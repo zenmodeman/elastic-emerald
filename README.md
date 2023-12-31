@@ -1,3 +1,5 @@
+Elastic Emerald built on top of pokeemerald-expansion
+
 # pokeemerald-expansion
 
 ## What is pokeemerald-expansion?
