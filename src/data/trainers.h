@@ -7500,16 +7500,16 @@ const struct Trainer gTrainers[] = {
         .party = TRAINER_PARTY(sParty_James4),
     },
 
-    [TRAINER_JAMES_5] =
+    [TRAINER_AURELIO] =
     {
-        .trainerClass = TRAINER_CLASS_BUG_CATCHER,
+        .trainerClass = TRAINER_CLASS_COOLTRAINER,
         .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_MALE,
-        .trainerPic = TRAINER_PIC_BUG_CATCHER,
-        .trainerName = _("JAMES"),
+        .trainerPic = TRAINER_PIC_COOLTRAINER_M,
+        .trainerName = _("AURELIO"),
         .items = {},
         .doubleBattle = FALSE,
-        .aiFlags = AI_FLAG_CHECK_BAD_MOVE,
-        .party = TRAINER_PARTY(sParty_James5),
+        .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES,
+        .party = TRAINER_PARTY(sParty_Aurelio),
     },
 
     [TRAINER_BRICE] =

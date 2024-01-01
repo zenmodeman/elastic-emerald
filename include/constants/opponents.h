@@ -626,7 +626,7 @@
 #define TRAINER_JAMES_2                     622
 #define TRAINER_JAMES_3                     623
 #define TRAINER_JAMES_4                     624
-#define TRAINER_JAMES_5                     625
+#define TRAINER_AURELIO                     625
 #define TRAINER_BRICE                       626
 #define TRAINER_TRENT_1                     627
 #define TRAINER_LENNY                       628
