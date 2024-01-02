@@ -7785,6 +7785,7 @@ u8 ItemBattleEffects(u8 caseID, u32 battler, bool32 moveTurn)
                 BattleScriptPushCursor();
                 gBattlescriptCurrInstr = BattleScript_ItemHurtRet;
                 gLastUsedItem = gBattleMons[gBattlerAttacker].item;
+                RecordItemEffectBattle(gBattlerAttacker, HOLD_EFFECT_LIFE_ORB);
             }
             break;
         case HOLD_EFFECT_THROAT_SPRAY:  // Does NOT need to be a damaging move
