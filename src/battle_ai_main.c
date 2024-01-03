@@ -2668,11 +2668,22 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
     u32 movesetIndex = AI_THINKING_STRUCT->movesetIndex;
 
+    //Doubles information for the skipping 
+    bool32 isDoubleBattle = IsValidDoubleBattle(battlerAtk);
+    u32 battlerAtkPartner = BATTLE_PARTNER(battlerAtk);
+
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
         return score;
 
     if (gBattleMoves[move].power == 0)
         return score; // can't make anything faint with no power
+
+    //In Double Battles, if the first move decider (the one with the smaller battlerId) can kill, 
+    //then the second move decider won't be incentivised to go for kill
+
+    if (isDoubleBattle && battlerAtkPartner < battlerAtk && CanAIFaintTarget(battlerAtkPartner, battlerDef, 1)){
+        return score;
+    }
 
     if (CanIndexMoveFaintTarget(battlerAtk, battlerDef, movesetIndex, 0) && gBattleMoves[move].effect != EFFECT_EXPLOSION)
     {
