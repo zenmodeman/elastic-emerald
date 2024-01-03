@@ -100,5 +100,6 @@ void MoveDeleterForgetMove(void);
 void BufferMoveDeleterNicknameAndMove(void);
 void GetNumMovesSelectedMonHas(void);
 void MoveDeleterChooseMoveToForget(void);
+bool8 DoesPlayerFollowItemClause(void);
 
 #endif // GUARD_PARTY_MENU_H

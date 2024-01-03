@@ -2,6 +2,8 @@ RustboroCity_Gym_MapScripts::
 	.byte 0
 
 RustboroCity_Gym_EventScript_Roxanne::
+	specialvar VAR_RESULT, DoesPlayerFollowItemClause
+	goto_if_eq VAR_RESULT, FALSE, RestrictItemClause
 	trainerbattle_single TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneIntro, RustboroCity_Gym_Text_RoxanneDefeat, RustboroCity_Gym_EventScript_RoxanneDefeated, NO_MUSIC
 	specialvar VAR_RESULT, ShouldTryRematchBattle
 	goto_if_eq VAR_RESULT, TRUE, RustboroCity_Gym_EventScript_RoxanneRematch
@@ -10,6 +12,11 @@ RustboroCity_Gym_EventScript_Roxanne::
 	release
 	end
 
+
+RestrictItemClause::
+	msgbox ExplainItemClause, MSGBOX_DEFAULT
+	release
+	end
 RustboroCity_Gym_EventScript_RoxanneDefeated::
 	message RustboroCity_Gym_Text_ReceivedStoneBadge
 	waitmessage
@@ -216,6 +223,12 @@ RustboroCity_Gym_Text_ExplainRockTomb:
 	.string "the move to a POKéMON.\p"
 	.string "Remember, a TM can be used only once,\n"
 	.string "so think before you use it.$"
+
+ExplainItemClause:
+	.string "You have Duplicate Held Items. \p"
+	.string "League sanctioned matches, \n"
+	.string "Must have item diversity. \p"
+	.string "Please return without duplicates.$" 
 
 RustboroCity_Gym_Text_RoxannePostBattle:
 	.string "Since you are so strong, you should\n"

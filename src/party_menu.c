@@ -506,6 +506,7 @@ static void ShowMoveSelectWindow(u8 slot);
 static void Task_HandleWhichMoveInput(u8 taskId);
 static bool32 CannotUsePartyBattleItem(u16 itemId, struct Pokemon* mon);
 
+
 // static const data
 #include "data/party_menu.h"
 
@@ -6856,6 +6857,24 @@ static u8 CheckBattleEntriesAndGetMessage(void)
     }
 
     return 0xFF;
+}
+
+bool8 DoesPlayerFollowItemClause(void){
+    struct Pokemon *party = gPlayerParty;
+    u8 i;
+    u8 j;
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u16 item = GetMonData(&party[i], MON_DATA_HELD_ITEM);
+
+        for (j = i + 1; j < PARTY_SIZE; j++)
+        {
+            // DebugPrintf("i = %d, j = %d, %x", a, a);
+            if (item != ITEM_NONE && item == GetMonData(&party[j], MON_DATA_HELD_ITEM))
+                return FALSE;
+        }        
+    }
+    return TRUE;
 }
 
 static bool8 HasPartySlotAlreadyBeenSelected(u8 slot)
