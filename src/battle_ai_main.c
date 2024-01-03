@@ -2678,10 +2678,9 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     if (gBattleMoves[move].power == 0)
         return score; // can't make anything faint with no power
 
-    //In Double Battles, if the first move decider (the one with the smaller battlerId) can kill, 
-    //then the second move decider won't be incentivised to go for kill
+    //In Double Battles, if the faster attacker has kill on target, the slower attacker shouldn't be incentivised to go for kill
 
-    if (isDoubleBattle && battlerAtkPartner < battlerAtk && CanAIFaintTarget(battlerAtkPartner, battlerDef, 1)){
+    if (isDoubleBattle && GetWhichBattlerFaster(battlerAtk, battlerAtkPartner, TRUE) != AI_IS_FASTER && CanAIFaintTarget(battlerAtkPartner, battlerDef, 1)){
         return score;
     }
 
