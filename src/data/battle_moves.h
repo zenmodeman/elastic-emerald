@@ -2893,7 +2893,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT_DYNAMAX] =
     [MOVE_SLASH] =
     {
         .effect = EFFECT_HIT,
-        .power = 70,
+        .power = 75,
         .type = TYPE_NORMAL,
         .accuracy = 100,
         .pp = 20,
@@ -7115,7 +7115,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT_DYNAMAX] =
     [MOVE_NIGHT_SLASH] =
     {
         .effect = EFFECT_HIT,
-        .power = 70,
+        .power = 75,
         .type = TYPE_DARK,
         .accuracy = 100,
         .pp = 15,
@@ -7776,7 +7776,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT_DYNAMAX] =
     [MOVE_CROSS_POISON] =
     {
         .effect = EFFECT_POISON_HIT,
-        .power = 70,
+        .power = 75,
         .type = TYPE_POISON,
         .accuracy = 100,
         .pp = 20,
