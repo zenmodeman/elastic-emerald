@@ -134,7 +134,7 @@ static const u16 sPoints_MoveEffect[NUM_BATTLE_MOVE_EFFECTS] =
     [EFFECT_RECOIL_IF_MISS]             = 1,
     [EFFECT_MIST]                       = 5,
     [EFFECT_FOCUS_ENERGY]               = 1,
-    [EFFECT_RECOIL_25]                  = 2,
+    [EFFECT_RECOIL]                     = 2,
     [EFFECT_CONFUSE]                    = 4,
     [EFFECT_ATTACK_UP_2]                = 1,
     [EFFECT_DEFENSE_UP_2]               = 1,
@@ -280,7 +280,6 @@ static const u16 sPoints_MoveEffect[NUM_BATTLE_MOVE_EFFECTS] =
     [EFFECT_SNATCH]                     = 1,
     [EFFECT_LOW_KICK]                   = 1,
     [EFFECT_SECRET_POWER]               = 1,
-    [EFFECT_RECOIL_33]                  = 2,
     [EFFECT_TEETER_DANCE]               = 6,
 //    [EFFECT_BLAZE_KICK]               = 1,
     [EFFECT_MUD_SPORT]                  = 4,
@@ -368,9 +367,7 @@ static const u16 sPoints_MoveEffect[NUM_BATTLE_MOVE_EFFECTS] =
     [EFFECT_GROWTH]                     = 0, // TODO: Assign points
     [EFFECT_CLOSE_COMBAT]               = 0, // TODO: Assign points
     [EFFECT_LAST_RESORT]                = 0, // TODO: Assign points
-    [EFFECT_RECOIL_33_STATUS]           = 0, // TODO: Assign points
     [EFFECT_FLINCH_STATUS]              = 0, // TODO: Assign points
-    [EFFECT_RECOIL_50]                  = 0, // TODO: Assign points
     [EFFECT_SHELL_SMASH]                = 0, // TODO: Assign points
     [EFFECT_SHIFT_GEAR]                 = 0, // TODO: Assign points
     [EFFECT_DEFENSE_UP_3]               = 0, // TODO: Assign points
@@ -702,7 +699,7 @@ static const u16 *const sPointsArray[] =
 };
 
 // Points will always be calculated for these messages
-// even if current pokemon does not have corresponding move
+// even if current Pokémon does not have corresponding move
 static const u16 sSpecialBattleStrings[] =
 {
     STRINGID_PKMNPERISHCOUNTFELL, STRINGID_PKMNWISHCAMETRUE, STRINGID_PKMNLOSTPPGRUDGE,
