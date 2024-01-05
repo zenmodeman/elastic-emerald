@@ -1766,7 +1766,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_TRICK:
-        case EFFECT_KNOCK_OFF:
+        //Currently just base knock off usage on damage
+        // case EFFECT_KNOCK_OFF:
             if (aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
                 ADJUST_SCORE(-10);
             break;
@@ -3739,10 +3740,14 @@ static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
     case EFFECT_PARTING_SHOT:
         if (!IsDoubleBattle())
         {
+            if (ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]) ||  ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
+                ADJUST_SCORE(1);
+
+            }
             switch (ShouldPivot(battlerAtk, battlerDef, aiData->abilities[battlerDef], move, movesetIndex))
             {
             case 0: // no
-                ADJUST_SCORE(-10);    // technically should go in CheckBadMove, but this is easier/less computationally demanding
+                // ADJUST_SCORE(-10);    // technically should go in CheckBadMove, but this is easier/less computationally demanding
                 break;
             case 1: // maybe
                 break;
@@ -4437,22 +4442,24 @@ static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
             ADJUST_SCORE(1);
         break;
     case EFFECT_KNOCK_OFF:
-        if (CanKnockOffItem(battlerDef, aiData->items[battlerDef]))
-        {
-            switch (aiData->holdEffects[battlerDef])
-            {
-            case HOLD_EFFECT_IRON_BALL:
-                if (HasMoveEffect(battlerDef, EFFECT_FLING))
-                    ADJUST_SCORE(4);
-                break;
-            case HOLD_EFFECT_LAGGING_TAIL:
-            case HOLD_EFFECT_STICKY_BARB:
-                break;
-            default:
-                ADJUST_SCORE(3);
-                break;
-            }
-        }
+        //Currently just base Knock Off usage on damage
+
+        // if (CanKnockOffItem(battlerDef, aiData->items[battlerDef]))
+        // {
+        //     switch (aiData->holdEffects[battlerDef])
+        //     {
+        //     case HOLD_EFFECT_IRON_BALL:
+        //         if (HasMoveEffect(battlerDef, EFFECT_FLING))
+        //             ADJUST_SCORE(4);
+        //         break;
+        //     case HOLD_EFFECT_LAGGING_TAIL:
+        //     case HOLD_EFFECT_STICKY_BARB:
+        //         break;
+        //     default:
+        //         ADJUST_SCORE(3);
+        //         break;
+        //     }
+        // }
         break;
     case EFFECT_SKILL_SWAP:
         if (gAbilities[aiData->abilities[battlerDef]].aiRating > gAbilities[aiData->abilities[battlerAtk]].aiRating)
