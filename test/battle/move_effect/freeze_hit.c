@@ -3,8 +3,8 @@
 
 ASSUMPTIONS
 {
-    ASSUME(gBattleMoves[MOVE_POWDER_SNOW].effect == EFFECT_FREEZE_HIT);
-    ASSUME(gBattleMoves[MOVE_BLIZZARD].accuracy == 70);
+    ASSUME(MoveHasMoveEffect(MOVE_POWDER_SNOW, MOVE_EFFECT_FREEZE_OR_FROSTBITE) == TRUE);
+    ASSUME(gMovesInfo[MOVE_BLIZZARD].accuracy == 70);
 }
 
 SINGLE_BATTLE_TEST("Powder Snow inflicts freeze")
@@ -75,8 +75,8 @@ SINGLE_BATTLE_TEST("Freezing Glare shouldn't freeze Psychic-types")
 {
     GIVEN {
         ASSUME(gSpeciesInfo[SPECIES_ARTICUNO_GALARIAN].types[0] == TYPE_PSYCHIC);
-        ASSUME(gBattleMoves[MOVE_FREEZING_GLARE].effect == EFFECT_FREEZE_HIT);
-        ASSUME(gBattleMoves[MOVE_FREEZING_GLARE].type == TYPE_PSYCHIC);
+        ASSUME(MoveHasMoveEffect(MOVE_FREEZING_GLARE, MOVE_EFFECT_FREEZE_OR_FROSTBITE) == TRUE);
+        ASSUME(gMovesInfo[MOVE_FREEZING_GLARE].type == TYPE_PSYCHIC);
         PLAYER(SPECIES_ARTICUNO_GALARIAN);
         OPPONENT(SPECIES_ARTICUNO_GALARIAN);
     } WHEN {

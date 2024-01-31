@@ -5,6 +5,7 @@
 #include "constants/items.h"
 #include "constants/region_map_sections.h"
 #include "constants/map_groups.h"
+#include "contest_effect.h"
 
 #define GET_BASE_SPECIES_ID(speciesId) (GetFormSpeciesId(speciesId, 0))
 #define FORM_SPECIES_END (0xffff)
@@ -403,7 +404,9 @@ struct SpeciesInfo /*0x8C*/
  /* 0x64 */ const u32 *shinyPaletteFemale;
  /* 0x68 */ const u8 *iconSprite;
  /* 0x6C */ const u8 *iconSpriteFemale;
+#if P_FOOTPRINTS
  /* 0x70 */ const u8 *footprint;
+#endif
             // All Pokémon pics are 64x64, but this data table defines where in this 64x64 frame the sprite's non-transparent pixels actually are.
  /* 0x74 */ u8 frontPicSize; // The dimensions of this drawn pixel area.
  /* 0x74 */ u8 frontPicSizeFemale; // The dimensions of this drawn pixel area.
@@ -430,7 +433,9 @@ struct SpeciesInfo /*0x8C*/
             u32 isPaldeanForm:1;
             u32 cannotBeTraded:1;
             u32 allPerfectIVs:1;
-            u32 padding4:18;
+            u32 dexForceRequired:1; // This species will be taken into account for Pokédex ratings even if they have the "isMythical" flag set.
+            u32 tmIlliterate:1; // This species will be unable to learn the universal moves.
+            u32 padding4:16;
             // Move Data
  /* 0x80 */ const struct LevelUpMove *levelUpLearnset;
  /* 0x84 */ const u16 *teachableLearnset;
@@ -439,8 +444,10 @@ struct SpeciesInfo /*0x8C*/
  /* 0x84 */ const struct FormChange *formChangeTable;
 };
 
-struct BattleMove
+struct MoveInfo
 {
+    const u8 *name;
+    const u8 *description;
     u16 effect;
     u8 power;
     u8 type:5;
@@ -449,8 +456,9 @@ struct BattleMove
     u16 accuracy:7;
     u16 recoil:7;
     u16 criticalHitStage:2;
+    u8 padding:6; // coming soon...
+    u8 numAdditionalEffects:2; // limited to 3 - don't want to get too crazy
     u8 pp;
-    u8 secondaryEffectChance;
 
     u16 target;
     s8 priority;
@@ -493,7 +501,7 @@ struct BattleMove
     u32 forcePressure:1;
     u32 cantUseTwice:1;
     u32 gravityBanned:1;
-    u32 healBlockBanned:1;
+    u32 healingMove:1;
     u32 meFirstBanned:1;
     u32 mimicBanned:1;
     u32 metronomeBanned:1;
@@ -506,7 +514,28 @@ struct BattleMove
     u32 skyBattleBanned:1;
     u32 sketchBanned:1;
 
-    u16 argument;
+    u32 argument; // also coming soon
+
+    // primary/secondary effects
+    const struct AdditionalEffect *additionalEffects;
+
+    // contest parameters
+    u8 contestEffect;
+    u8 contestCategory:3;
+    u8 contestComboStarterId;
+    u8 contestComboMoves[MAX_COMBO_MOVES];
+};
+
+#define EFFECTS_ARR(...) (const struct AdditionalEffect[]) {__VA_ARGS__}
+#define ADDITIONAL_EFFECTS(...) EFFECTS_ARR( __VA_ARGS__ ), .numAdditionalEffects = ARRAY_COUNT(EFFECTS_ARR( __VA_ARGS__ ))
+
+struct AdditionalEffect
+{
+    u8 self:1;
+    u8 onlyIfTargetRaisedStats:1;
+    u8 onChargeTurnOnly:1;
+    u8 chance; // 0% = effect certain, primary effect
+    u16 moveEffect;
 };
 
 struct Ability
@@ -577,11 +606,10 @@ extern u8 gEnemyPartyCount;
 extern struct Pokemon gEnemyParty[PARTY_SIZE];
 extern struct SpriteTemplate gMultiuseSpriteTemplate;
 
-extern const struct BattleMove gBattleMoves[];
+extern const struct MoveInfo gMovesInfo[];
 extern const u8 gFacilityClassToPicIndex[];
 extern const u8 gFacilityClassToTrainerClass[];
 extern const struct SpeciesInfo gSpeciesInfo[];
-extern const u8 *const gItemEffectTable[ITEMS_COUNT];
 extern const u32 gExperienceTables[][MAX_LEVEL + 1];
 extern const u8 gPPUpGetMask[];
 extern const u8 gPPUpClearMask[];
@@ -591,7 +619,7 @@ extern const u16 gUnionRoomFacilityClasses[];
 extern const struct SpriteTemplate gBattlerSpriteTemplates[];
 extern const s8 gNatureStatTable[][5];
 extern const u32 sExpCandyExperienceTable[];
-extern const struct Ability gAbilities[];
+extern const struct Ability gAbilitiesInfo[];
 
 void ZeroBoxMonData(struct BoxPokemon *boxMon);
 void ZeroMonData(struct Pokemon *mon);
@@ -686,7 +714,7 @@ void PokemonToBattleMon(struct Pokemon *src, struct BattlePokemon *dst);
 void CopyPlayerPartyMonToBattleData(u8 battlerId, u8 partyIndex);
 bool8 ExecuteTableBasedItemEffect(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex);
 bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex, u8 e);
-bool8 HealStatusConditions(struct Pokemon *mon, u32 battlePartyId, u32 healMask, u8 battlerId);
+bool8 HealStatusConditions(struct Pokemon *mon, u32 healMask, u8 battlerId);
 u8 GetItemEffectParamOffset(u32 battler, u16 itemId, u8 effectByte, u8 effectBit);
 u8 *UseStatIncreaseItem(u16 itemId);
 u8 GetNature(struct Pokemon *mon);
@@ -772,5 +800,6 @@ u16 GetCryIdBySpecies(u16 species);
 u16 GetSpeciesPreEvolution(u16 species);
 void HealPokemon(struct Pokemon *mon);
 void HealBoxPokemon(struct BoxPokemon *boxMon);
+const u8 *GetMoveName(u16 moveId);
 
 #endif // GUARD_POKEMON_H

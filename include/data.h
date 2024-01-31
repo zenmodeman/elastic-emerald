@@ -2,6 +2,7 @@
 #define GUARD_DATA_H
 
 #include "constants/moves.h"
+#include "constants/trainers.h"
 
 #define SPECIES_SHINY_TAG 5000
 
@@ -34,6 +35,8 @@ struct TrainerSprite
     struct CompressedSpriteSheet frontPic;
     struct CompressedSpritePalette palette;
     const union AnimCmd *const *const animation;
+    const struct Coords16 mugshotCoords;
+    s16 mugshotRotation;
 };
 
 struct TrainerBacksprite
@@ -82,8 +85,17 @@ struct Trainer
     /*0x12*/ u8 trainerPic;
     /*0x13*/ u8 trainerName[TRAINER_NAME_LENGTH + 1];
     /*0x1E*/ bool8 doubleBattle:1;
-             u8 padding:7;
-    /*0x1F*/ u8 partySize;
+             bool8 mugshotEnabled:1;
+             u8 padding:6;
+    /*0x1F*/ u8 mugshotColor;
+    /*0x20*/ u8 partySize;
+};
+
+struct TrainerClass
+{
+    u8 name[13];
+    u8 money;
+    u16 ball;
 };
 
 #define TRAINER_ENCOUNTER_MUSIC(trainer)((gTrainers[trainer].encounterMusic_gender & 0x7F))
@@ -117,9 +129,6 @@ extern const struct TrainerBacksprite gTrainerBacksprites[];
 extern const struct Trainer gTrainers[];
 extern const struct Trainer gBattlePartners[];
 
-extern const u8 gTrainerClassNames[][13];
-extern const u8 gMoveNames[MOVES_COUNT_DYNAMAX][MOVE_NAME_LENGTH + 1];
-extern const u8 *const gZMoveNames[];
-extern const u8 *const gMaxMoveNames[];
+extern const struct TrainerClass gTrainerClasses[TRAINER_CLASS_COUNT];
 
 #endif // GUARD_DATA_H
