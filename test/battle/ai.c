@@ -690,7 +690,6 @@ AI_SINGLE_BATTLE_TEST("First Impression is not chosen if it's blocked by certain
     PARAMETRIZE { species = SPECIES_FARIGIRAF; ability = ABILITY_ARMOR_TAIL; }
     PARAMETRIZE { species = SPECIES_TSAREENA; ability = ABILITY_QUEENLY_MAJESTY; }
 
-    KNOWN_FAILING; // Fails because the Omniscient flag is currently broken. It should pass after it is fixed
     GIVEN {
         ASSUME(gMovesInfo[MOVE_FIRST_IMPRESSION].effect == EFFECT_FIRST_TURN_ONLY);
         ASSUME(gMovesInfo[MOVE_FIRST_IMPRESSION].power == 90);
@@ -700,5 +699,33 @@ AI_SINGLE_BATTLE_TEST("First Impression is not chosen if it's blocked by certain
         OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_FIRST_IMPRESSION, MOVE_LUNGE); }
     } WHEN {
         TURN { EXPECT_MOVE(opponent, MOVE_LUNGE); }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("AI will not try to switch for the same pokemon for 2 spots in a double battle")
+{
+    u32 flags;
+
+    PARAMETRIZE {flags = AI_FLAG_SMART_SWITCHING; }
+    PARAMETRIZE {flags = 0; }
+
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | flags);
+        PLAYER(SPECIES_RATTATA);
+        PLAYER(SPECIES_RATTATA);
+        // No moves to damage player.
+        OPPONENT(SPECIES_GENGAR) { Moves(MOVE_SHADOW_BALL); }
+        OPPONENT(SPECIES_HAUNTER) { Moves(MOVE_SHADOW_BALL); }
+        OPPONENT(SPECIES_GENGAR) { Moves(MOVE_SHADOW_BALL); }
+        OPPONENT(SPECIES_RATICATE) { Moves(MOVE_HEADBUTT); }
+    } WHEN {
+        TURN { EXPECT_SWITCH(opponentLeft, 3); };
+    } SCENE {
+        MESSAGE("{PKMN} TRAINER LEAF withdrew Gengar!");
+        MESSAGE("{PKMN} TRAINER LEAF sent out Raticate!");
+        NONE_OF {
+            MESSAGE("{PKMN} TRAINER LEAF withdrew Haunter!");
+            MESSAGE("{PKMN} TRAINER LEAF sent out Raticate!");
+        }
     }
 }
