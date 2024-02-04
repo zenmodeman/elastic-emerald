@@ -287,3 +287,39 @@ EventScript_FailSweetScent::
 
 Text_FailSweetScent:
 	.string "Looks like there's nothing here…$"
+
+@ Interact with a tree that can be shaken
+EventScript_Shake::
+	lockall
+	setfieldeffectargument 0, VAR_RESULT
+	msgbox Text_WantToShake, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq EventScript_CancelShake
+	goto EventScript_ShakeTree
+	end
+
+EventScript_CancelShake::
+	closemessage
+	releaseall
+	end
+
+EventScript_ShakeTree::
+	setvar VAR_0x8004, 1  @ vertical pan
+	setvar VAR_0x8005, 1  @ horizontal pan
+	setvar VAR_0x8006, 8  @ num shakes
+	setvar VAR_0x8007, 5  @ shake delay
+	special ShakeCamera
+	waitstate
+	special ShakeWildEncounter
+	compare VAR_RESULT, FALSE
+	goto_if_eq EventScript_EndShake
+	waitstate
+
+EventScript_EndShake::
+	releaseall
+	end
+
+Text_WantToShake:
+	.string "It's a moderate sized tree.\n"
+	.string "Would you like to shake it?$"
+	

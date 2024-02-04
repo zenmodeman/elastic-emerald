@@ -3052,7 +3052,7 @@ static const struct TrainerMon sParty_Walter5[] = {
     }
 };
 
-static const struct TrainerMon sParty_Sidney_Singles[] = {
+static const struct TrainerMon sParty_Sidney[] = {
     {
     .iv = TRAINER_PARTY_IVS(30, 30, 30, 30, 30, 30),
     .lvl = 62,

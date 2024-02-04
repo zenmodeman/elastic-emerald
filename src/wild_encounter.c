@@ -42,6 +42,7 @@ enum {
     WILD_AREA_WATER,
     WILD_AREA_ROCKS,
     WILD_AREA_FISHING,
+    WILD_AREA_SHAKE,
 };
 
 #define WILD_CHECK_REPEL    (1 << 0)
@@ -499,6 +500,9 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
         wildMonIndex = ChooseWildMonIndex_WaterRock();
         break;
     case WILD_AREA_ROCKS:
+        wildMonIndex = ChooseWildMonIndex_WaterRock();
+        break;
+    case WILD_AREA_SHAKE:
         wildMonIndex = ChooseWildMonIndex_WaterRock();
         break;
     }
@@ -1013,6 +1017,35 @@ static bool8 IsAbilityAllowingEncounter(u8 level)
     }
 
     return TRUE;
+}
+
+void ShakeWildEncounter(void)
+{
+    u16 headerId = GetCurrentMapWildMonHeaderId();
+
+    if (headerId != 0xFFFF)
+    {
+        const struct WildPokemonInfo *wildPokemonInfo = gWildMonHeaders[headerId].shakeMonsInfo;
+
+        if (wildPokemonInfo == NULL)
+        {
+            gSpecialVar_Result = FALSE;
+        }
+
+        else if (WildEncounterCheck(wildPokemonInfo->encounterRate, TRUE) == TRUE && TryGenerateWildMon(wildPokemonInfo, WILD_AREA_SHAKE, WILD_CHECK_REPEL | WILD_CHECK_KEEN_EYE) == TRUE)
+        {
+            BattleSetup_StartWildBattle();
+            gSpecialVar_Result = TRUE;
+        }
+        else
+        {
+            gSpecialVar_Result = FALSE;
+        }
+    }
+    else
+    {
+        gSpecialVar_Result = FALSE;
+    }
 }
 
 static bool8 TryGetRandomWildMonIndexByType(const struct WildPokemon *wildMon, u8 type, u8 numMon, u8 *monIndex)
