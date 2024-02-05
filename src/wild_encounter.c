@@ -37,6 +37,9 @@ extern const u8 EventScript_SprayWoreOff[];
 #define NUM_FISHING_SPOTS_3 149
 #define NUM_FISHING_SPOTS (NUM_FISHING_SPOTS_1 + NUM_FISHING_SPOTS_2 + NUM_FISHING_SPOTS_3)
 
+#define MAX_REGULAR_LAND_SLOTS 8 
+
+
 enum {
     WILD_AREA_LAND,
     WILD_AREA_WATER,
@@ -62,6 +65,8 @@ static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildM
 static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 type, u16 ability, u8 *monIndex);
 #endif
 static bool8 IsAbilityAllowingEncounter(u8 level);
+
+static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 *monIndex, u8 numMon);
 
 EWRAM_DATA static u8 sWildEncountersDisabled = 0;
 EWRAM_DATA static u32 sFeebasRngValue = 0;
@@ -462,12 +467,28 @@ static void CreateWildMon(u16 species, u8 level)
 
 static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 area, u8 flags)
 {
+    u16 monotypeVarResult;
     u8 wildMonIndex = 0;
     u8 level;
+    bool8 isMonotypeInfluenced = FALSE;
+
+    monotypeVarResult = VarGet(VAR_MONOTYPE);
+
+    if (monotypeVarResult > 0 && monotypeVarResult < NUMBER_OF_MON_TYPES){
+        isMonotypeInfluenced = TRUE;
+    }
 
     switch (area)
     {
     case WILD_AREA_LAND:
+        if (isMonotypeInfluenced){
+            if (TryGetMonotypeVarInfluencedWildMonIndex(wildMonInfo->wildPokemon, &wildMonIndex, LAND_WILD_COUNT)){
+                break;
+            }else{
+                return FALSE;
+            }
+        }
+
         if (OW_MAGNET_PULL < GEN_9 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_STEEL, ABILITY_MAGNET_PULL, &wildMonIndex, LAND_WILD_COUNT))
             break;
         if (OW_STATIC < GEN_9 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_STATIC, &wildMonIndex, LAND_WILD_COUNT))
@@ -505,6 +526,11 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
     case WILD_AREA_SHAKE:
         wildMonIndex = ChooseWildMonIndex_WaterRock();
         break;
+    }
+
+    //Use modulus to cut down to the permitted size
+    if (area == WILD_AREA_LAND && wildMonIndex >= MAX_REGULAR_LAND_SLOTS && !isMonotypeInfluenced){
+        wildMonIndex = wildMonIndex % (MAX_REGULAR_LAND_SLOTS); 
     }
 
     level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, area);
@@ -1115,6 +1141,20 @@ static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildM
 #else
     return TryGetRandomWildMonIndexByType(wildMon, type, LAND_WILD_COUNT, monIndex);
 #endif
+}
+
+static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 *monIndex, u8 numMon)
+{
+    u8 typeVar;
+    u8 type;
+
+    typeVar = VarGet(VAR_MONOTYPE);
+    if (typeVar == 0 || typeVar >= NUMBER_OF_MON_TYPES){
+        return FALSE;
+    }
+    type = typeVar - 1;
+
+    return TryGetRandomWildMonIndexByType(wildMon, type, numMon, monIndex);
 }
 
 static void ApplyFluteEncounterRateMod(u32 *encRate)
