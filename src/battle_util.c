@@ -10656,14 +10656,17 @@ void TryRestoreHeldItems(void)
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        if (B_RESTORE_HELD_BATTLE_ITEMS == TRUE || gBattleStruct->itemLost[i].stolen)
+        if ((B_RESTORE_HELD_BATTLE_ITEMS == TRUE && !FlagGet(FLAG_RESOURCE_MODE)) || gBattleStruct->itemLost[i].stolen)
         {
             lostItem = gBattleStruct->itemLost[i].originalItem;
             // if (lostItem != ITEM_NONE && ItemId_GetPocket(lostItem) != POCKET_BERRIES)
             //     SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &lostItem);  // Restore stolen non-berry items
 
-            if (lostItem != ITEM_NONE || gBattleTypeFlags & BATTLE_TYPE_TRAINER) //In a trainer battle, ITEM_NONE is restored
-                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &lostItem);  // Restore all items
+            //In a trainer battle, ITEM_NONE is restored; i.e., a tricked item is not persisted
+            if (lostItem != ITEM_NONE || gBattleTypeFlags & BATTLE_TYPE_TRAINER) 
+            SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &lostItem);  // Restore all items
+            
+
             
         }
     }
