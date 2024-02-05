@@ -474,7 +474,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
 
     monotypeVarResult = VarGet(VAR_MONOTYPE);
 
-    if (monotypeVarResult > 0 && monotypeVarResult < NUMBER_OF_MON_TYPES){
+    if (monotypeVarResult > 0 && monotypeVarResult <= NUMBER_OF_MON_TYPES){
         isMonotypeInfluenced = TRUE;
     }
 
@@ -528,7 +528,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
         break;
     }
 
-    //Use modulus to cut down to the permitted size
+    //Use modulus to cut down to the permitted size; the total wild size is a multiple of the maximum land slots (24 v.s. 8)
     if (area == WILD_AREA_LAND && wildMonIndex >= MAX_REGULAR_LAND_SLOTS && !isMonotypeInfluenced){
         wildMonIndex = wildMonIndex % (MAX_REGULAR_LAND_SLOTS); 
     }
@@ -1149,7 +1149,7 @@ static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *w
     u8 type;
 
     typeVar = VarGet(VAR_MONOTYPE);
-    if (typeVar == 0 || typeVar >= NUMBER_OF_MON_TYPES){
+    if (typeVar == 0 || typeVar > NUMBER_OF_MON_TYPES){
         return FALSE;
     }
     type = typeVar - 1;
