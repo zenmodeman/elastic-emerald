@@ -1,0 +1,137 @@
+raw`
+InsideOfTruck_MapScripts::
+	map_script MAP_SCRIPT_ON_LOAD, InsideOfTruck_OnLoad
+	map_script MAP_SCRIPT_ON_RESUME, InsideOfTruck_OnResume
+	.byte 0
+
+InsideOfTruck_OnLoad:
+	setmetatile 4, 1, METATILE_InsideOfTruck_ExitLight_Top, FALSE
+	setmetatile 4, 2, METATILE_InsideOfTruck_ExitLight_Mid, FALSE
+	setmetatile 4, 3, METATILE_InsideOfTruck_ExitLight_Bottom, FALSE
+	end
+
+InsideOfTruck_OnResume:
+	setstepcallback STEP_CB_TRUCK
+	end
+
+
+InsideOfTruck_EventScript_SetIntroFlagsMale::
+	setrespawn HEAL_LOCATION_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F
+	setvar VAR_LITTLEROOT_INTRO_STATE, 1
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_MOM
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_TRUCK
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_RIVAL_MOM
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_RIVAL_SIBLING
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F_POKE_BALL
+	setvar VAR_LITTLEROOT_HOUSES_STATE_BRENDAN, 1
+	setdynamicwarp MAP_LITTLEROOT_TOWN, 3, 10
+	releaseall
+	end
+
+InsideOfTruck_EventScript_SetIntroFlagsFemale::
+	setrespawn HEAL_LOCATION_LITTLEROOT_TOWN_MAYS_HOUSE_2F
+	setvar VAR_LITTLEROOT_INTRO_STATE, 2
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_MOM
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_TRUCK
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_RIVAL_MOM
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_RIVAL_SIBLING
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL
+	setvar VAR_LITTLEROOT_HOUSES_STATE_MAY, 1
+	setdynamicwarp MAP_LITTLEROOT_TOWN, 12, 10
+	releaseall
+	end
+
+InsideOfTruck_EventScript_MovingBox::
+	msgbox InsideOfTruck_Text_BoxPrintedWithMonLogo, MSGBOX_SIGN
+	end
+
+InsideOfTruck_Text_BoxPrintedWithMonLogo:
+	.string "The box is printed with a POKéMON logo.\p"
+	.string "It's a POKéMON brand moving and\n"
+	.string "delivery service.$"
+
+`
+
+
+script InsideOfTruck_EventScript_SetIntroFlags{
+    lockall
+    setflag(FLAG_HIDE_MAP_NAME_POPUP)
+    msgbox(BeforeBegginning)
+    msgbox("Will you opt-in to Restricted Mode?")
+    do{
+        dynmultichoice(10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        if (var(VAR_RESULT) == 0){
+            setflag(FLAG_RESTRICTED_MODE)
+        }
+        elif (var(VAR_RESULT) ==2){
+            msgbox(RestrictedModeInfo)
+        }
+    }while (var(VAR_RESULT) ==2)
+
+    msgbox("Will you opt-in to Resource Mode?")
+    do{
+        dynmultichoice(10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        if (var(VAR_RESULT) == 0){
+            setflag(FLAG_RESOURCE_MODE)
+        }
+        elif (var(VAR_RESULT) ==2){
+            msgbox(ResourceModeInfo)
+        }
+    }while (var(VAR_RESULT) ==2)
+    
+    msgbox("Will you do a monotype run?")
+    do{
+        dynmultichoice(10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        if (var(VAR_RESULT) ==2){
+            msgbox(MonotypeInfo)
+        }
+    }while (var(VAR_RESULT) ==2)
+
+    if (var(VAR_RESULT) == 0){
+        msgbox("Please choose the monotype.")
+        dynmultichoice(10, 100, TRUE, 5, 0, DYN_MULTICHOICE_CB_NONE, "Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy")
+        copyvar(VAR_MONOTYPE, VAR_RESULT)
+        addvar(VAR_MONOTYPE, 1)
+    }
+
+    checkplayergender 
+    if (var(VAR_RESULT) == MALE){
+        goto(InsideOfTruck_EventScript_SetIntroFlagsMale)
+    }elif(var(VAR_RESULT) == FEMALE){
+        goto(InsideOfTruck_EventScript_SetIntroFlagsFemale)
+    }
+    msgbox("Quick Message.")
+    releaseall
+}
+
+text BeforeBegginning {
+    "Before begginning your game, \n"
+    "Let's configure some settings. \p"
+}
+
+text RestrictedModeInfo {
+    "Restricted mode adds constraints, \n"
+    "for balance reasons.\p"
+    "Certain moves, items, and abilities \n"
+    "are less available.\p"
+    "Bag items can't be used \n"
+    "in trainer battles. \p"
+    "Item Clause is enforced \n"
+    "for certain boss fights. \p"
+}
+
+text ResourceModeInfo {
+    "Restricted mode emphasizes finite supply, \n"
+    "for those who want more decision-making. \p"
+    "TMs, tutors, and move relearners \n"
+    "have limited use.\p"
+    "Consumable items do not regenerate, \n"
+    "and berries can't be planted. \p" 
+}
+
+text MonotypeInfo {
+    "For monotype runs, each monotype has \n"
+    "custom wild encounters and gifts. \p"
+    "Split Evolutions are constrained: A Wurmple in\n"
+    "Mono Poison will always evolve into a Cascoon. \p"     
+}
