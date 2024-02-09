@@ -44,7 +44,7 @@
 
 #define FLAG_RESTRICTED_MODE    0x20 // For Restricted Mode logic; formerly unused flag
 #define FLAG_RESOURCE_MODE    0x21 // For Resource Mode logic; formerly unused flag
-#define FLAG_UNUSED_0x022    0x22 // Unused Flag
+#define FLAG_EV_MODE    0x22 // For EV mode logic; formerly unused flag
 #define FLAG_UNUSED_0x023    0x23 // Unused Flag
 #define FLAG_UNUSED_0x024    0x24 // Unused Flag
 #define FLAG_UNUSED_0x025    0x25 // Unused Flag

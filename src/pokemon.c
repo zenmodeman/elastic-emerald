@@ -4829,6 +4829,10 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
     u8 stat;
     u8 bonus;
 
+    //Skip the EV check if not playing on EV mode
+    if (!FlagGet(FLAG_EV_MODE)){
+        return;
+    }
     heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, 0);
     if (heldItem == ITEM_ENIGMA_BERRY_E_READER)
     {

@@ -3286,10 +3286,13 @@ static const struct TrainerMon sParty_Drake[] = {
 static const struct TrainerMon sParty_Roxanne1[] = {
     {
     .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
-    .lvl = 12,
-    .species = SPECIES_GEODUDE,
-    .heldItem = ITEM_NONE,
-    .moves = {MOVE_TACKLE, MOVE_DEFENSE_CURL, MOVE_ROCK_THROW, MOVE_ROCK_TOMB}
+    .lvl = 13,
+    .species = SPECIES_DWEBBLE,
+    .heldItem = ITEM_LIECHI_BERRY,
+    .nature = TRAINER_PARTY_NATURE(NATURE_ADAMANT),
+    .ev = TRAINER_PARTY_EVS(84,84,84,84,84,84),
+    .ability = ABILITY_STURDY,
+    .moves = {MOVE_SAND_TOMB, MOVE_BUG_BITE, MOVE_ROCK_TOMB, MOVE_SANDSTORM}
     },
     {
     .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
