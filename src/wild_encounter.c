@@ -474,7 +474,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
 
     monotypeVarResult = VarGet(VAR_MONOTYPE);
 
-    if (monotypeVarResult > 0 && monotypeVarResult <= NUMBER_OF_MON_TYPES){
+    if (monotypeVarResult > 0 && monotypeVarResult < NUMBER_OF_MON_TYPES){
         isMonotypeInfluenced = TRUE;
     }
 
@@ -1074,6 +1074,41 @@ void ShakeWildEncounter(void)
     }
 }
 
+static bool8 IsMonMonotypeException(u16 species, u8 type){
+    if (type == TYPE_POISON){
+        if (species == SPECIES_WURMPLE){
+            return TRUE;
+        }
+    }else if (type == TYPE_FLYING){
+        if (species == SPECIES_WURMPLE){
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static bool8 TryGetRandomWildMonMonotypeIndex(const struct WildPokemon *wildMon, u8 type, u8 numMon, u8 *monIndex)
+{
+    u8 validIndexes[numMon]; // variable length array, an interesting feature
+    u8 i, validMonCount;
+
+    for (i = 0; i < numMon; i++)
+        validIndexes[i] = 0;
+
+    for (validMonCount = 0, i = 0; i < numMon; i++)
+    {
+        if (gSpeciesInfo[wildMon[i].species].types[0] == type || gSpeciesInfo[wildMon[i].species].types[1] == type || IsMonMonotypeException(wildMon[i].species, type))
+            validIndexes[validMonCount++] = i;
+    }
+
+    if (validMonCount == 0 || validMonCount == numMon)
+        return FALSE;
+
+    *monIndex = validIndexes[Random() % validMonCount];
+    return TRUE;
+}
+
+
 static bool8 TryGetRandomWildMonIndexByType(const struct WildPokemon *wildMon, u8 type, u8 numMon, u8 *monIndex)
 {
     u8 validIndexes[numMon]; // variable length array, an interesting feature
@@ -1149,12 +1184,17 @@ static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *w
     u8 type;
 
     typeVar = VarGet(VAR_MONOTYPE);
-    if (typeVar == 0 || typeVar > NUMBER_OF_MON_TYPES){
+    if (typeVar == 0 || typeVar >= NUMBER_OF_MON_TYPES){
         return FALSE;
     }
-    type = typeVar - 1;
+    if (typeVar <= 9){
+        type = typeVar - 1;
+    }else{
+        type = typeVar;
+    }
+    
 
-    return TryGetRandomWildMonIndexByType(wildMon, type, numMon, monIndex);
+    return TryGetRandomWildMonMonotypeIndex(wildMon, type, numMon, monIndex);
 }
 
 static void ApplyFluteEncounterRateMod(u32 *encRate)

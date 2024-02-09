@@ -763,6 +763,16 @@ void ZeroBoxMonData(struct BoxPokemon *boxMon)
         raw[i] = 0;
 }
 
+u8 GetTypeFromVar(u8 varValue){
+    if (varValue == 0 || varValue >= NUMBER_OF_MON_TYPES){
+        return TYPE_NONE;
+    }else if (varValue <= 9){
+        return varValue - 1;
+    }else{
+        return varValue;
+    }
+}
+
 void ZeroMonData(struct Pokemon *mon)
 {
     u32 arg;
@@ -4189,10 +4199,22 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem, s
                         targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_SILCOON:
+                if (GetTypeFromVar(VarGet(VAR_MONOTYPE))== TYPE_POISON){
+                    break;
+                }else if (GetTypeFromVar(VarGet(VAR_MONOTYPE)) == TYPE_FLYING){
+                    targetSpecies = evolutions[i].targetSpecies;
+                    break;
+                }
                 if (evolutions[i].param <= level && (upperPersonality % 10) <= 4)
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_CASCOON:
+                if (GetTypeFromVar(VarGet(VAR_MONOTYPE))== TYPE_FLYING){
+                    break;
+                }else if (GetTypeFromVar(VarGet(VAR_MONOTYPE))== TYPE_POISON){
+                    targetSpecies = evolutions[i].targetSpecies;
+                    break;
+                }
                 if (evolutions[i].param <= level && (upperPersonality % 10) > 4)
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
