@@ -890,7 +890,11 @@ static const u8 *ItemId_GetPluralName(u16 itemId)
 const u8 *ItemId_GetEffect(u32 itemId)
 {
     if (itemId == ITEM_ENIGMA_BERRY_E_READER)
+    #if FREE_ENIGMA_BERRY == FALSE
         return gSaveBlock1Ptr->enigmaBerry.itemEffect;
+    #else
+        return 0;
+    #endif //FREE_ENIGMA_BERRY
     else
         return gItemsInfo[SanitizeItemId(itemId)].effect;
 }
@@ -985,11 +989,11 @@ u32 GetItemStatus1Mask(u16 itemId)
         case ITEM3_BURN:
             return STATUS1_BURN;
         case ITEM3_POISON:
-            return STATUS1_POISON | STATUS1_TOXIC_POISON;
+            return STATUS1_PSN_ANY | STATUS1_TOXIC_COUNTER;
         case ITEM3_SLEEP:
             return STATUS1_SLEEP;
         case ITEM3_STATUS_ALL:
-            return STATUS1_ANY;
+            return STATUS1_ANY | STATUS1_TOXIC_COUNTER;
     }
     return 0;
 }

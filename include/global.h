@@ -18,6 +18,7 @@
 #include "constants/easy_chat.h"
 #include "constants/trainer_hill.h"
 #include "constants/items.h"
+#include "config/save.h"
 
 // Prevent cross-jump optimization.
 #define BLOCK_CROSS_JUMP asm("");
@@ -66,7 +67,7 @@
 // Used in cases where division by 0 can occur in the retail version.
 // Avoids invalid opcodes on some emulators, and the otherwise UB.
 #ifdef UBFIX
-#define SAFE_DIV(a, b) ((b) ? (a) / (b) : 0)
+#define SAFE_DIV(a, b) (((b) != 0) ? (a) / (b) : 0)
 #else
 #define SAFE_DIV(a, b) ((a) / (b))
 #endif
@@ -82,62 +83,6 @@
 
 // Extracts the lower 16 bits of a 32-bit number
 #define LOHALF(n) ((n) & 0xFFFF)
-
-/* (Credit to MGriffin) A rather monstrous way of finding the set bit in a word.
-Invalid input causes a compiler error. Sample: https://cexplore.karathan.at/z/x1hm7B */
-#define BIT_INDEX(n) \
-    (n) == (1 << 0) ? 0 : \
-    (n) == (1 << 1) ? 1 : \
-    (n) == (1 << 2) ? 2 : \
-    (n) == (1 << 3) ? 3 : \
-    (n) == (1 << 4) ? 4 : \
-    (n) == (1 << 5) ? 5 : \
-    (n) == (1 << 6) ? 6 : \
-    (n) == (1 << 7) ? 7 : \
-    (n) == (1 << 8) ? 8 : \
-    (n) == (1 << 9) ? 9 : \
-    (n) == (1 << 10) ? 10 : \
-    (n) == (1 << 11) ? 11 : \
-    (n) == (1 << 12) ? 12 : \
-    (n) == (1 << 13) ? 13 : \
-    (n) == (1 << 14) ? 14 : \
-    (n) == (1 << 15) ? 15 : \
-    (n) == (1 << 16) ? 16 : \
-    (n) == (1 << 17) ? 17 : \
-    (n) == (1 << 18) ? 18 : \
-    (n) == (1 << 19) ? 19 : \
-    (n) == (1 << 20) ? 20 : \
-    (n) == (1 << 21) ? 21 : \
-    (n) == (1 << 22) ? 22 : \
-    (n) == (1 << 23) ? 23 : \
-    (n) == (1 << 24) ? 24 : \
-    (n) == (1 << 25) ? 25 : \
-    (n) == (1 << 26) ? 26 : \
-    (n) == (1 << 27) ? 27 : \
-    (n) == (1 << 28) ? 28 : \
-    (n) == (1 << 29) ? 29 : \
-    (n) == (1 << 30) ? 30 : \
-    (n) == (1 << 31) ? 31 : \
-    *(u32 *)NULL
-
-#define COMPRESS_BITS_0 0, 1
-#define COMPRESS_BITS_1 1, 1
-#define COMPRESS_BITS_2 2, 1
-#define COMPRESS_BITS_3 3, 1
-#define COMPRESS_BITS_4 4, 1
-#define COMPRESS_BITS_5 5, 1
-#define COMPRESS_BITS_6 6, 1
-#define COMPRESS_BITS_7 7, 1
-
-/* Will try and compress a set bit (or up to three sequential bits) into a single byte
-Input must be of the form (upper << lower) where upper can be up to 3, lower up to 31 */
-#define COMPRESS_BITS(_val) COMPRESS_BITS_STEP_2 _val
-#define COMPRESS_BITS_STEP_2(_unpacked) COMPRESS_BITS_STEP_3(COMPRESS_BITS_## _unpacked)
-#define COMPRESS_BITS_STEP_3(...) COMPRESS_BITS_STEP_4(__VA_ARGS__)
-#define COMPRESS_BITS_STEP_4(upper, lower) (((upper % 8) << 5) + (BIT_INDEX(lower)))
-
-/* Will read a compressed bit stored by COMPRESS_BIT into a single byte */
-#define UNCOMPRESS_BITS(compressed) ((compressed >> 5) << (compressed & 0x1F))
 
 // There are many quirks in the source code which have overarching behavioral differences from
 // a number of other files. For example, diploma.c seems to declare rodata before each use while
@@ -180,9 +125,6 @@ Input must be of the form (upper << lower) where upper can be up to 3, lower up 
 #define NUM_FLAG_BYTES ROUND_BITS_TO_BYTES(FLAGS_COUNT)
 #define NUM_TRENDY_SAYING_BYTES ROUND_BITS_TO_BYTES(NUM_TRENDY_SAYINGS)
 
-// Converts a string to a compound literal, essentially making it a pointer to const u8
-#define COMPOUND_STRING(str) (const u8[]) _(str)
-
 // This produces an error at compile-time if expr is zero.
 // It looks like file.c:line: size of array `id' is negative
 #define STATIC_ASSERT(expr, id) typedef char id[(expr) ? 1 : -1];
@@ -224,6 +166,12 @@ struct UCoords32
     u32 x;
     u32 y;
 };
+
+struct SaveBlock3
+{
+};
+
+extern struct SaveBlock3 *gSaveBlock3Ptr;
 
 struct Time
 {
@@ -413,7 +361,9 @@ struct BattleFrontier
     /*0x64C*/ struct EmeraldBattleTowerRecord towerPlayer;
     /*0x738*/ struct EmeraldBattleTowerRecord towerRecords[BATTLE_TOWER_RECORD_COUNT]; // From record mixing.
     /*0xBEB*/ struct BattleTowerInterview towerInterview;
-    /*0xBEC*/ struct BattleTowerEReaderTrainer ereaderTrainer;
+#if FREE_BATTLE_TOWER_E_READER == FALSE
+    /*0xBEC*/ struct BattleTowerEReaderTrainer ereaderTrainer;  //188 bytes
+#endif //FREE_BATTLE_TOWER_E_READER
     /*0xCA8*/ u8 challengeStatus;
     /*0xCA9*/ u8 lvlMode:2;
               u8 challengePaused:1;
@@ -566,10 +516,14 @@ struct SaveBlock2
     /*0xB0*/ struct PlayersApprentice playerApprentice;
     /*0xDC*/ struct Apprentice apprentices[APPRENTICE_COUNT];
     /*0x1EC*/ struct BerryCrush berryCrush;
+#if FREE_POKEMON_JUMP == FALSE
     /*0x1FC*/ struct PokemonJumpRecords pokeJump;
+#endif //FREE_POKEMON_JUMP
     /*0x20C*/ struct BerryPickingResults berryPick;
+#if FREE_RECORD_MIXING_HALL_RECORDS == FALSE
     /*0x21C*/ struct RankingHall1P hallRecords1P[HALL_FACILITIES_COUNT][FRONTIER_LVL_MODE_COUNT][HALL_RECORDS_COUNT]; // From record mixing.
     /*0x57C*/ struct RankingHall2P hallRecords2P[FRONTIER_LVL_MODE_COUNT][HALL_RECORDS_COUNT]; // From record mixing.
+#endif //FREE_RECORD_MIXING_HALL_RECORDS
     /*0x624*/ u16 contestLinkResults[CONTEST_CATEGORIES_COUNT][CONTESTANT_COUNT];
     /*0x64C*/ struct BattleFrontier frontier;
 }; // sizeof=0xF2C
@@ -1043,11 +997,15 @@ struct SaveBlock1
     /*0x690*/ struct ItemSlot bagPocket_TMHM[BAG_TMHM_COUNT];
     /*0x790*/ struct ItemSlot bagPocket_Berries[BAG_BERRIES_COUNT];
     /*0x848*/ struct Pokeblock pokeblocks[POKEBLOCKS_COUNT];
+#if FREE_EXTRA_SEEN_FLAGS == FALSE
     /*0x988*/ u8 filler1[0x34]; // Previously Dex Flags, feel free to remove.
+#endif //FREE_EXTRA_SEEN_FLAGS
     /*0x9BC*/ u16 berryBlenderRecords[3];
     /*0x9C2*/ u8 unused_9C2[6];
+#if FREE_MATCH_CALL == FALSE
     /*0x9C8*/ u16 trainerRematchStepCounter;
     /*0x9CA*/ u8 trainerRematches[MAX_REMATCH_ENTRIES];
+#endif //FREE_MATCH_CALL
     /*0xA2E*/ //u8 padding3[2];
     /*0xA30*/ struct ObjectEvent objectEvents[OBJECT_EVENTS_COUNT];
     /*0xC70*/ struct ObjectEventTemplate objectEventTemplates[OBJECT_EVENT_TEMPLATES_COUNT];
@@ -1066,8 +1024,8 @@ struct SaveBlock1
     /*0x278E*/ u8 decorationPosters[10];
     /*0x2798*/ u8 decorationDolls[40];
     /*0x27C0*/ u8 decorationCushions[10];
-    /*0x27CA*/ //u8 padding4[2];
     /*0x27CC*/ TVShow tvShows[TV_SHOWS_COUNT];
+    /*0x27CA*/ //u8 padding4[2];
     /*0x2B50*/ PokeNews pokeNews[POKE_NEWS_COUNT];
     /*0x2B90*/ u16 outbreakPokemonSpecies;
     /*0x2B92*/ u8 outbreakLocationMapNum;
@@ -1091,22 +1049,36 @@ struct SaveBlock1
     /*0x2e64*/ struct DewfordTrend dewfordTrends[SAVED_TRENDS_COUNT];
     /*0x2e90*/ struct ContestWinner contestWinners[NUM_CONTEST_WINNERS]; // see CONTEST_WINNER_*
     /*0x3030*/ struct DayCare daycare;
+#if FREE_LINK_BATTLE_RECORDS == FALSE
     /*0x3150*/ struct LinkBattleRecords linkBattleRecords;
+#endif //FREE_LINK_BATTLE_RECORDS
     /*0x31A8*/ u8 giftRibbons[GIFT_RIBBONS_COUNT];
     /*0x31B3*/ struct ExternalEventData externalEventData;
     /*0x31C7*/ struct ExternalEventFlags externalEventFlags;
     /*0x31DC*/ struct Roamer roamer;
+#if FREE_ENIGMA_BERRY == FALSE
     /*0x31F8*/ struct EnigmaBerry enigmaBerry;
+#endif //FREE_ENIGMA_BERRY
+#if FREE_MYSTERY_GIFT == FALSE
     /*0x322C*/ struct MysteryGiftSave mysteryGift;
+#endif //FREE_MYSTERY_GIFT
     /*0x3???*/ u8 dexSeen[NUM_DEX_FLAG_BYTES];
     /*0x3???*/ u8 dexCaught[NUM_DEX_FLAG_BYTES];
+#if FREE_TRAINER_HILL == FALSE
     /*0x3???*/ u32 trainerHillTimes[NUM_TRAINER_HILL_MODES];
+#endif //FREE_TRAINER_HILL
+#if FREE_MYSTERY_EVENT_BUFFERS == FALSE
     /*0x3???*/ struct RamScript ramScript;
+#endif //FREE_MYSTERY_EVENT_BUFFERS
     /*0x3???*/ struct RecordMixingGift recordMixingGift;
     /*0x3???*/ LilycoveLady lilycoveLady;
     /*0x3???*/ struct TrainerNameRecord trainerNameRecords[20];
+#if FREE_UNION_ROOM_CHAT == FALSE
     /*0x3???*/ u8 registeredTexts[UNION_ROOM_KB_ROW_COUNT][21];
+#endif //FREE_UNION_ROOM_CHAT
+#if FREE_TRAINER_HILL == FALSE
     /*0x3???*/ struct TrainerHillSave trainerHill;
+#endif //FREE_TRAINER_HILL
     /*0x3???*/ struct WaldaPhrase waldaPhrase;
     // sizeof: 0x3???
 };
