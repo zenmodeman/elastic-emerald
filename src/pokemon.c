@@ -3425,11 +3425,35 @@ const u32 sExpCandyExperienceTable[] = {
     [EXP_30000 - 1] = 30000,
 };
 
+
+s32 GetEVStatCap(void){
+    if (!FlagGet(FLAG_EV_MODE)){
+        return 0;
+    }
+    if (FlagGet(FLAG_BADGE07_GET)){
+        return 252;
+    }else if (FlagGet(FLAG_BADGE06_GET)){
+        return 228;
+    }else if (FlagGet(FLAG_BADGE05_GET)){
+        return 192;
+    }else if (FlagGet(FLAG_BADGE04_GET)){
+        return 156;
+    }else if (FlagGet(FLAG_BADGE03_GET)){
+        return 120;
+    }else if (FlagGet(FLAG_BADGE02_GET)){
+        return 84;
+    }else if (FlagGet(FLAG_BADGE01_GET)){
+        return 48;
+    }else{
+        return 36;
+    }
+}
+
 // Returns TRUE if the item has no effect on the Pokémon, FALSE otherwise
 bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex, bool8 usedByAI)
 {
     u32 dataUnsigned;
-    s32 dataSigned, evCap;
+    s32 dataSigned, evCap, maxEVs;
     s32 friendship;
     s32 i;
     bool8 retVal = TRUE;
@@ -3444,6 +3468,11 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
     u8 effectFlags;
     s8 evChange;
     u16 evCount;
+
+
+    evCap = GetEVStatCap();
+
+    maxEVs = evCap == 0 ? 0 : evCap * 2 + 6;
 
     // Get item hold effect
     heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, NULL);
@@ -3560,13 +3589,14 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         if (evChange > 0) // Increasing EV (HP or Atk)
                         {
                             // Has EV increase limit already been reached?
-                            if (evCount >= MAX_TOTAL_EVS)
+                            // Replace MAX_TOTAL_EVS with a version relative to the EV cap 
+                            if (evCount >= maxEVs)
                                 return TRUE;
 
-                            if (itemEffect[10] & ITEM10_IS_VITAMIN)
-                                evCap = EV_ITEM_RAISE_LIMIT;
-                            else
-                                evCap = MAX_PER_STAT_EVS;
+                            // if (itemEffect[10] & ITEM10_IS_VITAMIN)
+                            //     evCap = EV_ITEM_RAISE_LIMIT;
+                            // else
+                            //     evCap = MAX_PER_STAT_EVS;
 
                             if (dataSigned >= evCap)
                                 break;
@@ -3577,8 +3607,8 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                             else
                                 temp2 = evChange;
 
-                            if (evCount + temp2 > MAX_TOTAL_EVS)
-                                temp2 += MAX_TOTAL_EVS - (evCount + temp2);
+                            if (evCount + temp2 > maxEVs)
+                                temp2 += maxEVs - (evCount + temp2);
 
                             dataSigned += temp2;
                         }
@@ -3745,25 +3775,24 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         if (evChange > 0) // Increasing EV
                         {
                             // Has EV increase limit already been reached?
-                            if (evCount >= MAX_TOTAL_EVS)
+                            if (evCount >= maxEVs)
                                 return TRUE;
 
-                            if (itemEffect[10] & ITEM10_IS_VITAMIN)
-                                evCap = EV_ITEM_RAISE_LIMIT;
-                            else
-                                evCap = MAX_PER_STAT_EVS;
+                            // if (itemEffect[10] & ITEM10_IS_VITAMIN)
+                            //     evCap = EV_ITEM_RAISE_LIMIT;
+                            // else
+                            //     evCap = MAX_PER_STAT_EVS;
 
                             if (dataSigned >= evCap)
                                 break;
-
                             // Limit the increase
                             if (dataSigned + evChange > evCap)
                                 temp2 = evCap - (dataSigned + evChange) + evChange;
                             else
                                 temp2 = evChange;
 
-                            if (evCount + temp2 > MAX_TOTAL_EVS)
-                                temp2 += MAX_TOTAL_EVS - (evCount + temp2);
+                            if (evCount + temp2 > maxEVs)
+                                temp2 += maxEVs - (evCount + temp2);
 
                             dataSigned += temp2;
                         }
@@ -4850,6 +4879,10 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
     int i, multiplier;
     u8 stat;
     u8 bonus;
+    s32 evCap, maxEVs;
+
+    evCap = GetEVStatCap();
+    maxEVs = evCap == 0 ? 0 : evCap * 2 + 6;
 
     //Skip the EV check if not playing on EV mode
     if (!FlagGet(FLAG_EV_MODE)){
@@ -4879,7 +4912,7 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
 
     for (i = 0; i < NUM_STATS; i++)
     {
-        if (totalEVs >= MAX_TOTAL_EVS)
+        if (totalEVs >= maxEVs)
             break;
 
         if (CheckPartyHasHadPokerus(mon, 0))
@@ -4930,12 +4963,12 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
         if (holdEffect == HOLD_EFFECT_MACHO_BRACE)
             evIncrease *= 2;
 
-        if (totalEVs + (s16)evIncrease > MAX_TOTAL_EVS)
-            evIncrease = ((s16)evIncrease + MAX_TOTAL_EVS) - (totalEVs + evIncrease);
+        if (totalEVs + (s16)evIncrease > maxEVs)
+            evIncrease = ((s16)evIncrease + maxEVs) - (totalEVs + evIncrease);
 
-        if (evs[i] + (s16)evIncrease > MAX_PER_STAT_EVS)
+        if (evs[i] + (s16)evIncrease > evCap)
         {
-            int val1 = (s16)evIncrease + MAX_PER_STAT_EVS;
+            int val1 = (s16)evIncrease + evCap;
             int val2 = evs[i] + evIncrease;
             evIncrease = val1 - val2;
         }
