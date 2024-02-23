@@ -1009,10 +1009,106 @@ script LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister{
 	if(var(VAR_LITTLEROOT_TOWN_STATE) == 0){
 		msgbox("Hello, {PLAYER}! Have you met {RIVAL} yet?")
 	}elif(var(VAR_LITTLEROOT_TOWN_STATE) == 1){
-		msgbox("I see you're ready to get your pokemon.")
+		msgbox(format("Ah, you've met {RIVAL}. Hope you two can get along."))
+		msgbox(format("Now, I'm sure you're raring to start your journey!"))
+		goto(Littleroot_GetStarterOption)
 	}elif(var(VAR_LITTLEROOT_TOWN_STATE) ==2){
 		msgbox(LittlerootTown_ProfessorBirchsLab_Text_BirchRivalGoneHome)
 	}
 	release
 	end
+}
+
+script Littleroot_GetStarterOption{
+	if(var(VAR_MONOTYPE) == 0){
+		call(StarterGeneralScript)
+	}
+	if(var(VAR_MONOTYPE) == 1){
+		call(StarterNormalScript)
+	}elif(var(VAR_MONOTYPE) == 2){	
+		call(StarterFightingScript)
+	}
+	waitmessage
+	releaseall
+	end
+}
+
+
+script StarterGeneralScript{
+	msgbox(format("Now for your starter, which type do you prefer?"))
+    dynmultichoice(20, 100, TRUE, 5, 0, DYN_MULTICHOICE_CB_NONE, "Grass", "Fire", "Water")
+	if (var(VAR_RESULT) == 0){
+		msgbox(format("I see, if you like Grass types, then Treecko will be a perfect fit!"))
+		
+		givemon(SPECIES_TREECKO, 5, ITEM_ORAN_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Treecko!")
+			call(NicknamePartyMon) 
+		}
+	}elif (var(VAR_RESULT) == 1){
+		msgbox(format("I see, if you like Fire types, then Torchic will be a perfect fit!"))
+		
+		givemon(SPECIES_TORCHIC, 5, ITEM_ORAN_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Torchic!")
+			call(NicknamePartyMon) 
+		}	
+	}elif (var(VAR_RESULT) == 2){
+		msgbox(format("I see, if you like Water types, then Mudkip will be a perfect fit!"))
+		
+		givemon(SPECIES_MUDKIP, 5, ITEM_ORAN_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Mudkip!")
+			call(NicknamePartyMon) 
+		}			
+	}
+	setflag(FLAG_STARTER_ACQUIRED)
+	setflag(FLAG_SYS_POKEMON_GET)
+	setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+script StarterNormalScript{
+		msgbox(format("I hear you're a fan of Normal Types, So Lillipup will be a perfect fit!"))
+
+		givemon(SPECIES_LILLIPUP, 5, ITEM_ORAN_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Lillipup!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon) 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterFightingScript{
+		msgbox(format("I hear you're a fan of Fighting Types, So Timburr will be a perfect fit!"))
+
+		givemon(SPECIES_TIMBURR, 5, ITEM_ORAN_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Timburr!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon) 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+
+
+script NicknamePartyMon{
+	msgbox("Give it a nickname?", MSGBOX_YESNO)
+	hidemonpic
+	if (var(VAR_RESULT) == YES){
+		call(Common_EventScript_GetGiftMonPartySlot)
+		call(Common_EventScript_NameReceivedPartyMon)
+	}
 }
