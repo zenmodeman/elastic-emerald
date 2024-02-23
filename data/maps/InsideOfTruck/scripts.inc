@@ -164,8 +164,6 @@ InsideOfTruck_EventScript_SetIntroFlags_21:
 	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_28
 InsideOfTruck_EventScript_SetIntroFlags_26:
 # 103 "data/maps/InsideOfTruck/scripts.pory"
-	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_25
-# 104 "data/maps/InsideOfTruck/scripts.pory"
 	releaseall
 	return
 
@@ -316,17 +314,13 @@ InsideOfTruck_EventScript_SetIntroFlags_Text_24:
 # 92 "data/maps/InsideOfTruck/scripts.pory"
 	.string "Fairy$"
 
-InsideOfTruck_EventScript_SetIntroFlags_Text_25:
-# 103 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Quick Message.$"
-
 BeforeBegginning::
-# 107 "data/maps/InsideOfTruck/scripts.pory"
+# 106 "data/maps/InsideOfTruck/scripts.pory"
 	.string "Before begginning your game, \n"
 	.string "Let's configure some settings. \p$"
 
 RestrictedModeInfo::
-# 112 "data/maps/InsideOfTruck/scripts.pory"
+# 111 "data/maps/InsideOfTruck/scripts.pory"
 	.string "Restricted mode adds constraints, \n"
 	.string "for balance reasons.\p"
 	.string "Certain moves, items, and abilities \n"
@@ -337,7 +331,7 @@ RestrictedModeInfo::
 	.string "for certain boss fights. \p$"
 
 ResourceModeInfo::
-# 123 "data/maps/InsideOfTruck/scripts.pory"
+# 122 "data/maps/InsideOfTruck/scripts.pory"
 	.string "Restricted mode emphasizes finite supply, \n"
 	.string "for those who want more decision-making. \p"
 	.string "TMs, tutors, and move relearners \n"
@@ -346,7 +340,7 @@ ResourceModeInfo::
 	.string "and berries can't be planted. \p$"
 
 MonotypeInfo::
-# 132 "data/maps/InsideOfTruck/scripts.pory"
+# 131 "data/maps/InsideOfTruck/scripts.pory"
 	.string "For monotype runs, each monotype has \n"
 	.string "custom wild encounters and gifts. \p"
 	.string "Split Evolutions are constrained: A Wurmple in\n"

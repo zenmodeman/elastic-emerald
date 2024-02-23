@@ -100,7 +100,6 @@ script InsideOfTruck_EventScript_SetIntroFlags{
     }elif(var(VAR_RESULT) == FEMALE){
         goto(InsideOfTruck_EventScript_SetIntroFlagsFemale)
     }
-    msgbox("Quick Message.")
     releaseall
 }
 
