@@ -24,6 +24,7 @@
 #include "task.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "party_menu.h"
 
 /*
  * Move relearner state machine
@@ -524,6 +525,10 @@ static void DoMoveRelearnerMain(void)
                 {
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
                     gSpecialVar_0x8004 = TRUE;
+                u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
+                if (remainingRelearner > 0){
+                    VarSet(VAR_REMAINING_RELEARNER, remainingRelearner -1);
+                }                     
                     sMoveRelearnerStruct->state = MENU_STATE_PRINT_TEXT_THEN_FANFARE;
                 }
                 else
@@ -679,7 +684,15 @@ static void DoMoveRelearnerMain(void)
         if (!gPaletteFade.active)
         {
             FreeMoveRelearnerResources();
-            SetMainCallback2(CB2_ReturnToField);
+            if (FlagGet(FLAG_PARTY_MOVES))
+			{
+				CB2_ReturnToPartyMenuFromSummaryScreen();
+				FlagClear(FLAG_PARTY_MOVES);
+			}
+			else
+			{
+				SetMainCallback2(CB2_ReturnToField);
+			}
         }
         break;
     case MENU_STATE_FADE_FROM_SUMMARY_SCREEN:
@@ -713,6 +726,11 @@ static void DoMoveRelearnerMain(void)
                 StringCopy(gStringVar2, GetMoveName(GetCurrentSelectedMove()));
                 PrintMessageWithPlaceholders(gText_MoveRelearnerAndPoof);
                 sMoveRelearnerStruct->state = MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE;
+
+                u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
+                if (remainingRelearner > 0){
+                    VarSet(VAR_REMAINING_RELEARNER, remainingRelearner -1);
+                }
                 gSpecialVar_0x8004 = TRUE;
             }
         }
@@ -769,7 +787,12 @@ static void HideHeartSpritesAndShowTeachMoveText(bool8 onlyHideSprites)
 
     if (!onlyHideSprites)
     {
-        StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn);
+        if (FlagGet(FLAG_RESOURCE_MODE)){
+            ConvertIntToDecimalStringN(gStringVar2, VarGet(VAR_REMAINING_RELEARNER), STR_CONV_MODE_LEFT_ALIGN, 1);
+            StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_Resource);
+        }else{
+            StringExpandPlaceholders(gStringVar2, gText_TeachWhichMoveToPkmn);
+        }
         FillWindowPixelBuffer(RELEARNERWIN_MSG, 0x11);
         AddTextPrinterParameterized(RELEARNERWIN_MSG, FONT_NORMAL, gStringVar4, 0, 1, 0, NULL);
     }
@@ -835,9 +858,15 @@ static s32 GetCurrentSelectedMove(void)
 // selected and whenever the display mode changes.
 static void ShowTeachMoveText(bool8 shouldDoNothingInstead)
 {
+
     if (shouldDoNothingInstead == FALSE)
     {
-        StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn);
+        if (FlagGet(FLAG_RESOURCE_MODE)){
+            ConvertIntToDecimalStringN(gStringVar3, VarGet(VAR_REMAINING_RELEARNER), STR_CONV_MODE_LEFT_ALIGN, 1);
+            StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_Resource);
+        }else{
+            StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn);
+        }
         FillWindowPixelBuffer(RELEARNERWIN_MSG, 0x11);
         AddTextPrinterParameterized(RELEARNERWIN_MSG, FONT_NORMAL, gStringVar4, 0, 1, 0, NULL);
     }
