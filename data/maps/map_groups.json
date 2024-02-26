@@ -429,7 +429,9 @@
     "TerraCave_Entrance",
     "TerraCave_End",
     "AlteringCave",
-    "MeteorFalls_StevensCave"
+    "MeteorFalls_StevensCave",
+    "OldaleRuins",
+    "OldaleRuins_1F"
   ],
   "gMapGroup_IndoorDynamic": [
     "SecretBase_RedCave1",
