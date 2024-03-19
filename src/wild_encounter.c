@@ -1053,7 +1053,8 @@ void ShakeWildEncounter(void)
     {
         const struct WildPokemonInfo *wildPokemonInfo = gWildMonHeaders[headerId].shakeMonsInfo;
 
-        if (wildPokemonInfo == NULL)
+        
+        if (wildPokemonInfo == NULL || GetMonData(&gPlayerParty[0], MON_DATA_SPECIES_OR_EGG) == SPECIES_NONE)
         {
             gSpecialVar_Result = FALSE;
         }

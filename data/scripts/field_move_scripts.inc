@@ -319,6 +319,9 @@ EventScript_EndShake::
 	releaseall
 	end
 
+Text_NoPokemonToShake:
+	.string "It's a moderate sized tree.\n"
+
 Text_WantToShake:
 	.string "It's a moderate sized tree.\n"
 	.string "Would you like to shake it?$"

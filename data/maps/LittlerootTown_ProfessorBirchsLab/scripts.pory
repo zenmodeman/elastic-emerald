@@ -1045,7 +1045,8 @@ script StarterGeneralScript{
 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
 			playfanfare(MUS_OBTAIN_ITEM)
 			msgbox("Received Treecko!")
-			call(NicknamePartyMon) 
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 0)	
 		}
 	}elif (var(VAR_RESULT) == 1){
 		msgbox(format("I see, if you like Fire types, then Torchic will be a perfect fit!"))
@@ -1056,6 +1057,7 @@ script StarterGeneralScript{
 			playfanfare(MUS_OBTAIN_ITEM)
 			msgbox("Received Torchic!")
 			call(NicknamePartyMon) 
+			setvar(VAR_STARTER_MON, 1)
 		}	
 	}elif (var(VAR_RESULT) == 2){
 		msgbox(format("I see, if you like Water types, then Mudkip will be a perfect fit!"))
@@ -1065,7 +1067,8 @@ script StarterGeneralScript{
 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
 			playfanfare(MUS_OBTAIN_ITEM)
 			msgbox("Received Mudkip!")
-			call(NicknamePartyMon) 
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 2) 
 		}			
 	}
 	setflag(FLAG_STARTER_ACQUIRED)
@@ -1082,6 +1085,7 @@ script StarterNormalScript{
 			msgbox("Received Lillipup!")
 			setflag(FLAG_STARTER_ACQUIRED)
 			call(NicknamePartyMon) 
+			setvar(VAR_STARTER_MON, 1) //Torchic because it's Fighting
 		}
 		setflag(FLAG_SYS_POKEMON_GET)
 		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
@@ -1096,7 +1100,8 @@ script StarterFightingScript{
 			playfanfare(MUS_OBTAIN_ITEM)
 			msgbox("Received Timburr!")
 			setflag(FLAG_STARTER_ACQUIRED)
-			call(NicknamePartyMon) 
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 2) //Mudkip for arbitrary reasons 
 		}
 		setflag(FLAG_SYS_POKEMON_GET)
 		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
