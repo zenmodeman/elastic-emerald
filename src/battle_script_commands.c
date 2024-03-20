@@ -2317,7 +2317,10 @@ static void Cmd_datahpupdate(void)
             u32 side = GetBattlerSide(battler);
             if (gBattleStruct->changedSpecies[side][gBattlerPartyIndexes[battler]] == SPECIES_NONE)
                 gBattleStruct->changedSpecies[side][gBattlerPartyIndexes[battler]] = gBattleMons[battler].species;
-            gBattleMons[battler].species = SPECIES_MIMIKYU_BUSTED;
+            if (gBattleMons[battler].species == SPECIES_MIMIKYU_TOTEM_DISGUISED)
+                gBattleMons[battler].species = SPECIES_MIMIKYU_TOTEM_BUSTED;
+            else
+                gBattleMons[battler].species = SPECIES_MIMIKYU_BUSTED;
             BattleScriptPush(cmd->nextInstr);
             gBattlescriptCurrInstr = BattleScript_TargetFormChange;
             return;
@@ -3858,21 +3861,21 @@ static void Cmd_setadditionaleffects(void)
 
     if (!(gMoveResultFlags & MOVE_RESULT_NO_EFFECT))
     {
-        GET_ADDITIONAL_EFFECTS_AND_COUNT(gCurrentMove, additionalEffectsCount, additionalEffects);
-        if (additionalEffectsCount > gBattleStruct->additionalEffectsCounter)
+        if (gMovesInfo[gCurrentMove].numAdditionalEffects > gBattleStruct->additionalEffectsCounter)
         {
-            u32 percentChance, i = gBattleStruct->additionalEffectsCounter;
+            u32 percentChance;
+            const struct AdditionalEffect *additionalEffect = &gMovesInfo[gCurrentMove].additionalEffects[gBattleStruct->additionalEffectsCounter];
             const u8 *currentPtr = gBattlescriptCurrInstr;
 
             // Various checks for if this move effect can be applied this turn
-            if (CanApplyAdditionalEffect(&additionalEffects[i]))
+            if (CanApplyAdditionalEffect(additionalEffect))
             {
-                percentChance = CalcSecondaryEffectChance(gBattlerAttacker, GetBattlerAbility(gBattlerAttacker), &additionalEffects[i]);
+                percentChance = CalcSecondaryEffectChance(gBattlerAttacker, GetBattlerAbility(gBattlerAttacker), additionalEffect);
 
                 // Activate effect if it's primary (chance == 0) or if RNGesus says so
-                if ((percentChance == 0) || RandomPercentage(RNG_SECONDARY_EFFECT + (i % 3), percentChance))
+                if ((percentChance == 0) || RandomPercentage(RNG_SECONDARY_EFFECT + gBattleStruct->additionalEffectsCounter, percentChance))
                 {
-                    gBattleScripting.moveEffect = additionalEffects[i].moveEffect | (MOVE_EFFECT_AFFECTS_USER * (additionalEffects[i].self));
+                    gBattleScripting.moveEffect = additionalEffect->moveEffect | (MOVE_EFFECT_AFFECTS_USER * (additionalEffect->self));
 
                     SetMoveEffect(
                         percentChance == 0, // a primary effect
@@ -3887,7 +3890,7 @@ static void Cmd_setadditionaleffects(void)
 
             // Call setadditionaleffects again in the case of a move with multiple effects
             gBattleStruct->additionalEffectsCounter++;
-            if (additionalEffectsCount > gBattleStruct->additionalEffectsCounter)
+            if (gMovesInfo[gCurrentMove].numAdditionalEffects > gBattleStruct->additionalEffectsCounter)
                 gBattleScripting.moveEffect = MOVE_EFFECT_CONTINUE;
             else
                 gBattleScripting.moveEffect = gBattleStruct->additionalEffectsCounter = 0;
@@ -14682,7 +14685,7 @@ bool32 DoesSubstituteBlockMove(u32 battlerAtk, u32 battlerDef, u32 move)
 
 bool32 DoesDisguiseBlockMove(u32 battlerAtk, u32 battlerDef, u32 move)
 {
-    if (gBattleMons[battlerDef].species != SPECIES_MIMIKYU_DISGUISED
+    if (!(gBattleMons[battlerDef].species == SPECIES_MIMIKYU_DISGUISED || gBattleMons[battlerDef].species == SPECIES_MIMIKYU_TOTEM_DISGUISED)
         || gBattleMons[battlerDef].status2 & STATUS2_TRANSFORMED
         || IS_MOVE_STATUS(move)
         || gHitMarker & HITMARKER_IGNORE_DISGUISE
@@ -15756,13 +15759,12 @@ static bool8 CanAbilityPreventStatLoss(u16 abilityDef, bool8 byIntimidate)
 static bool8 CanBurnHitThaw(u16 move)
 {
     u8 i;
-    GET_ADDITIONAL_EFFECTS_AND_COUNT(move, additionalEffectsCount, additionalEffects);
 
     if (B_BURN_HIT_THAW >= GEN_6)
     {
-        for (i = 0; i < additionalEffectsCount; i++)
+        for (i = 0; i < gMovesInfo[move].numAdditionalEffects; i++)
         {
-            if (additionalEffects[i].moveEffect == MOVE_EFFECT_BURN)
+            if (gMovesInfo[move].additionalEffects[i].moveEffect == MOVE_EFFECT_BURN)
                 return TRUE;
         }
     }
