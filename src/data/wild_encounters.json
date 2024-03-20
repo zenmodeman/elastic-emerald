@@ -110,7 +110,7 @@
                 "species": "SPECIES_BIDOOF"
               },
               {
-                "min_level": 3,
+                "min_level": 2,
                 "max_level": 4,
                 "species": "SPECIES_BIDOOF"
               },
@@ -130,7 +130,7 @@
                 "species": "SPECIES_INKAY"
               },
               {
-                "min_level": 3,
+                "min_level": 2,
                 "max_level": 4,
                 "species": "SPECIES_GOSSIFLEUR"
               },
@@ -140,89 +140,119 @@
                 "species": "SPECIES_SCORBUNNY"
               },
               {
-                "min_level": 3,
-                "max_level": 3,
-                "species": "SPECIES_WATTREL"
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_PICHU"
               },
               {
                 "min_level": 2,
-                "max_level": 2,
-                "species": "SPECIES_SWINUB"
+                "max_level": 4,
+                "species": "SPECIES_BLIPBUG"
               },
               {
                 "min_level": 2,
-                "max_level": 2,
-                "species": "SPECIES_COMBEE"
-              },
-              {
-                "min_level": 2,
-                "max_level": 3,
-                "species": "SPECIES_RALTS"
-              },
-              {
-                "min_level": 3,
-                "max_level": 3,
-                "species": "SPECIES_WIMPOD"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_GEODUDE_ALOLAN"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_DREEPY"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_ZIGZAGOON_GALARIAN"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SANDSHREW_ALOLAN"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_IGGLYBUFF"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_DEWPIDER"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_TYMPOLE"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SPHEAL"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_CARVANHA"
-              },
-              {
-                "min_level": 5,
-                "max_level": 5,
+                "max_level": 4,
                 "species": "SPECIES_WURMPLE"
               },
               {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_SLAKOTH"
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_WOOPER_PALDEAN"
               },
               {
-                "min_level": 5,
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_SMOLIV"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_CHARCADET"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_WOOPER"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_IMPIDIMP"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_MACHOP"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_VULPIX_ALOLAN"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_GEODUDE"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_WOOPER"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_GOOMY"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_GREAVARD"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_WOOPER"
+              },
+              {
+                "min_level": 2,
+                "max_level": 4,
+                "species": "SPECIES_GEODUDE"
+              },
+              {
+                "min_level": 2,
                 "max_level": 5,
-                "species": "SPECIES_SLAKOTH"
+                "species": "SPECIES_ZIGZAGOON_GALARIAN"
+              }
+            ]
+          },
+          "shake_mons": {
+            "encounter_rate": 150,
+            "mons": [
+              {
+                "min_level": 3,
+                "max_level": 4,
+                "species": "SPECIES_WURMPLE"
+              },
+              {
+                "min_level": 3,
+                "max_level": 4,
+                "species": "SPECIES_SHROODLE"
+              },
+              {
+                "min_level": 3,
+                "max_level": 4,
+                "species": "SPECIES_SENTRET"
+              },
+              {
+                "min_level": 3,
+                "max_level": 4,
+                "species": "SPECIES_PIKIPEK"
+              },
+              {
+                "min_level": 3,
+                "max_level": 4,
+                "species": "SPECIES_SCATTERBUG"
               }
             ]
           }
