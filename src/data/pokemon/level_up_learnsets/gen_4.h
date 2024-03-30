@@ -9363,6 +9363,7 @@ static const struct LevelUpMove sShinxLevelUpLearnset[] = {
 };
 
 static const struct LevelUpMove sLuxioLevelUpLearnset[] = {
+    LEVEL_UP_MOVE(0, MOVE_LASER_FOCUS),
     LEVEL_UP_MOVE( 1, MOVE_TACKLE),
     LEVEL_UP_MOVE( 1, MOVE_LEER),
     LEVEL_UP_MOVE( 5, MOVE_LEER),
@@ -9379,6 +9380,7 @@ static const struct LevelUpMove sLuxioLevelUpLearnset[] = {
 };
 
 static const struct LevelUpMove sLuxrayLevelUpLearnset[] = {
+    LEVEL_UP_MOVE(0, MOVE_CRUNCH),
     LEVEL_UP_MOVE( 1, MOVE_TACKLE),
     LEVEL_UP_MOVE( 1, MOVE_LEER),
     LEVEL_UP_MOVE( 1, MOVE_CHARGE),
@@ -9389,7 +9391,6 @@ static const struct LevelUpMove sLuxrayLevelUpLearnset[] = {
     LEVEL_UP_MOVE(23, MOVE_ROAR),
     LEVEL_UP_MOVE(28, MOVE_SWAGGER),
     LEVEL_UP_MOVE(35, MOVE_THUNDER_FANG),
-    LEVEL_UP_MOVE(42, MOVE_CRUNCH),
     LEVEL_UP_MOVE(49, MOVE_SCARY_FACE),
     LEVEL_UP_MOVE(56, MOVE_DISCHARGE),
     LEVEL_UP_END
