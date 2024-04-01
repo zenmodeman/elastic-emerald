@@ -1,0 +1,10 @@
+script Common_EventScript_PkmnCenterTutor{
+    lock
+    faceplayer
+    if (flag(FLAG_RESOURCE_MODE) && var(VAR_REMAINING_TUTOR) == 0){
+        msgbox(format("Sorry, you ran out of tutor points. Maybe acquire more badges"))
+    }else{
+        msgbox(format("Welcome, are you interested in teaching a move?"))
+    }
+    releaseall
+}

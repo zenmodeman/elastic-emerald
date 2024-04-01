@@ -134,3 +134,7 @@ text MonotypeInfo {
     "Split Evolutions are constrained: A Wurmple in\n"
     "Mono Poison will always evolve into a Cascoon. \p"     
 }
+
+text random {
+    "Temporary test \n"
+}

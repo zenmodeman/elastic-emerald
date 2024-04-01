@@ -345,3 +345,7 @@ MonotypeInfo::
 	.string "custom wild encounters and gifts. \p"
 	.string "Split Evolutions are constrained: A Wurmple in\n"
 	.string "Mono Poison will always evolve into a Cascoon. \p$"
+
+random::
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Temporary test \n$"
