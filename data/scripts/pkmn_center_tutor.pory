@@ -1,10 +1,25 @@
 script Common_EventScript_PkmnCenterTutor{
     lock
     faceplayer
+    
     if (flag(FLAG_RESOURCE_MODE) && var(VAR_REMAINING_TUTOR) == 0){
-        msgbox(format("Sorry, you ran out of tutor points. Maybe acquire more badges"))
+        msgbox(format("Sorry, you don't have any tutor points. Come back when you have acquired a gym badge."))
+    }elif(flag(FLAG_RESOURCE_MODE) && var(VAR_REMAINING_TUTOR) > 0) {
+        buffernumberstring(STR_VAR_1, VAR_REMAINING_TUTOR)
+        msgbox(format("Welcome, you have {STR_VAR_1} tutor points. Are you interested in teaching a move?"), MSGBOX_YESNO)
+        if (var(VAR_RESULT) == 1){
+            call(ChooseMoveTutorMon)
+        }
     }else{
-        msgbox(format("Welcome, are you interested in teaching a move?"))
+        msgbox(format("Welcome, are you interested in teaching a move?"), MSGBOX_YESNO)
+        if (var(VAR_RESULT) == 1){
+            call(ChooseMoveTutorMon)
+        }
     }
     releaseall
+}
+
+script ChooseMoveTutorMon{
+    msgbox(format("Select pokemon to teach"))
+    special(ChooseMonForCenterMoveTutor)
 }

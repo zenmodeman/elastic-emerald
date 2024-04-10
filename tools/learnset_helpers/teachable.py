@@ -21,6 +21,17 @@ tutor_moves = []
 incs_to_check =  glob.glob('./data/scripts/*.inc') # all .incs in the script folder
 incs_to_check += glob.glob('./data/maps/*/scripts.inc') # all map scripts
 
+
+# scan center tutor
+# This will suppose that every line that contains a move only contains whitespace, the move, and a comma
+with open("./src/data/pokemon/center_tutor_moves.h", 'r') as file:
+    for line in file:
+        stripped_line = line.strip()
+        if stripped_line.startswith("MOVE_"):
+            move_name = stripped_line.rstrip(",")
+            if move_name not in tutor_moves:
+                tutor_moves.append(move_name)
+
 if len(incs_to_check) == 0: # disabled if no jsons present
     quit()
 

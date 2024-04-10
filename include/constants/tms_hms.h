@@ -52,7 +52,8 @@
     F(SKILL_SWAP) \
     F(SNATCH) \
     F(OVERHEAT)\
-    F(THROAT_CHOP)
+    F(THROAT_CHOP)\
+    F(SPEED_SWAP)
 
 #define FOREACH_HM(F) \
     F(CUT) \

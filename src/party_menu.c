@@ -474,7 +474,9 @@ static void Task_ChooseContestMon(u8 taskId);
 static void CB2_ChooseContestMon(void);
 static void Task_ChoosePartyMon(u8 taskId);
 static void Task_ChooseMonForMoveRelearner(u8);
+static void Task_ChooseMonForCenterMoveTutor(u8);
 static void CB2_ChooseMonForMoveRelearner(void);
+static void CB2_ChooseMonForCenterTutor(void);
 static void Task_BattlePyramidChooseMonHeldItems(u8);
 static void ShiftMoveSlot(struct Pokemon *, u8, u8);
 static void BlitBitmapToPartyWindow_LeftColumn(u8, u8, u8, u8, u8, bool8);
@@ -7655,6 +7657,12 @@ void ChooseMonForMoveRelearner(void)
     CreateTask(Task_ChooseMonForMoveRelearner, 10);
 }
 
+void ChooseMonForCenterMoveTutor(void){
+    LockPlayerFieldControls();
+    FadeScreen(FADE_TO_BLACK, 0);
+    CreateTask(Task_ChooseMonForCenterMoveTutor, 10);
+}
+
 static void Task_ChooseMonForMoveRelearner(u8 taskId)
 {
     if (!gPaletteFade.active)
@@ -7665,7 +7673,29 @@ static void Task_ChooseMonForMoveRelearner(u8 taskId)
     }
 }
 
+static void Task_ChooseMonForCenterMoveTutor(u8 taskId)
+{
+    if (!gPaletteFade.active)
+    {
+        CleanupOverworldWindowsAndTilemaps();
+        //TODO: Need to handle distinction between Center Move Tutor and standard Move Relearner
+        InitPartyMenu(PARTY_MENU_TYPE_MOVE_RELEARNER, PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_AND_CLOSE, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ChooseMonForCenterTutor);
+        DestroyTask(taskId);
+    }
+}
+
 static void CB2_ChooseMonForMoveRelearner(void)
+{
+    gSpecialVar_0x8004 = GetCursorSelectionMonId();
+    if (gSpecialVar_0x8004 >= PARTY_SIZE)
+        gSpecialVar_0x8004 = PARTY_NOTHING_CHOSEN;
+    else
+        gSpecialVar_0x8005 = GetNumberOfRelearnableMoves(&gPlayerParty[gSpecialVar_0x8004]);
+    gFieldCallback2 = CB2_FadeFromPartyMenu;
+    SetMainCallback2(CB2_ReturnToField);
+}
+
+static void CB2_ChooseMonForCenterTutor(void)
 {
     gSpecialVar_0x8004 = GetCursorSelectionMonId();
     if (gSpecialVar_0x8004 >= PARTY_SIZE)
