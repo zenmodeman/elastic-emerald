@@ -10,9 +10,9 @@ const u16 gPreGym1Tutor[] = {
     MOVE_HOLD_BACK,
 };
 
-const u16 gPreGym1TutorSetup[]{
+const u16 gPreGym1TutorSetup[] = {
     MOVE_WITHDRAW,
     MOVE_FLOWER_SHIELD,
     MOVE_HARDEN,
     MOVE_DEFENSE_CURL,
-}
+};

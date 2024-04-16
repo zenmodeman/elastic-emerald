@@ -57,6 +57,8 @@
 #include "constants/union_room.h"
 #include "constants/weather.h"
 
+#include "data/pokemon/center_tutor_moves.h"
+
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_9) ? 160 : 220)
 
 struct SpeciesItem
@@ -5424,6 +5426,73 @@ u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
     return numMoves;
 }
 
+//TODO: Need a function that also factors in the pokemon's currently learned moves
+u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
+    u8 numMoves = 0;
+    int i;
+
+    for (i=0; i< sizeof(gPreGym1Tutor) / sizeof(gPreGym1Tutor[0]); i++){
+        if (CanLearnTeachableMove(species, gPreGym1Tutor[i])){
+            applicable_moves[numMoves++] = gPreGym1Tutor[i];
+        }
+    }
+
+    if (!FlagGet(FLAG_RESTRICTED_MODE)){
+        for (i=0; i< sizeof(gPreGym1TutorSetup) / sizeof(gPreGym1TutorSetup[0]); i++){
+            if (CanLearnTeachableMove(species, gPreGym1TutorSetup[i])){
+                applicable_moves[numMoves++] = gPreGym1TutorSetup[i];
+            }
+        }        
+    }
+    return numMoves;    
+}
+
+u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves)
+{
+    u16 learnedMoves[4];
+    u8 numMoves = 0;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
+
+    u16 applicable_tutor_moves[MAX_TUTOR_LIST] = {0};
+
+    int i, j;
+    
+    GetCenterTutorMoveList(species, applicable_tutor_moves);
+
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
+
+    for (i=0; i< MAX_TUTOR_LIST; i++){
+        if (!applicable_tutor_moves[i]){
+            break;
+        }
+        for (j=0; j < MAX_MON_MOVES && learnedMoves[j] != applicable_tutor_moves[i]; j++){
+            ;
+        }
+        //If the applicable move is not in the learned moves array, add it to the moves array
+        if (j == MAX_MON_MOVES){
+            moves[numMoves++] = applicable_tutor_moves[i];
+        }
+    }
+    return numMoves;
+}
+
+u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
+{   
+    u16 learnedMoves[MAX_MON_MOVES];
+    u16 moves[MAX_LEVEL_UP_MOVES];
+    u8 numMoves = 0;
+    u16 applicable_tutor_moves[MAX_TUTOR_LIST] = {0};
+    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
+
+    if (species == SPECIES_EGG)
+        return 0;
+
+    numMoves = GetCenterTutorMoveList(species, applicable_tutor_moves);
+
+    return numMoves;
+}
 u16 SpeciesToPokedexNum(u16 species)
 {
     if (IsNationalPokedexEnabled())

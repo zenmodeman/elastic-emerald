@@ -62,6 +62,24 @@ ChooseMoveTutorMon::
 	msgbox ChooseMoveTutorMon_Text_0
 # 24 "data/scripts/pkmn_center_tutor.pory"
 	special ChooseMonForCenterMoveTutor
+# 25 "data/scripts/pkmn_center_tutor.pory"
+	waitstate
+# 26 "data/scripts/pkmn_center_tutor.pory"
+	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
+	goto_if_ne ChooseMoveTutorMon_2
+	return
+
+ChooseMoveTutorMon_1:
+# 27 "data/scripts/pkmn_center_tutor.pory"
+	msgbox ChooseMoveTutorMon_Text_1
+# 28 "data/scripts/pkmn_center_tutor.pory"
+	special TeachCenterMoveTutorMove
+	return
+
+ChooseMoveTutorMon_2:
+# 26 "data/scripts/pkmn_center_tutor.pory"
+	compare VAR_0x8005, 0
+	goto_if_ne ChooseMoveTutorMon_1
 	return
 
 
@@ -85,3 +103,7 @@ Common_EventScript_PkmnCenterTutor_Text_2:
 ChooseMoveTutorMon_Text_0:
 # 23 "data/scripts/pkmn_center_tutor.pory"
 	.string "Select pokemon to teach$"
+
+ChooseMoveTutorMon_Text_1:
+# 27 "data/scripts/pkmn_center_tutor.pory"
+	.string "Teach Which Move?$"

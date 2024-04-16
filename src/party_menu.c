@@ -279,6 +279,7 @@ static void DisplayPartyPokemonDataForMultiBattle(u8);
 static void LoadPartyBoxPalette(struct PartyMenuBox *, u8);
 static void DrawEmptySlot(u8 windowId);
 static void DisplayPartyPokemonDataForRelearner(u8);
+static void DisplayPartyPokemonDataForCenterTutor(u8);
 static void DisplayPartyPokemonDataForContest(u8);
 static void DisplayPartyPokemonDataForChooseHalf(u8);
 static void DisplayPartyPokemonDataForWirelessMinigame(u8);
@@ -1005,6 +1006,9 @@ static void RenderPartyMenuBox(u8 slot)
         {
             if (gPartyMenu.menuType == PARTY_MENU_TYPE_MOVE_RELEARNER)
                 DisplayPartyPokemonDataForRelearner(slot);
+            else if (gPartyMenu.menuType == PARTY_MENU_TYPE_CENTER_MOVE_TUTOR){
+                DisplayPartyPokemonDataForCenterTutor(slot);
+            }    
             else if (gPartyMenu.menuType == PARTY_MENU_TYPE_CONTEST)
                 DisplayPartyPokemonDataForContest(slot);
             else if (gPartyMenu.menuType == PARTY_MENU_TYPE_CHOOSE_HALF)
@@ -1105,6 +1109,14 @@ static void DisplayPartyPokemonDataForContest(u8 slot)
 static void DisplayPartyPokemonDataForRelearner(u8 slot)
 {
     if (GetNumberOfRelearnableMoves(&gPlayerParty[slot]) == 0)
+        DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NOT_ABLE_2);
+    else
+        DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_ABLE_2);
+}
+
+static void DisplayPartyPokemonDataForCenterTutor(u8 slot)
+{
+    if (GetNumberOfCenterTutorableMoves(&gPlayerParty[slot]) == 0)
         DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NOT_ABLE_2);
     else
         DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_ABLE_2);
@@ -7679,7 +7691,7 @@ static void Task_ChooseMonForCenterMoveTutor(u8 taskId)
     {
         CleanupOverworldWindowsAndTilemaps();
         //TODO: Need to handle distinction between Center Move Tutor and standard Move Relearner
-        InitPartyMenu(PARTY_MENU_TYPE_MOVE_RELEARNER, PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_AND_CLOSE, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ChooseMonForCenterTutor);
+        InitPartyMenu(PARTY_MENU_TYPE_CENTER_MOVE_TUTOR, PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_AND_CLOSE, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, CB2_ChooseMonForCenterTutor);
         DestroyTask(taskId);
     }
 }
@@ -7701,7 +7713,7 @@ static void CB2_ChooseMonForCenterTutor(void)
     if (gSpecialVar_0x8004 >= PARTY_SIZE)
         gSpecialVar_0x8004 = PARTY_NOTHING_CHOSEN;
     else
-        gSpecialVar_0x8005 = GetNumberOfRelearnableMoves(&gPlayerParty[gSpecialVar_0x8004]);
+        gSpecialVar_0x8005 = GetNumberOfCenterTutorableMoves(&gPlayerParty[gSpecialVar_0x8004]);
     gFieldCallback2 = CB2_FadeFromPartyMenu;
     SetMainCallback2(CB2_ReturnToField);
 }
