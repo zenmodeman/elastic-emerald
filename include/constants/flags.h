@@ -42,10 +42,10 @@
 #define TEMP_FLAGS_END   FLAG_TEMP_1F
 #define NUM_TEMP_FLAGS   (TEMP_FLAGS_END - TEMP_FLAGS_START + 1)
 
-#define FLAG_RESTRICTED_MODE    0x20 // For Restricted Mode logic; formerly unused flag
-#define FLAG_RESOURCE_MODE    0x21 // For Resource Mode logic; formerly unused flag
-#define FLAG_EV_MODE    0x22 // For EV mode logic; formerly unused flag
-#define FLAG_PARTY_MOVES    0x23 // For move relearning; formerly unused flag
+#define FLAG_RESTRICTED_MODE    0x20 // For Restricted Mode logic; formerly un used flag
+#define FLAG_RESOURCE_MODE    0x21 // For Resource Mode logic; formerly un used flag
+#define FLAG_EV_MODE    0x22 // For EV mode logic; formerly un used flag
+#define FLAG_PARTY_MOVES    0x23 // For move relearning; formerly un used flag
 #define FLAG_UNUSED_0x024    0x24 // Unused Flag
 #define FLAG_UNUSED_0x025    0x25 // Unused Flag
 #define FLAG_UNUSED_0x026    0x26 // Unused Flag

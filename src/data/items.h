@@ -1680,7 +1680,7 @@ const struct Item gItemsInfo[] =
     [ITEM_SERIOUS_MINT] =
     {
         .name = _("Serious Mint"),
-        .price = (I_PRICE >= GEN_9) ? 20000 : 20,
+        .price = 500,
         .description = COMPOUND_STRING(
             "Can be smelled. It\n"
             "makes each stat\n"
@@ -1714,7 +1714,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Exp.Candy XS"),
         .pluralName = _("Exp.Candies XS"),
-        .price = 20,
+        .price = 100,
         .holdEffectParam = EXP_100,
         .description = COMPOUND_STRING(
             "Gives a very small\n"
@@ -1731,7 +1731,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Exp.Candy S"),
         .pluralName = _("Exp.Candies S"),
-        .price = 240,
+        .price = 400,
         .holdEffectParam = EXP_800,
         .description = COMPOUND_STRING(
             "Gives a small\n"
@@ -1765,7 +1765,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Exp.Candy L"),
         .pluralName = _("Exp.Candies L"),
-        .price = 3000,
+        .price = 2500,
         .holdEffectParam = EXP_10000,
         .description = COMPOUND_STRING(
             "Gives a large\n"
@@ -1782,7 +1782,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Exp.Candy XL"),
         .pluralName = _("Exp.Candies L"),
-        .price = 10000,
+        .price = 6000,
         .holdEffectParam = EXP_30000,
         .description = COMPOUND_STRING(
             "Gives a very large\n"

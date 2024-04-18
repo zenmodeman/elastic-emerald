@@ -1,0 +1,113 @@
+raw`
+
+OldaleTown_Mart_MapScripts::
+	.byte 0
+
+
+OldaleTown_Mart_EventScript_Woman::
+	lock
+	faceplayer
+	goto_if_set FLAG_ADVENTURE_STARTED, OldaleTown_Mart_EventScript_PokeBallsInStock
+	msgbox OldaleTown_Mart_Text_PokeBallsAreSoldOut, MSGBOX_DEFAULT
+	release
+	end
+
+OldaleTown_Mart_EventScript_PokeBallsInStock::
+	msgbox OldaleTown_Mart_Text_ImGoingToBuyPokeBalls, MSGBOX_DEFAULT
+	release
+	end
+
+OldaleTown_Mart_EventScript_Boy::
+	msgbox OldaleTown_Mart_Text_RestoreHPWithPotion, MSGBOX_NPC
+	end
+
+OldaleTown_Mart_Text_PokeBallsAreSoldOut:
+	.string "The clerk says they're all sold out.\n"
+	.string "I can't buy any POKé BALLS.$"
+
+OldaleTown_Mart_Text_ImGoingToBuyPokeBalls:
+	.string "I'm going to buy a bunch of POKé BALLS\n"
+	.string "and catch a bunch of POKéMON!$"
+
+OldaleTown_Mart_Text_RestoreHPWithPotion:
+	.string "If a POKéMON gets hurt and loses its HP\n"
+	.string "and faints, it won't be able to battle.\p"
+	.string "To prevent your POKéMON from fainting,\n"
+	.string "restore its HP with a POTION.$"
+
+`
+
+script OldaleTown_Mart_EventScript_Clerk{
+    lock
+    faceplayer
+    message("How May I serve you?")
+    waitmessage
+    if (flag(FLAG_ADVENTURE_STARTED)){
+        if (flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
+            pokemart(StockedMartItemsResourceEVs)
+        }elif (flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
+            pokemart(StockedMartItemsResourceEVless)
+        }elif (!flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
+            pokemart(StockedMartItemsResourcefulEVs)
+        }elif (!flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
+            pokemart(StockedMartItemsResourcefulEVless)
+        }
+
+    }else{
+        pokemart(BasicMartItems)
+    }
+    msgbox("Please Come Again")
+    release
+    end
+}
+
+mart BasicMartItems{
+    ITEM_POTION
+    ITEM_ANTIDOTE
+    ITEM_PARALYZE_HEAL
+    ITEM_AWAKENING
+}
+
+mart StockedMartItemsResourceEVless{
+    ITEM_POKE_BALL
+    ITEM_POTION
+    ITEM_ANTIDOTE
+    ITEM_PARALYZE_HEAL
+    ITEM_AWAKENING
+    ITEM_EXP_CANDY_XS
+    ITEM_POMEG_BERRY
+}
+
+mart StockedMartItemsResourceEVs{
+    ITEM_POKE_BALL
+    ITEM_POTION
+    ITEM_ANTIDOTE
+    ITEM_PARALYZE_HEAL
+    ITEM_AWAKENING
+    ITEM_EXP_CANDY_XS
+    ITEM_POMEG_BERRY
+    ITEM_HEALTH_FEATHER
+}
+
+mart StockedMartItemsResourcefulEVless{
+    ITEM_POKE_BALL
+    ITEM_POTION
+    ITEM_ANTIDOTE
+    ITEM_PARALYZE_HEAL
+    ITEM_AWAKENING
+    ITEM_EXP_CANDY_XS
+    ITEM_POMEG_BERRY
+    ITEM_SERIOUS_MINT
+}
+
+mart StockedMartItemsResourcefulEVs{
+    ITEM_POKE_BALL
+    ITEM_POTION
+    ITEM_ANTIDOTE
+    ITEM_PARALYZE_HEAL
+    ITEM_AWAKENING
+    ITEM_EXP_CANDY_XS
+    ITEM_POMEG_BERRY
+    ITEM_SERIOUS_MINT
+    ITEM_HEALTH_FEATHER
+}
