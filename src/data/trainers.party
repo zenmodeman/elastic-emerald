@@ -11354,19 +11354,42 @@ Pic: Cooltrainer M
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move
+AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices 
 
-Clefairy
-Level: 10
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Clefairy @ Sticky Barb  
+Ability: Magic Guard  
+Level: 10  
+EVs: 32 HP / 8 Def / 32 SpA  
+Bold Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Trick  
+- Icy Wind  
+- Charm  
+- Disarming Voice
 
-Slugma
-Level: 10
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Slugma @ Rocky Helmet  
+Ability: Magma Armor  
+Level: 10  
+EVs: 36 HP / 36 Def  
+Calm Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Ember  
+- Amnesia  
+- Rest  
+- Clear Smog
 
-Applin
-Level: 11
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+
+Applin @ Jaboca Berry  
+Ability: Ripen  
+Level: 11  
+EVs: 20 HP / 28 Def / 20 SpD  
+Impish Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Recycle  
+- Defense Curl  
+- Rollout  
+- Astonish
+
 
 
 === TRAINER_BRICE ===
