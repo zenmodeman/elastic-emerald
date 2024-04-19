@@ -59,7 +59,7 @@ script InsideOfTruck_EventScript_SetIntroFlags{
     msgbox(BeforeBegginning)
     msgbox("Will you opt-in to Restricted Mode?")
     do{
-        dynmultichoice(10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        dynmultichoice(7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
         if (var(VAR_RESULT) == 0){
             setflag(FLAG_RESTRICTED_MODE)
         }
@@ -70,7 +70,7 @@ script InsideOfTruck_EventScript_SetIntroFlags{
 
     msgbox("Will you opt-in to Resource Mode?")
     do{
-        dynmultichoice(10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        dynmultichoice(7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
         if (var(VAR_RESULT) == 0){
             setflag(FLAG_RESOURCE_MODE)
         }
@@ -81,7 +81,7 @@ script InsideOfTruck_EventScript_SetIntroFlags{
     
     msgbox("Will you do a monotype run?")
     do{
-        dynmultichoice(10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        dynmultichoice(7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
         if (var(VAR_RESULT) ==2){
             msgbox(MonotypeInfo)
         }
@@ -89,7 +89,7 @@ script InsideOfTruck_EventScript_SetIntroFlags{
 
     if (var(VAR_RESULT) == 0){
         msgbox("Please choose the monotype.")
-        dynmultichoice(10, 100, TRUE, 5, 0, DYN_MULTICHOICE_CB_NONE, "Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy")
+        dynmultichoice(5, 100, TRUE, 4, 0, DYN_MULTICHOICE_CB_NONE, "Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy")
         copyvar(VAR_MONOTYPE, VAR_RESULT)
         addvar(VAR_MONOTYPE, 1)
     }

@@ -112,7 +112,7 @@ InsideOfTruck_EventScript_SetIntroFlags::
 	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_0
 InsideOfTruck_EventScript_SetIntroFlags_3:
 # 62 "data/maps/InsideOfTruck/scripts.pory"
-	dynmultichoice 10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_1, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3
+	dynmultichoice 7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_1, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3
 # 63 "data/maps/InsideOfTruck/scripts.pory"
 	compare VAR_RESULT, 0
 	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_9
@@ -127,7 +127,7 @@ InsideOfTruck_EventScript_SetIntroFlags_2:
 	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_4
 InsideOfTruck_EventScript_SetIntroFlags_7:
 # 73 "data/maps/InsideOfTruck/scripts.pory"
-	dynmultichoice 10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_1, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3
+	dynmultichoice 7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_1, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3
 # 74 "data/maps/InsideOfTruck/scripts.pory"
 	compare VAR_RESULT, 0
 	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_17
@@ -142,7 +142,7 @@ InsideOfTruck_EventScript_SetIntroFlags_6:
 	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_5
 InsideOfTruck_EventScript_SetIntroFlags_15:
 # 84 "data/maps/InsideOfTruck/scripts.pory"
-	dynmultichoice 10, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_1, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3
+	dynmultichoice 7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_1, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3
 # 85 "data/maps/InsideOfTruck/scripts.pory"
 	compare VAR_RESULT, 2
 	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_24
@@ -191,7 +191,7 @@ InsideOfTruck_EventScript_SetIntroFlags_22:
 # 91 "data/maps/InsideOfTruck/scripts.pory"
 	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_6
 # 92 "data/maps/InsideOfTruck/scripts.pory"
-	dynmultichoice 10, 100, TRUE, 5, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_7, InsideOfTruck_EventScript_SetIntroFlags_Text_8, InsideOfTruck_EventScript_SetIntroFlags_Text_9, InsideOfTruck_EventScript_SetIntroFlags_Text_10, InsideOfTruck_EventScript_SetIntroFlags_Text_11, InsideOfTruck_EventScript_SetIntroFlags_Text_12, InsideOfTruck_EventScript_SetIntroFlags_Text_13, InsideOfTruck_EventScript_SetIntroFlags_Text_14, InsideOfTruck_EventScript_SetIntroFlags_Text_15, InsideOfTruck_EventScript_SetIntroFlags_Text_16, InsideOfTruck_EventScript_SetIntroFlags_Text_17, InsideOfTruck_EventScript_SetIntroFlags_Text_18, InsideOfTruck_EventScript_SetIntroFlags_Text_19, InsideOfTruck_EventScript_SetIntroFlags_Text_20, InsideOfTruck_EventScript_SetIntroFlags_Text_21, InsideOfTruck_EventScript_SetIntroFlags_Text_22, InsideOfTruck_EventScript_SetIntroFlags_Text_23, InsideOfTruck_EventScript_SetIntroFlags_Text_24
+	dynmultichoice 5, 100, TRUE, 4, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_7, InsideOfTruck_EventScript_SetIntroFlags_Text_8, InsideOfTruck_EventScript_SetIntroFlags_Text_9, InsideOfTruck_EventScript_SetIntroFlags_Text_10, InsideOfTruck_EventScript_SetIntroFlags_Text_11, InsideOfTruck_EventScript_SetIntroFlags_Text_12, InsideOfTruck_EventScript_SetIntroFlags_Text_13, InsideOfTruck_EventScript_SetIntroFlags_Text_14, InsideOfTruck_EventScript_SetIntroFlags_Text_15, InsideOfTruck_EventScript_SetIntroFlags_Text_16, InsideOfTruck_EventScript_SetIntroFlags_Text_17, InsideOfTruck_EventScript_SetIntroFlags_Text_18, InsideOfTruck_EventScript_SetIntroFlags_Text_19, InsideOfTruck_EventScript_SetIntroFlags_Text_20, InsideOfTruck_EventScript_SetIntroFlags_Text_21, InsideOfTruck_EventScript_SetIntroFlags_Text_22, InsideOfTruck_EventScript_SetIntroFlags_Text_23, InsideOfTruck_EventScript_SetIntroFlags_Text_24
 # 93 "data/maps/InsideOfTruck/scripts.pory"
 	copyvar VAR_MONOTYPE, VAR_RESULT
 # 94 "data/maps/InsideOfTruck/scripts.pory"

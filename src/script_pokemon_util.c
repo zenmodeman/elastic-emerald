@@ -464,6 +464,23 @@ void ScrCmd_givemon(struct ScriptContext *ctx)
     u8 ivs[NUM_STATS]        = {hpIv, atkIv, defIv, speedIv, spAtkIv, spDefIv};
     u16 moves[MAX_MON_MOVES] = {move1, move2, move3, move4};
 
+    u8 perfectStat1 = 255;
+    u8 perfectStat2 = 255;
+    u8 perfectStat3 = 255;
+
+    perfectStat1 = Random() % NUM_STATS;
+
+    while (perfectStat2 == 255 || perfectStat2 == perfectStat1){
+        perfectStat2 = Random() % (NUM_STATS);
+    }
+    while (perfectStat3 == 255 || perfectStat3 == perfectStat1 || perfectStat3 == perfectStat2){
+        perfectStat3 = Random() % (NUM_STATS);
+    }
+
+    ivs[perfectStat1] = MAX_PER_STAT_IVS;
+    ivs[perfectStat2] = MAX_PER_STAT_IVS;
+    ivs[perfectStat3] = MAX_PER_STAT_IVS;
+
     gSpecialVar_Result = ScriptGiveMonParameterized(species, level, item, ball, nature, abilityNum, gender, evs, ivs, moves, isShiny, ggMaxFactor, teraType);
 }
 
