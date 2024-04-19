@@ -5444,7 +5444,7 @@ u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
     return numMoves;
 }
 
-//TODO: Need a function that also factors in the pokemon's currently learned moves
+
 u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
     u8 numMoves = 0;
     int i;
@@ -5498,8 +5498,6 @@ u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves)
 
 u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
 {   
-    u16 learnedMoves[MAX_MON_MOVES];
-    u16 moves[MAX_LEVEL_UP_MOVES];
     u8 numMoves = 0;
     u16 applicable_tutor_moves[MAX_TUTOR_LIST] = {0};
     u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
