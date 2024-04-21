@@ -1040,27 +1040,27 @@ script Littleroot_GetStarterOption{
 	}elif(var(VAR_MONOTYPE) ==8){
 		call(StarterGhostScript)
 	}
-	// elif(var(VAR_MONOTYPE) == 9){
-	// 	call(StarterSteelScript)
-	// }elif(var(VAR_MONOTYPE) == 10){
-	// 	call(StarterFireScript)
-	// }elif(var(VAR_MONOTYPE) == 11){
-	// 	call(StarterWaterScript)
-	// }elif(var(VAR_MONOTYPE) == 12){
-	// 	call(StarterGrassScript)
-	// }elif(var(VAR_MONOTYPE) == 13){
-	// 	call(StarterElectricScript)
-	// }elif(var(VAR_MONOTYPE) == 14){
-	// 	call(StarterPsychicScript)
-	// }elif(var(VAR_MONOTYPE) == 15){
-	// 	call(StarterIceScript)
-	// }elif(var(VAR_MONOTYPE) == 16){
-	// 	call(StarterDragonScript)
-	// }elif(var(VAR_MONOTYPE) == 17){
-	// 	call(StarterDarkScript)
-	// }elif(var(VAR_MONOTYPE) == 18){
-	// 	call(StarterFairyScript)
-	// }
+	elif(var(VAR_MONOTYPE) == 9){
+		call(StarterSteelScript)
+	}elif(var(VAR_MONOTYPE) == 10){
+		call(StarterFireScript)
+	}elif(var(VAR_MONOTYPE) == 11){
+		call(StarterWaterScript)
+	}elif(var(VAR_MONOTYPE) == 12){
+		call(StarterGrassScript)
+	}elif(var(VAR_MONOTYPE) == 13){
+		call(StarterElectricScript)
+	}elif(var(VAR_MONOTYPE) == 14){
+		call(StarterPsychicScript)
+	}elif(var(VAR_MONOTYPE) == 15){
+		call(StarterIceScript)
+	}elif(var(VAR_MONOTYPE) == 16){
+		call(StarterDragonScript)
+	}elif(var(VAR_MONOTYPE) == 17){
+		call(StarterDarkScript)
+	}elif(var(VAR_MONOTYPE) == 18){
+		call(StarterFairyScript)
+	}
 	waitmessage
 	releaseall
 	end
@@ -1236,6 +1236,165 @@ script StarterGhostScript{
 		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
 }
 
+script StarterSteelScript{
+		msgbox(format("I hear you're a fan of Steel Types, So Sandshrew-Alola will be a perfect fit!"))
+
+		givemon(SPECIES_SANDSHREW_ALOLAN, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Sandshrew-Alola!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 0) //Set as Treecko, so rival has Blaziken 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterFireScript{
+		msgbox(format("I hear you're a fan of Fire Types, So Torchic will be a perfect fit!"))
+
+		givemon(SPECIES_TORCHIC, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Torchic!")
+			setflag(FLAG_STARTER_ACQUIRED)
+	call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 1) //Set as Torchic, obviously
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterWaterScript{
+		msgbox(format("I hear you're a fan of Water Types, So Mudkip will be a perfect fit!"))
+
+		givemon(SPECIES_MUDKIP, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Mudkip!")
+			setflag(FLAG_STARTER_ACQUIRED)
+	call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 2) //Set as Mudkip, obviously
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterGrassScript{
+		msgbox(format("I hear you're a fan of Grass Types, So Treecko will be a perfect fit!"))
+
+		givemon(SPECIES_TREECKO, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Treecko!")
+			setflag(FLAG_STARTER_ACQUIRED)
+	call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 0) //Set as Treecko, obviously
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterElectricScript{
+		msgbox(format("I hear you're a fan of Electric Types, So Pawmi will be a perfect fit!"))
+
+		givemon(SPECIES_PAWMI, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Pawmi!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 2) //Set as Mudkip, so rival has Sceptile (Avoiding Rival Mudkip since Pawmi has original type advantage) 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterPsychicScript{
+		msgbox(format("I hear you're a fan of Psychic Types, So Drowzee will be a perfect fit!"))
+
+		givemon(SPECIES_DROWZEE, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Drowzee!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 2) //Set as Mudkip, so rival has Sceptile (Tree has level-up Pursuit and Assurance) 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterIceScript{
+		msgbox(format("I hear you're a fan of Ice Types, So Sandshrew-Alola will be a perfect fit!"))
+
+		givemon(SPECIES_SANDSHREW_ALOLAN, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Sandshrew-Alola!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 0) //Set as Treecko, so rival has Blaziken 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterDragonScript{
+		msgbox(format("I hear you're a fan of Dragon Types, So Gible will be a perfect fit!"))
+
+		givemon(SPECIES_GIBLE, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Gible!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 2) //Set as Mudkip, so rival has Sceptile (Gets native Dragon moves) 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterDarkScript{
+		msgbox(format("I hear you're a fan of Dark Types, So Houndour will be a perfect fit!"))
+
+		givemon(SPECIES_HOUNDOUR, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Houndour!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 0) //Set as Treecko, so rival has Blaziken 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
+
+script StarterFairyScript{
+		msgbox(format("I hear you're a fan of Fairy Types, So Fidough will be a perfect fit!"))
+
+		givemon(SPECIES_FIDOUGH, 5, ITEM_ENIGMA_BERRY)
+
+		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+			playfanfare(MUS_OBTAIN_ITEM)
+			msgbox("Received Fidough!")
+			setflag(FLAG_STARTER_ACQUIRED)
+			call(NicknamePartyMon)
+			setvar(VAR_STARTER_MON, 0) //Set as Treecko, so rival has Blaziken 
+		}
+		setflag(FLAG_SYS_POKEMON_GET)
+		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
+}
 
 script NicknamePartyMon{
 	msgbox("Give it a nickname?", MSGBOX_YESNO)
