@@ -56,6 +56,7 @@ InsideOfTruck_Text_BoxPrintedWithMonLogo:
 script InsideOfTruck_EventScript_SetIntroFlags{
     lockall
     setflag(FLAG_HIDE_MAP_NAME_POPUP)
+    special(EnableNationalPokedex)
     msgbox(BeforeBegginning)
     msgbox("Will you opt-in to Restricted Mode?")
     do{
