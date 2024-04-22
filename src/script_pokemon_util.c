@@ -429,6 +429,8 @@ u32 ScriptGiveMon(u16 species, u8 level, u16 item)
 
 #define PARSE_FLAG(n, default_) (flags & (1 << (n))) ? VarGet(ScriptReadHalfword(ctx)) : (default_)
 
+#define NUMBER_OF_GIVE_MON_PERFECT_IVS 3
+
 void ScrCmd_givemon(struct ScriptContext *ctx)
 {
     u16 species       = VarGet(ScriptReadHalfword(ctx));
@@ -464,22 +466,15 @@ void ScrCmd_givemon(struct ScriptContext *ctx)
     u8 ivs[NUM_STATS]        = {hpIv, atkIv, defIv, speedIv, spAtkIv, spDefIv};
     u16 moves[MAX_MON_MOVES] = {move1, move2, move3, move4};
 
-    u8 perfectStat1 = 255;
-    u8 perfectStat2 = 255;
-    u8 perfectStat3 = 255;
+    u8 i;
 
-    perfectStat1 = Random() % NUM_STATS;
-
-    while (perfectStat2 == 255 || perfectStat2 == perfectStat1){
-        perfectStat2 = Random() % (NUM_STATS);
-    }
-    while (perfectStat3 == 255 || perfectStat3 == perfectStat1 || perfectStat3 == perfectStat2){
-        perfectStat3 = Random() % (NUM_STATS);
+    if (NUMBER_OF_GIVE_MON_PERFECT_IVS > 0){
+        for (i=0; i < NUMBER_OF_GIVE_MON_PERFECT_IVS && i < NUM_STATS; i++){
+            ivs[i] = MAX_PER_STAT_IVS;
+        }
+        Shuffle8(ivs, NUM_STATS);
     }
 
-    ivs[perfectStat1] = MAX_PER_STAT_IVS;
-    ivs[perfectStat2] = MAX_PER_STAT_IVS;
-    ivs[perfectStat3] = MAX_PER_STAT_IVS;
 
     gSpecialVar_Result = ScriptGiveMonParameterized(species, level, item, ball, nature, abilityNum, gender, evs, ivs, moves, isShiny, ggMaxFactor, teraType);
 }
