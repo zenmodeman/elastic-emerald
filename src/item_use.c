@@ -725,7 +725,7 @@ void ItemUseOutOfBattle_PowderJar(u8 taskId)
 
 void ItemUseOutOfBattle_Berry(u8 taskId)
 {
-    if (IsPlayerFacingEmptyBerryTreePatch() == TRUE)
+    if (IsPlayerFacingEmptyBerryTreePatch() == TRUE && !FlagGet(FLAG_RESOURCE_MODE))
     {
         sItemUseOnFieldCB = ItemUseOnFieldCB_Berry;
         gFieldCallback = FieldCB_UseItemOnField;
