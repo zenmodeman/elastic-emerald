@@ -134,6 +134,11 @@
 #define BERRY_TREE_ROUTE_123_SITRUS   88
 #define BERRY_TREE_ROUTE_123_RAWST    89
 
+//Newly defined Berry Trees
+#define BERRY_TREE_OLDALE_MICLE 90
+#define BERRY_TREE_OLDALE_CHESTO 91
+#define BERRY_TREE_OLDALE_SOIL_1 92
+#define BERRY_TREE_OLDALE_SOIL_2 93
 // Remainder are unused
 
 #define BERRY_TREES_COUNT 128
