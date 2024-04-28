@@ -56,6 +56,7 @@
 #include "constants/trainers.h"
 #include "constants/union_room.h"
 #include "constants/weather.h"
+#include "wild_encounter.h"
 
 #include "data/pokemon/center_tutor_moves.h"
 
@@ -903,6 +904,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
                 totalRerolls += I_SHINY_CHARM_ADDITIONAL_ROLLS;
             if (LURE_STEP_COUNT != 0)
                 totalRerolls += 1;
+            if (IsCurrentEncounterFishing())
+                totalRerolls += CalculateChainFishingShinyRolls();
 
             while (GET_SHINY_VALUE(value, personality) >= SHINY_ODDS && totalRerolls > 0)
             {
@@ -1357,7 +1360,7 @@ void ConvertPokemonToBattleTowerPokemon(struct Pokemon *mon, struct BattleTowerP
     dest->spDefenseIV  = GetMonData(mon, MON_DATA_SPDEF_IV, NULL);
     dest->abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
     dest->personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
-    GetMonData(mon, MON_DATA_NICKNAME, dest->nickname);
+    GetMonData(mon, MON_DATA_NICKNAME10, dest->nickname);
 }
 
 static void CreateEventMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId)
@@ -1715,7 +1718,7 @@ void GiveBoxMonInitialMoveset_Fast(struct BoxPokemon *boxMon) //Credit: Asparagu
     u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
     s32 level = GetLevelFromBoxMonExp(boxMon);
     s32 i;
-    u16 moves[MAX_MON_MOVES] = {0};
+    u16 moves[MAX_MON_MOVES] = {MOVE_NONE};
     u8 addedMoves = 0;
     const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
 
@@ -1729,13 +1732,15 @@ void GiveBoxMonInitialMoveset_Fast(struct BoxPokemon *boxMon) //Credit: Asparagu
         if (learnset[i].level == 0)
             continue;
 
-        for (j = 0; j < addedMoves + 1; j++)
+        for (j = 0; j < addedMoves; j++)
+        {
             if (moves[j] == learnset[i].move)
             {
                 alreadyKnown = TRUE;
                 break;
             }
-    
+        }
+
         if (!alreadyKnown)
         {
             if (addedMoves < MAX_MON_MOVES)
@@ -2199,6 +2204,7 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         switch (field)
         {
         case MON_DATA_NICKNAME:
+        case MON_DATA_NICKNAME10:
         {
             if (boxMon->isBadEgg)
             {
@@ -2241,7 +2247,7 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 // so if both are 0 we assume that this is a vanilla
                 // Pokémon and replace them with EOS. This means that
                 // two CHAR_SPACE at the end of a nickname are trimmed.
-                if (POKEMON_NAME_LENGTH >= 12)
+                if (field != MON_DATA_NICKNAME10 && POKEMON_NAME_LENGTH >= 12)
                 {
                     if (substruct0->nickname11 == 0 && substruct0->nickname12 == 0)
                     {
@@ -2736,14 +2742,23 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         switch (field)
         {
         case MON_DATA_NICKNAME:
+        case MON_DATA_NICKNAME10:
         {
             s32 i;
             for (i = 0; i < min(sizeof(boxMon->nickname), POKEMON_NAME_LENGTH); i++)
                 boxMon->nickname[i] = data[i];
-            if (POKEMON_NAME_LENGTH >= 11)
-                substruct0->nickname11 = data[10];
-            if (POKEMON_NAME_LENGTH >= 12)
-                substruct0->nickname12 = data[11];
+            if (field != MON_DATA_NICKNAME10)
+            {
+                if (POKEMON_NAME_LENGTH >= 11)
+                    substruct0->nickname11 = data[10];
+                if (POKEMON_NAME_LENGTH >= 12)
+                    substruct0->nickname12 = data[11];
+            }
+            else
+            {
+                substruct0->nickname11 = EOS;
+                substruct0->nickname12 = EOS;
+            }
             break;
         }
         case MON_DATA_SPECIES:
