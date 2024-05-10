@@ -4292,3 +4292,21 @@ void PreparePartyForSkyBattle(void)
     VarSet(B_VAR_SKY_BATTLE,participatingPokemonSlot);
     CompactPartySlots();
 }
+
+u8 TrainPlainIV(void)
+{
+    u8 targetIv = 15;
+    u8 targetStat;
+    u8 currentIv;
+
+    targetStat = MON_DATA_HP_IV + VarGet(VAR_TEMP_1);
+
+    currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
+    if (currentIv >= targetIv){
+        return FALSE;
+    } 
+    SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
+    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+
+    return TRUE;
+}

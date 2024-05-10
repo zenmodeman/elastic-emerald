@@ -148,6 +148,7 @@ const u32 *const gItemIconTable[ITEMS_COUNT + 1][2] =
     [ITEM_MAX_MUSHROOMS] = {gItemIcon_MaxMushrooms, gItemIconPalette_MaxMushrooms},
     // Treasures
     [ITEM_BOTTLE_CAP] = {gItemIcon_BottleCap, gItemIconPalette_BottleCap},
+    [ITEM_PLAIN_BOTTLE_CAP] = {gItemIcon_BottleCap, gItemIconPalette_BottleCap},
     [ITEM_GOLD_BOTTLE_CAP] = {gItemIcon_BottleCap, gItemIconPalette_GoldBottleCap},
     [ITEM_NUGGET] = {gItemIcon_Nugget, gItemIconPalette_Nugget},
     [ITEM_BIG_NUGGET] = {gItemIcon_BigNugget, gItemIconPalette_BigNugget},

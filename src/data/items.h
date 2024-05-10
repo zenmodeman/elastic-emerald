@@ -2254,6 +2254,21 @@ const struct Item gItemsInfo[] =
         .flingPower = 30,
     },
 
+        [ITEM_PLAIN_BOTTLE_CAP] =
+    {
+        .name = HANDLE_EXPANDED_ITEM_NAME("PlnBottlCap", "Plain Bottle Cap"),
+        .price = 500,
+        .description = COMPOUND_STRING(
+            "A plain bottle\n"
+            "cap that doesn't\n"
+            "stand out."),
+        .pocket = POCKET_ITEMS,
+        .type = ITEM_USE_BAG_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
+        .flingPower = 30,
+    },
+
+
     [ITEM_GOLD_BOTTLE_CAP] =
     {
         .name = HANDLE_EXPANDED_ITEM_NAME("GoldBottlCap", "Gold Bottle Cap"),

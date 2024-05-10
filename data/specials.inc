@@ -558,3 +558,4 @@ gSpecials::
 	def_special Script_GetChosenMonDefensiveIVs
 	def_special ChooseMonForCenterMoveTutor
 	def_special TeachCenterMoveTutorMove
+	def_special TrainPlainIV
