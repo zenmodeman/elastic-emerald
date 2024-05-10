@@ -321,16 +321,25 @@ RustboroCity_DevonCorp_1F_EventScript_IVTrainer_7:
 # 169 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	dynmultipush RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_5, ITEM_NONE
 # 170 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	dynmultistack 0, 0, TRUE, 6, FALSE, ITEM_NONE, DYN_MULTICHOICE_CB_NONE
+	dynmultistack 0, 0, FALSE, 6, FALSE, ITEM_NONE, DYN_MULTICHOICE_CB_NONE
 # 171 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	compare VAR_RESULT, ITEM_NONE
+	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_11
+# 171 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	compare VAR_RESULT, MULTI_B_PRESSED
 	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_11
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_10:
 # 174 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	compare VAR_RESULT, ITEM_PLAIN_BOTTLE_CAP
-	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_14
-RustboroCity_DevonCorp_1F_EventScript_IVTrainer_13:
+	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_16
 # 191 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	compare VAR_RESULT, ITEM_BOTTLE_CAP
+	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_17
+# 208 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	compare VAR_RESULT, ITEM_GOLD_BOTTLE_CAP
+	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_18
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_15:
+# 225 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	releaseall
 	end
 
@@ -354,85 +363,158 @@ RustboroCity_DevonCorp_1F_EventScript_IVTrainer_11:
 	goto RustboroCity_DevonCorp_1F_IVTrainer_Farewell
 	goto RustboroCity_DevonCorp_1F_EventScript_IVTrainer_10
 
-RustboroCity_DevonCorp_1F_EventScript_IVTrainer_14:
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_16:
 # 175 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_6
 # 176 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	call IVTrainer_ChooseStat
-# 177 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	call IVTrainer_ChooseMon
-# 178 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	specialvar VAR_RESULT, TrainPlainIV
-# 179 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	compare VAR_RESULT, FALSE
-	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_17
-# 185 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	playfanfare MUS_LEVEL_UP
-# 186 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	waitfanfare
-# 187 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	removeitem ITEM_PLAIN_BOTTLE_CAP, 1
-# 188 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_8
-# 189 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	waitmessage
-	goto RustboroCity_DevonCorp_1F_EventScript_IVTrainer_13
+# 177 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	call IVTrainer_ChooseStat
+# 178 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	call IVTrainer_ChooseMon
+# 179 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	specialvar VAR_RESULT, TrainPlainIV
+# 180 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_23
+# 186 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	playfanfare MUS_LEVEL_UP
+# 187 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitfanfare
+# 188 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	removeitem ITEM_PLAIN_BOTTLE_CAP, 1
+# 189 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_8
+# 190 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitmessage
+	goto RustboroCity_DevonCorp_1F_EventScript_IVTrainer_15
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_17:
-# 180 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_7
-# 181 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 192 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_6
+# 193 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	waitmessage
+# 194 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	call IVTrainer_ChooseStat
+# 195 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	call IVTrainer_ChooseMon
+# 196 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	specialvar VAR_RESULT, TrainMaxIV
+# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_26
+# 203 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	playfanfare MUS_LEVEL_UP
+# 204 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitfanfare
+# 205 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	removeitem ITEM_BOTTLE_CAP, 1
+# 206 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_8
+# 207 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitmessage
+	goto RustboroCity_DevonCorp_1F_EventScript_IVTrainer_15
+
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_18:
+# 209 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_9
+# 210 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitmessage
+# 211 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	call IVTrainer_ChooseMon
+# 212 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	specialvar VAR_RESULT, TrainMaxIVs
+# 213 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq RustboroCity_DevonCorp_1F_EventScript_IVTrainer_29
+# 219 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	playfanfare MUS_LEVEL_UP
+# 220 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitfanfare
+# 221 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	removeitem ITEM_GOLD_BOTTLE_CAP, 1
+# 222 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_8
+# 223 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitmessage
+	goto RustboroCity_DevonCorp_1F_EventScript_IVTrainer_15
+
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_23:
+# 181 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_7
 # 182 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitmessage
+# 183 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	releaseall
+	end
+
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_26:
+# 198 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_7
+# 199 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitmessage
+# 200 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	releaseall
+	end
+
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_29:
+# 214 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_10
+# 215 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	waitmessage
+# 216 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	releaseall
 	end
 
 
 IVTrainer_ChooseStat::
-# 196 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 230 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	msgbox IVTrainer_ChooseStat_Text_0
-# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	dynmultichoice 20, 100, TRUE, 5, 0, DYN_MULTICHOICE_CB_NONE, IVTrainer_ChooseStat_Text_1, IVTrainer_ChooseStat_Text_2, IVTrainer_ChooseStat_Text_3, IVTrainer_ChooseStat_Text_4, IVTrainer_ChooseStat_Text_5, IVTrainer_ChooseStat_Text_6, RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_5
-# 198 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 231 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	dynmultichoice 20, 100, FALSE, 5, 0, DYN_MULTICHOICE_CB_NONE, IVTrainer_ChooseStat_Text_1, IVTrainer_ChooseStat_Text_2, IVTrainer_ChooseStat_Text_3, IVTrainer_ChooseStat_Text_4, IVTrainer_ChooseStat_Text_5, IVTrainer_ChooseStat_Text_6, RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_5
+# 232 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	compare VAR_RESULT, 6
 	goto_if_eq IVTrainer_ChooseStat_2
+# 232 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	compare VAR_RESULT, MULTI_B_PRESSED
+	goto_if_eq IVTrainer_ChooseStat_2
 IVTrainer_ChooseStat_1:
-# 201 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 235 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	copyvar VAR_TEMP_1, VAR_RESULT
 	return
 
 IVTrainer_ChooseStat_2:
-# 199 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 233 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	goto RustboroCity_DevonCorp_1F_IVTrainer_Farewell
 	goto IVTrainer_ChooseStat_1
 
 
 RustboroCity_DevonCorp_1F_IVTrainer_Farewell::
-# 204 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 238 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	msgbox RustboroCity_DevonCorp_1F_IVTrainer_Farewell_Text_0
-# 205 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 239 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	releaseall
 	end
 
 
 IVTrainer_ChooseMon::
-# 210 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 244 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	msgbox IVTrainer_ChooseMon_Text_0
-# 211 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 245 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	special ChoosePartyMon
-# 212 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 246 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	waitstate
-# 213 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 247 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
 	goto_if_eq IVTrainer_ChooseMon_1
 	return
 
 IVTrainer_ChooseMon_1:
-# 214 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 248 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	msgbox IVTrainer_ChooseMon_Text_1
-# 215 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 249 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	waitmessage
-# 216 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 250 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	releaseall
 	end
 
@@ -471,54 +553,65 @@ RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_6:
 	.string "moderate training in one stat.$"
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_7:
-# 180 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 181 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "This Pokemon already exceeds my\n"
 	.string "training capacities for this stat!\l"
 	.string "Please come again with other training.$"
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_8:
-# 188 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 189 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "It's done. Your Pokémon looks much\n"
 	.string "stronger now.$"
 
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_9:
+# 209 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	.string "For this capsule, I can maximize all your\n"
+	.string "pokemon's stats.$"
+
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_10:
+# 214 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	.string "This Pokemon already exceeds my\n"
+	.string "training capacities for these stats!\l"
+	.string "Please come again with other training.$"
+
 IVTrainer_ChooseStat_Text_0:
-# 196 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 230 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Which stat should I train?$"
 
 IVTrainer_ChooseStat_Text_1:
-# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 231 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "HP$"
 
 IVTrainer_ChooseStat_Text_2:
-# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 231 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Atk$"
 
 IVTrainer_ChooseStat_Text_3:
-# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 231 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Def$"
 
 IVTrainer_ChooseStat_Text_4:
-# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 231 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Speed$"
 
 IVTrainer_ChooseStat_Text_5:
-# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 231 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Sp.atk$"
 
 IVTrainer_ChooseStat_Text_6:
-# 197 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 231 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Sp.def$"
 
 RustboroCity_DevonCorp_1F_IVTrainer_Farewell_Text_0:
-# 204 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 238 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Alright, have a nice day!$"
 
 IVTrainer_ChooseMon_Text_0:
-# 210 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 244 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Alright, Please choose a Pokemon to\n"
 	.string "train.$"
 
 IVTrainer_ChooseMon_Text_1:
-# 214 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+# 248 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Having trouble deciding? Take your\n"
 	.string "time.$"

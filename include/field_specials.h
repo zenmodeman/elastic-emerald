@@ -35,5 +35,7 @@ void SetPCBoxToSendMon(u8 boxId);
 void PreparePartyForSkyBattle(void);
 
 u8 TrainPlainIV(void);
+u8 TrainMaxIV(void);
+u8 TrainMaxIVs(void);
 
 #endif // GUARD_FIELD_SPECIALS_H

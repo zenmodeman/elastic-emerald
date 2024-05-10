@@ -4310,3 +4310,41 @@ u8 TrainPlainIV(void)
 
     return TRUE;
 }
+
+u8 TrainMaxIV(void){
+    u8 targetIv = MAX_PER_STAT_IVS;
+    u8 targetStat;
+    u8 currentIv;
+
+    targetStat = MON_DATA_HP_IV + VarGet(VAR_TEMP_1);
+    currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
+    if (currentIv >= targetIv){
+        return FALSE;
+    } 
+    SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
+    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+    return TRUE;
+}
+
+u8 TrainMaxIVs(void){
+    u8 targetIv = MAX_PER_STAT_IVS;
+    u8 numAlreadyMaxed = 0;
+    u8 targetStat;
+    u8 i;
+    u8 currentIv;
+
+    for (i=0; i< NUM_STATS; i++){
+        targetStat = MON_DATA_HP_IV + i;
+        currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
+        if(currentIv >= targetIv){
+            numAlreadyMaxed += 1;
+            continue;
+        }
+        SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
+    }
+    if (numAlreadyMaxed >= NUM_STATS){
+        return FALSE;
+    }
+    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+    return TRUE;
+}

@@ -167,12 +167,13 @@ script RustboroCity_DevonCorp_1F_EventScript_IVTrainer{
         dynmultipush("Gold Capsules", ITEM_GOLD_BOTTLE_CAP)
     }
 	dynmultipush("Never Mind", ITEM_NONE)
-	dynmultistack(0, 0, TRUE, 6, FALSE, ITEM_NONE, DYN_MULTICHOICE_CB_NONE)
-	if (var(VAR_RESULT) == ITEM_NONE){
+	dynmultistack(0, 0, FALSE, 6, FALSE, ITEM_NONE, DYN_MULTICHOICE_CB_NONE)
+	if (var(VAR_RESULT) == ITEM_NONE || var(VAR_RESULT) ==  MULTI_B_PRESSED){
 		goto(RustboroCity_DevonCorp_1F_IVTrainer_Farewell)
 	}
 	if (var(VAR_RESULT) == ITEM_PLAIN_BOTTLE_CAP){
 		msgbox(format("For this capsule, I can give you moderate training in one stat."))
+		waitmessage
 		call(IVTrainer_ChooseStat)
 		call(IVTrainer_ChooseMon)
 		specialvar(VAR_RESULT, TrainPlainIV)
@@ -187,6 +188,39 @@ script RustboroCity_DevonCorp_1F_EventScript_IVTrainer{
 		removeitem(ITEM_PLAIN_BOTTLE_CAP, 1)
 		msgbox(format("It's done. Your Pokémon looks much stronger now."))
 		waitmessage
+	}elif (var(VAR_RESULT) == ITEM_BOTTLE_CAP){
+		msgbox(format("For this capsule, I can give you moderate training in one stat."))
+		waitmessage
+		call(IVTrainer_ChooseStat)
+		call(IVTrainer_ChooseMon)
+		specialvar(VAR_RESULT, TrainMaxIV)
+		if (var(VAR_RESULT) == FALSE){
+			msgbox(format("This Pokemon already exceeds my training capacities for this stat! Please come again with other training."))
+			waitmessage
+			releaseall
+			end
+		}
+		playfanfare(MUS_LEVEL_UP)
+		waitfanfare
+		removeitem(ITEM_BOTTLE_CAP, 1)
+		msgbox(format("It's done. Your Pokémon looks much stronger now."))
+		waitmessage
+	}elif (var(VAR_RESULT) == ITEM_GOLD_BOTTLE_CAP){
+		msgbox(format("For this capsule, I can maximize all your pokemon's stats."))
+		waitmessage
+		call(IVTrainer_ChooseMon)
+		specialvar(VAR_RESULT, TrainMaxIVs)
+		if (var(VAR_RESULT) == FALSE){
+			msgbox(format("This Pokemon already exceeds my training capacities for these stats! Please come again with other training."))
+			waitmessage
+			releaseall
+			end
+		}
+		playfanfare(MUS_LEVEL_UP)
+		waitfanfare
+		removeitem(ITEM_GOLD_BOTTLE_CAP, 1)
+		msgbox(format("It's done. Your Pokémon looks much stronger now."))
+		waitmessage	
 	}
 	releaseall
 	end
@@ -194,8 +228,8 @@ script RustboroCity_DevonCorp_1F_EventScript_IVTrainer{
 
 script IVTrainer_ChooseStat{
 	msgbox(format("Which stat should I train?"))
-	dynmultichoice(20, 100, TRUE, 5, 0, DYN_MULTICHOICE_CB_NONE, "HP", "Atk", "Def", "Speed", "Sp.atk", "Sp.def", "Never Mind")
-	if (var(VAR_RESULT) == 6){
+	dynmultichoice(20, 100, FALSE, 5, 0, DYN_MULTICHOICE_CB_NONE, "HP", "Atk", "Def", "Speed", "Sp.atk", "Sp.def", "Never Mind")
+	if (var(VAR_RESULT) == 6 || var(VAR_RESULT) == MULTI_B_PRESSED){
 		goto(RustboroCity_DevonCorp_1F_IVTrainer_Farewell)
 	}
 	copyvar(VAR_TEMP_1, VAR_RESULT)
