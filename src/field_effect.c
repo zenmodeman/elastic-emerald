@@ -34,6 +34,12 @@
 #include "constants/songs.h"
 #include "constants/map_types.h"
 
+#include "event_data.h"
+#include "malloc.h"
+#include "pokedex.h"
+#include "constants/items.h"
+#include "random.h"
+
 #define subsprite_table(ptr) {.subsprites = ptr, .subspriteCount = (sizeof ptr) / (sizeof(struct Subsprite))}
 
 EWRAM_DATA s32 gFieldEffectArguments[8] = {0};
@@ -2585,9 +2591,18 @@ bool8 FldEff_FieldMoveShowMonInit(void)
     struct Pokemon *pokemon;
     bool32 noDucking = gFieldEffectArguments[0] & SHOW_MON_CRY_NO_DUCKING;
     pokemon = &gPlayerParty[(u8)gFieldEffectArguments[0]];
-    gFieldEffectArguments[0] = GetMonData(pokemon, MON_DATA_SPECIES);
-    gFieldEffectArguments[1] = GetMonData(pokemon, MON_DATA_IS_SHINY);
-    gFieldEffectArguments[2] = GetMonData(pokemon, MON_DATA_PERSONALITY);
+
+        if (FlagGet(FLAG_SYS_MAP_MENU_USED)) {
+            u16 designatedFlyMon = SPECIES_CORVIKNIGHT;
+            GetSetPokedexFlag(SpeciesToNationalPokedexNum(designatedFlyMon), FLAG_SET_SEEN); //Registers the pokemon shown as 'seen' in the pokedex
+            gFieldEffectArguments[0] = designatedFlyMon;
+            gFieldEffectArguments[1] = designatedFlyMon;
+            gFieldEffectArguments[2] = Random32();
+    } else {
+        gFieldEffectArguments[0] = GetMonData(pokemon, MON_DATA_SPECIES);
+        gFieldEffectArguments[1] = GetMonData(pokemon, MON_DATA_OT_ID);
+        gFieldEffectArguments[2] = GetMonData(pokemon, MON_DATA_PERSONALITY);
+    }
     gFieldEffectArguments[0] |= noDucking;
     FieldEffectStart(FLDEFF_FIELD_MOVE_SHOW_MON);
     FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON_INIT);

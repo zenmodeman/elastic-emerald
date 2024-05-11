@@ -3065,5 +3065,7 @@ extern const u8 gText_PlantBerry[];
 //Move Relearning
 extern const u8 gText_Moves_Menu[];
 
+extern const u8 gText_MenuMap[];
+extern const u8 gText_MenuFly[];
 
 #endif // GUARD_STRINGS_H

@@ -846,6 +846,36 @@ OldaleTown_EventScript_Fisherman_9:
 	goto OldaleTown_EventScript_Fisherman_8
 
 
+OldaleTown_EventScript_Taxi::
+# 443 "data/maps/OldaleTown/scripts.pory"
+	lock
+# 444 "data/maps/OldaleTown/scripts.pory"
+	faceplayer
+# 445 "data/maps/OldaleTown/scripts.pory"
+	goto_if_unset FLAG_SYS_FLY_GET, OldaleTown_EventScript_Taxi_2
+# 453 "data/maps/OldaleTown/scripts.pory"
+	msgbox OldaleTown_EventScript_Taxi_Text_3
+OldaleTown_EventScript_Taxi_1:
+# 455 "data/maps/OldaleTown/scripts.pory"
+	releaseall
+	end
+
+OldaleTown_EventScript_Taxi_2:
+# 446 "data/maps/OldaleTown/scripts.pory"
+	msgbox OldaleTown_EventScript_Taxi_Text_0
+# 447 "data/maps/OldaleTown/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 448 "data/maps/OldaleTown/scripts.pory"
+	msgbox OldaleTown_EventScript_Taxi_Text_1
+# 449 "data/maps/OldaleTown/scripts.pory"
+	waitfanfare
+# 450 "data/maps/OldaleTown/scripts.pory"
+	setflag FLAG_SYS_FLY_GET
+# 451 "data/maps/OldaleTown/scripts.pory"
+	msgbox OldaleTown_EventScript_Taxi_Text_2
+	goto OldaleTown_EventScript_Taxi_1
+
+
 OldaleTown_EventScript_Fisherman_Text_0:
 # 422 "data/maps/OldaleTown/scripts.pory"
 	.string "This is one of my favorite fishing\n"
@@ -865,6 +895,26 @@ OldaleTown_EventScript_Fisherman_Text_2:
 OldaleTown_EventScript_Fisherman_Text_3:
 # 436 "data/maps/OldaleTown/scripts.pory"
 	.string "Hope you're having a good time fishing!$"
+
+OldaleTown_EventScript_Taxi_Text_0:
+# 446 "data/maps/OldaleTown/scripts.pory"
+	.string "Hello, I manage the Corviknight ride\n"
+	.string "system. I see you're missing out, so I'll\l"
+	.string "give you a ride caller free of charge.$"
+
+OldaleTown_EventScript_Taxi_Text_1:
+# 448 "data/maps/OldaleTown/scripts.pory"
+	.string "{PLAYER} received the Ride Caller!$"
+
+OldaleTown_EventScript_Taxi_Text_2:
+# 451 "data/maps/OldaleTown/scripts.pory"
+	.string "You should be able to Fly from your menu\n"
+	.string "when you're outdoors. Hope you enjoy!$"
+
+OldaleTown_EventScript_Taxi_Text_3:
+# 453 "data/maps/OldaleTown/scripts.pory"
+	.string "Being able to fly is great isn't it? I'm\n"
+	.string "glad to offer my services in Hoenn.$"
 
 OldaleTown_Text_ThrowInFishingAdvice::
 # 405 "data/maps/OldaleTown/scripts.pory"

@@ -3987,6 +3987,7 @@ static void CursorCb_FieldMove(u8 taskId)
             case FIELD_MOVE_FLY:
                 gPartyMenu.exitCallback = CB2_OpenFlyMap;
                 Task_ClosePartyMenu(taskId);
+                FlagClear(FLAG_SYS_MAP_MENU_USED);
                 break;
             default:
                 gPartyMenu.exitCallback = CB2_ReturnToField;

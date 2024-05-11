@@ -439,3 +439,19 @@ script OldaleTown_EventScript_Fisherman {
     end
 }
 
+script OldaleTown_EventScript_Taxi{
+	lock
+	faceplayer	
+	if (!flag(FLAG_SYS_FLY_GET)){
+		msgbox(format("Hello, I manage the Corviknight ride system. I see you're missing out, so I'll give you a ride caller free of charge."))
+		playfanfare(MUS_OBTAIN_ITEM)
+		msgbox(format( "{PLAYER} received the Ride Caller!"))
+		waitfanfare
+		setflag(FLAG_SYS_FLY_GET)
+		msgbox(format("You should be able to Fly from your menu when you're outdoors. Hope you enjoy!"))
+	}else{
+		msgbox(format("Being able to fly is great isn't it? I'm glad to offer my services in Hoenn."))
+	}
+	releaseall
+	end
+}

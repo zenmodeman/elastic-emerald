@@ -2020,7 +2020,13 @@ static void CB_ExitFlyMap(void)
             }
             else
             {
-                SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
+                if (FlagGet(FLAG_SYS_MAP_MENU_USED)) {
+                    SetMainCallback2(CB2_ReturnToFieldWithOpenMenu);
+                }
+                else{
+                    SetMainCallback2(CB2_ReturnToPartyMenuFromFlyMap);
+                }
+                FlagClear(FLAG_SYS_MAP_MENU_USED);
             }
             TRY_FREE_AND_SET_NULL(sFlyMap);
             FreeAllWindowBuffers();
