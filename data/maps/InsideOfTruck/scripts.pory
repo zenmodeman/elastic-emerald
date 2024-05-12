@@ -57,39 +57,48 @@ script InsideOfTruck_EventScript_SetIntroFlags{
     lockall
     setflag(FLAG_HIDE_MAP_NAME_POPUP)
     special(EnableNationalPokedex)
-    msgbox(BeforeBegginning)
-    msgbox("Will you opt-in to Restricted Mode?")
+    msgbox(format("Before begginning your game, let's configure some settings."))
     do{
-        dynmultichoice(7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        msgbox(format("Will you opt-in to Restricted Mode?"))
+        dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
         if (var(VAR_RESULT) == 0){
             setflag(FLAG_RESTRICTED_MODE)
         }
         elif (var(VAR_RESULT) ==2){
-            msgbox(RestrictedModeInfo)
+            msgbox(format("Restricted mode adds constraints for balance reasons."))
+            msgbox(format("Certain moves, items, and abilities are less available."))
+            msgbox(format("Bag items can't be used during Trainer Battles."))
+            msgbox(format("Item clause is forced during Gym Battles and the Elite Four."))
         }
     }while (var(VAR_RESULT) ==2)
 
-    msgbox("Will you opt-in to Resource Mode?")
+    
     do{
-        dynmultichoice(7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        msgbox("Will you opt-in to Resource Mode?")
+        dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
         if (var(VAR_RESULT) == 0){
             setflag(FLAG_RESOURCE_MODE)
         }
         elif (var(VAR_RESULT) ==2){
-            msgbox(ResourceModeInfo)
+            msgbox(format("Resource Mode emphasizes finite supply to enforce more decision-making."))
+            msgbox(format("TMs, tutors, and move relearners have limited use."))
+            msgbox(format("Consumable items do not regenerate after battle, and berries cannot be planted."))
+            msgbox(format("Choosing to not play with Resource Mode grants much more flexibility."))
         }
     }while (var(VAR_RESULT) ==2)
     
-    msgbox("Will you do a monotype run?")
+    
     do{
-        dynmultichoice(7, 100, TRUE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        msgbox("Will you do a monotype run?")
+        dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
         if (var(VAR_RESULT) ==2){
-            msgbox(MonotypeInfo)
+            msgbox(format("For monotype runs, each monotype has custom wild encounters and gifts."))
+            msgbox(format("Split Evolutions are constrained: a Wurmple in Mono Poison will always evolve into a Cascoon."))    
         }
     }while (var(VAR_RESULT) ==2)
 
     if (var(VAR_RESULT) == 0){
-        msgbox("Please choose the monotype.")
+        msgbox("Please choose the monotype.") 
         dynmultichoice(5, 100, TRUE, 4, 0, DYN_MULTICHOICE_CB_NONE, "Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy")
         copyvar(VAR_MONOTYPE, VAR_RESULT)
         addvar(VAR_MONOTYPE, 1)
@@ -102,40 +111,4 @@ script InsideOfTruck_EventScript_SetIntroFlags{
         goto(InsideOfTruck_EventScript_SetIntroFlagsFemale)
     }
     releaseall
-}
-
-text BeforeBegginning {
-    "Before begginning your game, \n"
-    "Let's configure some settings. \p"
-}
-
-text RestrictedModeInfo {
-    "Restricted mode adds constraints, \n"
-    "for balance reasons.\p"
-    "Certain moves, items, and abilities \n"
-    "are less available.\p"
-    "Bag items can't be used \n"
-    "in trainer battles. \p"
-    "Item Clause is enforced \n"
-    "for certain boss fights. \p"
-}
-
-text ResourceModeInfo {
-    "Restricted mode emphasizes finite supply, \n"
-    "for those who want more decision-making. \p"
-    "TMs, tutors, and move relearners \n"
-    "have limited use.\p"
-    "Consumable items do not regenerate, \n"
-    "and berries can't be planted. \p" 
-}
-
-text MonotypeInfo {
-    "For monotype runs, each monotype has \n"
-    "custom wild encounters and gifts. \p"
-    "Split Evolutions are constrained: A Wurmple in\n"
-    "Mono Poison will always evolve into a Cascoon. \p"     
-}
-
-text random {
-    "Temporary test \n"
 }
