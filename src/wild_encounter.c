@@ -536,6 +536,14 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
         wildMonIndex = ChooseWildMonIndex_WaterRock();
         break;
     case WILD_AREA_SHAKE:
+        if (isMonotypeInfluenced){
+            if (TryGetMonotypeVarInfluencedWildMonIndex(wildMonInfo->wildPokemon, &wildMonIndex, SHAKE_WILD_COUNT)){
+                break;
+            }else{
+                return FALSE;
+            }
+        }
+
         wildMonIndex = ChooseWildMonIndex_WaterRock();
         break;
     }
