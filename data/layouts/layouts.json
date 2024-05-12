@@ -4430,6 +4430,16 @@
       "secondary_tileset": "gTileset_Cave",
       "border_filepath": "data/layouts/OldaleRuins_1F/border.bin",
       "blockdata_filepath": "data/layouts/OldaleRuins_1F/map.bin"
+    },
+    {
+      "id": "LAYOUT_PETALBURG_GROVE",
+      "name": "PetalburgGrove_Layout",
+      "width": 25,
+      "height": 20,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_Petalburg",
+      "border_filepath": "data/layouts/PetalburgGrove/border.bin",
+      "blockdata_filepath": "data/layouts/PetalburgGrove/map.bin"
     }
   ]
 }

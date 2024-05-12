@@ -1,0 +1,10 @@
+raw`
+PetalburgGrove_MapScripts::
+	.byte 0
+`
+
+script PetalburgGrove_WanderingWoman{
+    msgbox(format("This place is so peaceful. I love seeing the Pokemon here."))
+    releaseall
+    end
+}

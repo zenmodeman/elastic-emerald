@@ -22,6 +22,11 @@
       "map": "MAP_ROUTE102",
       "offset": 10,
       "direction": "right"
+    },
+    {
+      "map": "MAP_PETALBURG_GROVE",
+      "offset": 12,
+      "direction": "down"
     }
   ],
   "object_events": [
