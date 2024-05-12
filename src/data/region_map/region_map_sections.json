@@ -1730,8 +1730,8 @@
     {
       "map_section": "MAPSEC_PETALBURG_GROVE",
       "name": "Petalburg Grove",
-      "x": 0,
-      "y": 0,
+      "x": 1,
+      "y": 10,
       "width": 1,
       "height": 1
     }

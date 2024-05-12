@@ -1,10 +1,16 @@
 raw`
+.set LOCALID_WANDERING_WOMAN, 1
 PetalburgGrove_MapScripts::
 	.byte 0
 `
 
 script PetalburgGrove_WanderingWoman{
+    lock
+    faceplayer
     msgbox(format("This place is so peaceful. I love seeing the Pokemon here."))
+    closemessage
+	applymovement(LOCALID_WANDERING_WOMAN, Common_Movement_FaceOriginalDirection)
+	waitmovement(0)
     releaseall
     end
 }
