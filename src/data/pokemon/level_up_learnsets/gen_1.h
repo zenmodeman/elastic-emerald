@@ -316,8 +316,11 @@ static const struct LevelUpMove sFearowLevelUpLearnset[] = {
 static const struct LevelUpMove sEkansLevelUpLearnset[] = {
     LEVEL_UP_MOVE( 1, MOVE_WRAP),
     LEVEL_UP_MOVE( 1, MOVE_LEER),
-    LEVEL_UP_MOVE(10, MOVE_POISON_STING),
-    LEVEL_UP_MOVE(17, MOVE_BITE),
+    LEVEL_UP_MOVE(4, MOVE_POISON_STING),
+    LEVEL_UP_MOVE(7, MOVE_SPITE),
+    LEVEL_UP_MOVE(10, MOVE_BITE),
+    LEVEL_UP_MOVE(13, MOVE_SCARY_FACE),
+    //Rest is WIP
     LEVEL_UP_MOVE(24, MOVE_GLARE),
     LEVEL_UP_MOVE(31, MOVE_SCREECH),
     LEVEL_UP_MOVE(38, MOVE_ACID),
