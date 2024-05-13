@@ -6413,7 +6413,8 @@ bool32 CanBeParalyzed(u32 battler)
         || ability == ABILITY_PURIFYING_SALT
         || gBattleMons[battler].status1 & STATUS1_ANY
         || IsAbilityStatusProtected(battler)
-        || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN))
+        || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN)
+        || gFieldStatuses & STATUS_FIELD_MUDSPORT)
         return FALSE;
     return TRUE;
 }

@@ -16433,6 +16433,15 @@ void BS_JumpIfTerrainAffected(void)
         gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
+void BS_JumpIfSportApplied(void){
+    NATIVE_ARGS(u32 flags, const u8 *jumpInstr);
+    if (gFieldStatuses & cmd->flags){
+        gBattlescriptCurrInstr = cmd->jumpInstr;
+    }else{
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+}
+
 void BS_TryReflectType(void)
 {
     NATIVE_ARGS(const u8 *failInstr);

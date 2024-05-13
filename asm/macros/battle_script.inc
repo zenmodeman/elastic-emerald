@@ -2498,3 +2498,9 @@
 	printstring STRINGID_EMPTYSTRING3
 	waitmessage 1
 	.endm
+
+	.macro jumpifsportapplied sportFlags:req, jumpInstr:req
+	callnative BS_JumpIfSportApplied
+	.4byte \sportFlags
+	.4byte \jumpInstr
+	.endm
