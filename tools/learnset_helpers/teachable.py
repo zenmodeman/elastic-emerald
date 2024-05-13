@@ -60,6 +60,8 @@ with open("./src/pokemon.c", "r") as file:
                 continue
             universal_moves.append(y)
 
+modernToxicCompatability = ["./tools/learnset_helpers/porymoves_files/swsh.json", "./tools/learnset_helpers/porymoves_files/sv.json",
+                             "./tools/learnset_helpers/porymoves_files/la.json", "./tools/learnset_helpers/porymoves_files/bdsp.json"]
 # get compatibility from jsons
 def construct_compatibility_dict(force_custom_check):
     dict_out = {}
@@ -76,7 +78,8 @@ def construct_compatibility_dict(force_custom_check):
             #    if not move in dict_out[mon]:
             #        dict_out[mon].append(move)
             for move in data[mon]['TMMoves']:
-                if not move in dict_out[mon]:
+                    if move == "MOVE_TOXIC" and pth not in modernToxicCompatability:
+                        continue
                     dict_out[mon].append(move)
             for move in data[mon]['EggMoves']:
                 if not move in dict_out[mon]:
