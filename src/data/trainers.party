@@ -5874,23 +5874,26 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Shinx @ Rawst Berry  
+Shinx  
 Ability: Rivalry  
-Level: 5  
-IVs: 8 HP / 8 Atk / 8 Def / 8 SpA / 8 SpD / 8 Spe  
+Level: 4  
+Careful Nature  
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe  
 - Thunder Shock  
 - Fake Tears  
 - Mud-Slap  
 - Quick Attack  
 
-Litleo @ Cheri Berry  
+Litleo  
 Ability: Rivalry  
-Level: 5  
-IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 12 Spe  
+Level: 4  
+Adamant Nature  
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe  
 - Ember  
 - Tackle  
 - Leer  
 - Entrainment  
+
 
 === TRAINER_BILLY ===
 Name: BILLY
@@ -9520,7 +9523,8 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Torchic
 Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+
 
 === TRAINER_BRENDAN_ROUTE_110_TREECKO ===
 Name: BRENDAN
@@ -9683,9 +9687,13 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Torchic
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Torchic  
+Ability: Blaze  
+Level: 5  
+IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe  
+- Scratch  
+- Growl  
+- Focus Energy
 
 === TRAINER_MAY_ROUTE_110_TREECKO ===
 Name: MAY
