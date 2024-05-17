@@ -1062,8 +1062,7 @@ script Littleroot_GetStarterOption{
 		call(StarterFairyScript)
 	}
 	waitmessage
-	releaseall
-	end
+	goto(LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival)
 }
 
 

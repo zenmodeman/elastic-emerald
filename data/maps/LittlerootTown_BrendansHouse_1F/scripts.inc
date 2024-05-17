@@ -169,6 +169,8 @@ LittlerootTown_BrendansHouse_1F_EventScript_MeetRival::
 	delay 30
 	setvar VAR_LITTLEROOT_RIVAL_STATE, 3
 	setvar VAR_LITTLEROOT_TOWN_STATE, 1
+	setvar VAR_BIRCH_LAB_STATE, 2
+	setvar VAR_ROUTE101_STATE, 3
 	savebgm MUS_DUMMY
 	fadedefaultbgm
 	releaseall
