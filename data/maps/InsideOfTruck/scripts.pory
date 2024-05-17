@@ -57,6 +57,9 @@ script InsideOfTruck_EventScript_SetIntroFlags{
     lockall
     setflag(FLAG_HIDE_MAP_NAME_POPUP)
     special(EnableNationalPokedex)
+    setvar(VAR_REMAINING_RELEARNER, 1)
+    setvar(VAR_REMAINING_TUTOR, 1)
+
     msgbox(format("Before begginning your game, let's configure some settings."))
     do{
         msgbox(format("Will you opt-in to Restricted Mode?"))
@@ -68,7 +71,7 @@ script InsideOfTruck_EventScript_SetIntroFlags{
             msgbox(format("Restricted mode adds constraints for balance reasons."))
             msgbox(format("Certain moves, items, and abilities are less available."))
             msgbox(format("Bag items can't be used during Trainer Battles."))
-            msgbox(format("Item clause is forced during Gym Battles and the Elite Four."))
+            msgbox(format("Item clause is forced during Gym Leader and Elite Four Battles."))
         }
     }while (var(VAR_RESULT) ==2)
 
@@ -86,7 +89,19 @@ script InsideOfTruck_EventScript_SetIntroFlags{
             msgbox(format("Choosing to not play with Resource Mode grants much more flexibility."))
         }
     }while (var(VAR_RESULT) ==2)
-    
+
+    do{
+        msgbox("Will you play in EV-Mode?")
+        dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        if (var(VAR_RESULT) == 0){
+            setflag(FLAG_EV_MODE)
+        }
+        elif (var(VAR_RESULT) ==2){
+            msgbox(format("EV-Mode means effort values can be acquired, and trainers can also have them."))
+            msgbox(format("To prevent requiring full EVs immediately, there are EV caps throughout."))
+            msgbox(format("If not playing in EV-mode, the player cannot increase effort values, and trainers will not have them."))
+        }
+    }while (var(VAR_RESULT) ==2)
     
     do{
         msgbox("Will you do a monotype run?")
