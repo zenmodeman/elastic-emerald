@@ -47,6 +47,7 @@
 // AI_TryToFaint
 #define FAST_KILL      6 // AI is faster and faints target
 #define SLOW_KILL      4 // AI is slower and faints target
+#define ANY_KILL       6 // AI faints target, regardless of whether faster or slower
 #define LAST_CHANCE    2 // AI faints to target. It should try and do damage with a priority move
 
 #include "test_runner.h"

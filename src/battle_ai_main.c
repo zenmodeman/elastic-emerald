@@ -31,6 +31,8 @@
 #define AI_ACTION_WATCH         (1 << 2)
 #define AI_ACTION_DO_NOT_ATTACK (1 << 3)
 
+#define MIN_SWITCHES_FOR_PREDICTION 2
+
 static u32 ChooseMoveOrAction_Singles(u32 battlerAi);
 static u32 ChooseMoveOrAction_Doubles(u32 battlerAi);
 static inline void BattleAI_DoAIProcessing(struct AI_ThinkingStruct *aiThink, u32 battlerAi, u32 battlerDef);
@@ -55,6 +57,8 @@ static s32 AI_FirstBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 static s32 AI_PowerfulStatus(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 
+static bool32 ShouldPermitImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move);
+static bool32 ShouldPenalizeNonImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move);
 
 static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
 {
@@ -834,10 +838,13 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     switch (effectiveness)
     {
     case AI_EFFECTIVENESS_x0:
-        RETURN_SCORE_MINUS(20);
+        if (!ShouldPermitImmuneMove(battlerAtk, battlerDef, move)){
+            RETURN_SCORE_MINUS(20);
+        }
         break;
     case AI_EFFECTIVENESS_x0_125:
     case AI_EFFECTIVENESS_x0_25:
+        //TODO: Probably get rid of this logic later
         RETURN_SCORE_MINUS(10);
         break;
     }
@@ -2638,14 +2645,20 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 
     if (CanIndexMoveFaintTarget(battlerAtk, battlerDef, movesetIndex, 0) && gMovesInfo[move].effect != EFFECT_EXPLOSION)
     {
+        //Expeerimenting with removing the fast and slow kill factors, and just making any kill high priority
         if (AI_STRIKES_FIRST(battlerAtk, battlerDef, move))
-            ADJUST_SCORE(FAST_KILL);
+            // ADJUST_SCORE(FAST_KILL);
+            ADJUST_SCORE(ANY_KILL);
         else
-            ADJUST_SCORE(SLOW_KILL);
+            // ADJUST_SCORE(SLOW_KILL);
+            ADJUST_SCORE(ANY_KILL);
     }
     else if (CanTargetFaintAi(battlerDef, battlerAtk)
             && GetWhichBattlerFaster(battlerAtk, battlerDef, TRUE) != AI_IS_FASTER
-            && GetMovePriority(battlerAtk, move) > 0)
+            && GetMovePriority(battlerAtk, move) > 0
+            //About 98% chance to go for priority, to prevent guarenteed abuse of this logic
+            && AI_RandLessThan(250)
+            )
     {
         ADJUST_SCORE(LAST_CHANCE);
     }
@@ -3199,13 +3212,16 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
     if ((gBattleMons[battlerAtk].status1 & (STATUS1_FREEZE | STATUS1_FROSTBITE)) && gMovesInfo[move].thawsUser)
         ADJUST_SCORE(10);
 
+    //Currently Removing this overly deterministic switch logic
     // check burn / frostbite
-    if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_SMART_SWITCHING && AI_DATA->abilities[battlerAtk] == ABILITY_NATURAL_CURE)
-    {
-        if ((gBattleMons[battlerAtk].status1 & STATUS1_BURN && HasOnlyMovesWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL, TRUE))
-        || (gBattleMons[battlerAtk].status1 & STATUS1_FROSTBITE && HasOnlyMovesWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL, TRUE)))
-            ADJUST_SCORE(-20); // Force switch if all your attacking moves are physical and you have Natural Cure.
-    }
+    // if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_SMART_SWITCHING && AI_DATA->abilities[battlerAtk] == ABILITY_NATURAL_CURE)
+    // {
+    //     if ((gBattleMons[battlerAtk].status1 & STATUS1_BURN && HasOnlyMovesWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL, TRUE))
+    //     || (gBattleMons[battlerAtk].status1 & STATUS1_FROSTBITE && HasOnlyMovesWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL, TRUE))){
+    //         ADJUST_SCORE(-20); // Force switch if all your attacking moves are physical and you have Natural Cure.
+    //     }
+            
+    // }
 
     // move effect checks
     switch (moveEffect)
@@ -4491,6 +4507,8 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 case MOVE_EFFECT_SP_ATK_MINUS_1:
                 case MOVE_EFFECT_SP_DEF_MINUS_1:
                 case MOVE_EFFECT_ACC_MINUS_1:
+                    //TODO: Expand the logic for the above move effects later, and most likely avoid the fall-throughs
+                    break;
                 case MOVE_EFFECT_EVS_MINUS_1:
                     if (aiData->abilities[battlerDef] != ABILITY_CONTRARY)
                         ADJUST_SCORE(DECENT_EFFECT);
@@ -4640,23 +4658,140 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         return BEST_MOVE_EFFECTS;
 }
 
+//
+/*
+Function to determine whether a move the target is immune to should not be disincentivized, based on switch expectations
+Required conditions:
+-The target has switched at least twice, and the opposing team has a pokemon in the party that has switched twice and is also immune to another
+an AI mon move that is of a different type than the current move.
+
+*/
+static bool32 ShouldPermitImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move){
+    u32 i, j, count;
+    u16 *moves = gBattleMons[battlerAtk].moves;
+    struct AiPartyMon *aiMons = AI_PARTY->mons[GetBattlerSide(battlerDef)];
+    
+    if (!gMovesInfo[move].power){
+        return FALSE;
+    }
+
+    if (aiMons[gBattlerPartyIndexes[battlerDef]].switchInCount < MIN_SWITCHES_FOR_PREDICTION){
+        // DebugPrintf("Current mon hasn't switched out enough");
+        return FALSE;
+    }
+    count = AI_PARTY->count[GetBattlerSide(battlerDef)];
+    for (i=0; i < count; i++){
+        if (aiMons[i].species != gBattleMons[battlerDef].species && aiMons[i].switchInCount < MIN_SWITCHES_FOR_PREDICTION){
+            continue;
+        }
+        // DebugPrintf("A back mon that has switched enough has been found");
+
+        for (j = 0; j < MAX_MON_MOVES; j++){
+            if (moves[j] != MOVE_NONE && moves[j] != MOVE_UNAVAILABLE && gMovesInfo[moves[j]].type  != gMovesInfo[move].type
+             && gMovesInfo[moves[j]].power){
+                // DebugPrintf("Move check has been reached for move number %d", moves[j]);
+                if (gMovesInfo[moves[j]].type == TYPE_GHOST && ((gSpeciesInfo[aiMons[i].species].types[0] == TYPE_NORMAL) ||
+                 (gSpeciesInfo[aiMons[i].species].types[0] == TYPE_NORMAL))){
+                    
+                    if (Random() & 1){
+                        return TRUE;
+                        // DebugPrintf("Ghost move check has returned true");
+                    }else{
+                        return FALSE;
+                        // DebugPrintf("Ghost move check has returned false");
+                    }
+                 }  
+                if (gMovesInfo[moves[j]].type == TYPE_FIGHTING && ((gSpeciesInfo[aiMons[i].species].types[0] == TYPE_GHOST) ||
+                 (gSpeciesInfo[aiMons[i].species].types[0] == TYPE_GHOST))){
+                    if (Random() & 1){
+                        return TRUE;
+                    }else{
+                        return FALSE;
+                    }
+                 }  
+            }
+        }
+    }
+    // DebugPrintf("Terminal return false has been reached");
+    return FALSE;
+} 
+
+//TODO: Add additional logic checks beyond just effectiveness
+static bool32 ShouldPenalizeNonImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move){
+    u32 i, j, count;
+    bool32 hasTargetImmuneMove = FALSE; 
+    struct AiPartyMon *aiMons = AI_PARTY->mons[GetBattlerSide(battlerDef)];
+    
+    if (!gMovesInfo[move].power){
+        return FALSE;
+    }
+
+    if (aiMons[gBattlerPartyIndexes[battlerDef]].switchInCount < MIN_SWITCHES_FOR_PREDICTION){
+        // DebugPrintf("Current mon hasn't switched out enough");
+        return FALSE;
+    }
+
+    for (j = 0; j < MAX_MON_MOVES; j++){
+        if (AI_DATA->effectiveness[battlerAtk][battlerDef][j] == AI_EFFECTIVENESS_x0){
+            hasTargetImmuneMove = TRUE;
+            break;
+        }
+    }
+    if (!hasTargetImmuneMove){
+        return FALSE;
+    }
+
+    count = AI_PARTY->count[GetBattlerSide(battlerDef)];
+
+    for (i=0; i < count; i++){
+        if (aiMons[i].species != gBattleMons[battlerDef].species && aiMons[i].switchInCount < MIN_SWITCHES_FOR_PREDICTION){
+            continue;
+        }
+        // DebugPrintf("A back mon that has switched enough has been found");
+        if (gMovesInfo[move].type == TYPE_GHOST && ((gSpeciesInfo[aiMons[i].species].types[0] == TYPE_NORMAL) ||
+                 (gSpeciesInfo[aiMons[i].species].types[0] == TYPE_NORMAL))){
+                    if (Random() & 1){
+                        return TRUE;
+                    }else{
+                        return FALSE;
+                    }                    
+            }
+        }
+        if (gMovesInfo[move].type == TYPE_FIGHTING && ((gSpeciesInfo[aiMons[i].species].types[0] == TYPE_GHOST) ||
+            (gSpeciesInfo[aiMons[i].species].types[0] == TYPE_GHOST)))
+        {
+            if (Random() & 1){
+                return TRUE;
+            }else{
+                return FALSE;
+            }                    
+        }       
+
+    return FALSE;
+}
+
 // AI_FLAG_CHECK_VIABILITY - Chooses best possible move to hit player
 static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
-    // Targeting partner, check benefits of doing that instead
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
         return score;
 
     if (gMovesInfo[move].power)
     {
-        if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex) == 0)
+        if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex) == 0){
             ADJUST_SCORE(-20);
-        else
+            //TODO: Perhaps ShouldPermitImmuneMove also belongs here when it comes to ability immunities
+        }
+        else{
             score += AI_CompareDamagingMoves(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex);
+            if (ShouldPenalizeNonImmuneMove(battlerAtk, battlerDef, move)){
+                ADJUST_SCORE(-20);
+            }
+        }
     }
 
     // Calculates score based on effects of a move
-    score += AI_CalcMoveScore(battlerAtk, battlerDef, move);
+    score += AI_CalcMoveScore(battlerAtk, battlerDef, move);   
 
     return score;
 }
