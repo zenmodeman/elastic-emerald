@@ -435,11 +435,58 @@ u8 PickWildMonNature(void)
     return Random() % NUM_NATURES;
 }
 
+static bool32 IsBurmyCloakType(u8 type){
+    if (type == TYPE_GRASS || type == TYPE_GROUND || type == TYPE_STEEL){
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+}
+
+static bool32 IsBurmyExlusiveEvolutionType(u8 type){
+    if (IsBurmyCloakType(type) || type == TYPE_FLYING){
+        return TRUE;
+    }else{
+        return FALSE;
+    }
+}
+
 static void CreateWildMon(u16 species, u8 level)
 {
+    u8 gender;
     bool32 checkCuteCharm = TRUE;
+    u8 monotype = GetTypeFromVar(VarGet(VAR_MONOTYPE));
 
     ZeroEnemyPartyMons();
+
+    //Enforce certain genders of encounters for certain monotypes
+    
+    //Force Frosslass-possible in mono Ghost
+    if (species == SPECIES_SNORUNT && monotype == TYPE_GHOST){
+        gender = MON_FEMALE;
+        CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, gender, PickWildMonNature(), 0);
+        return;
+    }
+
+    //Force Gallade-possible in Mono Fighting
+    if ((species == SPECIES_RALTS || species == SPECIES_KIRLIA) && monotype == TYPE_FIGHTING){
+        gender = MON_MALE;
+        CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, gender, PickWildMonNature(), 0);
+        return;
+    }
+    if (species == SPECIES_BURMY && IsBurmyExlusiveEvolutionType(monotype)){
+        //Force Mothim-possible in Mono Flying
+        if (monotype == TYPE_FLYING){
+            gender = MON_MALE;
+        }
+        //Force Wormadam-possible in Mono Grass, Ground, or Steel
+        else if (IsBurmyCloakType(monotype)){
+            gender = MON_FEMALE;
+        }
+        CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, gender, PickWildMonNature(), 0);
+        return;
+    }
+    //Cute Charm gender encounter logic below, only reached if the above conditions aren't met
 
     switch (gSpeciesInfo[species].genderRatio)
     {
@@ -457,18 +504,16 @@ static void CreateWildMon(u16 species, u8 level)
     {
         u16 leadingMonSpecies = GetMonData(&gPlayerParty[0], MON_DATA_SPECIES);
         u32 leadingMonPersonality = GetMonData(&gPlayerParty[0], MON_DATA_PERSONALITY);
-        u8 gender = GetGenderFromSpeciesAndPersonality(leadingMonSpecies, leadingMonPersonality);
+        gender = GetGenderFromSpeciesAndPersonality(leadingMonSpecies, leadingMonPersonality);
 
         // misses mon is genderless check, although no genderless mon can have cute charm as ability
         if (gender == MON_FEMALE)
             gender = MON_MALE;
         else
             gender = MON_FEMALE;
-
         CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, gender, PickWildMonNature(), 0);
         return;
     }
-
     CreateMonWithNature(&gEnemyParty[0], species, level, USE_RANDOM_IVS, PickWildMonNature());
 }
 #ifdef BUGFIX
@@ -1171,13 +1216,23 @@ void ShakeWildEncounter(void)
     }
 }
 
-static bool8 IsMonMonotypeException(u16 species, u8 type){
-    if (type == TYPE_POISON){
-        if (species == SPECIES_WURMPLE){
+//Currently just checks whether a mon evolves to the specified type; e.g. Charmander is valid for Mono Flying because of Charizard
+//But hardcoded additional checks can be placed if desired, such as a pokemon being valid for Mono Fire because it can be in-game-traded for a Fire-type
+static bool32 IsMonMonotypeException(u16 species, u8 type){
+    u32 i;
+    u16 evoSpecies;
+
+    const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+    if (evolutions == NULL){
+        return FALSE;
+    }
+    for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++){
+        evoSpecies = evolutions[i].targetSpecies;
+        if (gSpeciesInfo[evoSpecies].types[0] == type || gSpeciesInfo[evoSpecies].types[1] == type){
             return TRUE;
         }
-    }else if (type == TYPE_FLYING){
-        if (species == SPECIES_WURMPLE){
+        //Need to check if seocndary evolution fits the criteria
+        if (GetSpeciesEvolutions(evoSpecies) != NULL && IsMonMonotypeException(evoSpecies, type)){
             return TRUE;
         }
     }
@@ -1277,20 +1332,10 @@ static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildM
 
 static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 *monIndex, u8 numMon)
 {
-    u8 typeVar;
-    u8 type;
-
-    typeVar = VarGet(VAR_MONOTYPE);
-    if (typeVar == 0 || typeVar >= NUMBER_OF_MON_TYPES){
+    u8 type = GetTypeFromVar(VarGet(VAR_MONOTYPE));
+    if (type == TYPE_NONE){
         return FALSE;
     }
-    if (typeVar <= 9){
-        type = typeVar - 1;
-    }else{
-        type = typeVar;
-    }
-    
-
     return TryGetRandomWildMonMonotypeIndex(wildMon, type, numMon, monIndex);
 }
 
