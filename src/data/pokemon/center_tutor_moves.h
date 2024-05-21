@@ -1,6 +1,7 @@
 #include "constants/moves.h"
 
 const u16 gPreGym1Tutor[] = {
+    MOVE_BIND,
     MOVE_WHIRLPOOL,
     MOVE_FIRE_SPIN,
     MOVE_BLOCK,
@@ -8,6 +9,16 @@ const u16 gPreGym1Tutor[] = {
     MOVE_INFESTATION,
     MOVE_SAND_TOMB,
     MOVE_HOLD_BACK,
+    MOVE_FALSE_SWIPE,
+    MOVE_TORMENT,
+    MOVE_EMBARGO, 
+    MOVE_CORROSIVE_GAS, 
+    MOVE_HEAL_BLOCK, 
+    MOVE_LASER_FOCUS, 
+    MOVE_MUD_SPORT, 
+    MOVE_MIST, 
+    MOVE_WATER_SPORT,
+    MOVE_SPITE
 };
 
 const u16 gPreGym1TutorSetup[] = {

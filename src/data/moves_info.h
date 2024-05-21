@@ -7712,7 +7712,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .effect = EFFECT_HIT,
         .power = B_UPDATED_MOVE_DATA >= GEN_6 ? 60 : 50,
         .type = TYPE_ROCK,
-        .accuracy = B_UPDATED_MOVE_DATA >= GEN_6 ? 95 : 80,
+        .accuracy = 100,
         .pp = B_UPDATED_MOVE_DATA >= GEN_6 ? 15 : 10,
         .target = MOVE_TARGET_SELECTED,
         .priority = 0,

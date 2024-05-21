@@ -8137,7 +8137,7 @@
       "MOVE_ROLE_PLAY",
       "MOVE_THUNDER_PUNCH"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_HEAL_BLOCK"]
   },
   "HYPNO": {
     "LevelMoves": [
@@ -8281,7 +8281,7 @@
       "MOVE_ROLE_PLAY",
       "MOVE_THUNDER_PUNCH"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_HEAL_BLOCK"]
   },
   "KRABBY": {
     "LevelMoves": [],
@@ -32132,7 +32132,7 @@
       "MOVE_RECYCLE",
       "MOVE_WISH"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_HEAL_BLOCK"]
   },
   "ABSOL": {
     "LevelMoves": [],
@@ -38335,7 +38335,7 @@
       "MOVE_RECYCLE",
       "MOVE_WISH"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_HEAL_BLOCK"]
   },
   "STUNKY": {
     "LevelMoves": [
