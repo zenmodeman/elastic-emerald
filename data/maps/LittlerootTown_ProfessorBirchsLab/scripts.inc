@@ -1053,7 +1053,7 @@ LittlerootTown_ProfessorBirchsLab_EventScript_MayGivePokeBalls::
 # 527 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox LittlerootTown_ProfessorBirchsLab_Text_MayGotPokedexTooTakeThese, MSGBOX_DEFAULT
 # 528 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	giveitem ITEM_POKE_BALL, 5
+	giveitem ITEM_POKE_BALL, 30
 # 529 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	call_if_eq VAR_RESULT, FALSE, LittlerootTown_ProfessorBirchsLab_EventScript_MayNoRoomForPokeBalls
 # 530 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
@@ -1069,7 +1069,7 @@ LittlerootTown_ProfessorBirchsLab_EventScript_BrendanGivePokeBalls::
 # 535 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox LittlerootTown_ProfessorBirchsLab_Text_BrendanGotPokedexTooTakeThese, MSGBOX_DEFAULT
 # 536 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	giveitem ITEM_POKE_BALL, 5
+	giveitem ITEM_POKE_BALL, 30
 # 537 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	call_if_eq VAR_RESULT, FALSE, LittlerootTown_ProfessorBirchsLab_EventScript_BrendanNoRoomForPokeBalls
 # 538 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
