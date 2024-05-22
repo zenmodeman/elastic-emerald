@@ -726,8 +726,6 @@ static void MultiMove_DeselectColumn(u8, u8, u8);
 
 // Move Items mode
 static bool32 IsItemIconAtPosition(u8, u8);
-static const u32 *GetItemIconPic(u16);
-static const u32 *GetItemIconPalette(u16);
 static u8 GetNewItemIconIdx(void);
 static void SetItemIconPosition(u8, u8, u8);
 static void LoadItemIconGfx(u8, const u32 *, const u32 *);
@@ -4031,11 +4029,11 @@ static void PrintDisplayMonInfo(void)
         AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonNameText, FONT_NORMAL, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 6), sStorage->displayMonNameText, 6, 0, TEXT_SKIP_DRAW, NULL);
         AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonNameText, FONT_SHORT, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 12), sStorage->displayMonSpeciesName, 6, 15, TEXT_SKIP_DRAW, NULL);
         AddTextPrinterParameterized(WIN_DISPLAY_INFO, FONT_SHORT, sStorage->displayMonGenderLvlText, 10, 29, TEXT_SKIP_DRAW, NULL);
-        AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonItemName, FONT_SMALL, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 22), sStorage->displayMonItemName, 6, 43, TEXT_SKIP_DRAW, NULL);
+        AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonItemName, FONT_SMALL, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 6), sStorage->displayMonItemName, 6, 43, TEXT_SKIP_DRAW, NULL);
     }
     else
     {
-        AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonItemName, FONT_SMALL, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 22), sStorage->displayMonItemName, 6, 0, TEXT_SKIP_DRAW, NULL);
+        AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonItemName, FONT_SMALL, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 6), sStorage->displayMonItemName, 6, 0, TEXT_SKIP_DRAW, NULL);
         AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonNameText, FONT_NORMAL, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 6), sStorage->displayMonNameText, 6, 13, TEXT_SKIP_DRAW, NULL);
         AddTextPrinterParameterized(WIN_DISPLAY_INFO, GetFontIdToFit(sStorage->displayMonSpeciesName, FONT_SHORT, 0, WindowWidthPx(WIN_DISPLAY_INFO) - 12), sStorage->displayMonSpeciesName, 6, 28, TEXT_SKIP_DRAW, NULL);
         AddTextPrinterParameterized(WIN_DISPLAY_INFO, FONT_SHORT, sStorage->displayMonGenderLvlText, 10, 42, TEXT_SKIP_DRAW, NULL);
@@ -5558,10 +5556,7 @@ static void InitBoxTitle(u8 boxId)
     sStorage->wallpaperPalBits |= (1 << 16) << tagIndex;
 
     StringCopyPadded(sStorage->boxTitleText, GetBoxNamePtr(boxId), 0, BOX_NAME_LENGTH);
-    if (DECAP_ENABLED && DECAP_MIRRORING)
-        DrawTextWindowAndBufferTiles(MirrorPtr(sStorage->boxTitleText), sStorage->boxTitleTiles, 0, 0, 2);
-    else
-        DrawTextWindowAndBufferTiles(sStorage->boxTitleText, sStorage->boxTitleTiles, 0, 0, 2);
+    DrawTextWindowAndBufferTiles(sStorage->boxTitleText, sStorage->boxTitleTiles, 0, 0, 2);
     LoadSpriteSheet(&spriteSheet);
     x = GetBoxTitleBaseX(GetBoxNamePtr(boxId));
 
@@ -6438,10 +6433,23 @@ static void SetPlacedMonData(u8 boxId, u8 position)
 
 static void PurgeMonOrBoxMon(u8 boxId, u8 position)
 {
+    u16 item = ITEM_NONE;
+
     if (boxId == TOTAL_BOXES_COUNT)
+    {
+        if (OW_PC_RELEASE_ITEM >= GEN_8)
+            item = GetMonData(&gPlayerParty[position], MON_DATA_HELD_ITEM);
         ZeroMonData(&gPlayerParty[position]);
+    }
     else
+    {
+        if (OW_PC_RELEASE_ITEM >= GEN_8)
+            item = GetBoxMonDataAt(boxId, position, MON_DATA_HELD_ITEM);
         ZeroBoxMonAt(boxId, position);
+    }
+
+    if (item != ITEM_NONE)
+        AddBagItem(item, 1);
 }
 
 static void SetShiftedMonData(u8 boxId, u8 position)
@@ -9265,16 +9273,6 @@ static void SetItemIconActive(u8 id, bool8 active)
     sStorage->itemIcons[id].sprite->invisible = (active == FALSE);
 }
 
-static const u32 *GetItemIconPic(u16 itemId)
-{
-    return GetItemIconPicOrPalette(itemId, 0);
-}
-
-static const u32 *GetItemIconPalette(u16 itemId)
-{
-    return GetItemIconPicOrPalette(itemId, 1);
-}
-
 static void PrintItemDescription(void)
 {
     const u8 *description;
@@ -9619,10 +9617,7 @@ struct BoxPokemon *GetBoxedMonPtr(u8 boxId, u8 boxPosition)
 u8 *GetBoxNamePtr(u8 boxId)
 {
     if (boxId < TOTAL_BOXES_COUNT)
-        if (DECAP_ENABLED && DECAP_MIRRORING)
-            return MirrorPtr(gPokemonStoragePtr->boxNames[boxId]);
-        else
-            return gPokemonStoragePtr->boxNames[boxId];
+        return gPokemonStoragePtr->boxNames[boxId];
     else
         return NULL;
 }
