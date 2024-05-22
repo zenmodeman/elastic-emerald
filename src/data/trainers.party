@@ -5874,25 +5874,25 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Shinx  
+Shinx (M)  
 Ability: Rivalry  
-Level: 4  
+Level: 4 
 Careful Nature  
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Thunder Shock  
 - Fake Tears  
 - Mud-Slap  
-- Quick Attack  
+- Quick Attack
 
-Litleo  
+Litleo (M)  
 Ability: Rivalry  
-Level: 4  
+Level: 5  
 Adamant Nature  
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe  
+IVs: 10 HP / 20 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Ember  
 - Tackle  
 - Leer  
-- Entrainment  
+- Entrainment
 
 
 === TRAINER_BILLY ===

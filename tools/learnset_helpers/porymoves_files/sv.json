@@ -69478,7 +69478,7 @@
       "MOVE_ROLLOUT",
       "MOVE_SUCKER_PUNCH"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_INFESTATION"]
   },
   "FLAPPLE": {
     "LevelMoves": [

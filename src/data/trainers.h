@@ -14747,9 +14747,10 @@ F_TRAINER_FEMALE |
             {
 #line 5877
             .species = SPECIES_SHINX,
-            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 5877
+            .gender = TRAINER_MON_MALE,
 #line 5881
-            .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
+            .iv = TRAINER_PARTY_IVS(10, 10, 10, 10, 10, 10),
 #line 5878
             .ability = ABILITY_RIVALRY,
 #line 5879
@@ -14768,13 +14769,14 @@ F_TRAINER_FEMALE |
             {
 #line 5887
             .species = SPECIES_LITLEO,
-            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 5887
+            .gender = TRAINER_MON_MALE,
 #line 5891
-            .iv = TRAINER_PARTY_IVS(0, 0, 0, 0, 0, 0),
+            .iv = TRAINER_PARTY_IVS(10, 20, 10, 10, 10, 10),
 #line 5888
             .ability = ABILITY_RIVALRY,
 #line 5889
-            .lvl = 4,
+            .lvl = 5,
 #line 5890
             .nature = NATURE_ADAMANT,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
