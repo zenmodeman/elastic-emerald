@@ -96,6 +96,8 @@ bool32 IsConfusionMoveEffect(u32 moveEffect);
 bool32 HasMove(u32 battlerId, u32 move);
 bool32 HasOnlyMovesWithCategory(u32 battlerId, u32 category, bool32 onlyOffensive);
 bool32 HasMoveWithCategory(u32 battler, u32 category);
+bool32 HasNoMovesKnown(u32 battler);
+
 bool32 HasMoveWithType(u32 battler, u32 type);
 bool32 HasMoveEffect(u32 battlerId, u32 moveEffect);
 bool32 HasMoveEffectANDArg(u32 battlerId, u32 effect, u32 argument);

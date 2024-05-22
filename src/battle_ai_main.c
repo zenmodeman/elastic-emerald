@@ -1760,7 +1760,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_TRICK:
-        //Currently just base knock off usage on damage
+        //Don't disincentivize Knock Off if it still does more damage
         // case EFFECT_KNOCK_OFF:
             if (aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
                 ADJUST_SCORE(-10);
@@ -3286,27 +3286,35 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_EVASION_UP_2:
         IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_EVASION, &score);
         break;
+    //In the future, probably take into account expected survival
     case EFFECT_ATTACK_DOWN:
     case EFFECT_ATTACK_DOWN_2:
-        if (!ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
+        if (!ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
             ADJUST_SCORE(-2);
-        if (gBattleMons[battlerDef].statStages[STAT_ATK] < DEFAULT_STAT_STAGE)
-            ADJUST_SCORE(-1);
-        else if (aiData->hpPercents[battlerAtk] <= 90)
-            ADJUST_SCORE(-1);
-        if (gBattleMons[battlerDef].statStages[STAT_ATK] > 3 && !AI_RandLessThan(50))
+        }else if (AI_RandLessThan(127)){
+            ADJUST_SCORE(1);
+        }   
+        if ((aiData->hpPercents[battlerAtk] < 50 && !AI_RandLessThan(50))
+          || (gBattleMons[battlerDef].statStages[STAT_ATK] <= 3 && !AI_RandLessThan(50))){
             ADJUST_SCORE(-2);
-        else if (aiData->hpPercents[battlerDef] < 70)
-            ADJUST_SCORE(-2);
+          }
         break;
     case EFFECT_DEFENSE_DOWN:
     case EFFECT_DEFENSE_DOWN_2:
-        if (!ShouldLowerDefense(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
+        //Worth noting that with the current logic, the effects will be disincentivized if the user doesn't have a physical move
+        if (!ShouldLowerDefense(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
             ADJUST_SCORE(-2);
-        if ((aiData->hpPercents[battlerAtk] < 70 && !AI_RandLessThan(50)) || (gBattleMons[battlerDef].statStages[STAT_DEF] <= 3 && !AI_RandLessThan(50)))
+        }else if (AI_RandLessThan(127)){
+            ADJUST_SCORE(1);
+        }
+            
+        if ((aiData->hpPercents[battlerAtk] < 70 && !AI_RandLessThan(50))
+          || (gBattleMons[battlerDef].statStages[STAT_DEF] <= 3 && !AI_RandLessThan(50))){
             ADJUST_SCORE(-2);
-        if (aiData->hpPercents[battlerDef] <= 70)
+          }
+        if (aiData->hpPercents[battlerDef] <= 60){
             ADJUST_SCORE(-2);
+        }
         break;
     case EFFECT_SPEED_DOWN:
     case EFFECT_SPEED_DOWN_2:
@@ -3317,43 +3325,52 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     case EFFECT_SPECIAL_ATTACK_DOWN:
     case EFFECT_SPECIAL_ATTACK_DOWN_2:
-        if (!ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
+        if (!ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
             ADJUST_SCORE(-2);
-        if (gBattleMons[battlerDef].statStages[STAT_SPATK] < DEFAULT_STAT_STAGE)
-            ADJUST_SCORE(-1);
-        else if (aiData->hpPercents[battlerAtk] <= 90)
-            ADJUST_SCORE(-1);
-        if (gBattleMons[battlerDef].statStages[STAT_SPATK] > 3 && !AI_RandLessThan(50))
+        }else if (AI_RandLessThan(127)){
+            ADJUST_SCORE(1);
+        }   
+        if ((aiData->hpPercents[battlerAtk] < 50 && !AI_RandLessThan(50))
+          || (gBattleMons[battlerDef].statStages[STAT_SPATK] <= 3 && !AI_RandLessThan(50))){
             ADJUST_SCORE(-2);
-        else if (aiData->hpPercents[battlerDef] < 70)
-            ADJUST_SCORE(-2);
+          }
         break;
     case EFFECT_SPECIAL_DEFENSE_DOWN:
     case EFFECT_SPECIAL_DEFENSE_DOWN_2:
-        if (!ShouldLowerSpDef(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
+        //Worth noting that with the current logic, the effects will be disincentivized if the user doesn't have a special move
+        if (!ShouldLowerSpDef(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
             ADJUST_SCORE(-2);
+        }else if (AI_RandLessThan(127)){
+            ADJUST_SCORE(1);
+        }
+            
         if ((aiData->hpPercents[battlerAtk] < 70 && !AI_RandLessThan(50))
-          || (gBattleMons[battlerDef].statStages[STAT_SPDEF] <= 3 && !AI_RandLessThan(50)))
+          || (gBattleMons[battlerDef].statStages[STAT_SPDEF] <= 3 && !AI_RandLessThan(50))){
             ADJUST_SCORE(-2);
-        if (aiData->hpPercents[battlerDef] <= 70)
+          }
+        if (aiData->hpPercents[battlerDef] <= 60){
             ADJUST_SCORE(-2);
+        }
         break;
     case EFFECT_ACCURACY_DOWN:
     case EFFECT_ACCURACY_DOWN_2:
-        if (ShouldLowerAccuracy(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
+        if (!ShouldLowerAccuracy(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
             ADJUST_SCORE(-2);
+        }else if (AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
         if ((aiData->hpPercents[battlerAtk] < 70 || aiData->hpPercents[battlerDef] < 70) && AI_RandLessThan(100))
             ADJUST_SCORE(-1);
         if (gBattleMons[battlerDef].statStages[STAT_ACC] <= 4 && !AI_RandLessThan(80))
             ADJUST_SCORE(-2);
         if (gBattleMons[battlerDef].status1 & STATUS1_PSN_ANY && !AI_RandLessThan(70))
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE(WEAK_EFFECT);
         if (gStatuses3[battlerDef] & STATUS3_LEECHSEED && !AI_RandLessThan(70))
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE(WEAK_EFFECT);
         if (gStatuses3[battlerDef] & STATUS3_ROOTED && AI_RandLessThan(128))
             ADJUST_SCORE(WEAK_EFFECT);
         if (gBattleMons[battlerDef].status2 & STATUS2_CURSED && !AI_RandLessThan(70))
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE(WEAK_EFFECT);
         if (aiData->hpPercents[battlerAtk] > 70 || gBattleMons[battlerDef].statStages[STAT_ACC] < DEFAULT_STAT_STAGE)
             break;
         else if (aiData->hpPercents[battlerAtk] < 40 || aiData->hpPercents[battlerDef] < 40 || !AI_RandLessThan(70))
@@ -3361,8 +3378,11 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     case EFFECT_EVASION_DOWN:
     case EFFECT_EVASION_DOWN_2:
-        if (!ShouldLowerEvasion(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
+        if (!ShouldLowerEvasion(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
             ADJUST_SCORE(-2);
+        }else if (AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
         if ((aiData->hpPercents[battlerAtk] < 70 || gBattleMons[battlerDef].statStages[STAT_EVASION] <= 3) && !AI_RandLessThan(50))
             ADJUST_SCORE(-2);
         if (aiData->hpPercents[battlerDef] <= 70)
@@ -3373,8 +3393,10 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(-2);
         break;
 	case EFFECT_BIDE:
-        if (aiData->hpPercents[battlerAtk] < 90)
-            ADJUST_SCORE(-2); // Should be either removed or turned into increasing score
+        if (!CanTargetFaintAi(battlerDef, battlerAtk)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+        break;
     case EFFECT_ACUPRESSURE:
         break;
     case EFFECT_ATTACK_ACCURACY_UP: // hone claws
@@ -3486,12 +3508,22 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(GOOD_EFFECT);
         break;
     case EFFECT_FOCUS_ENERGY:
-    case EFFECT_LASER_FOCUS:
         if (aiData->abilities[battlerAtk] == ABILITY_SUPER_LUCK
           || aiData->abilities[battlerAtk] == ABILITY_SNIPER
           || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_SCOPE_LENS
-          || HasHighCritRatioMove(battlerAtk))
-            ADJUST_SCORE(GOOD_EFFECT);
+          || HasHighCritRatioMove(battlerAtk)){
+            ADJUST_SCORE(WEAK_EFFECT);
+          }
+        if (AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+        break;
+    case EFFECT_LASER_FOCUS:
+        if (aiData->abilities[battlerAtk] == ABILITY_SNIPER){
+            ADJUST_SCORE(DECENT_EFFECT);
+        }else if (AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
         break;
     case EFFECT_CONFUSE:
         IncreaseConfusionScore(battlerAtk, battlerDef, move, &score);
@@ -3917,8 +3949,12 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         else if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_STATUS))
             ADJUST_SCORE(DECENT_EFFECT);
         break;
-    case EFFECT_TRICK:
     case EFFECT_BESTOW:
+        //Fallthrough to the Trick logic, but only if the opponent doesn't have an item
+        if (aiData->items[battlerDef] != ITEM_NONE){
+            break;
+        }
+    case EFFECT_TRICK:
         switch (aiData->holdEffects[battlerAtk])
         {
         case HOLD_EFFECT_CHOICE_SCARF:
@@ -3949,8 +3985,19 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 ADJUST_SCORE(DECENT_EFFECT);
             break;
         case HOLD_EFFECT_LAGGING_TAIL:
+            if (aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
+                ADJUST_SCORE(DECENT_EFFECT);
+            }
+            break;
         case HOLD_EFFECT_STICKY_BARB:
-            ADJUST_SCORE(DECENT_EFFECT);
+            //If expects the opponent to outspeed and steal the sticky barb with a contact move, have a chance to not Trick
+            if (aiData->items[battlerDef] == ITEM_NONE && GetWhichBattlerFaster(battlerAtk, battlerDef, TRUE) == AI_IS_SLOWER && gMovesInfo[predictedMove].makesContact) {
+                if (AI_RandLessThan(127)){
+                    ADJUST_SCORE(WEAK_EFFECT);
+                }        
+            }else{
+                ADJUST_SCORE(DECENT_EFFECT);
+            }
             break;
         case HOLD_EFFECT_UTILITY_UMBRELLA:
             if (aiData->abilities[battlerAtk] != ABILITY_SOLAR_POWER && aiData->abilities[battlerAtk] != ABILITY_DRY_SKIN)
@@ -4499,31 +4546,97 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
                     score += ShouldTryToFlinch(battlerAtk, battlerDef, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], move);
                     break;
                 case MOVE_EFFECT_SPD_MINUS_1:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && 
+                    ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
+
+                        //This check is only true against neutral targets, so perhaps improve it later for any stat stages
+                        if ((aiData->speedStats[battlerAtk] * 1.5) > aiData->speedStats[battlerDef]){
+                            ADJUST_SCORE(DECENT_EFFECT);
+                        }else{
+                            ADJUST_SCORE(WEAK_EFFECT);
+                        }
+                    }
+                    break;
                 case MOVE_EFFECT_SPD_MINUS_2:
-                    if (!ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
-                        break;
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && 
+                    ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef] && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]))
+                    {
+                        if ((aiData->speedStats[battlerAtk] * 2) > aiData->speedStats[battlerDef]){
+                            ADJUST_SCORE(DECENT_EFFECT);
+                        }else{
+                            ADJUST_SCORE(WEAK_EFFECT);
+                        }
+                    }
+                    break;
                 case MOVE_EFFECT_ATK_MINUS_1:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;
                 case MOVE_EFFECT_DEF_MINUS_1:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerDefense(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;
                 case MOVE_EFFECT_SP_ATK_MINUS_1:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;
                 case MOVE_EFFECT_SP_DEF_MINUS_1:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerSpDef(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;                
                 case MOVE_EFFECT_ACC_MINUS_1:
-                    //TODO: Expand the logic for the above move effects later, and most likely avoid the fall-throughs
-                    break;
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerAccuracy(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;      
                 case MOVE_EFFECT_EVS_MINUS_1:
-                    if (aiData->abilities[battlerDef] != ABILITY_CONTRARY)
-                        ADJUST_SCORE(DECENT_EFFECT);
-                    break;
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerEvasion(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;      
                 case MOVE_EFFECT_ATK_MINUS_2:
-                case MOVE_EFFECT_DEF_MINUS_2:
-                case MOVE_EFFECT_SP_ATK_MINUS_2:
-                case MOVE_EFFECT_SP_DEF_MINUS_2:
-                case MOVE_EFFECT_ACC_MINUS_2:
-                case MOVE_EFFECT_EVS_MINUS_2:
-                    if (aiData->abilities[battlerDef] != ABILITY_CONTRARY)
-                        ADJUST_SCORE(DECENT_EFFECT);
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(200)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
                     break;
+                case MOVE_EFFECT_DEF_MINUS_2:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerDefense(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(200)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;
+                case MOVE_EFFECT_SP_ATK_MINUS_2:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(200)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;
+                case MOVE_EFFECT_SP_DEF_MINUS_2:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerSpDef(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(200)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;
+                case MOVE_EFFECT_ACC_MINUS_2:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerAccuracy(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(200)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;
+                case MOVE_EFFECT_EVS_MINUS_2:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerEvasion(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(200)){
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                    break;                
                 case MOVE_EFFECT_POISON:
-                    IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100){
+                        IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
+                    }
+                    break;
+                case MOVE_EFFECT_PARALYSIS:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100){
+                        IncreaseParalyzeScore(battlerAtk, battlerDef, move, &score);
+                    }
                     break;
                 case MOVE_EFFECT_CLEAR_SMOG:
                     score += AI_TryToClearStats(battlerAtk, battlerDef, FALSE);
@@ -4560,7 +4673,10 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
                         case HOLD_EFFECT_STICKY_BARB:
                             break;
                         default:
-                            ADJUST_SCORE(DECENT_EFFECT);
+                            //Make it so the chance to be incentivized beyond best damage is occasional
+                            if (AI_RandLessThan(127)){
+                                ADJUST_SCORE(WEAK_EFFECT);
+                            }
                             break;
                         }
                     }
@@ -4648,14 +4764,25 @@ static u32 AI_CalcMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
     }
 
-    if (score <= 1)
+
+    if (score < 1){
         return NOT_GOOD_ENOUGH;
-    else if (score <= 3)
-        return GOOD_MOVE_EFFECTS;
-    else if (score <= 5)
-        return PREFERRED_MOVE_EFFECTS;
-    else
+    }
+    if (score >= 5){
         return BEST_MOVE_EFFECTS;
+    }
+    return score;
+
+    //Original logic, for reference 
+
+    // if (score <= 1)
+    //     return NOT_GOOD_ENOUGH;
+    // else if (score <= 3)
+    //     return GOOD_MOVE_EFFECTS;
+    // else if (score <= 5)
+    //     return PREFERRED_MOVE_EFFECTS;
+    // else
+    //     return BEST_MOVE_EFFECTS;
 }
 
 //
@@ -4805,7 +4932,7 @@ static s32 AI_SetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
         return score;
 
     if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_SMART_SWITCHING
-      && AI_WhoStrikesFirst(battlerAtk, battlerDef, move) == AI_IS_SLOWER
+      && AI_WhoStrikesFirst(battlerAtk, battlerDef, move) != AI_IS_FASTER
       && CanTargetFaintAi(battlerDef, battlerAtk)
       && GetMovePriority(battlerAtk, move) == 0)
     {

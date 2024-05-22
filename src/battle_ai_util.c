@@ -1600,7 +1600,9 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
         return FALSE; // Don't bother lowering stats if can kill enemy.
 
     if (gBattleMons[battlerDef].statStages[STAT_ATK] > 4
-      && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
+      && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
+      //Estimate based on raw stats when lacking move knowledge
+      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].attack * 1.1) >= gBattleMons[battlerDef].spAttack)) 
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_WHITE_SMOKE
@@ -1655,7 +1657,8 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
         return FALSE; // Don't bother lowering stats if can kill enemy.
 
     if (gBattleMons[battlerDef].statStages[STAT_SPATK] > 4
-      && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
+      && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
+      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].spAttack * 1.1) >= gBattleMons[battlerDef].attack))
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
@@ -1766,6 +1769,19 @@ bool32 HasMoveWithCategory(u32 battler, u32 category)
             return TRUE;
     }
     return FALSE;
+}
+
+bool32 HasNoMovesKnown(u32 battler){
+
+    u32 i;
+    u16 *moves = GetMovesArray(battler);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE)
+            return FALSE;
+    }
+    return TRUE;
 }
 
 bool32 HasMoveWithType(u32 battler, u32 type)
