@@ -6504,7 +6504,11 @@ static u8 HealConfuseBerry(u32 battler, u32 itemId, u32 flavorId, bool32 end2)
     {
         PREPARE_FLAVOR_BUFFER(gBattleTextBuff1, flavorId);
 
-        gBattleMoveDamage = GetNonDynamaxMaxHP(battler) / GetBattlerItemHoldEffectParam(battler, itemId);
+        //Currently use a hardcoded 40% instead of the fraction
+        gBattleMoveDamage = (GetNonDynamaxMaxHP(battler) * 40 / 100);
+        
+        // gBattleMoveDamage = GetNonDynamaxMaxHP(battler) / GetBattlerItemHoldEffectParam(battler, itemId);
+        
         if (gBattleMoveDamage == 0)
             gBattleMoveDamage = 1;
         gBattleMoveDamage *= -1;
@@ -11247,6 +11251,8 @@ bool32 CanTargetBattler(u32 battlerAtk, u32 battlerDef, u16 move)
         return FALSE;
     return TRUE;
 }
+
+
 
 static void SetRandomMultiHitCounter()
 {
