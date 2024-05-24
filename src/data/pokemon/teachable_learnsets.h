@@ -2680,6 +2680,7 @@ static const u16 sMeowthGalarianTeachableLearnset[] = {
     MOVE_THROAT_CHOP,
     MOVE_THUNDER,
     MOVE_THUNDERBOLT,
+    MOVE_TORMENT,
     MOVE_BODY_SLAM,
     MOVE_DOUBLE_EDGE,
     MOVE_ENDURE,
@@ -2690,6 +2691,7 @@ static const u16 sMeowthGalarianTeachableLearnset[] = {
     MOVE_SPITE,
     MOVE_SWAGGER,
     MOVE_SWORDS_DANCE,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 
@@ -2711,6 +2713,7 @@ static const u16 sPerrserkerTeachableLearnset[] = {
     MOVE_THROAT_CHOP,
     MOVE_THUNDER,
     MOVE_THUNDERBOLT,
+    MOVE_TORMENT,
     MOVE_BODY_SLAM,
     MOVE_DOUBLE_EDGE,
     MOVE_ENDURE,
@@ -2721,6 +2724,7 @@ static const u16 sPerrserkerTeachableLearnset[] = {
     MOVE_SPITE,
     MOVE_SWAGGER,
     MOVE_SWORDS_DANCE,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 #endif //P_GALARIAN_FORMS
@@ -5387,6 +5391,7 @@ static const u16 sVoltorbHisuianTeachableLearnset[] = {
     MOVE_THIEF,
     MOVE_THUNDER,
     MOVE_THUNDERBOLT,
+    MOVE_TORMENT,
     MOVE_DOUBLE_EDGE,
     MOVE_ENDURE,
     MOVE_EXPLOSION,
@@ -5394,6 +5399,7 @@ static const u16 sVoltorbHisuianTeachableLearnset[] = {
     MOVE_SLEEP_TALK,
     MOVE_SWIFT,
     MOVE_THUNDER_WAVE,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 
@@ -5411,6 +5417,7 @@ static const u16 sElectrodeHisuianTeachableLearnset[] = {
     MOVE_THIEF,
     MOVE_THUNDER,
     MOVE_THUNDERBOLT,
+    MOVE_TORMENT,
     MOVE_DOUBLE_EDGE,
     MOVE_ENDURE,
     MOVE_EXPLOSION,
@@ -5418,6 +5425,7 @@ static const u16 sElectrodeHisuianTeachableLearnset[] = {
     MOVE_SLEEP_TALK,
     MOVE_SWIFT,
     MOVE_THUNDER_WAVE,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 #endif //P_HISUIAN_FORMS
@@ -14492,6 +14500,7 @@ static const u16 sSlakingTeachableLearnset[] = {
     MOVE_SOLAR_BEAM,
     MOVE_STRENGTH,
     MOVE_SUNNY_DAY,
+    MOVE_SURF,
     MOVE_TAUNT,
     MOVE_THIEF,
     MOVE_THROAT_CHOP,
@@ -23971,6 +23980,7 @@ static const u16 sDarumakaGalarianTeachableLearnset[] = {
     MOVE_SUNNY_DAY,
     MOVE_TAUNT,
     MOVE_THIEF,
+    MOVE_TORMENT,
     MOVE_ENDURE,
     MOVE_FIRE_PUNCH,
     MOVE_FIRE_SPIN,
@@ -23980,6 +23990,7 @@ static const u16 sDarumakaGalarianTeachableLearnset[] = {
     MOVE_ROCK_SLIDE,
     MOVE_SLEEP_TALK,
     MOVE_SNORE,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 
@@ -24005,6 +24016,7 @@ static const u16 sDarmanitanGalarianTeachableLearnset[] = {
     MOVE_SUNNY_DAY,
     MOVE_TAUNT,
     MOVE_THIEF,
+    MOVE_TORMENT,
     MOVE_BODY_SLAM,
     MOVE_ENDURE,
     MOVE_FIRE_PUNCH,
@@ -24015,6 +24027,7 @@ static const u16 sDarmanitanGalarianTeachableLearnset[] = {
     MOVE_ROCK_SLIDE,
     MOVE_SLEEP_TALK,
     MOVE_SNORE,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 #endif //P_GALARIAN_FORMS
@@ -33347,6 +33360,7 @@ static const u16 sCoalossalTeachableLearnset[] = {
 static const u16 sApplinTeachableLearnset[] = {
     MOVE_ATTRACT,
     MOVE_DEFENSE_CURL,
+    MOVE_INFESTATION,
     MOVE_ROLLOUT,
     MOVE_WITHDRAW,
     MOVE_UNAVAILABLE,
@@ -33682,6 +33696,7 @@ static const u16 sClobbopusTeachableLearnset[] = {
     MOVE_REST,
     MOVE_ROCK_SMASH,
     MOVE_TAUNT,
+    MOVE_TORMENT,
     MOVE_WATERFALL,
     MOVE_BIND,
     MOVE_BODY_SLAM,
@@ -33691,6 +33706,7 @@ static const u16 sClobbopusTeachableLearnset[] = {
     MOVE_SEISMIC_TOSS,
     MOVE_SLEEP_TALK,
     MOVE_SNORE,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 
@@ -33707,6 +33723,7 @@ static const u16 sGrapploctTeachableLearnset[] = {
     MOVE_ROCK_SMASH,
     MOVE_SURF,
     MOVE_TAUNT,
+    MOVE_TORMENT,
     MOVE_WATERFALL,
     MOVE_BIND,
     MOVE_BODY_SLAM,
@@ -33716,6 +33733,7 @@ static const u16 sGrapploctTeachableLearnset[] = {
     MOVE_SEISMIC_TOSS,
     MOVE_SLEEP_TALK,
     MOVE_SNORE,
+    MOVE_TORMENT,
     MOVE_WHIRLPOOL,
     MOVE_UNAVAILABLE,
 };

@@ -26899,7 +26899,7 @@
       "MOVE_SNORE",
       "MOVE_TICKLE"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_SURF"]
   },
   "NINCADA": {
     "LevelMoves": [],
@@ -69465,7 +69465,10 @@
       {
         "Level": 1,
         "Move": "MOVE_WITHDRAW"
-      }
+      },
+      {"Level": 1,
+      "Move": "MOVE_INFESTATION"
+    }
     ],
     "PreEvoMoves": [],
     "TMMoves": [
@@ -69478,7 +69481,7 @@
       "MOVE_ROLLOUT",
       "MOVE_SUCKER_PUNCH"
     ],
-    "TutorMoves": ["MOVE_INFESTATION"]
+    "TutorMoves": ["MOVE_INFESTATION", "MOVE_CONFIDE"]
   },
   "FLAPPLE": {
     "LevelMoves": [
@@ -70425,14 +70428,14 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "GRAPPLOCT": {
     "LevelMoves": [],
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "SINISTEA": {
     "LevelMoves": [
@@ -71408,7 +71411,7 @@
       "MOVE_NIGHT_SLASH",
       "MOVE_SPITE"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "CURSOLA": {
     "LevelMoves": [],
@@ -91277,7 +91280,7 @@
       "MOVE_NIGHT_SLASH",
       "MOVE_SPITE"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "PONYTA_GALARIAN": {
     "LevelMoves": [],
@@ -92306,14 +92309,14 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "DARMANITAN_GALARIAN": {
     "LevelMoves": [],
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "YAMASK_GALARIAN": {
     "LevelMoves": [],
@@ -92709,7 +92712,7 @@
       "MOVE_RECYCLE",
       "MOVE_WORRY_SEED"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "ELECTRODE_HISUIAN": {
     "LevelMoves": [
@@ -92835,7 +92838,7 @@
       "MOVE_RECYCLE",
       "MOVE_WORRY_SEED"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "TYPHLOSION_HISUIAN": {
     "LevelMoves": [

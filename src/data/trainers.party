@@ -11028,12 +11028,13 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 Tangela @ Rocky Helmet  
 Ability: Regenerator  
 Level: 8  
-EVs: 36 Atk / 8 Def / 8 SpD  
+EVs: 20 HP / 20 Def / 20 Spe  
 Adamant Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 20 SpD / 15 Spe  
 - Constrict  
 - Pain Split  
 - Synthesis  
-- Amnesia  
+- Amnesia
 
 
 === TRAINER_HALEY_1 ===
@@ -11232,7 +11233,7 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Surskit @ Aguav Berry  
+Surskit (M) @ Aguav Berry  
 Ability: Swift Swim  
 Level: 5  
 Bashful Nature  
@@ -11242,14 +11243,15 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Quick Attack  
 - Mist  
 
-Sewaddle @ Occa Berry  
-Ability: Swarm  
+Venonat (M) @ Zoom Lens  
+Ability: Tinted Lens  
 Level: 6  
-IVs: 10 HP / 10 Atk / 12 Def / 10 SpA / 10 SpD / 10 Spe  
-- String Shot  
-- Struggle Bug  
-- Razor Leaf  
-- Tackle  
+Quiet Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Stun Spore  
+- Pounce  
+- Poison Powder  
+- Supersonic
 
 === TRAINER_LYLE ===
 Name: LYLE
