@@ -14796,6 +14796,10 @@ bool32 CanCamouflage(u8 battler)
     return TRUE;
 }
 
+u32 GetTerrainType(){
+    return sTerrainToType[gBattleTerrain];
+}
+
 static void Cmd_settypetoterrain(void)
 {
     CMD_ARGS(const u8 *failInstr);

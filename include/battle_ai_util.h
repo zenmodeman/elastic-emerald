@@ -30,6 +30,8 @@ s32 AI_WhoStrikesFirst(u32 battlerAI, u32 battler2, u32 moveConsidered);
 bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk);
 u32 NoOfHitsForTargetToFaintAI(u32 battlerDef, u32 battlerAtk);
 u32 GetBestDmgMoveFromBattler(u32 battlerAtk, u32 battlerDef);
+u32 GetBestDmgFromBattler(u32 battlerAtk, u32 battlerDef);
+
 bool32 CanTargetMoveFaintAi(u32 move, u32 battlerDef, u32 battlerAtk, u32 nHits);
 bool32 CanTargetFaintAiWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod, s32 dmgMod);
 s32 AI_DecideKnownAbilityForTurn(u32 battlerId);

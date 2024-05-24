@@ -830,6 +830,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     SetTypeBeforeUsingMove(move, battlerAtk);
     GET_MOVE_TYPE(move, moveType);
 
+
     if (gMovesInfo[move].powderMove && !IsAffectedByPowder(battlerDef, aiData->abilities[battlerDef], aiData->holdEffects[battlerDef]))
         RETURN_SCORE_MINUS(10);
 
@@ -838,6 +839,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 
     if (IsTwoTurnNotSemiInvulnerableMove(battlerAtk, move) && CanTargetFaintAi(battlerDef, battlerAtk))
         RETURN_SCORE_MINUS(10);
+    
 
     // check if negates type
     switch (effectiveness)
@@ -2178,7 +2180,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             if (aiData->abilities[battlerAtk] == ABILITY_NONE
               || gAbilitiesInfo[aiData->abilities[battlerAtk]].cantBeCopied
               || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeOverwritten
-              || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_ABILITY_SHIELD)
+              || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_ABILITY_SHIELD
+              || aiData->abilities[battlerAtk] == aiData ->abilities[battlerDef])
                 ADJUST_SCORE(-10);
             else if (IsDynamaxed(battlerDef))
                 ADJUST_SCORE(-10);
@@ -3324,9 +3327,17 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     case EFFECT_SPECIAL_DEFENSE_UP:
         IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF, &score);
+        
         break;
     case EFFECT_SPECIAL_DEFENSE_UP_2:
         IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF_2, &score);
+        
+        //Have a chance to incentivize when a held item covers for the other side        
+        if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_KEE_BERRY){
+          if (!CanAIFaintTarget(battlerAtk, battlerDef, 2) && AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+          }  
+        }
         break;
     case EFFECT_ACCURACY_UP:
     case EFFECT_ACCURACY_UP_2:
@@ -3511,6 +3522,44 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
 
             if (ShouldRecover(battlerAtk, battlerDef, move, healPercent))
                 ADJUST_SCORE(DECENT_EFFECT);
+        }
+        break;
+    case EFFECT_PAIN_SPLIT:
+        if (AI_WhoStrikesFirst(battlerAtk, battlerDef, move) == AI_IS_FASTER){
+            u32 expectedSplitHp = (gBattleMons[battlerDef].hp + gBattleMons[battlerAtk].hp)/2;
+            if (gBattleMons[battlerAtk].hp >= gBattleMons[battlerDef].hp){
+                ADJUST_SCORE(-2);
+                break;
+            }else if ((expectedSplitHp - gBattleMons[battlerAtk].hp) >= (gBattleMons[battlerAtk].maxHP * 4)/10){
+                ADJUST_SCORE(DECENT_EFFECT);
+            }else if ((expectedSplitHp - gBattleMons[battlerAtk].hp) >= gBattleMons[battlerAtk].maxHP/4){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+        }else{
+            //If AI is slower and can die, just give a minor score in case AI survives somehow
+            if (CanTargetFaintAi(battlerDef, battlerAtk)){
+                ADJUST_SCORE(WEAK_EFFECT);
+                //Skip all further checks, to ensure the other checks are operating under the assumption the AI mon would die after the target's turn 
+                break;
+            }
+            u32 expectedHpAfterHit = gBattleMons[battlerAtk].hp - GetBestDmgFromBattler(battlerDef, battlerAtk);
+
+            u32 expectedSplitHp = (gBattleMons[battlerDef].hp + expectedHpAfterHit)/2;
+
+            //Factor the amount of damage the AI is expected to take in determining the HP thresholds.
+            //If the AI's HP is lower, make the score incentives guarenteed, but if the AI's HP is higher, 
+            //make it an RNG chance in case player doesn't deal damage
+            if ((expectedHpAfterHit) >= gBattleMons[battlerDef].hp){
+                ADJUST_SCORE(-2);
+            }else if ((expectedSplitHp - expectedHpAfterHit) >= (gBattleMons[battlerAtk].maxHP * 4)/10){
+                if (gBattleMons[battlerAtk].hp < gBattleMons[battlerDef].hp || AI_RandLessThan(127)){
+                    ADJUST_SCORE(DECENT_EFFECT);
+                }
+            }else if ((expectedSplitHp - expectedHpAfterHit) >= gBattleMons[battlerAtk].maxHP/4){
+                if (gBattleMons[battlerAtk].hp < gBattleMons[battlerDef].hp || AI_RandLessThan(127)){
+                    ADJUST_SCORE(WEAK_EFFECT);
+                }
+            }
         }
         break;
     case EFFECT_RESTORE_HP:
@@ -3959,6 +4008,11 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         //if (CountUsablePartyMons(battlerDef) != 0)
             //ADJUST_SCORE(8);
         break;
+    case EFFECT_MIST:
+        if (!CanTargetFaintAi(battlerDef, battlerAtk) && !CanAIFaintTarget(battlerAtk, battlerDef, 2) && AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+        break;
     case EFFECT_PURSUIT:
         // TODO
         // if (IsPredictedToSwitch(battlerDef, battlerAtk))
@@ -4176,6 +4230,18 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_ENTRAINMENT:
         if (IsDynamaxed(battlerDef))
             break;
+        
+        else if (aiData->abilities[battlerAtk] == ABILITY_RIVALRY){
+            //Incentivize using Entrainment when same gender. Might tweak these odds, dpending on what trainers end up using this.
+            if (AreBattlersOfOppositeGender(battlerAtk, battlerDef)){
+                ADJUST_SCORE(WEAK_EFFECT);
+
+                if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_RandLessThan(200)){
+                    ADJUST_SCORE(WEAK_EFFECT);
+                }
+            }
+            break;
+        }
         else if ((IsAbilityOfRating(aiData->abilities[battlerDef], 5) || gAbilitiesInfo[aiData->abilities[battlerAtk]].aiRating <= 0)
         && (aiData->abilities[battlerDef] != aiData->abilities[battlerAtk] && !(gStatuses3[battlerDef] & STATUS3_GASTRO_ACID)))
             ADJUST_SCORE(DECENT_EFFECT);
@@ -4427,6 +4493,21 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_SOAK:
         if (HasMoveWithType(battlerAtk, TYPE_ELECTRIC) || HasMoveWithType(battlerAtk, TYPE_GRASS) || (HasMoveEffect(battlerAtk, EFFECT_SUPER_EFFECTIVE_ON_ARG) && gMovesInfo[move].argument == TYPE_WATER) )
             ADJUST_SCORE(DECENT_EFFECT); // Get some super effective moves
+        else{
+            u32 bestDamagingMove = GetBestDmgMoveFromBattler(battlerAtk, battlerDef);
+            // DebugPrintf("Best damaging move is %d", bestDamagingMove);
+            // DebugPrintf("Type Effectiveness Check is %d", AI_GetTypeEffectiveness(bestDamagingMove, battlerAtk, battlerDef));
+            // DebugPrintf("Modifier to Water is %d", GetTypeModifier(gMovesInfo[bestDamagingMove].type, TYPE_WATER));
+            // DebugPrintf("CanAiFaintTarget is %d", CanAIFaintTarget(battlerAtk, battlerDef, 1));
+            if (bestDamagingMove != MOVE_NONE && bestDamagingMove != MOVE_UNAVAILABLE 
+            && AI_GetTypeEffectiveness(bestDamagingMove, battlerAtk, battlerDef) <  UQ_4_12(2.0)
+            && GetTypeModifier(gMovesInfo[bestDamagingMove].type, TYPE_WATER) >= UQ_4_12(1.0)
+            && !CanAIFaintTarget(battlerAtk, battlerDef, 1)
+            && AI_RandLessThan(127)
+            ){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+        }
         break;
     case EFFECT_THIRD_TYPE:
         if (aiData->abilities[battlerDef] == ABILITY_WONDER_GUARD)
@@ -4480,9 +4561,39 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         break;
     case EFFECT_CAMOUFLAGE:
-        if (predictedMove != MOVE_NONE && AI_WhoStrikesFirst(battlerAtk, battlerDef, move) == AI_IS_FASTER // Attacker goes first
-         && !IS_MOVE_STATUS(move) && AI_GetTypeEffectiveness(predictedMove, battlerDef, battlerAtk) != AI_EFFECTIVENESS_x0)
-            ADJUST_SCORE(DECENT_EFFECT);
+
+        //Give potential to use Camouflage if AI cannot 2KO, the new type is not weak to the opponent's STABs, and the current type does not resist both STABs
+        if (!CanAIFaintTarget(battlerAtk, battlerDef, 2) 
+        && GetTypeModifier(gBattleMons[battlerDef].type1, GetTerrainType()) < UQ_4_12(2.0) 
+        && GetTypeModifier(gBattleMons[battlerDef].type2, GetTerrainType()) < UQ_4_12(2.0) 
+
+        //uses MOVE_CONSTRICT as a hacky way to only consider types and not specific move logic
+        && 
+        (CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].type1, battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0)
+        || CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].type2, battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0))
+        ){
+            //~50% chance incentive
+            if (AI_RandLessThan(127)){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+
+            //guarenteed score increase if Camouflage type is Grass and the user has Flower Veil or Flower Shield
+            if (GetTerrainType() == TYPE_GRASS 
+            && (aiData->abilities[battlerAtk] == ABILITY_FLOWER_VEIL || HasMove(battlerAtk, MOVE_FLOWER_SHIELD)) 
+            ){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+            
+            //guarenteed score increase if will get STAB on a move that is SE
+            if (HasMoveWithType(battlerAtk, GetTerrainType()) && CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, GetTerrainType(), battlerAtk, battlerDef, aiData->abilities[battlerDef], FALSE) >= UQ_4_12(2.0)) {
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+        }
+
+        // if (predictedMove != MOVE_NONE && AI_WhoStrikesFirst(battlerAtk, battlerDef, move) == AI_IS_FASTER // Attacker goes first
+        //  && !IS_MOVE_STATUS(move) && AI_GetTypeEffectiveness(predictedMove, battlerDef, battlerAtk) != AI_EFFECTIVENESS_x0)
+        //     ADJUST_SCORE(DECENT_EFFECT);
+        
         break;
     case EFFECT_TOXIC_THREAD:
         IncreasePoisonScore(battlerAtk, battlerDef, move, &score);
@@ -4861,8 +4972,11 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
     }
 
-
-    if (score < 1){
+    //Try this for now, where at least a -1 for these minuses
+    if (score < 0){
+        return -1;
+    }
+    if (score == 0){
         return NOT_GOOD_ENOUGH;
     }
     if (score >= 5){
@@ -5015,6 +5129,17 @@ static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
     }
 
     score += AI_CalcMoveEffectScore(battlerAtk, battlerDef, move);
+
+    // Some additional scores for very specific cases
+    switch(move){
+        case MOVE_CONSTRICT:
+            //Because Constrict makes so little progres, have a chance to give it a disincentivize score, in the case that it's the best damaging move
+            //This raises the liklihood of using a neutral score status move above best damaging move Constrict
+            if (gBattleMons[battlerAtk].statStages[STAT_ATK] <= DEFAULT_STAT_STAGE && gBattleMons[battlerDef].statStages[STAT_DEF] >= DEFAULT_STAT_STAGE && score > 100){
+                ADJUST_SCORE(-1);
+            }
+            break;
+    }
 
     return score;
 }

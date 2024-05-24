@@ -715,25 +715,40 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
                         return TRUE;
                     break;
                 case MOVE_EFFECT_ATK_MINUS_1:
-                case MOVE_EFFECT_DEF_MINUS_1:
-                case MOVE_EFFECT_SPD_MINUS_1:
-                case MOVE_EFFECT_SP_ATK_MINUS_1:
-                case MOVE_EFFECT_SP_DEF_MINUS_1:
-                case MOVE_EFFECT_ACC_MINUS_1:
-                case MOVE_EFFECT_EVS_MINUS_1:
-                    if (ShouldLowerStat(battlerDef, abilityDef, STAT_ATK + (gMovesInfo[move].additionalEffects[i].moveEffect - MOVE_EFFECT_ATK_MINUS_1)) && noOfHitsToKo != 1)
-                        return TRUE;
-                    break;
                 case MOVE_EFFECT_ATK_MINUS_2:
-                case MOVE_EFFECT_DEF_MINUS_2:
-                case MOVE_EFFECT_SPD_MINUS_2:
-                case MOVE_EFFECT_SP_ATK_MINUS_2:
-                case MOVE_EFFECT_SP_DEF_MINUS_2:
-                case MOVE_EFFECT_ACC_MINUS_2:
-                case MOVE_EFFECT_EVS_MINUS_2:
-                    if (ShouldLowerStat(battlerDef, abilityDef, STAT_ATK + (gMovesInfo[move].additionalEffects[i].moveEffect - MOVE_EFFECT_ATK_MINUS_1)) && noOfHitsToKo != 1)
+                    if (ShouldLowerAttack(battlerAtk, battlerDef, abilityDef) && noOfHitsToKo != 1)
                         return TRUE;
                     break;
+                case MOVE_EFFECT_DEF_MINUS_1:
+                case MOVE_EFFECT_DEF_MINUS_2:
+                    if (ShouldLowerDefense(battlerAtk, battlerDef, abilityDef) && noOfHitsToKo != 1)
+                        return TRUE;
+                    break;
+                case MOVE_EFFECT_SPD_MINUS_1:
+                case MOVE_EFFECT_SPD_MINUS_2:
+                    if (ShouldLowerSpeed(battlerAtk, battlerDef, abilityDef) && noOfHitsToKo != 1)
+                        return TRUE;
+                    break;
+                case MOVE_EFFECT_SP_ATK_MINUS_1:
+                case MOVE_EFFECT_SP_ATK_MINUS_2:
+                    if (ShouldLowerSpAtk(battlerAtk, battlerDef, abilityDef) && noOfHitsToKo != 1)
+                        return TRUE;
+                    break;                
+                case MOVE_EFFECT_SP_DEF_MINUS_1:
+                case MOVE_EFFECT_SP_DEF_MINUS_2:
+                    if (ShouldLowerSpDef(battlerAtk, battlerDef, abilityDef) && noOfHitsToKo != 1)
+                        return TRUE;
+                    break;                      
+                case MOVE_EFFECT_ACC_MINUS_1:
+                case MOVE_EFFECT_ACC_MINUS_2:
+                    if (ShouldLowerAccuracy(battlerAtk, battlerDef, abilityDef) && noOfHitsToKo != 1)
+                        return TRUE;
+                    break;  
+                case MOVE_EFFECT_EVS_MINUS_1:
+                case MOVE_EFFECT_EVS_MINUS_2:
+                    if (ShouldLowerEvasion(battlerAtk, battlerDef, abilityDef) && noOfHitsToKo != 1)
+                        return TRUE;
+                    break;                
             }
         }
     }
@@ -889,6 +904,7 @@ uq4_12_t AI_GetTypeEffectiveness(u32 move, u32 battlerAtk, u32 battlerDef)
     gBattleStruct->dynamicMoveType = 0;
     SetTypeBeforeUsingMove(move, battlerAtk);
     GET_MOVE_TYPE(move, moveType);
+    //TODO: Have custom type effectiveness calculations for Proactive Color  Change
     typeEffectiveness = CalcTypeEffectivenessMultiplier(move, moveType, battlerAtk, battlerDef, AI_DATA->abilities[battlerDef], FALSE);
 
     RestoreBattlerData(battlerAtk);
@@ -1033,6 +1049,24 @@ u32 GetBestDmgMoveFromBattler(u32 battlerAtk, u32 battlerDef)
         }
     }
     return move;
+}
+
+u32 GetBestDmgFromBattler(u32 battlerAtk, u32 battlerDef)
+{
+    u32 i;
+    u32 bestDmg = 0;
+    u32 unusable = AI_DATA->moveLimitations[battlerAtk];
+    u16 *moves = GetMovesArray(battlerAtk);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && !(unusable & gBitTable[i])
+            && bestDmg < AI_DATA->simulatedDmg[battlerAtk][battlerDef][i])
+        {
+            bestDmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][i];
+        }
+    }
+    return bestDmg;
 }
 
 // Check if AI mon has the means to faint the target with any of its moves.
@@ -1666,6 +1700,7 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_WHITE_SMOKE
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_HYPER_CUTTER
+      && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -1685,6 +1720,7 @@ bool32 ShouldLowerDefense(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_WHITE_SMOKE
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_BIG_PECKS
+      && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -1702,6 +1738,7 @@ bool32 ShouldLowerSpeed(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_WHITE_SMOKE
+      && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -1721,6 +1758,7 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_WHITE_SMOKE
+      && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -1739,6 +1777,7 @@ bool32 ShouldLowerSpDef(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_WHITE_SMOKE
+      && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -1758,6 +1797,7 @@ bool32 ShouldLowerAccuracy(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_KEEN_EYE
       && defAbility != ABILITY_MINDS_EYE
       && (B_ILLUMINATE_EFFECT >= GEN_9 && defAbility != ABILITY_ILLUMINATE)
+      && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -1775,6 +1815,7 @@ bool32 ShouldLowerEvasion(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_WHITE_SMOKE
+      && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -3053,6 +3094,14 @@ bool32 ShouldRecover(u32 battlerAtk, u32 battlerDef, u32 move, u32 healPercent)
         else if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_DATA->hpPercents[battlerAtk] < 60 && (Random() % 3))
             return TRUE;    // target can't faint attacker at all, attacker health is about half, 2/3rds rate of encouraging healing
     }
+    //Logic for slower AI
+    if (AI_DATA->hpPercents[battlerAtk] < 50){
+        return TRUE;
+    }
+    //~50% chance to heal when about less then 2/3 HP and slower
+    if (AI_DATA->hpPercents[battlerAtk] < 65 && AI_RandLessThan(127)){
+        return TRUE;
+    }
     return FALSE;
 }
 
@@ -3554,43 +3603,43 @@ static void IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 stat
         break;
     case STAT_CHANGE_ATK_2:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
-            ADJUST_SCORE_PTR(GOOD_EFFECT);
+            ADJUST_SCORE_PTR(DECENT_EFFECT);
         break;
     case STAT_CHANGE_DEF_2:
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
         {
             if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_STALL)
-                ADJUST_SCORE_PTR(GOOD_EFFECT);
-            else
                 ADJUST_SCORE_PTR(DECENT_EFFECT);
+            else
+                ADJUST_SCORE_PTR(WEAK_EFFECT);
         }
         break;
     case STAT_CHANGE_SPEED_2:
         if ((noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
-            ADJUST_SCORE_PTR(GOOD_EFFECT);
+            ADJUST_SCORE_PTR(DECENT_EFFECT);
         break;
     case STAT_CHANGE_SPATK_2:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
-            ADJUST_SCORE_PTR(GOOD_EFFECT);
+            ADJUST_SCORE_PTR(DECENT_EFFECT);
         break;
     case STAT_CHANGE_SPDEF_2:
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
         {
             if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_STALL)
-                ADJUST_SCORE_PTR(GOOD_EFFECT);
-            else
                 ADJUST_SCORE_PTR(DECENT_EFFECT);
+            else
+                ADJUST_SCORE_PTR(WEAK_EFFECT);
         }
         break;
     case STAT_CHANGE_ACC:
         if (gBattleMons[battlerAtk].statStages[STAT_ACC] <= 3) // Increase only if necessary
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+            ADJUST_SCORE_PTR(WEAK_EFFECT);
         break;
     case STAT_CHANGE_EVASION:
         if (noOfHitsToFaint > 3 || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
-            ADJUST_SCORE_PTR(GOOD_EFFECT);
-        else
             ADJUST_SCORE_PTR(DECENT_EFFECT);
+        else
+            ADJUST_SCORE_PTR(WEAK_EFFECT);
         break;
     }
 }

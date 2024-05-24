@@ -35,8 +35,8 @@
 // Temporary scores that are added together to determine a final score at the at of AI_CalcMoveEffectScore
 #define WEAK_EFFECT      1
 #define DECENT_EFFECT    2
-#define GOOD_EFFECT      4
-#define BEST_EFFECT      6
+#define GOOD_EFFECT      3
+#define BEST_EFFECT      4
 
 // AI_CalcMoveEffectScore final score
 #define NOT_GOOD_ENOUGH           0 // Not worth using over a damaging move
