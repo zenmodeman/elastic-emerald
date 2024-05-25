@@ -2598,6 +2598,10 @@ bool8 FldEff_FieldMoveShowMonInit(void)
             gFieldEffectArguments[0] = designatedFlyMon;
             gFieldEffectArguments[1] = designatedFlyMon;
             gFieldEffectArguments[2] = Random32();
+            
+            
+            FlagClear(FLAG_SYS_MAP_MENU_USED);
+            
     } else {
         gFieldEffectArguments[0] = GetMonData(pokemon, MON_DATA_SPECIES);
         gFieldEffectArguments[1] = GetMonData(pokemon, MON_DATA_OT_ID);
