@@ -22,6 +22,11 @@
       "map": "MAP_ROUTE114",
       "offset": -40,
       "direction": "right"
+    },
+    {
+      "map": "MAP_SAND_FRONT",
+      "offset": 42,
+      "direction": "left"
     }
   ],
   "object_events": [
@@ -348,7 +353,9 @@
       "dest_warp_id": "0"
     }
   ],
-  "coord_events": [],
+  "coord_events": [
+
+  ],
   "bg_events": [
     {
       "type": "secret_base",

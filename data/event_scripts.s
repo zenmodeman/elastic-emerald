@@ -1079,3 +1079,5 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/OldaleRuins_1F/scripts.inc"
 
 	.include "data/maps/PetalburgGrove/scripts.inc"
+
+	.include "data/maps/SandFront/scripts.inc"

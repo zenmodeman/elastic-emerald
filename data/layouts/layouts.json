@@ -4440,6 +4440,16 @@
       "secondary_tileset": "gTileset_Petalburg",
       "border_filepath": "data/layouts/PetalburgGrove/border.bin",
       "blockdata_filepath": "data/layouts/PetalburgGrove/map.bin"
+    },
+    {
+      "id": "LAYOUT_SAND_FRONT",
+      "name": "SandFront_Layout",
+      "width": 32,
+      "height": 68,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_Mauville",
+      "border_filepath": "data/layouts/SandFront/border.bin",
+      "blockdata_filepath": "data/layouts/SandFront/map.bin"
     }
   ]
 }
