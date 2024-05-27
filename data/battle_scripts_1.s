@@ -1255,12 +1255,13 @@ BattleScript_EffectLaserFocus::
 	attackcanceler
 	attackstring
 	ppreduce
+	@ Reworked setuserstatus3 should not fail even if laser focus was already set
 	setuserstatus3 STATUS3_LASER_FOCUS, BattleScript_ButItFailed
 	attackanimation
 	waitanimation
 	printstring STRINGID_LASERFOCUS
 	waitmessage B_WAIT_TIME_LONG
-	goto BattleScript_MoveEnd
+	goto BattleScript_DoAccUp
 
 BattleScript_VCreateStatLoss::
 	jumpifstat BS_ATTACKER, CMP_GREATER_THAN, STAT_DEF, MIN_STAT_STAGE, BattleScript_VCreateStatAnim
@@ -2202,6 +2203,7 @@ BattleScript_AttackSpAttackUpTrySpAtk::
 	waitmessage B_WAIT_TIME_LONG
 BattleScript_AttackSpAttackUpEnd:
 	goto BattleScript_MoveEnd
+
 
 BattleScript_EffectAttackAccUp::
 	attackcanceler
@@ -4260,15 +4262,24 @@ BattleScript_EffectForesight::
 	attackcanceler
 	attackstring
 	ppreduce
-	accuracycheck BattleScript_ButItFailed, NO_ACC_CALC_CHECK_LOCK_ON
-	jumpifstatus2 BS_TARGET, STATUS2_FORESIGHT, BattleScript_ButItFailed
+	@ REMOVED accuracycheck BattleScript_ButItFailed, NO_ACC_CALC_CHECK_LOCK_ON
+	@ REMOVED jumpifstatus2 BS_TARGET, STATUS2_FORESIGHT, BattleScript_ButItFailed
 	setforesight
 BattleScript_IdentifiedFoe:
 	attackanimation
 	waitanimation
 	printstring STRINGID_PKMNIDENTIFIED
 	waitmessage B_WAIT_TIME_LONG
-	goto BattleScript_MoveEnd
+	goto BattleScript_DoAccUp
+
+BattleScript_DoAccUp::
+	setstatchanger STAT_ACC, 1, FALSE
+	statbuffchange MOVE_EFFECT_AFFECTS_USER | STAT_CHANGE_ALLOW_PTR, BattleScript_StatUpEnd
+	jumpifbyte CMP_NOT_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_StatUpDoAnim
+	pause B_WAIT_TIME_SHORT
+	goto BattleScript_StatUpPrintString
+
+
 
 BattleScript_EffectPerishSong::
 	attackcanceler

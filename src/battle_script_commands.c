@@ -14427,8 +14427,9 @@ static void Cmd_setuserstatus3(void)
     CMD_ARGS(u32 flags, const u8 *failInstr);
 
     u32 flags = cmd->flags;
-
-    if (gStatuses3[gBattlerAttacker] & flags)
+    
+    //Add additional condition that Laser Focus is alright to chain
+    if (!(flags & STATUS3_LASER_FOCUS) && (gStatuses3[gBattlerAttacker] & flags))
     {
         gBattlescriptCurrInstr = cmd->failInstr;
     }
