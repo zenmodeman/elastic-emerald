@@ -4571,45 +4571,72 @@ Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 Mugshot: Green
 
-Dusclops
-Level: 48
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Shadow Punch
-- Confuse Ray
-- Curse
-- Protect
+Cofagrigus @ Kasib Berry  
+Ability: Mummy  
+EVs: 1 Def  
+Bold Nature  
+IVs: 0 Atk  
+- Body Press  
+- Will-O-Wisp  
+- Hex  
+- Toxic Spikes  
 
-Banette
-Level: 49
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Shadow Ball
-- Grudge
-- Will O Wisp
-- Feint Attack
+Jellicent (F) @ Leftovers  
+Ability: Cursed Body  
+Level: 63  
+EVs: 1 SpD  
+Calm Nature  
+IVs: 0 Atk  
+- Confuse Ray  
+- Strength Sap  
+- Night Shade  
+- Whirlpool  
 
-Sableye
-Level: 50
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Shadow Ball
-- Double Team
-- Night Shade
-- Feint Attack
+Annihilape @ Punching Glove  
+Ability: Defiant  
+Level: 63  
+EVs: 1 Spe  
+Jolly Nature  
+- Rage Fist  
+- Bulk Up  
+- Drain Punch  
+- Thunder Punch  
 
-Banette
-Level: 49
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Shadow Ball
-- Psychic
-- Thunderbolt
-- Facade
+Zoroark-Hisui @ Focus Sash  
+Ability: Illusion  
+Level: 64  
+EVs: 1 Spe  
+Timid Nature  
+IVs: 0 Atk  
+- Hyper Voice  
+- Flamethrower  
+- Bitter Malice  
+- Curse  
 
-Dusclops @ Sitrus Berry
-Level: 51
-IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-- Shadow Ball
-- Ice Beam
-- Rock Slide
-- Earthquake
+Mimikyu (F) @ Lum Berry  
+Ability: Disguise  
+Level: 64  
+EVs: 1 Atk  
+Adamant Nature  
+- Play Rough  
+- Shadow Sneak  
+- Swords Dance  
+- Shadow Claw  
+
+Sableye @ Sablenite  
+Ability: Prankster  
+Level: 65  
+EVs: 1 SpA  
+Modest Nature  
+IVs: 0 Atk  
+- Recover  
+- Shadow Ball  
+- Dazzling Gleam  
+- Calm Mind  
+
+
+
+
 
 === TRAINER_GLACIA ===
 Name: GLACIA
