@@ -38,6 +38,8 @@ static u32 ChooseMoveOrAction_Doubles(u32 battlerAi);
 static inline void BattleAI_DoAIProcessing(struct AI_ThinkingStruct *aiThink, u32 battlerAi, u32 battlerDef);
 static bool32 IsPinchBerryItemEffect(u32 holdEffect);
 
+static void AddSTABToMovesList(u16 *moves, u32 battler);
+
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
 EWRAM_DATA u8 sBattler_AI = 0;
@@ -433,14 +435,32 @@ static u32 Ai_SetMoveAccuracy(struct AiLogicData *aiData, u32 battlerAtk, u32 ba
     return accuracy;
 }
 
+
+static void AddSTABToMovesList(u16 *moves, u32 battler){
+    u32 i;
+    u32 currentMove;
+    for (i = 0; i < MAX_MON_MOVES; i++){
+        currentMove = gBattleMons[battler].moves[i];
+        if (currentMove != moves[i] && gMovesInfo[currentMove].power > 0 && IS_BATTLER_OF_TYPE(battler, gMovesInfo[currentMove].type)){
+            moves[i] = currentMove;
+        }
+    }
+}
 static void SetBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u32 battlersCount)
 {
     u32 battlerDef, i, weather;
     u16 *moves;
-
     SaveBattlerData(battlerAtk);
+
     moves = GetMovesArray(battlerAtk);
+
+    //Modification to add information about STAB moves when full information is not known
+    if (!IsAiBattlerAware(battlerAtk)){
+        AddSTABToMovesList(moves, battlerAtk);
+    }    
+
     weather = AI_GetWeather(aiData);
+    
 
     SetBattlerData(battlerAtk);
 
@@ -457,6 +477,9 @@ static void SetBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u3
             s32 dmg = 0;
             u8 effectiveness = AI_EFFECTIVENESS_x0;
             u32 move = moves[i];
+            if (battlerAtk == 0){
+                // DebugPrintf("The move check after adding STAB for move # %d is %d", i, moves[i]);
+            }
 
             if (move != 0
              && move != 0xFFFF
@@ -3386,11 +3409,11 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     case EFFECT_SPECIAL_ATTACK_DOWN:
     case EFFECT_SPECIAL_ATTACK_DOWN_2:
-        if (!ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
-            ADJUST_SCORE(-2);
-        }else if (AI_RandLessThan(127)){
+
+        if (ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
             ADJUST_SCORE(1);
-        }   
+        }
+
         if ((aiData->hpPercents[battlerAtk] < 50 && !AI_RandLessThan(50))
           || (gBattleMons[battlerDef].statStages[STAT_SPATK] <= 3 && !AI_RandLessThan(50))){
             ADJUST_SCORE(-2);
@@ -5157,7 +5180,7 @@ static s32 AI_SetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
       && CanTargetFaintAi(battlerDef, battlerAtk)
       && GetMovePriority(battlerAtk, move) == 0)
     {
-        RETURN_SCORE_MINUS(20);    // No point in setting up if you will faint. Should just switch if possible..
+        return score;  // No point in setting up if you will faint.
     }
 
     // check effects to prioritize first turn

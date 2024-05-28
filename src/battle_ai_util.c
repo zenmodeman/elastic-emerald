@@ -33,6 +33,7 @@
     return FALSE
 
 static u32 AI_GetEffectiveness(uq4_12_t multiplier);
+static u16 GetAtkSpAtkGapThreshold(u32 battlerDef);
 
 // Functions
 u32 GetAIChosenMove(u32 battlerId)
@@ -497,6 +498,8 @@ s32 AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u8 *typeEffectivenes
 
     if (gMovesInfo[move].power)
         isDamageMoveUnusable = IsDamageMoveUnusable(move, battlerAtk, battlerDef);
+
+    //possibly here is where to change effectiveness Multiplier for modifier Color Change
 
     effectivenessMultiplier = CalcTypeEffectivenessMultiplier(move, moveType, battlerAtk, battlerDef, aiData->abilities[battlerDef], FALSE);
     if (gMovesInfo[move].power && !isDamageMoveUnusable)
@@ -1022,6 +1025,7 @@ u32 NoOfHitsForTargetToFaintAI(u32 battlerDef, u32 battlerAtk)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         currNumberOfHits = GetNoOfHitsToKOBattler(battlerDef, battlerAtk, i);
+        // DebugPrintf("For move %d, the number of hits to KO is %d", i, currNumberOfHits);
         if (currNumberOfHits != 0)
         {
             if (currNumberOfHits < leastNumberOfHits)
@@ -1683,6 +1687,20 @@ u32 CountNegativeStatStages(u32 battlerId)
     }
     return count;
 }
+//Give more leeway in earlier levels
+static u16 GetAtkSpAtkGapThreshold(u32 battlerDef){
+    u32 level = gBattleMons[battlerDef].level;
+    if (level <= 20){
+        return 1.5;
+    }
+    else if (level <= 30){
+        return 1.35;
+    }
+    else if (level <= 40){
+        return 1.2;
+    }
+    return 1.15;
+}
 
 bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
 {
@@ -1690,11 +1708,12 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
             && (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT)
             && CanAIFaintTarget(battlerAtk, battlerDef, 0))
         return FALSE; // Don't bother lowering stats if can kill enemy.
-
-    if (gBattleMons[battlerDef].statStages[STAT_ATK] > 4
+        
+    //Still valid to go below -2 if can't make enough progress
+    if ((gBattleMons[battlerDef].statStages[STAT_ATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
       //Estimate based on raw stats when lacking move knowledge
-      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].attack * 1.1) >= gBattleMons[battlerDef].spAttack)) 
+      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack)) 
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_WHITE_SMOKE
@@ -1744,6 +1763,7 @@ bool32 ShouldLowerSpeed(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     return FALSE;
 }
 
+
 bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
 {
     if (AI_STRIKES_FIRST(battlerAtk, battlerDef, AI_THINKING_STRUCT->moveConsidered)
@@ -1751,9 +1771,10 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
             && CanAIFaintTarget(battlerAtk, battlerDef, 0))
         return FALSE; // Don't bother lowering stats if can kill enemy.
 
-    if (gBattleMons[battlerDef].statStages[STAT_SPATK] > 4
+    //Still valid to go below -2 if can't make enough progress
+    if ((gBattleMons[battlerDef].statStages[STAT_SPATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
-      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].spAttack * 1.1) >= gBattleMons[battlerDef].attack))
+      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack))
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
@@ -3573,7 +3594,7 @@ static void IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 stat
     {
     case STAT_CHANGE_ATK:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+            ADJUST_SCORE_PTR(WEAK_EFFECT);
         break;
     case STAT_CHANGE_DEF:
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
