@@ -245,6 +245,8 @@ extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Giddy;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_UnusedMauvilleOldMan1;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_UnusedMauvilleOldMan2;
 
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_RuinManiac;
+
 
 const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM_OBJ_EVENT_GFX] = {
     [OBJ_EVENT_GFX_BRENDAN_NORMAL] =           &gObjectEventGraphicsInfo_BrendanNormal,
@@ -323,7 +325,8 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_SPENSER] =                  &gObjectEventGraphicsInfo_Spenser,
     [OBJ_EVENT_GFX_NOLAND] =                   &gObjectEventGraphicsInfo_Noland,
     [OBJ_EVENT_GFX_LUCY] =                     &gObjectEventGraphicsInfo_Lucy,
-    [OBJ_EVENT_GFX_UNUSED_NATU_DOLL] =         &gObjectEventGraphicsInfo_UnusedNatuDoll,
+    [OBJ_EVENT_GFX_RUIN_MANIAC] =              &gObjectEventGraphicsInfo_RuinManiac,
+    // [OBJ_EVENT_GFX_UNUSED_NATU_DOLL] =         &gObjectEventGraphicsInfo_UnusedNatuDoll, Replaced with Ruin Maniac
     [OBJ_EVENT_GFX_UNUSED_MAGNEMITE_DOLL] =    &gObjectEventGraphicsInfo_UnusedMagnemiteDoll,
     [OBJ_EVENT_GFX_UNUSED_SQUIRTLE_DOLL] =     &gObjectEventGraphicsInfo_UnusedSquirtleDoll,
     [OBJ_EVENT_GFX_UNUSED_WOOPER_DOLL] =       &gObjectEventGraphicsInfo_UnusedWooperDoll,

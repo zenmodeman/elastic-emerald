@@ -77,7 +77,7 @@
 #define OBJ_EVENT_GFX_SPENSER                     73
 #define OBJ_EVENT_GFX_NOLAND                      74
 #define OBJ_EVENT_GFX_LUCY                        75
-#define OBJ_EVENT_GFX_UNUSED_NATU_DOLL            76
+#define OBJ_EVENT_GFX_RUIN_MANIAC                     76  //Formerly OBJ_EVENT_GFX_UNUSED_NATU_DOLL
 #define OBJ_EVENT_GFX_UNUSED_MAGNEMITE_DOLL       77
 #define OBJ_EVENT_GFX_UNUSED_SQUIRTLE_DOLL        78
 #define OBJ_EVENT_GFX_UNUSED_WOOPER_DOLL          79
@@ -250,7 +250,7 @@
 // object graphics that can be removed. If more graphics are needed, anything that
 // stores graphics ids will need to be increased in size. See wiki entry below:
 // https://github.com/pret/pokeemerald/wiki/Feature-Branches#overworld-expansion
-#define NUM_OBJ_EVENT_GFX                        239
+#define NUM_OBJ_EVENT_GFX                       239     
 
 
 // These are dynamic object gfx ids.

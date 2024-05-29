@@ -455,3 +455,7 @@ script OldaleTown_EventScript_Taxi{
 	releaseall
 	end
 }
+
+script OldaleTown_EventScript_RuinsSign{
+	msgbox(format("Oldale Ruins \n A Mysterious Spot Popular With Researchers"), MSGBOX_SIGN)
+}

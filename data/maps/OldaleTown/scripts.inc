@@ -876,6 +876,12 @@ OldaleTown_EventScript_Taxi_2:
 	goto OldaleTown_EventScript_Taxi_1
 
 
+OldaleTown_EventScript_RuinsSign::
+# 460 "data/maps/OldaleTown/scripts.pory"
+	msgbox OldaleTown_EventScript_RuinsSign_Text_0, MSGBOX_SIGN
+	return
+
+
 OldaleTown_EventScript_Fisherman_Text_0:
 # 422 "data/maps/OldaleTown/scripts.pory"
 	.string "This is one of my favorite fishing\n"
@@ -915,6 +921,12 @@ OldaleTown_EventScript_Taxi_Text_3:
 # 453 "data/maps/OldaleTown/scripts.pory"
 	.string "Being able to fly is great isn't it? I'm\n"
 	.string "glad to offer my services in Hoenn.$"
+
+OldaleTown_EventScript_RuinsSign_Text_0:
+# 460 "data/maps/OldaleTown/scripts.pory"
+	.string "Oldale Ruins\n"
+	.string "A Mysterious Spot Popular With\l"
+	.string "Researchers$"
 
 OldaleTown_Text_ThrowInFishingAdvice::
 # 405 "data/maps/OldaleTown/scripts.pory"
