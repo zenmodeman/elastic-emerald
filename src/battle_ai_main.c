@@ -38,7 +38,6 @@ static u32 ChooseMoveOrAction_Doubles(u32 battlerAi);
 static inline void BattleAI_DoAIProcessing(struct AI_ThinkingStruct *aiThink, u32 battlerAi, u32 battlerDef);
 static bool32 IsPinchBerryItemEffect(u32 holdEffect);
 
-static void AddSTABToMovesList(u16 *moves, u32 battler);
 
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
@@ -436,28 +435,14 @@ static u32 Ai_SetMoveAccuracy(struct AiLogicData *aiData, u32 battlerAtk, u32 ba
 }
 
 
-static void AddSTABToMovesList(u16 *moves, u32 battler){
-    u32 i;
-    u32 currentMove;
-    for (i = 0; i < MAX_MON_MOVES; i++){
-        currentMove = gBattleMons[battler].moves[i];
-        if (currentMove != moves[i] && gMovesInfo[currentMove].power > 0 && IS_BATTLER_OF_TYPE(battler, gMovesInfo[currentMove].type)){
-            moves[i] = currentMove;
-        }
-    }
-}
+
 static void SetBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u32 battlersCount)
 {
     u32 battlerDef, i, weather;
     u16 *moves;
     SaveBattlerData(battlerAtk);
 
-    moves = GetMovesArray(battlerAtk);
-
-    //Modification to add information about STAB moves when full information is not known
-    if (!IsAiBattlerAware(battlerAtk)){
-        AddSTABToMovesList(moves, battlerAtk);
-    }    
+    moves = GetMovesArrayWithHiddenSTAB(battlerAtk);
 
     weather = AI_GetWeather(aiData);
     
@@ -478,7 +463,7 @@ static void SetBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u3
             u8 effectiveness = AI_EFFECTIVENESS_x0;
             u32 move = moves[i];
             if (battlerAtk == 0){
-                // DebugPrintf("The move check after adding STAB for move # %d is %d", i, moves[i]);
+                DebugPrintf("The move check after adding STAB for move # %d is %d", i, moves[i]);
             }
 
             if (move != 0

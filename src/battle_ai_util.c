@@ -33,7 +33,9 @@
     return FALSE
 
 static u32 AI_GetEffectiveness(uq4_12_t multiplier);
+
 static u16 GetAtkSpAtkGapThreshold(u32 battlerDef);
+static void AddSTABToMovesList(u16 *moves, u32 battler);
 
 // Functions
 u32 GetAIChosenMove(u32 battlerId)
@@ -1713,7 +1715,7 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     if ((gBattleMons[battlerDef].statStages[STAT_ATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
       //Estimate based on raw stats when lacking move knowledge
-      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack)) 
+      || (HasNoKnownNonProtectingMoves(battlerDef) && (gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack)) 
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_WHITE_SMOKE
@@ -1774,7 +1776,7 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     //Still valid to go below -2 if can't make enough progress
     if ((gBattleMons[battlerDef].statStages[STAT_SPATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
-      || (HasNoMovesKnown(battlerDef) && (gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack))
+      || (HasNoKnownNonProtectingMoves(battlerDef) && (gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack))
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
@@ -1862,6 +1864,31 @@ u16 *GetMovesArray(u32 battler)
         return gBattleResources->battleHistory->usedMoves[battler];
 }
 
+static void AddSTABToMovesList(u16 *moves, u32 battler){
+    u32 i;
+    u32 currentMove;
+    for (i = 0; i < MAX_MON_MOVES; i++){
+        currentMove = gBattleMons[battler].moves[i];
+        if (currentMove != moves[i] && gMovesInfo[currentMove].power > 0 && IS_BATTLER_OF_TYPE(battler, gMovesInfo[currentMove].type)){
+            moves[i] = currentMove;
+        }
+    }
+}
+
+/*When computing moves of non-AI battlers, also read unrevealed STAB damaging moves.
+This is important for better damage threshold estimates, and will eventually be used in the switch logic.
+But ordinary GetMovesArray should be used for move-specific logic, such as whether the player has revealed Brick Break. 
+*/
+u16 *GetMovesArrayWithHiddenSTAB(u32 battler){
+    u16 *moves = GetMovesArray(battler);
+
+    //Don't do additional work if all moves are already known because battler is AI
+    if (!IsAiBattlerAware(battler)){
+        AddSTABToMovesList(moves, battler);
+    }    
+    return moves;
+}
+
 bool32 HasOnlyMovesWithCategory(u32 battlerId, u32 category, bool32 onlyOffensive)
 {
     u32 i;
@@ -1902,6 +1929,20 @@ bool32 HasNoMovesKnown(u32 battler){
             return FALSE;
     }
     return TRUE;
+}
+
+
+bool32 HasNoKnownNonProtectingMoves(u32 battler){
+    u32 i;
+    u16 *moves = GetMovesArray(battler);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        u32 move = moves[i];
+        if (move != MOVE_NONE && move != MOVE_UNAVAILABLE && gMovesInfo[move].effect != EFFECT_PROTECT && gMovesInfo[move].effect != EFFECT_MAT_BLOCK)
+            return FALSE;
+    }
+    return TRUE; 
 }
 
 bool32 HasMoveWithType(u32 battler, u32 type)
