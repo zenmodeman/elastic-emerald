@@ -5254,7 +5254,8 @@ static s32 AI_SetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
     case EFFECT_SNOWSCAPE:
     case EFFECT_GEOMANCY:
     case EFFECT_VICTORY_DANCE:
-        ADJUST_SCORE(DECENT_EFFECT);
+        //Originally was decent effect, but make it just a lesser free score, so that further logic is still required to be guarenteed.
+        ADJUST_SCORE(WEAK_EFFECT);
         break;
     case EFFECT_HIT:
     {
