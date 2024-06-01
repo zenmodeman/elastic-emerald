@@ -2532,6 +2532,8 @@ const struct Item gItemsInfo[] =
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
         .flingPower = 30,
+        .iconPic = gItemIcon_BottleCap,
+        .iconPalette = gItemIconPalette_BottleCap,
     },
 
 

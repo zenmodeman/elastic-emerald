@@ -1,0 +1,15 @@
+raw `
+
+OldaleRuins_MapScripts::
+	.byte 0
+
+`
+
+script OldaleRuins_EventScript_Maniac {
+    lock
+    faceplayer
+    msgbox(format("These gems are intriguing. I'm fascinated by this place and love to visit a lot. There's rumors that there's some key out there can unlock a portal to an anicent world."))
+    msgbox(format("Maybe they have something to do with gems like these. Then again, there's probably no truth behind any of this, but it's fun to imagine!"))
+    releaseall
+    end
+}

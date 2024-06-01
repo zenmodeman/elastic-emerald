@@ -925,8 +925,7 @@ OldaleTown_EventScript_Taxi_Text_3:
 OldaleTown_EventScript_RuinsSign_Text_0:
 # 460 "data/maps/OldaleTown/scripts.pory"
 	.string "Oldale Ruins\n"
-	.string "A Mysterious Spot Popular With\l"
-	.string "Researchers$"
+	.string "An Enigmatic Link to the Past.$"
 
 OldaleTown_Text_ThrowInFishingAdvice::
 # 405 "data/maps/OldaleTown/scripts.pory"
