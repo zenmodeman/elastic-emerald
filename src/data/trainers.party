@@ -1534,27 +1534,35 @@ Makuhita
 Level: 32
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
-=== TRAINER_WILTON_5 ===
-Name: WILTON
-Class: Cooltrainer
-Pic: Cooltrainer M
+=== TRAINER_JIMMY ===
+Name: JIMMY
+Class: School Kid
+Pic: School Kid M
 Gender: Male
-Music: Cool
-Items: Full Restore
+Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Manectric
-Level: 35
-IVs: 17 HP / 17 Atk / 17 Def / 17 SpA / 17 SpD / 17 Spe
+Ekans (M) @ Chesto Berry  
+Ability: Shed Skin  
+Level: 9  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Rest  
+- Trailblaze  
+- Mud Bomb  
+- Poison Sting  
 
-Wailmer
-Level: 35
-IVs: 17 HP / 17 Atk / 17 Def / 17 SpA / 17 SpD / 17 Spe
+Sandshrew (M) @ Normal Gem  
+Ability: Sand Veil  
+Level: 9  
+Jolly Nature  
+IVs: 12 HP / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Fury Swipes  
+- Bulldoze  
+- Sandstorm  
+- Metal Claw  
 
-Hariyama
-Level: 35
-IVs: 17 HP / 17 Atk / 17 Def / 17 SpA / 17 SpD / 17 Spe
+
 
 === TRAINER_WARREN ===
 Name: WARREN
