@@ -10193,7 +10193,13 @@ static void Cmd_various(void)
     case VARIOUS_TRY_HEAL_QUARTER_HP:
     {
         VARIOUS_ARGS(const u8 *failInstr);
-        gBattleMoveDamage = GetNonDynamaxMaxHP(battler) / 4;
+        //Modification to make the healing 33% if it isn't "spread reduced"; if there is an ally present, then it will heal 25%
+        if (!(gBattleTypeFlags & BATTLE_TYPE_DOUBLE) || gAbsentBattlerFlags & gBitTable[GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(gBattlerAttacker)))]){
+            gBattleMoveDamage = GetNonDynamaxMaxHP(battler) / 3;
+        }else{
+            gBattleMoveDamage = GetNonDynamaxMaxHP(battler) / 4;
+        }
+        
         if (gBattleMoveDamage == 0)
             gBattleMoveDamage = 1;
         gBattleMoveDamage *= -1;
@@ -14017,7 +14023,6 @@ static void Cmd_trysethelpinghand(void)
     CMD_ARGS(const u8 *failInstr);
 
     gBattlerTarget = GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(gBattlerAttacker)));
-
     if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE
         && !(gAbsentBattlerFlags & gBitTable[gBattlerTarget])
         && !gProtectStructs[gBattlerAttacker].helpingHand
