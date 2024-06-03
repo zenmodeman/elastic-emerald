@@ -4535,7 +4535,9 @@ static void HandleTurnActionSelectionState(void)
                     }
                     break;
                 case B_ACTION_USE_ITEM:
-                    if (FlagGet(B_FLAG_NO_BAG_USE))
+                    if (FlagGet(B_FLAG_NO_BAG_USE) ||
+                     //Restricted Mode no use of bag items in trainer battles
+                     (gBattleTypeFlags & BATTLE_TYPE_TRAINER && FlagGet(FLAG_RESTRICTED_MODE)))
                     {
                         RecordedBattle_ClearBattlerAction(battler, 1);
                         gSelectionBattleScripts[battler] = BattleScript_ActionSelectionItemsCantBeUsed;
