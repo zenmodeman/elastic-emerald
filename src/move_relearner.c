@@ -523,9 +523,9 @@ static void DoMoveRelearnerMain(void)
             {
                 if (GiveMoveToMon(&gPlayerParty[sMoveRelearnerStruct->partyMon], GetCurrentSelectedMove()) != MON_HAS_MAX_MOVES)
                 {
+                    u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
                     gSpecialVar_0x8004 = TRUE;
-                u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
                 if (remainingRelearner > 0){
                     VarSet(VAR_REMAINING_RELEARNER, remainingRelearner -1);
                 }                     
@@ -719,6 +719,7 @@ static void DoMoveRelearnerMain(void)
             else
             {
                 u16 moveId = GetMonData(&gPlayerParty[sMoveRelearnerStruct->partyMon], MON_DATA_MOVE1 + sMoveRelearnerStruct->moveSlot);
+                u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
 
                 StringCopy(gStringVar3, GetMoveName(moveId));
                 RemoveMonPPBonus(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->moveSlot);
@@ -727,7 +728,6 @@ static void DoMoveRelearnerMain(void)
                 PrintMessageWithPlaceholders(gText_MoveRelearnerAndPoof);
                 sMoveRelearnerStruct->state = MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE;
 
-                u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
                 if (remainingRelearner > 0){
                     VarSet(VAR_REMAINING_RELEARNER, remainingRelearner -1);
                 }
