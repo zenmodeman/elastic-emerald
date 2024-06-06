@@ -1158,6 +1158,8 @@ DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Terror traps both opponents")
     }
 }
 
+TO_DO_BATTLE_TEST("(DYNAMAX) Baton Pass passes G-Max Terror's escape prevention effect");
+
 DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Meltdown torments both opponents for 3 turns")
 {
     GIVEN {
@@ -1391,6 +1393,8 @@ DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Chi Strike boosts allies' crit chance")
     }
 }
 
+TO_DO_BATTLE_TEST("(DYNAMAX) Baton Pass doesn't pass G-Max Chi Strike's effect");
+
 DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Depletion takes away 2 PP from the target's last move")
 {
     GIVEN {
@@ -1468,5 +1472,21 @@ SINGLE_BATTLE_TEST("(DYNAMAX) Max Moves don't execute effects on fainted battler
         MESSAGE("Wobbuffet used Max Strike!");
         MESSAGE("Foe Wobbuffet fainted!");
         NOT MESSAGE("Foe Wobbuffet's Speed fell!");
+    }
+}
+
+SINGLE_BATTLE_TEST("(DYNAMAX) Moxie clones can be triggered by Max Moves fainting opponents")
+{
+    ASSUME(gMovesInfo[MOVE_WATERFALL].power > 0);
+    GIVEN {
+        PLAYER(SPECIES_GYARADOS) { Ability(ABILITY_MOXIE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); }
+        OPPONENT(SPECIES_WYNAUT);
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_CELEBRATE); MOVE(player, MOVE_WATERFALL, dynamax: TRUE); SEND_OUT(opponent, 1); }
+    } SCENE {
+        MESSAGE("Foe Wobbuffet fainted!");
+        ABILITY_POPUP(player, ABILITY_MOXIE);
+        MESSAGE("Gyarados's Moxie raised its Attack!");
     }
 }

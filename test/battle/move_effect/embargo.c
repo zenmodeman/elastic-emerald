@@ -203,7 +203,7 @@ SINGLE_BATTLE_TEST("Embargo doesn't stop an item flung at an affected target fro
     }
 }
 
-SINGLE_BATTLE_TEST("Embargo is passed via Baton Pass")
+SINGLE_BATTLE_TEST("Baton Pass passes Embargo's effect")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -220,7 +220,7 @@ SINGLE_BATTLE_TEST("Embargo is passed via Baton Pass")
         // Turn 2
         MESSAGE("Wobbuffet used Baton Pass!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_BATON_PASS, player);
-        MESSAGE("Go! Wynaut!");
+        SEND_IN_MESSAGE("Wynaut");
         // Turn 3
         MESSAGE("Wynaut used Fling!");
         MESSAGE("But it failed!");

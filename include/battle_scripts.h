@@ -141,6 +141,7 @@ extern const u8 BattleScript_CurseTurnDmg[];
 extern const u8 BattleScript_TargetPRLZHeal[];
 extern const u8 BattleScript_TargetWokeUp[];
 extern const u8 BattleScript_TargetBurnHeal[];
+extern const u8 BattleScript_TargetPoisonHealed[];
 extern const u8 BattleScript_MoveEffectSleep[];
 extern const u8 BattleScript_YawnMakesAsleep[];
 extern const u8 BattleScript_MoveEffectPoison[];
@@ -504,13 +505,13 @@ extern const u8 BattleScript_TheRainbowDisappeared[];
 extern const u8 BattleScript_HurtByTheSeaOfFire[];
 extern const u8 BattleScript_TheSeaOfFireDisappeared[];
 extern const u8 BattleScript_TheSwampDisappeared[];
-extern const u8 BattleScript_ItemRestoreHP_Party[];
 extern const u8 BattleScript_EffectPsychicNoise[];
 extern const u8 BattleScript_AromaVeilProtectsRet[];
 extern const u8 BattleScript_LowerAtkSpAtk[];
 extern const u8 BattleScript_Terastallization[];
 extern const u8 BattleScript_BoosterEnergyEnd2[];
 extern const u8 BattleScript_TeraShellDistortingTypeMatchups[];
+extern const u8 BattleScript_TeraFormChange[];
 
 // zmoves
 extern const u8 BattleScript_ZMoveActivateDamaging[];

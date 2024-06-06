@@ -20,26 +20,31 @@
 #define MOVE_LIMITATION_PLACEHOLDER             (1 << 15)
 #define MOVE_LIMITATIONS_ALL                    0xFFFF
 
-#define ABILITYEFFECT_ON_SWITCHIN                0
-#define ABILITYEFFECT_ENDTURN                    1
-#define ABILITYEFFECT_MOVES_BLOCK                2
-#define ABILITYEFFECT_ABSORBING                  3
-#define ABILITYEFFECT_MOVE_END_ATTACKER          4
-#define ABILITYEFFECT_MOVE_END                   5
-#define ABILITYEFFECT_IMMUNITY                   6
-#define ABILITYEFFECT_SYNCHRONIZE                7
-#define ABILITYEFFECT_ATK_SYNCHRONIZE            8
-#define ABILITYEFFECT_TRACE1                     9
-#define ABILITYEFFECT_TRACE2                     10
-#define ABILITYEFFECT_MOVE_END_OTHER             11
-#define ABILITYEFFECT_NEUTRALIZINGGAS            12
-#define ABILITYEFFECT_FIELD_SPORT                13 // Only used if B_SPORT_TURNS >= GEN_6
-#define ABILITYEFFECT_ON_WEATHER                 14
-#define ABILITYEFFECT_ON_TERRAIN                 15
-#define ABILITYEFFECT_SWITCH_IN_TERRAIN          16
-#define ABILITYEFFECT_SWITCH_IN_WEATHER          17
-#define ABILITYEFFECT_OPPORTUNIST                18
-#define ABILITYEFFECT_SWITCH_IN_STATUSES         19
+enum {
+    ABILITYEFFECT_ON_SWITCHIN,
+    ABILITYEFFECT_ENDTURN,
+    ABILITYEFFECT_MOVES_BLOCK,
+    ABILITYEFFECT_WOULD_BLOCK,         // Checks immunity without triggering a script
+    ABILITYEFFECT_ABSORBING,
+    ABILITYEFFECT_WOULD_ABSORB,        // Checks immunity without triggering a script
+    ABILITYEFFECT_MOVE_END_ATTACKER,
+    ABILITYEFFECT_MOVE_END,
+    ABILITYEFFECT_IMMUNITY,
+    ABILITYEFFECT_SYNCHRONIZE,
+    ABILITYEFFECT_ATK_SYNCHRONIZE,
+    ABILITYEFFECT_TRACE1,
+    ABILITYEFFECT_TRACE2,
+    ABILITYEFFECT_MOVE_END_OTHER,
+    ABILITYEFFECT_NEUTRALIZINGGAS,
+    ABILITYEFFECT_FIELD_SPORT,         // Only used if B_SPORT_TURNS >= GEN_6
+    ABILITYEFFECT_ON_WEATHER,
+    ABILITYEFFECT_ON_TERRAIN,
+    ABILITYEFFECT_SWITCH_IN_TERRAIN,
+    ABILITYEFFECT_SWITCH_IN_WEATHER,
+    ABILITYEFFECT_OPPORTUNIST,
+    ABILITYEFFECT_SWITCH_IN_STATUSES,
+};
+
 // Special cases
 #define ABILITYEFFECT_MUD_SPORT                  252 // Only used if B_SPORT_TURNS >= GEN_6
 #define ABILITYEFFECT_WATER_SPORT                253 // Only used if B_SPORT_TURNS >= GEN_6
@@ -60,6 +65,10 @@
 
 #define IS_WHOLE_SIDE_ALIVE(battler)    ((IsBattlerAlive(battler) && IsBattlerAlive(BATTLE_PARTNER(battler))))
 #define IS_ALIVE_AND_PRESENT(battler)   (IsBattlerAlive(battler) && IsBattlerSpritePresent(battler))
+
+// Lowest and highest percentages used for damage roll calculations
+#define DMG_ROLL_PERCENT_LO 85
+#define DMG_ROLL_PERCENT_HI 100
 
 // for Natural Gift and Fling
 struct TypePower
@@ -182,6 +191,7 @@ s32 CalculateMoveDamageVars(u32 move, u32 battlerAtk, u32 battlerDef, u32 moveTy
 uq4_12_t CalcTypeEffectivenessMultiplier(u32 move, u32 moveType, u32 battlerAtk, u32 battlerDef, u32 defAbility, bool32 recordAbilities);
 uq4_12_t CalcPartyMonTypeEffectivenessMultiplier(u16 move, u16 speciesDef, u16 abilityDef);
 uq4_12_t GetTypeModifier(u32 atkType, u32 defType);
+uq4_12_t GetTypeEffectiveness(struct Pokemon *mon, u8 moveType);
 s32 GetStealthHazardDamage(u8 hazardType, u32 battler);
 s32 GetStealthHazardDamageByTypesAndHP(u8 hazardType, u8 type1, u8 type2, u32 maxHp);
 bool32 CanMegaEvolve(u32 battler);
@@ -202,6 +212,7 @@ u8 GetBattleMoveCategory(u32 moveId);
 bool32 CanFling(u32 battler);
 bool32 IsTelekinesisBannedSpecies(u16 species);
 bool32 IsHealBlockPreventingMove(u32 battler, u32 move);
+bool32 IsBelchPreventingMove(u32 battler, u32 move);
 bool32 HasEnoughHpToEatBerry(u32 battler, u32 hpFraction, u32 itemId);
 bool32 IsPartnerMonFromSameTrainer(u32 battler);
 u8 GetCategoryBasedOnStats(u32 battler);
@@ -232,6 +243,8 @@ bool32 MoveHasAdditionalEffectWithChance(u32 move, u32 moveEffect, u32 chance);
 bool32 MoveHasAdditionalEffectSelf(u32 move, u32 moveEffect);
 bool32 MoveHasAdditionalEffectSelfArg(u32 move, u32 moveEffect, u32 argument);
 bool32 MoveHasChargeTurnAdditionalEffect(u32 move);
+bool32 CanTargetPartner(u32 battlerAtk, u32 battlerDef);
+bool32 TargetFullyImmuneToCurrMove(u32 BattlerAtk, u32 battlerDef);
 
 bool32 CanSleep(u32 battler);
 bool32 CanBePoisoned(u32 battlerAttacker, u32 battlerTarget);

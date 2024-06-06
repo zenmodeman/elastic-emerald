@@ -13869,8 +13869,8 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
-        .iconPic = gItemIcon_QuestionMark,
-        .iconPalette = gItemIconPalette_QuestionMark,
+        .iconPic = gItemIcon_StellarTeraShard,
+        .iconPalette = gItemIconPalette_StellarTeraShard,
     },
 
     [ITEM_JUBILIFE_MUFFIN] =
