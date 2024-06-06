@@ -2378,7 +2378,8 @@ enum
 s32 GetDrainedBigRootHp(u32 battler, s32 hp)
 {
     if (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_BIG_ROOT)
-        hp = (hp * 1300) / 1000;
+        // hp = (hp * 1300) / 1000;
+        hp = (hp * 1350) / 1000; //Slight Buff
     if (hp == 0)
         hp = 1;
 

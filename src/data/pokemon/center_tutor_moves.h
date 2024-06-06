@@ -14,16 +14,22 @@ const u16 gPreGym1Tutor[] = {
     MOVE_EMBARGO, 
     MOVE_CORROSIVE_GAS, 
     MOVE_HEAL_BLOCK, 
-    MOVE_LASER_FOCUS, 
+    MOVE_FORESIGHT,  
     MOVE_MUD_SPORT, 
     MOVE_MIST, 
     MOVE_WATER_SPORT,
     MOVE_SPITE
 };
 
+
+
 const u16 gPreGym1TutorSetup[] = {
     MOVE_WITHDRAW,
     MOVE_FLOWER_SHIELD,
     MOVE_HARDEN,
     MOVE_DEFENSE_CURL,
+};
+
+const u16 gPreGym2Tutor[] = {
+    MOVE_LASER_FOCUS
 };

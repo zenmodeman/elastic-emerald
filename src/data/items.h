@@ -12,7 +12,9 @@
     #define EVO_HELD_ITEM_FIELD_FUNC ItemUseOutOfBattle_CannotUse
 #endif
 
-#define GEM_BOOST_PARAM ((I_GEM_BOOST_POWER >= GEN_6) ? 30 : 50)
+// #define GEM_BOOST_PARAM ((I_GEM_BOOST_POWER >= GEN_6) ? 30 : 50)
+//Slight gem buff compared to the vanilla nerf
+#define GEM_BOOST_PARAM 35
 #define TYPE_BOOST_PARAM ((I_TYPE_BOOST_POWER >= GEN_4) ? 20 : 10) // For non Pokémon-specific type-boosting held items.
 #define POWER_ITEM_BOOST ((I_POWER_ITEM_BOOST >= GEN_7) ? 8 : 4)
 
@@ -8747,7 +8749,7 @@ const struct Item gItemsInfo[] =
         .name = _("Big Root"),
         .price = (I_PRICE >= GEN_9) ? 10000 : ((I_PRICE >= GEN_7) ? 4000 : 200),
         .holdEffect = HOLD_EFFECT_BIG_ROOT,
-        .holdEffectParam = 30,
+        .holdEffectParam = 35, //Slight buff, though the actual implementation is irrespective of this parameter
         .description = COMPOUND_STRING(
             "A held item that\n"
             "boosts the power of\n"
