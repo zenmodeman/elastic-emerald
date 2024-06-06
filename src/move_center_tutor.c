@@ -522,9 +522,10 @@ static void DoMoveTutorMain(void)
             {
                 if (GiveMoveToMon(&gPlayerParty[sMoveTutorStruct->partyMon], GetCurrentSelectedMove()) != MON_HAS_MAX_MOVES)
                 {
+                    u8 remainingTutor = VarGet(VAR_REMAINING_TUTOR);
+
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
                     gSpecialVar_0x8004 = TRUE;
-                u8 remainingTutor = VarGet(VAR_REMAINING_TUTOR);
                 if (remainingTutor > 0){
                     VarSet(VAR_REMAINING_TUTOR, remainingTutor -1);
                 }                     
@@ -718,7 +719,7 @@ static void DoMoveTutorMain(void)
             else
             {
                 u16 moveId = GetMonData(&gPlayerParty[sMoveTutorStruct->partyMon], MON_DATA_MOVE1 + sMoveTutorStruct->moveSlot);
-
+                u8 remainingTutor = VarGet(VAR_REMAINING_TUTOR);
                 StringCopy(gStringVar3, GetMoveName(moveId));
                 RemoveMonPPBonus(&gPlayerParty[sMoveTutorStruct->partyMon], sMoveTutorStruct->moveSlot);
                 SetMonMoveSlot(&gPlayerParty[sMoveTutorStruct->partyMon], GetCurrentSelectedMove(), sMoveTutorStruct->moveSlot);
@@ -726,7 +727,7 @@ static void DoMoveTutorMain(void)
                 PrintMessageWithPlaceholders(gText_MoveRelearnerAndPoof);
                 sMoveTutorStruct->state = MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE;
 
-                u8 remainingTutor = VarGet(VAR_REMAINING_TUTOR);
+                
                 if (remainingTutor > 0){
                     VarSet(VAR_REMAINING_TUTOR, remainingTutor -1);
                 }
