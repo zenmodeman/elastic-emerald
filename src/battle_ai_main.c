@@ -3271,6 +3271,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     bool32 isDoubleBattle = IsValidDoubleBattle(battlerAtk);
     u32 i;
 
+
     // The AI should understand that while Dynamaxed, status moves function like Protect.
     if (IsDynamaxed(battlerAtk) && gMovesInfo[move].category == DAMAGE_CATEGORY_STATUS)
         moveEffect = EFFECT_PROTECT;
@@ -3554,15 +3555,18 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 ADJUST_SCORE(WEAK_EFFECT);
             }
         }else{
+            u32 expectedHpAfterHit;
+            u32 expectedSplitHp;
             //If AI is slower and can die, just give a minor score in case AI survives somehow
             if (CanTargetFaintAi(battlerDef, battlerAtk)){
                 ADJUST_SCORE(WEAK_EFFECT);
                 //Skip all further checks, to ensure the other checks are operating under the assumption the AI mon would die after the target's turn 
                 break;
             }
-            u32 expectedHpAfterHit = gBattleMons[battlerAtk].hp - GetBestDmgFromBattler(battlerDef, battlerAtk);
+            
+            expectedHpAfterHit = gBattleMons[battlerAtk].hp - GetBestDmgFromBattler(battlerDef, battlerAtk);
 
-            u32 expectedSplitHp = (gBattleMons[battlerDef].hp + expectedHpAfterHit)/2;
+            expectedSplitHp = (gBattleMons[battlerDef].hp + expectedHpAfterHit)/2;
 
             //Factor the amount of damage the AI is expected to take in determining the HP thresholds.
             //If the AI's HP is lower, make the score incentives guarenteed, but if the AI's HP is higher, 
