@@ -1061,8 +1061,8 @@ void ZeroBoxMonData(struct BoxPokemon *boxMon)
 u8 GetTypeFromVar(u8 varValue){
     if (varValue == 0 || varValue >= NUMBER_OF_MON_TYPES){
         return TYPE_NONE;
-    }else if (varValue <= 9){
-        return varValue - 1;
+    }else if (varValue >= 10){
+        return varValue + 1;
     }else{
         return varValue;
     }
