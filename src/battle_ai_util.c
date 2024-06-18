@@ -2933,7 +2933,9 @@ bool32 AI_CanBeBurned(u32 battler, u32 ability)
       || IS_BATTLER_OF_TYPE(battler, TYPE_FIRE)
       || gBattleMons[battler].status1 & STATUS1_ANY
       || IsAbilityStatusProtected(battler)
-      || gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_SAFEGUARD)
+      || gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_SAFEGUARD
+      || gFieldStatuses & STATUS_FIELD_WATERSPORT
+      )
         return FALSE;
     return TRUE;
 }
@@ -2969,7 +2971,8 @@ bool32 AI_CanBurn(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 battlerAtk
     if (!AI_CanBeBurned(battlerDef, defAbility)
       || AI_DATA->effectiveness[battlerAtk][battlerDef][AI_THINKING_STRUCT->movesetIndex] == AI_EFFECTIVENESS_x0
       || DoesSubstituteBlockMove(battlerAtk, battlerDef, move)
-      || PartnerMoveEffectIsStatusSameTarget(battlerAtkPartner, battlerDef, partnerMove))
+      || PartnerMoveEffectIsStatusSameTarget(battlerAtkPartner, battlerDef, partnerMove)
+      || gFieldStatuses & STATUS_FIELD_WATERSPORT)
     {
         return FALSE;
     }

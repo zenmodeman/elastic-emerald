@@ -6429,7 +6429,8 @@ bool32 CanBeBurned(u32 battler)
       || ability == ABILITY_THERMAL_EXCHANGE
       || ability == ABILITY_PURIFYING_SALT
       || IsAbilityStatusProtected(battler)
-      || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN))
+      || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN)
+      || gFieldStatuses & STATUS_FIELD_WATERSPORT)
         return FALSE;
     return TRUE;
 }

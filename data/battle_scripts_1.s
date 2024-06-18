@@ -2918,6 +2918,12 @@ BattleScript_MudSportPrevents::
 	orhalfword gMoveResultFlags, MOVE_RESULT_FAILED
 	goto BattleScript_MoveEnd
 
+BattleScript_WaterSportPrevents::
+	pause B_WAIT_TIME_SHORT
+	printstring STRINGID_WATERSPORTPREVENTS
+	waitmessage B_WAIT_TIME_LONG
+	orhalfword gMoveResultFlags, MOVE_RESULT_FAILED
+	goto BattleScript_MoveEnd
 
 BattleScript_FlowerVeilProtectsRet::
 	pause B_WAIT_TIME_SHORT
@@ -4928,6 +4934,7 @@ BattleScript_EffectWillOWisp::
 	jumpifshieldsdown BS_TARGET, BattleScript_AbilityProtectsDoesntAffect
 	jumpifstatus BS_TARGET, STATUS1_ANY, BattleScript_ButItFailed
 	jumpifterrainaffected BS_TARGET, STATUS_FIELD_MISTY_TERRAIN, BattleScript_MistyTerrainPrevents
+	jumpifsportapplied STATUS_FIELD_WATERSPORT, BattleScript_WaterSportPrevents
 	accuracycheck BattleScript_ButItFailed, ACC_CURR_MOVE
 	jumpifsafeguard BattleScript_SafeguardProtected
 	attackanimation
