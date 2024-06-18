@@ -5919,7 +5919,7 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Mud-Slap  
 - Quick Attack
 
-Litleo (M)  
+Litleo (F)  
 Ability: Rivalry  
 Level: 5  
 Adamant Nature  
@@ -5939,13 +5939,26 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Zigzagoon
-Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Meowth-Galar (M) @ Throat Spray  
+Ability: Pickup  
+Level: 7  
+IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Nasty Plot  
+- Round  
+- Metal Claw  
+- Growl  
 
-Seedot
-Level: 7
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Tyrogue @ Flame Orb  
+Ability: Guts  
+Level: 8  
+EVs: 24 HP / 24 Atk / 24 Def  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Fake Out  
+- Bullet Punch  
+- Mach Punch  
+- Rapid Spin  
+
+
 
 === TRAINER_JOSH ===
 Name: JOSH
