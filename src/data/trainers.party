@@ -11467,7 +11467,7 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Clefairy @ Sticky Barb  
+Clefairy (F) @ Sticky Barb  
 Ability: Magic Guard  
 Level: 10  
 EVs: 32 HP / 8 Def / 32 SpA  
@@ -11476,30 +11476,31 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Trick  
 - Icy Wind  
 - Charm  
-- Disarming Voice
+- Disarming Voice  
 
-Slugma @ Rocky Helmet  
-Ability: Magma Armor  
+Shroodle (M) @ Jaboca Berry  
+Ability: Pickpocket  
 Level: 10  
-EVs: 36 HP / 36 Def  
-Calm Nature  
+EVs: 32 HP / 32 Spe  
+Serious Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
-- Ember  
-- Amnesia  
-- Rest  
-- Clear Smog
+- Poison Fang  
+- Mud Shot  
+- Leer  
+- Super Fang  
 
-
-Applin @ Jaboca Berry  
+Applin (M) @ Maranga Berry  
 Ability: Ripen  
 Level: 11  
 EVs: 20 HP / 28 Def / 20 SpD  
 Impish Nature  
-IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
 - Recycle  
 - Defense Curl  
 - Rollout  
-- Astonish
+- Grassy Glide  
+
+
 
 
 

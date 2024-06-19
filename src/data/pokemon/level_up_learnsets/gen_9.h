@@ -11,22 +11,28 @@ static const struct LevelUpMove sBulbasaurLevelUpLearnset[] = {
     LEVEL_UP_MOVE( 1, MOVE_TACKLE),
     LEVEL_UP_MOVE( 1, MOVE_GROWL),
     LEVEL_UP_MOVE( 3, MOVE_VINE_WHIP),
-    LEVEL_UP_MOVE( 6, MOVE_GROWTH),
+    LEVEL_UP_MOVE(6, MOVE_SWEET_SCENT),
     LEVEL_UP_MOVE( 9, MOVE_LEECH_SEED),
     LEVEL_UP_MOVE(12, MOVE_RAZOR_LEAF),
     LEVEL_UP_MOVE(15, MOVE_POISON_POWDER),
     LEVEL_UP_MOVE(15, MOVE_SLEEP_POWDER),
+
+    //WIP
     LEVEL_UP_MOVE(18, MOVE_SEED_BOMB),
     LEVEL_UP_MOVE(21, MOVE_TAKE_DOWN),
-    LEVEL_UP_MOVE(24, MOVE_SWEET_SCENT),
     LEVEL_UP_MOVE(27, MOVE_SYNTHESIS),
     LEVEL_UP_MOVE(30, MOVE_WORRY_SEED),
     LEVEL_UP_MOVE(33, MOVE_DOUBLE_EDGE),
     LEVEL_UP_MOVE(36, MOVE_SOLAR_BEAM),
+
+    LEVEL_UP_MOVE(72, MOVE_GROWTH),
     LEVEL_UP_END
 };
 
 static const struct LevelUpMove sIvysaurLevelUpLearnset[] = {
+    LEVEL_UP_MOVE(0, MOVE_WORRY_SEED),
+
+    //Fill with Bulbasaur reference later
     LEVEL_UP_MOVE( 1, MOVE_TACKLE),
     LEVEL_UP_MOVE( 1, MOVE_GROWL),
     LEVEL_UP_MOVE( 1, MOVE_VINE_WHIP),
@@ -4749,9 +4755,15 @@ static const struct LevelUpMove sMewLevelUpLearnset[] = {
 static const struct LevelUpMove sChikoritaLevelUpLearnset[] = {
     LEVEL_UP_MOVE( 1, MOVE_TACKLE),
     LEVEL_UP_MOVE( 1, MOVE_GROWL),
+    LEVEL_UP_MOVE(3, MOVE_REFRESH),
     LEVEL_UP_MOVE( 6, MOVE_RAZOR_LEAF),
     LEVEL_UP_MOVE( 9, MOVE_POISON_POWDER),
+    LEVEL_UP_MOVE(9, MOVE_GRASSY_TERRAIN),
+
     LEVEL_UP_MOVE(12, MOVE_SYNTHESIS),
+    LEVEL_UP_MOVE(15, MOVE_NATURAL_GIFT),
+
+    //WIP
     LEVEL_UP_MOVE(17, MOVE_REFLECT),
     LEVEL_UP_MOVE(20, MOVE_MAGICAL_LEAF),
     LEVEL_UP_MOVE(23, MOVE_NATURE_POWER),
@@ -4765,6 +4777,9 @@ static const struct LevelUpMove sChikoritaLevelUpLearnset[] = {
 };
 
 static const struct LevelUpMove sBayleefLevelUpLearnset[] = {
+    LEVEL_UP_MOVE(0, MOVE_LIGHT_SCREEN),
+
+    //Fill in rest with Chikorita reference
     LEVEL_UP_MOVE( 1, MOVE_TACKLE),
     LEVEL_UP_MOVE( 1, MOVE_GROWL),
     LEVEL_UP_MOVE( 1, MOVE_RAZOR_LEAF),

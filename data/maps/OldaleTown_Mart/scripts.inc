@@ -159,97 +159,99 @@ BasicMartItems:
 	.2byte ITEM_AWAKENING
 # 69 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_EXP_CANDY_XS
+# 70 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_REPEL
 	.2byte ITEM_NONE
 
 	.align 2
-# 72 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourceEVless:
 # 73 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
+StockedMartItemsResourceEVless:
 # 74 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_POKE_BALL
 # 75 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POTION
 # 76 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ANTIDOTE
 # 77 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_PARALYZE_HEAL
 # 78 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_AWAKENING
 # 79 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POMEG_BERRY
+	.2byte ITEM_EXP_CANDY_XS
 # 80 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_POMEG_BERRY
+# 81 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_REPEL
 	.2byte ITEM_NONE
 
 	.align 2
-# 83 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourceEVs:
 # 84 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
+StockedMartItemsResourceEVs:
 # 85 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_POKE_BALL
 # 86 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POTION
 # 87 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ANTIDOTE
 # 88 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_PARALYZE_HEAL
 # 89 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_AWAKENING
 # 90 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POMEG_BERRY
+	.2byte ITEM_EXP_CANDY_XS
 # 91 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_POMEG_BERRY
 # 92 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_REPEL
+# 93 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_HEALTH_FEATHER
 	.2byte ITEM_NONE
 
 	.align 2
-# 95 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourcefulEVless:
 # 96 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
+StockedMartItemsResourcefulEVless:
 # 97 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_POKE_BALL
 # 98 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POTION
 # 99 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ANTIDOTE
 # 100 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_PARALYZE_HEAL
 # 101 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_AWAKENING
 # 102 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POMEG_BERRY
+	.2byte ITEM_EXP_CANDY_XS
 # 103 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_POMEG_BERRY
 # 104 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_REPEL
+# 105 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_SERIOUS_MINT
 	.2byte ITEM_NONE
 
 	.align 2
-# 107 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourcefulEVs:
 # 108 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
+StockedMartItemsResourcefulEVs:
 # 109 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_POKE_BALL
 # 110 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POTION
 # 111 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ANTIDOTE
 # 112 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_PARALYZE_HEAL
 # 113 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_AWAKENING
 # 114 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POMEG_BERRY
+	.2byte ITEM_EXP_CANDY_XS
 # 115 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_POMEG_BERRY
 # 116 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_SERIOUS_MINT
+	.2byte ITEM_REPEL
 # 117 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_SERIOUS_MINT
+# 118 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_HEALTH_FEATHER
 	.2byte ITEM_NONE
 

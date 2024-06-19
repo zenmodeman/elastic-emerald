@@ -67,6 +67,7 @@ mart BasicMartItems{
     ITEM_PARALYZE_HEAL
     ITEM_AWAKENING
     ITEM_EXP_CANDY_XS
+    ITEM_REPEL
 }
 
 mart StockedMartItemsResourceEVless{
