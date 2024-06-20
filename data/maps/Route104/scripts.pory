@@ -853,10 +853,6 @@ Route104_EventScript_Ivan::
 	msgbox Route104_Text_IvanPostBattle, MSGBOX_AUTOCLOSE
 	end
 
-Route104_EventScript_Billy::
-	trainerbattle_single TRAINER_BILLY, Route104_Text_BillyIntro, Route104_Text_BillyDefeat
-	msgbox Route104_Text_BillyPostBattle, MSGBOX_AUTOCLOSE
-	end
 
 Route104_EventScript_Haley::
 	trainerbattle_single TRAINER_HALEY_1, Route104_Text_HaleyIntro, Route104_Text_HaleyDefeat, Route104_EventScript_TryRegisterHaleyAfterBattle
@@ -1191,8 +1187,23 @@ script Route104_EventScript_CindyIsWillingToRematch{
 script Route104_EventScript_Cindy{
 	trainerbattle_single(TRAINER_CINDY_1, Route104_Text_CindyIntro, Route104_Text_CindyDefeat, Route104_EventScript_CindyIsWillingToRematch)
 	goto(Route104_EventScriptCindyRematch)
-
 } 
+
+script Route104_EventScript_Billy{
+	trainerbattle_single(TRAINER_BILLY, Route104_Text_BillyIntro, Route104_Text_BillyDefeat, Route104_EventScript_BillyGift)
+	msgbox(Route104_Text_BillyPostBattle, MSGBOX_AUTOCLOSE)
+	end
+}
+
+script  Route104_EventScript_BillyGift{
+	msgbox(format("That was a nice battle! Here, you can have one of the mints that I've been giving to my Pokemon."))
+	giveitem(ITEM_SERIOUS_MINT)
+    if (var(VAR_RESULT) == FALSE){
+    	call(Common_EventScript_ShowBagIsFull)
+    }
+	releaseall
+	end
+}
 
 script Route104_EventScriptCindyRematch{
 	msgbox(format("Hey, {PLAYER}, Would you like a rematch?"), MSGBOX_YESNO)
