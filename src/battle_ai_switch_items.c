@@ -73,7 +73,7 @@ static bool32 HasBadOdds(u32 battler, bool32 emitResult)
     //Variable initialization
 	u8 opposingPosition, atkType1, atkType2, defType1, defType2, effectiveness;
     s32 i, damageDealt = 0, maxDamageDealt = 0, damageTaken = 0, maxDamageTaken = 0;
-    u32 aiMove, playerMove, aiBestMove = MOVE_NONE, aiAbility = GetBattlerAbility(battler), opposingBattler, weather = AI_GetWeather(AI_DATA);
+    u32 aiMove, playerMove, aiBestMove = MOVE_NONE, aiAbility = AI_DATA->abilities[battler], opposingBattler, weather = AI_GetWeather(AI_DATA);
     bool32 getsOneShot = FALSE, hasStatusMove = FALSE, hasSuperEffectiveMove = FALSE;
 	u16 typeEffectiveness = UQ_4_12(1.0), aiMoveEffect; //baseline typing damage
 
@@ -120,7 +120,7 @@ static bool32 HasBadOdds(u32 battler, bool32 emitResult)
                     hasSuperEffectiveMove = TRUE;
 
                 // Get maximum damage mon can deal
-                damageDealt = AI_DATA->simulatedDmg[battler][opposingBattler][i];
+                damageDealt = AI_DATA->simulatedDmg[battler][opposingBattler][i].expected;
                 if(damageDealt > maxDamageDealt)
                 {
                     maxDamageDealt = damageDealt;
@@ -148,8 +148,8 @@ static bool32 HasBadOdds(u32 battler, bool32 emitResult)
         playerMove = gBattleMons[opposingBattler].moves[i];
         if (playerMove != MOVE_NONE && gMovesInfo[playerMove].power != 0)
         {
-            damageTaken = AI_CalcDamage(playerMove, opposingBattler, battler, &effectiveness, FALSE, weather, DMG_ROLL_HIGHEST);
-            if (damageTaken > maxDamageTaken)
+            struct SimulatedDamage dmg = AI_CalcDamage(playerMove, opposingBattler, battler, &effectiveness, FALSE, weather, DMG_ROLL_HIGHEST);
+            if (dmg.expected > maxDamageTaken)
                 maxDamageTaken = damageTaken;
         }
     }
@@ -247,7 +247,7 @@ static bool32 ShouldSwitchIfWonderGuard(u32 battler, bool32 emitResult)
 
     opposingPosition = BATTLE_OPPOSITE(GetBattlerPosition(battler));
 
-    if (GetBattlerAbility(GetBattlerAtPosition(opposingPosition)) != ABILITY_WONDER_GUARD)
+    if (AI_DATA->abilities[GetBattlerAtPosition(opposingPosition)] != ABILITY_WONDER_GUARD)
         return FALSE;
 
     // Check if Pokémon has a super effective move.
@@ -837,7 +837,7 @@ static bool32 CanMonSurviveHazardSwitchin(u32 battler)
 {
     u32 battlerIn1, battlerIn2;
     u32 hazardDamage = 0, battlerHp = gBattleMons[battler].hp;
-    u32 ability = GetBattlerAbility(battler), aiMove;
+    u32 ability = AI_DATA->abilities[battler], aiMove;
     s32 firstId, lastId, i, j;
     struct Pokemon *party;
 
@@ -1742,7 +1742,7 @@ static bool32 CanAbilityTrapOpponent(u16 ability, u32 opponent)
         return FALSE;
     else if (ability == ABILITY_SHADOW_TAG)
     {
-        if (B_SHADOW_TAG_ESCAPE >= GEN_4 && GetBattlerAbility(opponent) == ABILITY_SHADOW_TAG) // Check if ability exists in species
+        if (B_SHADOW_TAG_ESCAPE >= GEN_4 && AI_DATA->abilities[opponent] == ABILITY_SHADOW_TAG) // Check if ability exists in species
             return FALSE;
         else
             return TRUE;
@@ -1880,14 +1880,17 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
                 // If AI mon can one shot
                 if (damageDealt > playerMonHP)
                 {
-                    // If AI mon is faster and doesn't die to hazards
-                    if ((aiMonSpeed > playerMonSpeed || aiMovePriority > 0) && AI_DATA->switchinCandidate.battleMon.hp > GetSwitchinHazardsDamage(battler, &AI_DATA->switchinCandidate.battleMon))
+                    // If AI mon outspeeds and doesn't die to hazards
+                    if ((((aiMonSpeed > playerMonSpeed && !(gFieldStatuses & STATUS_FIELD_TRICK_ROOM)) || aiMovePriority > 0) // Outspeed if not Trick Room
+                        || ((gFieldStatuses & STATUS_FIELD_TRICK_ROOM) // Trick Room
+                        && (aiMonSpeed < playerMonSpeed || (gItemsInfo[AI_DATA->switchinCandidate.battleMon.item].holdEffect == HOLD_EFFECT_ROOM_SERVICE && aiMonSpeed * 2 / 3 < playerMonSpeed)))) // Trick Room speeds
+                        && AI_DATA->switchinCandidate.battleMon.hp > GetSwitchinHazardsDamage(battler, &AI_DATA->switchinCandidate.battleMon)) // Hazards
                     {
                         // We have a revenge killer
                         revengeKillerId = i;
                     }
 
-                    // If AI mon is slower
+                    // If AI mon is outsped
                     else
                     {
                         // If AI mon can't be OHKO'd
@@ -1902,8 +1905,10 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
                 // If AI mon can two shot
                 if (damageDealt > playerMonHP / 2)
                 {
-                    // If AI mon is faster
-                    if (aiMonSpeed > playerMonSpeed || aiMovePriority > 0)
+                    // If AI mon outspeeds
+                    if (((aiMonSpeed > playerMonSpeed && !(gFieldStatuses & STATUS_FIELD_TRICK_ROOM)) || aiMovePriority > 0) // Outspeed if not Trick Room
+                        || (((gFieldStatuses & STATUS_FIELD_TRICK_ROOM) && gFieldTimers.trickRoomTimer > 1) // Trick Room has at least 2 turns left
+                        && (aiMonSpeed < playerMonSpeed || (gItemsInfo[AI_DATA->switchinCandidate.battleMon.item].holdEffect == HOLD_EFFECT_ROOM_SERVICE && aiMonSpeed * 2/ 3 < playerMonSpeed)))) // Trick Room speeds
                     {
                         // If AI mon can't be OHKO'd
                         if (hitsToKOAI > hitsToKOAIThreshold)
@@ -1912,7 +1917,7 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
                             fastThreatenId = i;
                         }
                     }
-                    // If AI mon is slower
+                    // If AI mon is outsped
                     else
                     {
                         // If AI mon can't be 2HKO'd

@@ -3068,4 +3068,8 @@ extern const u8 gText_Moves_Menu[];
 extern const u8 gText_MenuMap[];
 extern const u8 gText_MenuFly[];
 
+// Map name pop-up
+extern const u8 gText_AM[];
+extern const u8 gText_PM[];
+
 #endif // GUARD_STRINGS_H

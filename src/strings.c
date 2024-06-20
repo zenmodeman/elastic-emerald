@@ -1854,3 +1854,5 @@ const u8 gText_Moves_Menu[] = _("Change Moves");
 
 const u8 gText_MenuMap[] = _("MAP");
 const u8 gText_MenuFly[] = _("FLY");
+const u8 gText_AM[] = _("AM");
+const u8 gText_PM[] = _("PM");
