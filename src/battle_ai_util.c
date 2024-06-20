@@ -1137,9 +1137,9 @@ u32 GetBestDmgFromBattler(u32 battlerAtk, u32 battlerDef)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && !(unusable & gBitTable[i])
-            && bestDmg < AI_DATA->simulatedDmg[battlerAtk][battlerDef][i])
+            && bestDmg < AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected)
         {
-            bestDmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][i];
+            bestDmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected;
         }
     }
     return bestDmg;

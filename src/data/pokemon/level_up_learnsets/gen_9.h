@@ -7822,7 +7822,7 @@ static const struct LevelUpMove sShroomishLevelUpLearnset[] = {
     LEVEL_UP_MOVE(33, MOVE_TOXIC),
     LEVEL_UP_MOVE(36, MOVE_SEED_BOMB),
     LEVEL_UP_MOVE(40, MOVE_SPORE),
-    LEVEL_UP_MOVE(72, MOVE_GROWTH)
+    LEVEL_UP_MOVE(72, MOVE_GROWTH),
     LEVEL_UP_END
 };
 
