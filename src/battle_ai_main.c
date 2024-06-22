@@ -33,6 +33,8 @@
 
 #define MIN_SWITCHES_FOR_PREDICTION 2
 
+static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move);
+
 static u32 ChooseMoveOrAction_Singles(u32 battlerAi);
 static u32 ChooseMoveOrAction_Doubles(u32 battlerAi);
 static inline void BattleAI_DoAIProcessing(struct AI_ThinkingStruct *aiThink, u32 battlerAi, u32 battlerDef);
@@ -3169,6 +3171,14 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
     {
         if (moves[i] != MOVE_NONE && gMovesInfo[moves[i]].power)
         {
+            //POTENTIALLY SCRAP below
+            //Idea is that if the effect score is disincentivized, don't factor it in best number of hits
+            //Issue is that this creates duplication of the calculation, and it could be desynchronized when random score increases
+            //are at play
+            if(AI_CalcMoveEffectScore(battlerAtk, battlerDef, moves[i]) < 0){
+                continue;
+            }
+
             noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i);
             if (ShouldUseSpreadDamageMove(battlerAtk,moves[i], i, noOfHits[i]))
             {
@@ -3293,6 +3303,22 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     //     }
             
     // }
+
+    //Throat Spray logic
+    if (gMovesInfo[move].soundMove 
+    && aiData->holdEffects[battlerAtk] == HOLD_EFFECT_THROAT_SPRAY 
+    && HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)){
+        ADJUST_SCORE(WEAK_EFFECT);
+        //Conditional additional score raise
+        if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+    }
+    
+    //Priority Moves v.s. Upper Hand logic
+    if (gMovesInfo[move].power && (HasMove(battlerDef, MOVE_UPPER_HAND) || HasMove(battlerDef, MOVE_QUICK_GUARD)) && gMovesInfo[move].priority > 0 && AI_RandLessThan(127)){
+        score -= 2;
+    }
 
     // move effect checks
     switch (moveEffect)
@@ -4693,9 +4719,19 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             {
                 switch (gMovesInfo[move].additionalEffects[i].moveEffect)
                 {
+                case MOVE_EFFECT_SPD_PLUS_1:
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100
+                     && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
+                        //This check is only true against neutral targets, so perhaps improve it later for any stat stages
+                        if ((aiData->speedStats[battlerAtk] * 1.5) > aiData->speedStats[battlerDef]){
+                            ADJUST_SCORE(DECENT_EFFECT);
+                        }else{
+                            ADJUST_SCORE(WEAK_EFFECT);
+                        }
+                    }
+                    break;
                 case MOVE_EFFECT_ATK_PLUS_1:
                 case MOVE_EFFECT_DEF_PLUS_1:
-                case MOVE_EFFECT_SPD_PLUS_1:
                 case MOVE_EFFECT_SP_ATK_PLUS_1:
                 case MOVE_EFFECT_SP_DEF_PLUS_1:
                     StageStatId = STAT_CHANGE_ATK + gMovesInfo[move].additionalEffects[i].moveEffect - MOVE_EFFECT_ATK_PLUS_1;
@@ -5116,6 +5152,8 @@ static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
 {
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
         return score;
+
+    //Testing, move CalcMoveEffectScore above CompareDamagingMoves so that negative score moves are not counted
 
     if (gMovesInfo[move].power)
     {

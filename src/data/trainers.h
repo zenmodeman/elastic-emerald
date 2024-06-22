@@ -14898,7 +14898,7 @@ F_TRAINER_FEMALE |
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 5946
-                MOVE_NASTY_PLOT,
+                MOVE_CONFIDE,
                 MOVE_ROUND,
                 MOVE_METAL_CLAW,
                 MOVE_GROWL,
