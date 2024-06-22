@@ -63,6 +63,7 @@ static s32 AI_PowerfulStatus(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
 static bool32 ShouldPermitImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move);
 static bool32 ShouldPenalizeNonImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move);
 
+
 static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
 {
     [0] = AI_CheckBadMove,           // AI_FLAG_CHECK_BAD_MOVE
@@ -98,6 +99,10 @@ static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
     [30] = AI_Safari,               // AI_FLAG_SAFARI
     [31] = AI_FirstBattle,          // AI_FLAG_FIRST_BATTLE
 };
+
+//The first 4 represent the scores of the 4 indexes
+//And the last index represents whether the values have been set
+s32 tentativeScores[5] = {0};
 
 // Functions
 void BattleAI_SetupItems(void)
@@ -788,8 +793,11 @@ static inline bool32 ShouldConsiderMoveForBattler(u32 battlerAi, u32 battlerDef,
     return TRUE;
 }
 
+
 static inline void BattleAI_DoAIProcessing(struct AI_ThinkingStruct *aiThink, u32 battlerAi, u32 battlerDef)
 {
+    //Clear the array before processing it
+    memset(tentativeScores, 0, sizeof(tentativeScores));
     do
     {
         if (gBattleMons[battlerAi].pp[aiThink->movesetIndex] == 0)
@@ -3171,11 +3179,10 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
     {
         if (moves[i] != MOVE_NONE && gMovesInfo[moves[i]].power)
         {
+            DebugPrintf("For move %d, the tentative score is %d", moves[i], tentativeScores[i]);
             //POTENTIALLY SCRAP below
             //Idea is that if the effect score is disincentivized, don't factor it in best number of hits
-            //Issue is that this creates duplication of the calculation, and it could be desynchronized when random score increases
-            //are at play
-            if(AI_CalcMoveEffectScore(battlerAtk, battlerDef, moves[i]) < 0){
+            if (tentativeScores[i] < 100){
                 continue;
             }
 
@@ -3317,6 +3324,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     
     //Priority Moves v.s. Upper Hand logic
     if (gMovesInfo[move].power && (HasMove(battlerDef, MOVE_UPPER_HAND) || HasMove(battlerDef, MOVE_QUICK_GUARD)) && gMovesInfo[move].priority > 0 && AI_RandLessThan(127)){
+        // DebugPrintf("The Upper Hand RNG check has been hit.");
         score -= 2;
     }
 
@@ -5147,36 +5155,58 @@ static bool32 ShouldPenalizeNonImmuneMove(u32 battlerAtk, u32 battlerDef, u32 mo
 
 
 
+static void setTentativeScores(){
+    u32 i;
+
+    //Do nothing if tentative scores are already set
+    if (tentativeScores[4] == 1){
+        return;
+    }
+    
+    for (i=0; i < MAX_MON_MOVES; i++){
+        tentativeScores[i] = gBattleResources->ai->score[i];
+    }
+    tentativeScores[4] = 1;
+}
+
 // AI_FLAG_CHECK_VIABILITY - Chooses best possible move to hit player
 static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
+    u32 moveSlot = GetMoveSlot(GetMovesArray(battlerAtk), move);
+
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
         return score;
 
-    //Testing, move CalcMoveEffectScore above CompareDamagingMoves so that negative score moves are not counted
+    setTentativeScores();
+    tentativeScores[moveSlot] += AI_CalcMoveEffectScore(battlerAtk, battlerDef, move);
 
     if (gMovesInfo[move].power)
     {
         if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex) == 0){
-            ADJUST_SCORE(-20);
+            tentativeScores[moveSlot] -= 20;
+            // ADJUST_SCORE(-20);
+
              //TODO: Perhaps ShouldPermitImmuneMove also belongs here when it comes to ability immunities
 
         }
         else
         {
             if ((AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_RISKY) && GetBestDmgMoveFromBattler(battlerAtk, battlerDef) == move){
-                ADJUST_SCORE(1);
+                tentativeScores[moveSlot] += 1;
+                // ADJUST_SCORE(1);
             }
             else{
-                score += AI_CompareDamagingMoves(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex);
+                tentativeScores[moveSlot] += AI_CompareDamagingMoves(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex);
+                // score += AI_CompareDamagingMoves(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex);
                 if (ShouldPenalizeNonImmuneMove(battlerAtk, battlerDef, move)){
-                    ADJUST_SCORE(-20);
+                    tentativeScores[moveSlot] -= 20;
+                    // ADJUST_SCORE(-20);
                 }
             }
         }
     }
 
-    score += AI_CalcMoveEffectScore(battlerAtk, battlerDef, move);
+    // score += AI_CalcMoveEffectScore(battlerAtk, battlerDef, move);
 
     // Some additional scores for very specific cases
     switch(move){
@@ -5184,12 +5214,13 @@ static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score
             //Because Constrict makes so little progres, have a chance to give it a disincentivize score, in the case that it's the best damaging move
             //This raises the liklihood of using a neutral score status move above best damaging move Constrict
             if (gBattleMons[battlerAtk].statStages[STAT_ATK] <= DEFAULT_STAT_STAGE && gBattleMons[battlerDef].statStages[STAT_DEF] >= DEFAULT_STAT_STAGE && score > 100){
-                ADJUST_SCORE(-1);
+                tentativeScores[moveSlot] -=1;
+                // ADJUST_SCORE(-1);
             }
             break;
     }
-
-    return score;
+    return tentativeScores[moveSlot];
+    // return score;
 }
 
 // Effects that are encouraged on the first turn of battle
