@@ -888,8 +888,11 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_METAL_BURST:
             break;
         default:
-            //TODO: Probably get rid of this logic later
-        RETURN_SCORE_MINUS(10);
+
+            //Get Rid of the score disincentive for now, since this overwrites other
+            //reasons to use a move, such as nuzzle or trailblaze.
+            RETURN_SCORE_MINUS(0);
+            // RETURN_SCORE_MINUS(10);
         }
         break;
     }
@@ -3918,7 +3921,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_SANDSTORM:
         if (ShouldSetSandstorm(battlerAtk, aiData->abilities[battlerAtk], aiData->holdEffects[battlerAtk]))
         {
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE(WEAK_EFFECT);
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_SMOOTH_ROCK)
                 ADJUST_SCORE(WEAK_EFFECT);
             if (HasMoveEffect(battlerDef, EFFECT_MORNING_SUN)
