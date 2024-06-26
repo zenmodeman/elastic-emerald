@@ -5735,6 +5735,10 @@ u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves)
     u16 applicable_tutor_moves[MAX_TUTOR_LIST] = {0};
 
     int i, j;
+
+    if (species == SPECIES_EGG){
+        return 0;
+    }
     
     GetCenterTutorMoveList(species, applicable_tutor_moves);
 
@@ -5757,18 +5761,12 @@ u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves)
     return numMoves;
 }
 
+//Simply use the CenterTutorableMoves number of tutorable moves
+//To compute this, since it handles move overlaps
 u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
 {   
-    u8 numMoves = 0;
-    u16 applicable_tutor_moves[MAX_TUTOR_LIST] = {0};
-    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
-
-    if (species == SPECIES_EGG)
-        return 0;
-
-    numMoves = GetCenterTutorMoveList(species, applicable_tutor_moves);
-
-    return numMoves;
+    u16 moves[MAX_TUTOR_LIST] = {0};
+    return GetCenterTutorableMoves(mon, moves);
 }
 u16 SpeciesToPokedexNum(u16 species)
 {
