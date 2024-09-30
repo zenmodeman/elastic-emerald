@@ -2518,7 +2518,7 @@ const struct Item gItemsInfo[] =
 
         [ITEM_PLAIN_BOTTLE_CAP] =
     {
-        .name = HANDLE_EXPANDED_ITEM_NAME("PlnBottlCap", "Plain Bottle Cap"),
+        .name = _("Plain Bottle Cap"),
         .price = 500,
         .description = COMPOUND_STRING(
             "A plain bottle\n"

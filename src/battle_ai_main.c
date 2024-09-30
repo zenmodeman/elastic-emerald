@@ -34,8 +34,6 @@
 
 #define MIN_SWITCHES_FOR_PREDICTION 2
 
-static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move);
-
 static u32 ChooseMoveOrAction_Singles(u32 battlerAi);
 static u32 ChooseMoveOrAction_Doubles(u32 battlerAi);
 static inline void BattleAI_DoAIProcessing(struct AI_ThinkingStruct *aiThink, u32 battlerAi, u32 battlerDef);
@@ -4714,13 +4712,13 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
 
         //Give potential to use Camouflage if AI cannot 2KO, the new type is not weak to the opponent's STABs, and the current type does not resist both STABs
         if (!CanAIFaintTarget(battlerAtk, battlerDef, 2) 
-        && GetTypeModifier(gBattleMons[battlerDef].type1, GetTerrainType()) < UQ_4_12(2.0) 
-        && GetTypeModifier(gBattleMons[battlerDef].type2, GetTerrainType()) < UQ_4_12(2.0) 
+        && GetTypeModifier(gBattleMons[battlerDef].types[0], GetTerrainType()) < UQ_4_12(2.0) 
+        && GetTypeModifier(gBattleMons[battlerDef].types[1], GetTerrainType()) < UQ_4_12(2.0) 
 
         //uses MOVE_CONSTRICT as a hacky way to only consider types and not specific move logic
         && 
-        (CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].type1, battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0)
-        || CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].type2, battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0))
+        (CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].types[0], battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0)
+        || CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].types[1], battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0))
         ){
             //~50% chance incentive
             if (AI_RandLessThan(127)){

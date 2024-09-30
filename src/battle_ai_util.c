@@ -1239,23 +1239,7 @@ u32 GetBestDmgFromBattler(u32 battler, u32 battlerTarget)
     return bestDmg;
 }
 
-u32 GetBestDmgFromBattler(u32 battlerAtk, u32 battlerDef)
-{
-    u32 i;
-    u32 bestDmg = 0;
-    u32 unusable = AI_DATA->moveLimitations[battlerAtk];
-    u16 *moves = GetMovesArray(battlerAtk);
 
-    for (i = 0; i < MAX_MON_MOVES; i++)
-    {
-        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && !(unusable & gBitTable[i])
-            && bestDmg < AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected)
-        {
-            bestDmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected;
-        }
-    }
-    return bestDmg;
-}
 
 // Check if AI mon has the means to faint the target with any of its moves.
 // If numHits > 1, check if the target will be KO'ed by that number of hits (ignoring healing effects)
