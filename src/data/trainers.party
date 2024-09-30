@@ -2056,9 +2056,26 @@ Items: Full Restore
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Zigzagoon @ Nugget
-Level: 7
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Zigzagoon (F) @ Ring Target  
+Ability: Quick Feet  
+Level: 8  
+EVs: 32 Def / 8 SpA / 32 SpD  
+Modest Nature  
+IVs: 10 HP / 0 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Trick  
+- Mud Shot  
+- Round  
+- Charge Beam  
+
+Happiny @ Ring Target  
+Ability: Natural Cure  
+Level: 8  
+EVs: 4 HP / 12 Atk / 12 Def / 32 SpD / 12 Spe  
+Serious Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Trick  
+- Last Resort  
+
 
 === TRAINER_DAPHNE ===
 Name: DAPHNE
