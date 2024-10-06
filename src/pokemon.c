@@ -2392,6 +2392,39 @@ union EvolutionTracker
     struct EvolutionTrackerBitfield asField;
 };
 
+
+static u32 getCuratedOrRandomTeraType(u16 species, u32 personality){
+
+    
+    //Get a value of 0 to TYPE_FAIRY - 1; add 1 since 0 is TYPE_NONE, to get values between TYPE_NORMAL and TYPE_FAIRY
+    u32 randomTeraType = (personality % TYPE_FAIRY) + 1;
+
+    //Easiest way to deal with TYPE_MYSTERY is to just replace it with Stellar
+    if (randomTeraType == TYPE_MYSTERY){
+        randomTeraType = TYPE_STELLAR;
+    }
+    
+    if (!FlagGet(FLAG_CURATED_TERA)){
+        return randomTeraType;
+    }
+
+    switch(species){
+        case SPECIES_APPLIN:
+        case SPECIES_FLAPPLE:
+        case SPECIES_APPLETUN:
+        case SPECIES_DIPPLIN:
+        case SPECIES_HYDRAPPLE:
+            return TYPE_BUG;
+        case SPECIES_TREECKO:
+            return TYPE_GRASS;
+        case SPECIES_SNOVER:
+            return TYPE_STELLAR;
+        case SPECIES_BELLSPROUT:
+            return TYPE_DARK;
+        default:
+            return randomTeraType;
+    }
+}
 /* GameFreak called GetBoxMonData with either 2 or 3 arguments, for type
  * safety we have a GetBoxMonData macro (in include/pokemon.h) which
  * dispatches to either GetBoxMonData2 or GetBoxMonData3 based on the
@@ -2778,8 +2811,9 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
             }
             else if (substruct0->teraType == TYPE_NONE) // Tera Type hasn't been modified so we can just use the personality
             {
-                const u8 *types = gSpeciesInfo[substruct0->species].types;
-                retVal = (boxMon->personality & 0x1) == 0 ? types[0] : types[1];
+                retVal = getCuratedOrRandomTeraType(substruct0->species, boxMon->personality);
+                // const u8 *types = gSpeciesInfo[substruct0->species].types;
+                //retVal = (boxMon->personality & 0x1) == 0 ? types[0] : types[1];
             }
             else
             {
@@ -3758,6 +3792,7 @@ s32 GetEVStatCap(void){
     }
 }
 
+
 // Returns TRUE if the item has no effect on the Pokémon, FALSE otherwise
 bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex, bool8 usedByAI)
 {
@@ -3842,9 +3877,10 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
                     dataUnsigned = sExpCandyExperienceTable[param - 1] + GetMonData(mon, MON_DATA_EXP, NULL);
 
-                    if (B_RARE_CANDY_CAP && B_EXP_CAP_TYPE == EXP_CAP_HARD)
+                    // if (B_RARE_CANDY_CAP && B_EXP_CAP_TYPE == EXP_CAP_HARD)
+                    if (FlagGet(FLAG_LEVEL_CAP))
                     {
-                        u32 currentLevelCap = GetCurrentLevelCap();
+                        u32 currentLevelCap = GetCurrentLevelCap(CANDY_CAP);
                         if (dataUnsigned > gExperienceTables[gSpeciesInfo[species].growthRate][currentLevelCap])
                             dataUnsigned = gExperienceTables[gSpeciesInfo[species].growthRate][currentLevelCap];
                     }
@@ -5522,7 +5558,7 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
         expPoints = gExperienceTables[gSpeciesInfo[species].growthRate][MAX_LEVEL];
         SetMonData(mon, MON_DATA_EXP, &expPoints);
     }
-    if (nextLevel > GetCurrentLevelCap() || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
+    if (nextLevel > GetCurrentLevelCap(CANDY_CAP) || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
     {
         return FALSE;
     }

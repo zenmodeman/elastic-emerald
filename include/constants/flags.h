@@ -46,9 +46,9 @@
 #define FLAG_RESOURCE_MODE    0x21 // For Resource Mode logic; formerly un used flag
 #define FLAG_EV_MODE    0x22 // For EV mode logic; formerly un used flag
 #define FLAG_PARTY_MOVES    0x23 // For move relearning; formerly un used flag
-#define FLAG_UNUSED_0x024    0x24 // Unused Flag
-#define FLAG_UNUSED_0x025    0x25 // Unused Flag
-#define FLAG_UNUSED_0x026    0x26 // Unused Flag
+#define FLAG_LEVEL_CAP    0x24 //Whether there's a level cap; formerly un used flag
+#define FLAG_TERA_CHARGED    0x25 // Flag to store tera charge; formerly un used flag
+#define FLAG_CURATED_TERA    0x26 // Flag to determine whether to curate teras; formerly un used flag
 #define FLAG_UNUSED_0x027    0x27 // Unused Flag
 #define FLAG_UNUSED_0x028    0x28 // Unused Flag
 #define FLAG_UNUSED_0x029    0x29 // Unused Flag

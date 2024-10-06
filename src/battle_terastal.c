@@ -62,15 +62,25 @@ void ApplyBattlerVisualsForTeraAnim(u32 battler)
 bool32 CanTerastallize(u32 battler)
 {
     u32 holdEffect = GetBattlerHoldEffect(battler, FALSE);
-
+    u32 teraType = GetBattlerTeraType(battler);
+    u32 monotype;
     // Prevents Zigzagoon from terastalizing in vanilla.
     if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE && GetBattlerSide(battler) == B_SIDE_OPPONENT)
         return FALSE;
+
+    //For monotypes, only permit teras that don't remove the type relevant to the monotype
+    if (VarGet(VAR_MONOTYPE) != 0){
+        monotype = GetTypeFromVar(VarGet(VAR_MONOTYPE));
+        if (teraType != monotype && teraType != TYPE_STELLAR){
+            return FALSE;
+        }
+    }
 
     if (TESTING || GetBattlerSide(battler) == B_SIDE_OPPONENT)
     {
         // Skip all other checks in this block, go to HasTrainerUsedGimmick
     }
+
     else if (!CheckBagHasItem(ITEM_TERA_ORB, 1))
     {
         return FALSE;
