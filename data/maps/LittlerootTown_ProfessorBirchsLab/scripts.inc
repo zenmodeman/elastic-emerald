@@ -2539,7 +2539,7 @@ StarterSteelScript::
 # 1239 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterSteelScript_Text_0
 # 1241 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	givemon SPECIES_SANDSHREW_ALOLAN, 5, ITEM_ENIGMA_BERRY
+	givemon SPECIES_SANDSHREW_ALOLA, 5, ITEM_ENIGMA_BERRY
 # 1243 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterSteelScript_2
@@ -2713,7 +2713,7 @@ StarterIceScript::
 # 1335 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterIceScript_Text_0
 # 1337 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	givemon SPECIES_SANDSHREW_ALOLAN, 5, ITEM_ENIGMA_BERRY
+	givemon SPECIES_SANDSHREW_ALOLA, 5, ITEM_ENIGMA_BERRY
 # 1339 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterIceScript_2

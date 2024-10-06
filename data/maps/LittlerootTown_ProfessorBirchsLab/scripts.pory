@@ -1238,7 +1238,7 @@ script StarterGhostScript{
 script StarterSteelScript{
 		msgbox(format("I hear you're a fan of Steel Types, So Sandshrew-Alola will be a perfect fit!"))
 
-		givemon(SPECIES_SANDSHREW_ALOLAN, 5, ITEM_ENIGMA_BERRY)
+		givemon(SPECIES_SANDSHREW_ALOLA, 5, ITEM_ENIGMA_BERRY)
 
 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
 			playfanfare(MUS_OBTAIN_ITEM)
@@ -1334,7 +1334,7 @@ script StarterPsychicScript{
 script StarterIceScript{
 		msgbox(format("I hear you're a fan of Ice Types, So Sandshrew-Alola will be a perfect fit!"))
 
-		givemon(SPECIES_SANDSHREW_ALOLAN, 5, ITEM_ENIGMA_BERRY)
+		givemon(SPECIES_SANDSHREW_ALOLA, 5, ITEM_ENIGMA_BERRY)
 
 		if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
 			playfanfare(MUS_OBTAIN_ITEM)

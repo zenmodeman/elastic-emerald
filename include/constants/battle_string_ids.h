@@ -713,11 +713,13 @@
 #define STRINGID_PKMNMADESHELLGLEAM                   711
 #define STRINGID_FICKLEBEAMDOUBLED                    712
 #define STRINGID_COMMANDERACTIVATES                   713
+#define STRINGID_POKEFLUTECATCHY                      714
+#define STRINGID_POKEFLUTE                            715
+#define STRINGID_MONHEARINGFLUTEAWOKE                 716
+#define STRINGID_MUDSPORTPREVENTS                    717
+#define STRINGID_WATERSPORTPREVENTS                  718
 
-#define STRINGID_MUDSPORTPREVENTS                    714
-#define STRINGID_WATERSPORTPREVENTS                  715
-
-#define BATTLESTRINGS_COUNT                           716
+#define BATTLESTRINGS_COUNT                           719
 
 // This is the string id that gBattleStringsTable starts with.
 // String ids before this (e.g. STRINGID_INTROMSG) are not in the table,
