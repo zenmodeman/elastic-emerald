@@ -1,6 +1,12 @@
 #ifndef GUARD_CONFIG_CAPS_H
 #define GUARD_CONFIG_CAPS_H
 
+
+//Hard cap and candy cap
+#define HARD_CAP TRUE
+#define CANDY_CAP FALSE
+
+
 // Level Cap Constants
 #define EXP_CAP_NONE                    0 // Regular behavior, no level caps are applied
 #define EXP_CAP_HARD                    1 // Pokémon with a level >= the level cap cannot gain any experience

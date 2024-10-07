@@ -165,26 +165,56 @@ InsideOfTruck_EventScript_SetIntroFlags_23:
 # 108 "data/maps/InsideOfTruck/scripts.pory"
 	dynmultichoice 7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3, InsideOfTruck_EventScript_SetIntroFlags_Text_4
 # 109 "data/maps/InsideOfTruck/scripts.pory"
+	compare VAR_RESULT, 0
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_33
+# 112 "data/maps/InsideOfTruck/scripts.pory"
 	compare VAR_RESULT, 2
-	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_32
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_34
 InsideOfTruck_EventScript_SetIntroFlags_22:
-# 113 "data/maps/InsideOfTruck/scripts.pory"
+# 117 "data/maps/InsideOfTruck/scripts.pory"
 	compare VAR_RESULT, 2
 	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_23
-# 115 "data/maps/InsideOfTruck/scripts.pory"
-	compare VAR_RESULT, 0
-	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_30
-InsideOfTruck_EventScript_SetIntroFlags_29:
+InsideOfTruck_EventScript_SetIntroFlags_31:
+# 120 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_21
+# 121 "data/maps/InsideOfTruck/scripts.pory"
+	dynmultichoice 7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3, InsideOfTruck_EventScript_SetIntroFlags_Text_4
 # 122 "data/maps/InsideOfTruck/scripts.pory"
-	checkplayergender
-# 123 "data/maps/InsideOfTruck/scripts.pory"
-	compare VAR_RESULT, MALE
-	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_35
+	compare VAR_RESULT, 0
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_41
 # 125 "data/maps/InsideOfTruck/scripts.pory"
+	compare VAR_RESULT, 2
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_42
+InsideOfTruck_EventScript_SetIntroFlags_30:
+# 130 "data/maps/InsideOfTruck/scripts.pory"
+	compare VAR_RESULT, 2
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_31
+InsideOfTruck_EventScript_SetIntroFlags_39:
+# 134 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_25
+# 135 "data/maps/InsideOfTruck/scripts.pory"
+	dynmultichoice 7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_2, InsideOfTruck_EventScript_SetIntroFlags_Text_3, InsideOfTruck_EventScript_SetIntroFlags_Text_4
+# 136 "data/maps/InsideOfTruck/scripts.pory"
+	compare VAR_RESULT, 0
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_51
+InsideOfTruck_EventScript_SetIntroFlags_50:
+# 142 "data/maps/InsideOfTruck/scripts.pory"
+	compare VAR_RESULT, 2
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_53
+InsideOfTruck_EventScript_SetIntroFlags_38:
+# 146 "data/maps/InsideOfTruck/scripts.pory"
+	compare VAR_RESULT, 2
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_39
+# 148 "data/maps/InsideOfTruck/scripts.pory"
+	checkplayergender
+# 149 "data/maps/InsideOfTruck/scripts.pory"
+	compare VAR_RESULT, MALE
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_46
+# 151 "data/maps/InsideOfTruck/scripts.pory"
 	compare VAR_RESULT, FEMALE
-	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_36
-InsideOfTruck_EventScript_SetIntroFlags_34:
-# 128 "data/maps/InsideOfTruck/scripts.pory"
+	goto_if_eq InsideOfTruck_EventScript_SetIntroFlags_47
+InsideOfTruck_EventScript_SetIntroFlags_45:
+# 154 "data/maps/InsideOfTruck/scripts.pory"
 	releaseall
 	return
 
@@ -234,33 +264,61 @@ InsideOfTruck_EventScript_SetIntroFlags_26:
 	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_17
 	goto InsideOfTruck_EventScript_SetIntroFlags_14
 
-InsideOfTruck_EventScript_SetIntroFlags_30:
-# 116 "data/maps/InsideOfTruck/scripts.pory"
-	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_21
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	dynmultichoice 5, 100, TRUE, 4, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_22, InsideOfTruck_EventScript_SetIntroFlags_Text_23, InsideOfTruck_EventScript_SetIntroFlags_Text_24, InsideOfTruck_EventScript_SetIntroFlags_Text_25, InsideOfTruck_EventScript_SetIntroFlags_Text_26, InsideOfTruck_EventScript_SetIntroFlags_Text_27, InsideOfTruck_EventScript_SetIntroFlags_Text_28, InsideOfTruck_EventScript_SetIntroFlags_Text_29, InsideOfTruck_EventScript_SetIntroFlags_Text_30, InsideOfTruck_EventScript_SetIntroFlags_Text_31, InsideOfTruck_EventScript_SetIntroFlags_Text_32, InsideOfTruck_EventScript_SetIntroFlags_Text_33, InsideOfTruck_EventScript_SetIntroFlags_Text_34, InsideOfTruck_EventScript_SetIntroFlags_Text_35, InsideOfTruck_EventScript_SetIntroFlags_Text_36, InsideOfTruck_EventScript_SetIntroFlags_Text_37, InsideOfTruck_EventScript_SetIntroFlags_Text_38, InsideOfTruck_EventScript_SetIntroFlags_Text_39
-# 118 "data/maps/InsideOfTruck/scripts.pory"
-	copyvar VAR_MONOTYPE, VAR_RESULT
-# 119 "data/maps/InsideOfTruck/scripts.pory"
-	addvar VAR_MONOTYPE, 1
-	goto InsideOfTruck_EventScript_SetIntroFlags_29
-
-InsideOfTruck_EventScript_SetIntroFlags_32:
+InsideOfTruck_EventScript_SetIntroFlags_33:
 # 110 "data/maps/InsideOfTruck/scripts.pory"
-	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_19
-# 111 "data/maps/InsideOfTruck/scripts.pory"
-	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_20
+	setflag FLAG_LEVEL_CAP
 	goto InsideOfTruck_EventScript_SetIntroFlags_22
 
-InsideOfTruck_EventScript_SetIntroFlags_35:
-# 124 "data/maps/InsideOfTruck/scripts.pory"
-	goto InsideOfTruck_EventScript_SetIntroFlagsMale
-	goto InsideOfTruck_EventScript_SetIntroFlags_34
+InsideOfTruck_EventScript_SetIntroFlags_34:
+# 113 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_19
+# 114 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_20
+# 115 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_17
+	goto InsideOfTruck_EventScript_SetIntroFlags_22
 
-InsideOfTruck_EventScript_SetIntroFlags_36:
+InsideOfTruck_EventScript_SetIntroFlags_41:
+# 123 "data/maps/InsideOfTruck/scripts.pory"
+	setflag FLAG_CURATED_TERA
+	goto InsideOfTruck_EventScript_SetIntroFlags_30
+
+InsideOfTruck_EventScript_SetIntroFlags_42:
 # 126 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_22
+# 127 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_23
+# 128 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_24
+	goto InsideOfTruck_EventScript_SetIntroFlags_30
+
+InsideOfTruck_EventScript_SetIntroFlags_46:
+# 150 "data/maps/InsideOfTruck/scripts.pory"
+	goto InsideOfTruck_EventScript_SetIntroFlagsMale
+	goto InsideOfTruck_EventScript_SetIntroFlags_45
+
+InsideOfTruck_EventScript_SetIntroFlags_47:
+# 152 "data/maps/InsideOfTruck/scripts.pory"
 	goto InsideOfTruck_EventScript_SetIntroFlagsFemale
-	goto InsideOfTruck_EventScript_SetIntroFlags_34
+	goto InsideOfTruck_EventScript_SetIntroFlags_45
+
+InsideOfTruck_EventScript_SetIntroFlags_51:
+# 137 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_26
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	dynmultichoice 5, 100, TRUE, 4, 0, DYN_MULTICHOICE_CB_NONE, InsideOfTruck_EventScript_SetIntroFlags_Text_27, InsideOfTruck_EventScript_SetIntroFlags_Text_28, InsideOfTruck_EventScript_SetIntroFlags_Text_29, InsideOfTruck_EventScript_SetIntroFlags_Text_30, InsideOfTruck_EventScript_SetIntroFlags_Text_31, InsideOfTruck_EventScript_SetIntroFlags_Text_32, InsideOfTruck_EventScript_SetIntroFlags_Text_33, InsideOfTruck_EventScript_SetIntroFlags_Text_34, InsideOfTruck_EventScript_SetIntroFlags_Text_35, InsideOfTruck_EventScript_SetIntroFlags_Text_36, InsideOfTruck_EventScript_SetIntroFlags_Text_37, InsideOfTruck_EventScript_SetIntroFlags_Text_38, InsideOfTruck_EventScript_SetIntroFlags_Text_39, InsideOfTruck_EventScript_SetIntroFlags_Text_40, InsideOfTruck_EventScript_SetIntroFlags_Text_41, InsideOfTruck_EventScript_SetIntroFlags_Text_42, InsideOfTruck_EventScript_SetIntroFlags_Text_43, InsideOfTruck_EventScript_SetIntroFlags_Text_44
+# 139 "data/maps/InsideOfTruck/scripts.pory"
+	copyvar VAR_MONOTYPE, VAR_RESULT
+# 140 "data/maps/InsideOfTruck/scripts.pory"
+	addvar VAR_MONOTYPE, 1
+	goto InsideOfTruck_EventScript_SetIntroFlags_50
+
+InsideOfTruck_EventScript_SetIntroFlags_53:
+# 143 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_45
+# 144 "data/maps/InsideOfTruck/scripts.pory"
+	msgbox InsideOfTruck_EventScript_SetIntroFlags_Text_46
+	goto InsideOfTruck_EventScript_SetIntroFlags_38
 
 
 InsideOfTruck_EventScript_SetIntroFlags_Text_0:
@@ -353,91 +411,125 @@ InsideOfTruck_EventScript_SetIntroFlags_Text_17:
 
 InsideOfTruck_EventScript_SetIntroFlags_Text_18:
 # 107 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Will you do a monotype run?$"
+	.string "Will you play with level caps?$"
 
 InsideOfTruck_EventScript_SetIntroFlags_Text_19:
-# 110 "data/maps/InsideOfTruck/scripts.pory"
+# 113 "data/maps/InsideOfTruck/scripts.pory"
+	.string "This mode prevents you from exceeding\n"
+	.string "certain levels based on progression.$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_20:
+# 114 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Most of the time, the level cap for\n"
+	.string "experience gain is 1 higher than the\l"
+	.string "cap for rare candies or exp. candies$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_21:
+# 120 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Will you play with curated teras?$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_22:
+# 126 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Curated teras means each pokemon with\n"
+	.string "have a pre-determined tera type.$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_23:
+# 127 "data/maps/InsideOfTruck/scripts.pory"
+	.string "This adds another layer to balancing\n"
+	.string "and niches for different Pokemon.$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_24:
+# 128 "data/maps/InsideOfTruck/scripts.pory"
+	.string "If you do not choose curated teras, a\n"
+	.string "Pokemon's tera type will be random.$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_25:
+# 134 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Will you do a monotype run?$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_26:
+# 137 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Please choose the monotype.$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_27:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Normal$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_28:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Fighting$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_29:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Flying$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_30:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Poison$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_31:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Ground$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_32:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Rock$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_33:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Bug$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_34:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Ghost$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_35:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Steel$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_36:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Fire$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_37:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Water$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_38:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Grass$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_39:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Electric$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_40:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Psychic$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_41:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Ice$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_42:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Dragon$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_43:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Dark$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_44:
+# 138 "data/maps/InsideOfTruck/scripts.pory"
+	.string "Fairy$"
+
+InsideOfTruck_EventScript_SetIntroFlags_Text_45:
+# 143 "data/maps/InsideOfTruck/scripts.pory"
 	.string "For monotype runs, each monotype has\n"
 	.string "custom wild encounters and gifts.$"
 
-InsideOfTruck_EventScript_SetIntroFlags_Text_20:
-# 111 "data/maps/InsideOfTruck/scripts.pory"
+InsideOfTruck_EventScript_SetIntroFlags_Text_46:
+# 144 "data/maps/InsideOfTruck/scripts.pory"
 	.string "Split Evolutions are constrained: a\n"
 	.string "Wurmple in Mono Poison will always\l"
 	.string "evolve into a Cascoon.$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_21:
-# 116 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Please choose the monotype.$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_22:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Normal$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_23:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Fighting$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_24:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Flying$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_25:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Poison$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_26:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Ground$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_27:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Rock$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_28:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Bug$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_29:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Ghost$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_30:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Steel$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_31:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Fire$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_32:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Water$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_33:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Grass$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_34:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Electric$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_35:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Psychic$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_36:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Ice$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_37:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Dragon$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_38:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Dark$"
-
-InsideOfTruck_EventScript_SetIntroFlags_Text_39:
-# 117 "data/maps/InsideOfTruck/scripts.pory"
-	.string "Fairy$"

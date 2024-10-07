@@ -431,7 +431,7 @@ static bool32 IsBurmyCloakType(u8 type){
     }
 }
 
-static bool32 IsBurmyExlusiveEvolutionType(u8 type){
+static bool32 IsBurmyExclusiveEvolutionType(u8 type){
     if (IsBurmyCloakType(type) || type == TYPE_FLYING){
         return TRUE;
     }else{
@@ -462,7 +462,7 @@ static void CreateWildMon(u16 species, u8 level)
         CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, gender, PickWildMonNature(), 0);
         return;
     }
-    if (species == SPECIES_BURMY && IsBurmyExlusiveEvolutionType(monotype)){
+    if (species == SPECIES_BURMY && IsBurmyExclusiveEvolutionType(monotype)){
         //Force Mothim-possible in Mono Flying
         if (monotype == TYPE_FLYING){
             gender = MON_MALE;
@@ -1153,18 +1153,20 @@ static bool32 IsMonMonotypeException(u16 species, u8 type){
     if (evolutions == NULL){
         return FALSE;
     }
+    //Need to check every evolution method
     for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++){
         evoSpecies = evolutions[i].targetSpecies;
         if (gSpeciesInfo[evoSpecies].types[0] == type || gSpeciesInfo[evoSpecies].types[1] == type){
             return TRUE;
         }
-        //Need to check if seocndary evolution fits the criteria
+        //if it can evolve a second time, check for its evolution too
         if (GetSpeciesEvolutions(evoSpecies) != NULL && IsMonMonotypeException(evoSpecies, type)){
             return TRUE;
         }
     }
     return FALSE;
 }
+
 
 static bool8 TryGetRandomWildMonMonotypeIndex(const struct WildPokemon *wildMon, u8 type, u8 numMon, u8 *monIndex)
 {

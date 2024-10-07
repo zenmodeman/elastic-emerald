@@ -4,36 +4,53 @@
 #include "caps.h"
 #include "pokemon.h"
 
-
-u32 GetCurrentLevelCap(void)
+/*
+if isHardCap is true, the level cap is for gaining experience; otherwise, it's for rare candies / exp candies
+*/
+u32 GetCurrentLevelCap(bool32 isHardCap)
 {
     static const u32 sLevelCapFlagMap[][2] =
-    {
+    {   
+        {TRAINER_FLAGS_START + TRAINER_TIANA, 8},
+        {TRAINER_FLAGS_START + TRAINER_GRUNT_PETALBURG_WOODS, 10},
         {FLAG_BADGE01_GET, 15},
         {FLAG_BADGE02_GET, 19},
-        {FLAG_BADGE03_GET, 24},
-        {FLAG_BADGE04_GET, 29},
-        {FLAG_BADGE05_GET, 31},
-        {FLAG_BADGE06_GET, 33},
-        {FLAG_BADGE07_GET, 42},
-        {FLAG_BADGE08_GET, 46},
-        {FLAG_IS_CHAMPION, 58},
+        {FLAG_BADGE03_GET, 26},
+        {FLAG_BADGE04_GET, 33},
+        {FLAG_BADGE05_GET, 36},
+        {FLAG_BADGE06_GET, 42},
+        {FLAG_BADGE07_GET, 50},
+        {FLAG_BADGE08_GET, 58},
+        {FLAG_IS_CHAMPION, 67},
     };
 
     u32 i;
+    u32 candyCap;
 
-    if (B_LEVEL_CAP_TYPE == LEVEL_CAP_FLAG_LIST)
+    if (!FlagGet(FLAG_LEVEL_CAP)){
+        return MAX_LEVEL;
+    }
+
+
+    for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMap); i++)
     {
-        for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMap); i++)
-        {
-            if (!FlagGet(sLevelCapFlagMap[i][0]))
-                return sLevelCapFlagMap[i][1];
+        if (!FlagGet(sLevelCapFlagMap[i][0])){
+            candyCap = sLevelCapFlagMap[i][1];
+            if (isHardCap){
+                if (sLevelCapFlagMap[i][0] == FLAG_IS_CHAMPION){
+                    return candyCap + 3;
+                }
+                return candyCap + 1;
+            }
+            return candyCap;
         }
+
     }
-    else if (B_LEVEL_CAP_TYPE == LEVEL_CAP_VARIABLE)
-    {
-        return VarGet(B_LEVEL_CAP_VARIABLE);
-    }
+
+    // else if (B_LEVEL_CAP_TYPE == LEVEL_CAP_VARIABLE)
+    // {
+    //     return VarGet(B_LEVEL_CAP_VARIABLE);
+    // }
 
     return MAX_LEVEL;
 }
@@ -44,7 +61,7 @@ u32 GetSoftLevelCapExpValue(u32 level, u32 expValue)
     static const u32 sExpScalingUp[5]   = { 16, 8, 4, 2, 1 };
 
     u32 levelDifference;
-    u32 currentLevelCap = GetCurrentLevelCap();
+    u32 currentLevelCap = GetCurrentLevelCap(HARD_CAP);
 
     if (B_EXP_CAP_TYPE == EXP_CAP_NONE)
         return expValue;

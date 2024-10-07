@@ -104,20 +104,46 @@ script InsideOfTruck_EventScript_SetIntroFlags{
     }while (var(VAR_RESULT) ==2)
     
     do{
+        msgbox("Will you play with level caps?")
+        dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        if (var(VAR_RESULT) == 0){
+            setflag(FLAG_LEVEL_CAP)
+        }
+        elif (var(VAR_RESULT) ==2){
+            msgbox(format("This mode prevents you from exceeding certain levels based on progression."))
+            msgbox(format("Most of the time, the level cap for experience gain is 1 higher than the cap for rare candies or exp. candies"))
+            msgbox(format("If not playing in EV-mode, the player cannot increase effort values, and trainers will not have them."))
+        }
+    }while (var(VAR_RESULT) ==2)
+
+     do{
+        msgbox("Will you play with curated teras?")
+        dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        if (var(VAR_RESULT) == 0){
+            setflag(FLAG_CURATED_TERA)
+        }
+        elif (var(VAR_RESULT) ==2){
+            msgbox(format("Curated teras means each pokemon with have a pre-determined tera type."))
+            msgbox(format("This adds another layer to balancing and niches for different Pokemon."))
+            msgbox(format("If you do not choose curated teras, a Pokemon's tera type will be random."))
+        }
+    }while (var(VAR_RESULT) ==2)   
+
+    
+    do{
         msgbox("Will you do a monotype run?")
         dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+        if (var(VAR_RESULT) == 0){
+            msgbox("Please choose the monotype.") 
+            dynmultichoice(5, 100, TRUE, 4, 0, DYN_MULTICHOICE_CB_NONE, "Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy")
+            copyvar(VAR_MONOTYPE, VAR_RESULT)
+        addvar(VAR_MONOTYPE, 1)
+        }
         if (var(VAR_RESULT) ==2){
             msgbox(format("For monotype runs, each monotype has custom wild encounters and gifts."))
             msgbox(format("Split Evolutions are constrained: a Wurmple in Mono Poison will always evolve into a Cascoon."))    
         }
     }while (var(VAR_RESULT) ==2)
-
-    if (var(VAR_RESULT) == 0){
-        msgbox("Please choose the monotype.") 
-        dynmultichoice(5, 100, TRUE, 4, 0, DYN_MULTICHOICE_CB_NONE, "Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy")
-        copyvar(VAR_MONOTYPE, VAR_RESULT)
-        addvar(VAR_MONOTYPE, 1)
-    }
 
     checkplayergender 
     if (var(VAR_RESULT) == MALE){
