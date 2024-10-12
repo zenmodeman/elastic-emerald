@@ -5023,6 +5023,15 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                     effect++;
                 }
                 break;
+            case ABILITY_HONEY_GATHER:
+                if (gBattleMons[battler].item == ITEM_NONE)
+                {
+                    gBattlerTarget = gBattlerAttacker;
+                    gLastUsedItem = ITEM_HONEY;
+                    BattleScriptPushCursorAndCallback(BattleScript_PickupActivates);
+                    effect++;
+                }
+                break; 
             case ABILITY_HARVEST:
                 if ((IsBattlerWeatherAffected(battler, B_WEATHER_SUN) || RandomPercentage(RNG_HARVEST, 50))
                  && gBattleMons[battler].item == ITEM_NONE
@@ -6708,6 +6717,9 @@ bool32 CanBeConfused(u32 battler)
 // second argument is 1/X of current hp compared to max hp
 bool32 HasEnoughHpToEatBerry(u32 battler, u32 hpFraction, u32 itemId)
 {
+    if (itemId == ITEM_HONEY){
+        return HasEnoughPercentageHp(battler, HONEY_PERCENT_THRESHOLD);
+    }
     bool32 isBerry = (ItemId_GetPocket(itemId) == POCKET_BERRIES);
 
     if (!IsBattlerAlive(battler))
@@ -6726,6 +6738,16 @@ bool32 HasEnoughHpToEatBerry(u32 battler, u32 hpFraction, u32 itemId)
         RecordAbilityBattle(battler, ABILITY_GLUTTONY);
         return TRUE;
     }
+
+    return FALSE;
+}
+
+bool32 HasEnoughPercentageHp(u32 battler, u32 hpPercent){
+    if (!IsBattlerAlive(battler))
+        return FALSE;
+
+    if (gBattleMons[battler].hp <= (gBattleMons[battler].maxHP * hpPercent)/100)
+        return TRUE;
 
     return FALSE;
 }
@@ -6991,13 +7013,17 @@ static u32 ItemRestorePp(u32 battler, u32 itemId, bool32 execute)
     return 0;
 }
 
+
 static u8 ItemHealHp(u32 battler, u32 itemId, bool32 end2, bool32 percentHeal)
 {
     if (!(gBattleScripting.overrideBerryRequirements && gBattleMons[battler].hp == gBattleMons[battler].maxHP)
         && (B_HEAL_BLOCKING < GEN_5 || !(gStatuses3[battler] & STATUS3_HEAL_BLOCK))
         && HasEnoughHpToEatBerry(battler, 2, itemId))
-    {
-        if (percentHeal)
+    {   
+        if (itemId == ITEM_HONEY){
+            gBattleMoveDamage = (GetNonDynamaxMaxHP(battler) / GetBattlerItemHoldEffectParam(battler, itemId)) * -1;
+        }
+        else if (percentHeal)
             gBattleMoveDamage = (GetNonDynamaxMaxHP(battler) * GetBattlerItemHoldEffectParam(battler, itemId) / 100) * -1;
         else
             gBattleMoveDamage = GetBattlerItemHoldEffectParam(battler, itemId) * -1;
@@ -10013,7 +10039,7 @@ static inline uq4_12_t GetScreensModifier(u32 move, u32 battlerAtk, u32 battlerD
     bool32 reflect = (sideStatus & SIDE_STATUS_REFLECT) && IS_MOVE_PHYSICAL(move);
     bool32 auroraVeil = sideStatus & SIDE_STATUS_AURORA_VEIL;
 
-    if (!(GetBattlerAbility(battlerDef) == ABILITY_BIG_PECKS &&  (reflect || (auroraVeil && IS_MOVE_PHYSICAL(move)))){
+    if (!(GetBattlerAbility(battlerDef) == ABILITY_BIG_PECKS &&  (reflect || (auroraVeil && IS_MOVE_PHYSICAL(move))))){
         if (isCrit || abilityAtk == ABILITY_INFILTRATOR || gProtectStructs[battlerAtk].confusionSelfDmg)
             return UQ_4_12(1.0);
     }

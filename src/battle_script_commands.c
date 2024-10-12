@@ -15049,9 +15049,13 @@ static void Cmd_tryrecycleitem(void)
         usedHeldItem = &gBattleStruct->usedHeldItems[gBattlerPartyIndexes[gBattlerTarget]][GetBattlerSide(gBattlerTarget)];
     else
         usedHeldItem = &gBattleStruct->usedHeldItems[gBattlerPartyIndexes[gBattlerAttacker]][GetBattlerSide(gBattlerAttacker)];
-    if (*usedHeldItem != ITEM_NONE && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
+    if ((*usedHeldItem != ITEM_NONE || GetBattlerAbility(gBattlerAttacker) == ABILITY_HONEY_GATHER) && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
     {
-        gLastUsedItem = *usedHeldItem;
+        if (GetBattlerAbility(gBattlerAttacker) == ABILITY_HONEY_GATHER){
+            gLastUsedItem = ITEM_HONEY;
+        }else{
+            gLastUsedItem = *usedHeldItem;
+        }
         *usedHeldItem = ITEM_NONE;
         gBattleMons[gBattlerAttacker].item = gLastUsedItem;
 
