@@ -6052,10 +6052,13 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Geodude
-Level: 10
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Tackle
+Roggenrola @ Oran Berry  
+Ability: Sturdy  
+Level: 11  
+IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Smack Down  
+- Tackle  
+- Harden
 
 === TRAINER_TOMMY ===
 Name: TOMMY

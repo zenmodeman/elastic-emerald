@@ -2828,8 +2828,8 @@ const struct Item gItemsInfo[] =
         .price = (I_PRICE < GEN_5) ? 100 : ((I_PRICE < GEN_8) ? 300 : 900),
         .description = COMPOUND_STRING(
             "Sweet honey that\n"
-            "attracts wild\n"
-            "Pokémon when used."),
+            "heals at\n"
+            "moderate HP.\n"),
         .pocket = POCKET_ITEMS,
         .holdEffect = HOLD_EFFECT_RESTORE_PCT_HP,
         .holdEffectParam = HONEY_HEAL_FRACTION,
