@@ -8738,10 +8738,21 @@ u32 GetBattlerWeight(u32 battler)
     u32 ability = GetBattlerAbility(battler);
     u32 holdEffect = GetBattlerHoldEffect(battler, TRUE);
 
-    if (ability == ABILITY_HEAVY_METAL)
+    if (ability == ABILITY_HEAVY_METAL){
         weight *= 2;
-    else if (ability == ABILITY_LIGHT_METAL)
+
+        //Ensure 200kg is the minimum for heavy metal
+        if (weight < 2000){
+            weight = 2000;
+        }
+    }
+    else if (ability == ABILITY_LIGHT_METAL){
         weight /= 2;
+        //Ensure 40kg is the maximum for light metal
+        if (weight > 400){
+            weight = 400;
+        }
+    }
 
     if (holdEffect == HOLD_EFFECT_FLOAT_STONE)
         weight /= 2;
