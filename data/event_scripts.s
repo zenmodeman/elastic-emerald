@@ -1160,3 +1160,5 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/PetalburgGrove/scripts.inc"
 
 	.include "data/maps/SandFront/scripts.inc"
+
+	.include "data/maps/OldaleTown_TechHouse/scripts.inc"

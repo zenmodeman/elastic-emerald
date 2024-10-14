@@ -209,6 +209,13 @@
       "elevation": 0,
       "dest_map": "MAP_OLDALE_RUINS",
       "dest_warp_id": "1"
+    },
+    {
+      "x": 40,
+      "y": 15,
+      "elevation": 0,
+      "dest_map": "MAP_OLDALE_TOWN_TECH_HOUSE",
+      "dest_warp_id": "0"
     }
   ],
   "coord_events": [

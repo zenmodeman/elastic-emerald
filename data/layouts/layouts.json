@@ -4450,6 +4450,16 @@
       "secondary_tileset": "gTileset_Mauville",
       "border_filepath": "data/layouts/SandFront/border.bin",
       "blockdata_filepath": "data/layouts/SandFront/map.bin"
+    },
+    {
+      "id": "LAYOUT_OLDALE_TOWN_TECH_HOUSE",
+      "name": "OldaleTown_TechHouse_Layout",
+      "width": 25,
+      "height": 25,
+      "primary_tileset": "gTileset_Building",
+      "secondary_tileset": "gTileset_GenericBuilding",
+      "border_filepath": "data/layouts/OldaleTown_TechHouse/border.bin",
+      "blockdata_filepath": "data/layouts/OldaleTown_TechHouse/map.bin"
     }
   ]
 }
