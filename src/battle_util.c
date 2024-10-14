@@ -8935,7 +8935,7 @@ static inline u32 CalcMoveBasePower(u32 move, u32 battlerAtk, u32 battlerDef, u3
 {
     u32 i;
     u32 basePower = gMovesInfo[move].power;
-    u32 weight, hpFraction, speed;
+    u32 weight, hpFraction, speed, speedPercentage;
 
     if (GetActiveGimmick(battlerAtk) == GIMMICK_Z_MOVE)
         return GetZMovePower(gBattleStruct->zmove.baseMoves[battlerAtk]);
@@ -9065,10 +9065,13 @@ static inline u32 CalcMoveBasePower(u32 move, u32 battlerAtk, u32 battlerDef, u3
         basePower += (CountBattlerStatIncreases(battlerAtk, TRUE) * 20);
         break;
     case EFFECT_ELECTRO_BALL:
-        speed = GetBattlerTotalSpeedStat(battlerAtk) / GetBattlerTotalSpeedStat(battlerDef);
-        if (speed >= ARRAY_COUNT(sSpeedDiffPowerTable))
-            speed = ARRAY_COUNT(sSpeedDiffPowerTable) - 1;
-        basePower = sSpeedDiffPowerTable[speed];
+        speedPercentage = (GetBattlerTotalSpeedStat(battlerAtk) * 100) / GetBattlerTotalSpeedStat(battlerDef);
+        speed = speedPercentage / 100;
+        if (speed >= ARRAY_COUNT(sSpeedDiffPowerTable)){
+            basePower = sSpeedDiffPowerTable[ARRAY_COUNT(sSpeedDiffPowerTable) - 1];
+        }else{
+            basePower = sSpeedDiffPowerTable[speed] + ((sSpeedDiffPowerTable[speed+1] - (sSpeedDiffPowerTable[speed])) * (speedPercentage % 100))/100;
+        }
         break;
     case EFFECT_GYRO_BALL:
         basePower = ((25 * GetBattlerTotalSpeedStat(battlerDef)) / GetBattlerTotalSpeedStat(battlerAtk)) + 1;
@@ -9836,7 +9839,7 @@ static inline u32 CalcDefenseStat(u32 move, u32 battlerAtk, u32 battlerDef, u32 
     if (atkAbility == ABILITY_UNAWARE)
         defStage = DEFAULT_STAT_STAGE;
     // certain moves also ignore stat changes
-    if (gMovesInfo[move].ignoresTargetDefenseEvasionStages)
+    if (defAbility != ABILITY_BIG_PECKS && (gMovesInfo[move].ignoresTargetDefenseEvasionStages || gMovesInfo[move].effect == EFFECT_PUNISHMENT))
         defStage = DEFAULT_STAT_STAGE;
 
     defStat *= gStatStageRatios[defStage][0];
