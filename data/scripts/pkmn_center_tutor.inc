@@ -73,7 +73,9 @@ ChooseMoveTutorMon_1:
 # 27 "data/scripts/pkmn_center_tutor.pory"
 	msgbox ChooseMoveTutorMon_Text_1
 # 28 "data/scripts/pkmn_center_tutor.pory"
-	special TeachCenterMoveTutorMove
+	setvar VAR_TEMP_9, MOVE_TUTOR_CENTER
+# 29 "data/scripts/pkmn_center_tutor.pory"
+	special TeachNPCMoveTutorMove
 	return
 
 ChooseMoveTutorMon_2:

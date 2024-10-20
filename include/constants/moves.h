@@ -1022,4 +1022,9 @@
 // Used for checks for moves affected by Disable, Mimic, etc.
 #define MOVE_UNAVAILABLE 0xFFFF
 
+
+//Used for Move Tutor variants
+
+#define MOVE_TUTOR_CENTER 0 
+#define MOVE_TUTOR_TECH 1
 #endif  // GUARD_CONSTANTS_MOVES_H

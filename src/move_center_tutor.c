@@ -30,9 +30,9 @@
  * Center Move tutor state machine
  * ------------------------
  *
- * Entry point: TeachCenterMoveTutorMove
+ * Entry point: TeachNPCMoveTutorMove
  *
- * TeachCenterMoveTutorMove
+ * TeachNPCMoveTutorMove
  * Task_WaitForFadeOut
  * CB2_InitLearnMove
  *   - Creates moveDisplayArrowTask to listen to right/left buttons.
@@ -370,7 +370,7 @@ static void VBlankCB_MoveTutor(void)
 }
 
 // Script arguments: The Pokémon to teach is in VAR_0x8004
-void TeachCenterMoveTutorMove(void)
+void TeachNPCMoveTutorMove(void)
 {
     LockPlayerFieldControls();
     CreateTask(Task_WaitForFadeOut, 10);
@@ -919,7 +919,7 @@ static void CreateLearnableMovesList(void)
     s32 i;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
 
-    sMoveTutorStruct->numMenuChoices = GetCenterTutorableMoves(&gPlayerParty[sMoveTutorStruct->partyMon], sMoveTutorStruct->movesToLearn);
+    sMoveTutorStruct->numMenuChoices = GetNPCTutorableMoves(&gPlayerParty[sMoveTutorStruct->partyMon], sMoveTutorStruct->movesToLearn);
 
     for (i = 0; i < sMoveTutorStruct->numMenuChoices; i++)
     {

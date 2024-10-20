@@ -54,7 +54,8 @@
     F(OVERHEAT)\
     F(THROAT_CHOP)\
     F(SPEED_SWAP)\
-    F(GUARD_SWAP)
+    F(HELPING_HAND)\
+    F(HARD_PRESS)
 
 #define FOREACH_HM(F) \
     F(CUT) \

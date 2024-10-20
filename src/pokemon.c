@@ -5751,7 +5751,7 @@ u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
 }
 
 
-u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
+static u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
     u8 numMoves = 0;
     int i;
 
@@ -5771,7 +5771,48 @@ u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
     return numMoves;    
 }
 
-u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves)
+static u8 GetTechTutorMoveList(u16 species, u16 *applicable_moves){
+    u8 numMoves = 0;
+    int i;
+
+    for (i=0; i< sizeof(gTechTutor) / sizeof(gTechTutor[0]); i++){
+        if (CanLearnTeachableMove(species, gTechTutor[i])){
+            applicable_moves[numMoves++] = gTechTutor[i];
+        }
+    }
+
+    return numMoves;    
+}
+
+u8 GetNPCTutorMoveList(u16 species, u16 *applicable_moves){
+    u8 numMoves = 0;
+    int i;
+    
+    if(VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
+        return GetCenterTutorMoveList(species, applicable_moves);
+    }else if (VarGet(VAR_TEMP_9) == MOVE_TUTOR_TECH){
+        return GetTechTutorMoveList(species, applicable_moves);
+    }
+
+    return 0;
+
+    for (i=0; i< sizeof(gPreGym1Tutor) / sizeof(gPreGym1Tutor[0]); i++){
+        if (CanLearnTeachableMove(species, gPreGym1Tutor[i])){
+            applicable_moves[numMoves++] = gPreGym1Tutor[i];
+        }
+    }
+
+    if (!FlagGet(FLAG_RESTRICTED_MODE)){
+        for (i=0; i< sizeof(gPreGym1TutorSetup) / sizeof(gPreGym1TutorSetup[0]); i++){
+            if (CanLearnTeachableMove(species, gPreGym1TutorSetup[i])){
+                applicable_moves[numMoves++] = gPreGym1TutorSetup[i];
+            }
+        }        
+    }
+    return numMoves;    
+}
+
+u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
 {
     u16 learnedMoves[4];
     u8 numMoves = 0;
@@ -5785,7 +5826,7 @@ u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves)
         return 0;
     }
     
-    GetCenterTutorMoveList(species, applicable_tutor_moves);
+    GetNPCTutorMoveList(species, applicable_tutor_moves);
 
 
     for (i = 0; i < MAX_MON_MOVES; i++)
@@ -5811,7 +5852,7 @@ u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves)
 u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
 {   
     u16 moves[MAX_TUTOR_LIST] = {0};
-    return GetCenterTutorableMoves(mon, moves);
+    return GetNPCTutorableMoves(mon, moves);
 }
 u16 SpeciesToPokedexNum(u16 species)
 {

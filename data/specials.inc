@@ -556,7 +556,7 @@ gSpecials::
 	def_special Script_GetChosenMonOffensiveIVs
 	def_special Script_GetChosenMonDefensiveIVs
 	def_special ChooseMonForCenterMoveTutor
-	def_special TeachCenterMoveTutorMove
+	def_special TeachNPCMoveTutorMove
 	def_special TrainPlainIV
 	def_special TrainMaxIV
 	def_special TrainMaxIVs

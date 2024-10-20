@@ -118,6 +118,8 @@ enum {
     MON_DATA_EVOLUTION_TRACKER,
 };
 
+
+
 struct PokemonSubstruct0
 {
     u16 species:11; // 2047 species.
@@ -834,7 +836,7 @@ void PartySpreadPokerus(struct Pokemon *party);
 bool8 TryIncrementMonLevel(struct Pokemon *mon);
 u8 CanLearnTeachableMove(u16 species, u16 move);
 u8 GetMoveRelearnerMoves(struct Pokemon *mon, u16 *moves);
-u8 GetCenterTutorableMoves(struct Pokemon *mon, u16 *moves);
+u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves);
 u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves);
 u8 GetNumberOfRelearnableMoves(struct Pokemon *mon);
 u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon);

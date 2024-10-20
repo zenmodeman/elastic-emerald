@@ -25,6 +25,7 @@ script ChooseMoveTutorMon{
     waitstate
     if (var(VAR_0x8004) != PARTY_NOTHING_CHOSEN && var(VAR_0x8005) != 0){
         msgbox(format("Teach Which Move?"))
-        special(TeachCenterMoveTutorMove)
+        setvar(VAR_TEMP_9, MOVE_TUTOR_CENTER)
+        special(TeachNPCMoveTutorMove)
     }
 }

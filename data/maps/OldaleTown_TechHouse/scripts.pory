@@ -8,52 +8,29 @@ script OldaleTown_TechHouse_Master {
 	faceplayer
     msgbox(format("Welcome! I'm known around here as the Tech Sage!"))
     msgbox(format("You see, while most folks focus on the obvious strengths and weaknesses of Pokémon battles, I find beauty in the overlooked."))
-    msgbox(format("Moves like Embargo, Mist, and Laser Focus - people never think about these gems, but I do!"))
+    msgbox(format("Moves like Embargo, Gastro Acid, and Heal Block - people never think about these gems, but I do!"))
     msgbox(format("If you want to learn them, I'll teach you for no charge!"))
     msgbox(format("Would you like to learn some niche moves?"), MSGBOX_YESNO)
     if (var(VAR_RESULT)== TRUE){
-        dynmultichoice(5, 100, FALSE, 4, 0, DYN_MULTICHOICE_CB_NONE, "Block", "Hold Back", "Embargo", "Corrosive Gas", 
-        "Heal Block", "Laser Focus", "Mud Sport", "Mist", "Water Sport", "Spite", 
-        "Magic Room", "Wonder Room", "Imprison", "Venom Drench", "Swallow", "Telekinesis")
-        if (var(VAR_RESULT) ==  MULTI_B_PRESSED){
-            goto(TechTutorRejected)
-        }elif(var(VAR_RESULT) == 0){
-            setvar(VAR_0x8005, MOVE_BLOCK)
-        }elif(var(VAR_RESULT) == 1){
-            setvar(VAR_0x8005, MOVE_HOLD_BACK)
-        }elif(var(VAR_RESULT) == 2){
-            setvar(VAR_0x8005, MOVE_EMBARGO)
-        }elif(var(VAR_RESULT) == 3){
-            setvar(VAR_0x8005, MOVE_CORROSIVE_GAS)
-        }elif(var(VAR_RESULT) == 4){
-            setvar(VAR_0x8005, MOVE_HEAL_BLOCK)
-        }elif(var(VAR_RESULT) == 5){
-            setvar(VAR_0x8005, MOVE_LASER_FOCUS)
-        }elif(var(VAR_RESULT) == 6){
-            setvar(VAR_0x8005, MOVE_MUD_SPORT)
-        }elif(var(VAR_RESULT) == 7){
-            setvar(VAR_0x8005, MOVE_MIST)
-        }elif(var(VAR_RESULT) == 8){
-            setvar(VAR_0x8005, MOVE_WATER_SPORT)
-        }elif(var(VAR_RESULT) == 9){
-            setvar(VAR_0x8005, MOVE_SPITE)
-        }elif(var(VAR_RESULT) == 10){
-            setvar(VAR_0x8005, MOVE_MAGIC_ROOM)
-        }elif(var(VAR_RESULT) == 11){
-            setvar(VAR_0x8005, MOVE_WONDER_ROOM)
-        }elif(var(VAR_RESULT) == 12){
-            setvar(VAR_0x8005, MOVE_IMPRISON)
-        }elif(var(VAR_RESULT) == 13){
-            setvar(VAR_0x8005, MOVE_VENOM_DRENCH)
-        }elif(var(VAR_RESULT) == 14){
-            setvar(VAR_0x8005, MOVE_SWALLOW)
-        }elif(var(VAR_RESULT) == 15){
-            setvar(VAR_0x8005, MOVE_TELEKINESIS)
-        }
-        goto(TeachTechMasterTutorMove)
+        call(ChooseTechMoveTutorMon)
+        waitstate
+        msgbox(format("Come back anytime you want to learn a move!"))
+    }else{
+        goto(TechTutorRejected)
     }
     releaseall
     end
+}
+
+script ChooseTechMoveTutorMon{
+    msgbox(format("Select pokemon to teach."))
+    special(ChooseMonForCenterMoveTutor)
+    waitstate
+    if (var(VAR_0x8004) != PARTY_NOTHING_CHOSEN && var(VAR_0x8005) != 0){
+        msgbox(format("Teach Which Move?"))
+        setvar(VAR_TEMP_9, MOVE_TUTOR_TECH)
+        special(TeachNPCMoveTutorMove)
+    }
 }
 
 script TechTutorRejected{
@@ -62,15 +39,3 @@ script TechTutorRejected{
     end
 }
 
-script TeachTechMasterTutorMove{
-	msgbox(format("Teach Move to which Pokemon?")) 
-    fadescreen(FADE_TO_BLACK)
-	special(ChooseMonForMoveTutor)
-	waitstate
-    if(var(VAR_RESULT) == FALSE){
-        goto(TechTutorRejected)
-    }
-    msgbox(format("Hope you like the move!"))
-	releaseall
-	end
-}
