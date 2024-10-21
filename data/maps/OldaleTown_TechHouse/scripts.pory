@@ -16,11 +16,53 @@ script OldaleTown_TechHouse_Master {
         waitstate
         msgbox(format("Come back anytime you want to learn a move!"))
     }else{
-        goto(TechTutorRejected)
+        call(TechTutorRejected)
     }
-    releaseall
+    release
     end
 }
+
+script OldaleTown_TechHouse_Sport_BugCatcher{
+    lock 
+    faceplayer
+    msgbox(format("As a bug catcher, my Beautifly, Masquerain, and Ninjask get dismissed for their Fire and Electric weaknesses a lot."))
+    msgbox(format("But I've got a strategy for that. You see, my Masquerain knows Water Sport and Mud Sport!"))
+    msgbox(format("Masquerain isn't a fan of Rain, but Water Sport deters Fire moves even better than Rain Dance does!"))
+    msgbox(format("And unlike Rain Dance, Water Sport keeps my bugs safe from burn, even when facing the hottest Fire moves."))
+    msgbox(format("There's no feeling better than making Flamethrowers weaker than Embers!"))
+    msgbox(format("And with Mud Sport, Electric attacks don't just lose power - they also can't paralyze."))
+    msgbox(format("That means my Bug-types can take a Thunderbolt without worrying about getting slowed down!"))
+    msgbox(format("If you're interested in this strategy yourself, grab a Damp Rock and Smooth Rock. They'll help these moves last longer."))
+    msgbox(format("When you've got a team of bugs, you need all the time you can get!"))
+    release
+    end
+}
+
+script OldaleTown_TechHouse_Mist_OldMan{
+    lock
+    faceplayer
+    msgbox(format("Ah, Mist... Now that's a move with history."))
+    msgbox(format("Back in the day, my Milotic's Mist shielded me from so many Intimidates, Snarls, and especially Parting Shots in tournament battles!"))
+    msgbox(format("And with an Icy Rock, I could keep that Mist up for most of a Double Battle!"))
+    msgbox(format(("But now with all this new technology, like the Clear Amulet, I suppose not many trainers see the need for Mist anymore.")))
+    msgbox(format("Sure, the Clear Amulet is much easier to use, but there's something so satisfying about setting up your own protective Mist, don't you think?"))
+    release
+    end
+}
+
+script OldaleTown_TechHouse_Embargo_Maniac{
+    lock
+    faceplayer
+    msgbox(format("I've got a fellow nerd friend who's a big chance freak. You might even bump into him on your journey."))
+    msgbox(format("He's obsessed with held items that rely on lucky chances, like Focus Band and Starf Berry."))
+    msgbox(format("And he only collects Pokemon with the ability Sticky Hold, to avoid counterplay like Knock Off, Trick, and Corrosive Gas."))
+    msgbox(format(("But... I’ve found plenty of ways to mess up his plan. Hehe, amateur mistake.")))
+    msgbox(format("Sure, there’s the obvious stuff like Neutralizing Gas or Mold Breaker, which he knew about but was hoping people wouldn't use on him."))
+    msgbox(format("But he never saw Embargo or Magic Room coming! Sticky Hold can't protect him from those, what a rookie!"))
+    release
+    end
+}
+
 
 script ChooseTechMoveTutorMon{
     msgbox(format("Select pokemon to teach."))
@@ -35,7 +77,5 @@ script ChooseTechMoveTutorMon{
 
 script TechTutorRejected{
     msgbox(format("Too bad, but come back if you change your mind!"))
-    releaseall
-    end
 }
 

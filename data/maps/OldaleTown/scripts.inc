@@ -812,7 +812,7 @@ OldaleTown_EventScript_Fisherman::
 	msgbox OldaleTown_EventScript_Fisherman_Text_3
 OldaleTown_EventScript_Fisherman_1:
 # 438 "data/maps/OldaleTown/scripts.pory"
-	releaseall
+	release
 	end
 
 OldaleTown_EventScript_Fisherman_2:
@@ -857,7 +857,7 @@ OldaleTown_EventScript_Taxi::
 	msgbox OldaleTown_EventScript_Taxi_Text_3
 OldaleTown_EventScript_Taxi_1:
 # 455 "data/maps/OldaleTown/scripts.pory"
-	releaseall
+	release
 	end
 
 OldaleTown_EventScript_Taxi_2:

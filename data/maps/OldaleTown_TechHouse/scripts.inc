@@ -24,10 +24,10 @@ OldaleTown_TechHouse_Master::
 	compare VAR_RESULT, TRUE
 	goto_if_eq OldaleTown_TechHouse_Master_2
 # 19 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	goto TechTutorRejected
+	call TechTutorRejected
 OldaleTown_TechHouse_Master_1:
 # 21 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	releaseall
+	release
 	end
 
 OldaleTown_TechHouse_Master_2:
@@ -71,9 +71,7 @@ ChooseTechMoveTutorMon_2:
 TechTutorRejected::
 # 37 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	msgbox TechTutorRejected_Text_0
-# 38 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	releaseall
-	end
+	return
 
 
 OldaleTown_TechHouse_Master_Text_0:
