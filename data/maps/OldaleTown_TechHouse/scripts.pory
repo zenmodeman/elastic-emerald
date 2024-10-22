@@ -6,10 +6,13 @@ OldaleTown_TechHouse_MapScripts::
 script OldaleTown_TechHouse_Master {
 	lock
 	faceplayer
-    msgbox(format("Welcome! I'm known around here as the Tech Sage!"))
-    msgbox(format("You see, while most folks focus on the obvious strengths and weaknesses of Pokémon battles, I find beauty in the overlooked."))
-    msgbox(format("Moves like Embargo, Gastro Acid, and Heal Block - people never think about these gems, but I do!"))
-    msgbox(format("If you want to learn them, I'll teach you for no charge!"))
+    if (!flag(FLAG_TEMP_8)){
+        msgbox(format("Welcome! I'm known around here as the Tech Sage!"))
+        msgbox(format("You see, while most folks focus on the obvious strengths and weaknesses of Pokémon battles, I find beauty in the overlooked."))
+        msgbox(format("Moves like Embargo, Gastro Acid, and Heal Block - people never think about these gems, but I do!"))
+        msgbox(format("If you want to learn them, I'll teach you for no charge!"))
+    }
+    setflag(FLAG_TEMP_8)
     msgbox(format("Would you like to learn some niche moves?"), MSGBOX_YESNO)
     if (var(VAR_RESULT)== TRUE){
         call(ChooseTechMoveTutorMon)
@@ -44,7 +47,7 @@ script OldaleTown_TechHouse_Mist_OldMan{
     msgbox(format("Ah, Mist... Now that's a move with history."))
     msgbox(format("Back in the day, my Milotic's Mist shielded me from so many Intimidates, Snarls, and especially Parting Shots in tournament battles!"))
     msgbox(format("And with an Icy Rock, I could keep that Mist up for most of a Double Battle!"))
-    msgbox(format(("But now with all this new technology, like the Clear Amulet, I suppose not many trainers see the need for Mist anymore.")))
+    msgbox(format("But now with all this new technology, like the Clear Amulet, I suppose not many trainers see the need for Mist anymore."))
     msgbox(format("Sure, the Clear Amulet is much easier to use, but there's something so satisfying about setting up your own protective Mist, don't you think?"))
     release
     end
@@ -53,16 +56,37 @@ script OldaleTown_TechHouse_Mist_OldMan{
 script OldaleTown_TechHouse_Embargo_Maniac{
     lock
     faceplayer
-    msgbox(format("I've got a fellow nerd friend who's a big chance freak. You might even bump into him on your journey."))
+    msgbox(format("I've got a fellow collector friend who's a big chance freak. You might even bump into him on your journey."))
     msgbox(format("He's obsessed with held items that rely on lucky chances, like Focus Band and Starf Berry."))
     msgbox(format("And he only collects Pokemon with the ability Sticky Hold, to avoid counterplay like Knock Off, Trick, and Corrosive Gas."))
-    msgbox(format(("But... I’ve found plenty of ways to mess up his plan. Hehe, amateur mistake.")))
+    msgbox(format("But... I’ve found plenty of ways to mess up his plan, hehe."))
     msgbox(format("Sure, there’s the obvious stuff like Neutralizing Gas or Mold Breaker, which he knew about but was hoping people wouldn't use on him."))
     msgbox(format("But he never saw Embargo or Magic Room coming! Sticky Hold can't protect him from those, what a rookie!"))
     release
     end
 }
 
+script OldaleTown_TechHouse_WonderRoom_Hiker{
+    lock
+    faceplayer
+    msgbox(format("My Rock-types are tough as boulders when it comes to physical hits, but Special Attacks? That's where they crumble.")) 
+    msgbox(format("But with my Stonjourner using Wonder Room, I can flip the script and swap their defenses!")) 
+    msgbox(format("That way, even my Rocks can take on those tricky Special Attackers without breaking a sweat!"))
+    faceplayer
+    release
+    end
+}
+
+script OldaleTown_TechHouse_Walker{
+    lock
+    faceplayer
+    msgbox(format("Hey there! If you're into niche strategies, you've come to the right place!"))
+    msgbox(format("I’m not as dedicated as the rest of the folks here, but I love listening to their ideas."))
+    msgbox(format("Our leader's known as the Tech Master. He's spent decades perfecting moves most people wouldn’t even consider."))
+    msgbox(format("You gotta respect that kind of dedication."))
+    release
+    end
+}
 
 script ChooseTechMoveTutorMon{
     msgbox(format("Select pokemon to teach."))
