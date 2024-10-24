@@ -1442,6 +1442,11 @@
 	callnative BS_SetGlaiveRush
 	.endm
 
+	.macro setdraindouse failInstr:req
+	callnative BS_SetDrainDouse
+	.4byte \failInstr
+	.endm
+	
 	.macro tryrelicsong
 	callnative BS_TryRelicSong
 	.endm

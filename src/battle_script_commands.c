@@ -3996,9 +3996,16 @@ static bool32 CanApplyAdditionalEffect(const struct AdditionalEffect *additional
 static void Cmd_setadditionaleffects(void)
 {
     CMD_ARGS();
-
+    //Failed attempt at trying to inject additional effect
+    // if (gStatuses4[gBattlerAttacker] & STATUS4_DRAIN_DOUSE){
+    //     u32 percentChance = 100;
+    //     const u8 *currentPtr = gBattlescriptCurrInstr;
+    //     const struct AdditionalEffect *additionalEffect = {.moveEffect = MOVE_EFFECT_ABSORB};
+    // }
+    
     if (!(gMoveResultFlags & MOVE_RESULT_NO_EFFECT))
     {
+
         if (gMovesInfo[gCurrentMove].numAdditionalEffects > gBattleStruct->additionalEffectsCounter)
         {
             u32 percentChance;
@@ -6387,6 +6394,54 @@ static void Cmd_moveend(void)
                     }
                 }
             }
+            gBattleScripting.moveendState++;
+            break;
+        case MOVEEND_DRAIN_DOUSE:
+        {
+            //Use gSpecialStatuses[gBattlerTarget].shellBellDmg per target as an idea.
+            s32 drainHealAmount = 0;
+            // DebugPrintf("The case for Drain Douse is being reached.");
+            if (gStatuses4[gBattlerAttacker] & STATUS4_DRAIN_DOUSE){
+                for (i = 0; i < gBattlersCount; i++)
+                {
+                    s32 currentDrainAmount = 0;
+                    if (i == gBattlerAttacker)
+                        continue;
+                    //The supposition is that shellBellDmg will give the amount after the most recent attack and nothing else.
+                    if (gSpecialStatuses[i].shellBellDmg > 0){
+                        currentDrainAmount = GetDrainedBigRootHp(gBattlerAttacker, gSpecialStatuses[i].shellBellDmg/2);
+                    }
+                    if (currentDrainAmount != 0 && GetBattlerAbility(i) == ABILITY_LIQUID_OOZE){
+                        currentDrainAmount *= -1;
+                    }
+                    drainHealAmount += currentDrainAmount;
+                    // DebugPrintf("i: %d, currentDrainAmount: %d, shellBellDmg: %d, drainHealAmount: %d", i, currentDrainAmount, gSpecialStatuses[i].shellBellDmg, drainHealAmount);
+                }
+
+                // DebugPrintf("Checking whether the variables for states are applicable --");
+                // DebugPrintf("damagedMons: %d, drainHealAmount: %d, gBattlerAttacker: %d, gBattlerTarget: %d", 
+                // gSpecialStatuses[gBattlerAttacker].damagedMons, drainHealAmount, gBattlerAttacker, gBattlerTarget);
+
+                if (gSpecialStatuses[gBattlerAttacker].damagedMons  // Need to have done damage
+                && drainHealAmount != 0
+                && gBattlerAttacker != gBattlerTarget
+                && (gBattleMons[gBattlerAttacker].hp != gBattleMons[gBattlerAttacker].maxHP || drainHealAmount > 0)
+                && IsBattlerAlive(gBattlerAttacker)
+                && (B_HEAL_BLOCKING < GEN_5 || !(gStatuses3[gBattlerAttacker] & STATUS3_HEAL_BLOCK)))
+                {
+                    gBattleMoveDamage = drainHealAmount;
+                    // DebugPrintf("Right below setting gBattleMoveDamage");
+                    BattleScriptPushCursor();
+                    if (drainHealAmount < 0){
+                        gBattlescriptCurrInstr = BattleScript_DrainDouseHeal;
+                    }else{
+                        gBattlescriptCurrInstr = BattleScript__DrainDouseOoze;
+                    }
+                    effect = TRUE;
+                }
+            }
+
+        }
             gBattleScripting.moveendState++;
             break;
         case MOVEEND_LIFEORB_SHELLBELL:
@@ -16945,6 +17000,21 @@ void BS_TryCopycat(void)
 
         gHitMarker &= ~HITMARKER_ATTACKSTRING_PRINTED;
         gBattlerTarget = GetMoveTarget(gCalledMove, NO_TARGET_OVERRIDE);
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+}
+
+void BS_SetDrainDouse()
+{
+    NATIVE_ARGS(const u8 *failInstr);
+
+    if (gStatuses4[gBattlerTarget] &  STATUS4_DRAIN_DOUSE)
+    {
+        gBattlescriptCurrInstr = cmd->failInstr;
+    }
+    else
+    {
+        gStatuses4[gBattlerTarget] |= STATUS4_DRAIN_DOUSE;
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
 }

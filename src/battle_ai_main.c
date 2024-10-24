@@ -454,9 +454,9 @@ static void SetBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u3
             struct SimulatedDamage dmg = {0};
             u8 effectiveness = AI_EFFECTIVENESS_x0;
             u32 move = moves[i];
-            if (battlerAtk == 0){
-                DebugPrintf("The move check after adding STAB for move # %d is %d", i, moves[i]);
-            }
+            // if (battlerAtk == 0){
+            //     DebugPrintf("The move check after adding STAB for move # %d is %d", i, moves[i]);
+            // }
 
             if (move != 0
              && move != 0xFFFF
@@ -3237,7 +3237,7 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
     {
         if (moves[i] != MOVE_NONE && gMovesInfo[moves[i]].power)
         {
-            DebugPrintf("For move %d, the tentative score is %d", moves[i], tentativeScores[i]);
+            // DebugPrintf("For move %d, the tentative score is %d", moves[i], tentativeScores[i]);
             //POTENTIALLY SCRAP below
             //Idea is that if the effect score is disincentivized, don't factor it in best number of hits
             if (tentativeScores[i] < 100){

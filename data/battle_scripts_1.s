@@ -2594,6 +2594,19 @@ BattleScript_EffectGastroAcid::
 	tryendneutralizinggas BS_TARGET
 	goto BattleScript_MoveEnd
 
+BattleScript_EffectDrainDouse::
+	attackcanceler
+	accuracycheck BattleScript_PrintMoveMissed, ACC_CURR_MOVE
+	attackstring
+	ppreduce
+	setdraindouse BattleScript_ButItFailed
+	attackanimation
+	waitanimation
+	printstring STRINGID_DRAINDOUSESETSDRAINING
+	waitmessage B_WAIT_TIME_LONG
+	flushtextbox
+	goto BattleScript_MoveEnd
+
 BattleScript_EffectToxicSpikes::
 	attackcanceler
 	attackstring
@@ -9050,6 +9063,8 @@ BattleScript_ItemHurtEnd2::
 	call BattleScript_ItemHurtRet
 	end2
 
+
+
 BattleScript_ItemHealHP_Ret::
 	playanimation BS_ATTACKER, B_ANIM_HELD_ITEM_EFFECT
 	printstring STRINGID_PKMNSITEMRESTOREDHPALITTLE
@@ -9058,6 +9073,27 @@ BattleScript_ItemHealHP_Ret::
 	healthbarupdate BS_ATTACKER
 	datahpupdate BS_ATTACKER
 	return
+
+BattleScript_DrainDouseHeal::
+	orword gHitMarker, HITMARKER_IGNORE_BIDE | HITMARKER_IGNORE_SUBSTITUTE | HITMARKER_IGNORE_DISGUISE | HITMARKER_PASSIVE_DAMAGE
+	setbyte cMULTISTRING_CHOOSER, B_MSG_ABSORB
+	healthbarupdate BS_ATTACKER
+	datahpupdate BS_ATTACKER
+	printfromtable gAbsorbDrainStringIds
+	waitmessage B_WAIT_TIME_LONG
+	return
+
+BattleScript__DrainDouseOoze::
+	orword gHitMarker, HITMARKER_IGNORE_BIDE | HITMARKER_IGNORE_SUBSTITUTE | HITMARKER_IGNORE_DISGUISE | HITMARKER_PASSIVE_DAMAGE
+	setbyte cMULTISTRING_CHOOSER, B_MSG_ABSORB_OOZE
+	healthbarupdate BS_ATTACKER
+	datahpupdate BS_ATTACKER
+	printfromtable gAbsorbDrainStringIds
+	waitmessage B_WAIT_TIME_LONG
+	tryfaintmon BS_ATTACKER
+	return
+
+
 
 BattleScript_SelectingNotAllowedMoveChoiceItem::
 	printselectionstring STRINGID_ITEMALLOWSONLYYMOVE

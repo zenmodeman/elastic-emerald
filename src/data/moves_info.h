@@ -20672,7 +20672,27 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         }),
         .battleAnimScript = gBattleAnimMove_MalignantChain,
     },
-
+    [MOVE_DRAIN_DOUSE] = 
+    {
+        .name = COMPOUND_STRING("Drain Douse"),
+        .effect = EFFECT_DRAIN_DOUSE,
+        .description =  COMPOUND_STRING(
+        "Doused Liquid gives\n"
+        "target's moves draining."),
+        .power = 0,
+        .type = TYPE_POISON,
+        .accuracy = 100,
+        .pp = 15,
+        .target = MOVE_TARGET_SELECTED,
+        .priority = 1,
+        .magicCoatAffected = TRUE,
+        .category = DAMAGE_CATEGORY_STATUS,
+        .zMove = { .effect = Z_EFFECT_SPD_UP_1 }, 
+        .contestEffect = CONTEST_EFFECT_STARTLE_MON_WITH_JUDGES_ATTENTION,
+        .contestCategory = CONTEST_CATEGORY_BEAUTY,
+        .contestComboStarterId = 0,
+        .battleAnimScript = gBattleAnimMove_GastroAcid,
+        },
     // Z-Moves
     [MOVE_BREAKNECK_BLITZ] =
     {

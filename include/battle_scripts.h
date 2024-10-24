@@ -850,5 +850,8 @@ extern const u8 BattleScript_EffectSpicyExtract[];
 extern const u8 BattleScript_DamageToQuarterTargetHP[];
 extern const u8 BattleScript_EffectFickleBeam[];
 extern const u8 BattleScript_FickleBeamDoubled[];
+extern const u8 BattleScript_EffectDrainDouse[];
+extern const u8 BattleScript_DrainDouseHeal[];
+extern const u8 BattleScript__DrainDouseOoze[];
 
 #endif // GUARD_BATTLE_SCRIPTS_H

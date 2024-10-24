@@ -910,7 +910,16 @@
 
 #define MOVES_COUNT_GEN9 848
 
-#define MOVES_COUNT         MOVES_COUNT_GEN9
+#define MOVES_COUNT_OFFICIAL MOVES_COUNT_GEN9
+
+
+//Add custom moves
+#define MOVE_DRAIN_DOUSE (MOVES_COUNT_OFFICIAL + 0)
+
+//Increment by 1 whenever adding a new custom move
+#define MOVE_COUNT_CUSTOM (MOVES_COUNT_OFFICIAL + 1)
+
+#define MOVES_COUNT         MOVE_COUNT_CUSTOM
 
 // Z Moves
 #define MOVE_BREAKNECK_BLITZ (MOVES_COUNT + 0)
