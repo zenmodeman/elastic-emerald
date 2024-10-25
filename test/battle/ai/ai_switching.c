@@ -35,11 +35,11 @@ AI_SINGLE_BATTLE_TEST("AI switches if Perish Song is about to kill")
             TURN { ; }
             TURN { EXPECT_SWITCH(opponent, 1); }
     } SCENE {
-        MESSAGE("{PKMN} TRAINER LEAF sent out Crobat!");
+        MESSAGE(AI_TRAINER_NAME " sent out Crobat!");
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI will not try to switch for the same pokemon for 2 spots in a double battle")
+AI_DOUBLE_BATTLE_TEST("AI will not try to switch for the same pokemon for 2 spots in a double battle (all bad moves)")
 {
     u32 flags;
 
@@ -58,11 +58,34 @@ AI_DOUBLE_BATTLE_TEST("AI will not try to switch for the same pokemon for 2 spot
     } WHEN {
         TURN { EXPECT_SWITCH(opponentLeft, 3); };
     } SCENE {
-        MESSAGE("{PKMN} TRAINER LEAF withdrew Gengar!");
-        MESSAGE("{PKMN} TRAINER LEAF sent out Raticate!");
+        MESSAGE(AI_TRAINER_NAME " withdrew Gengar!");
+        MESSAGE(AI_TRAINER_NAME " sent out Raticate!");
         NONE_OF {
-            MESSAGE("{PKMN} TRAINER LEAF withdrew Haunter!");
-            MESSAGE("{PKMN} TRAINER LEAF sent out Raticate!");
+            MESSAGE(AI_TRAINER_NAME " withdrew Haunter!");
+            MESSAGE(AI_TRAINER_NAME " sent out Raticate!");
+        }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("AI will not try to switch for the same pokemon for 2 spots in a double battle (Wonder Guard)")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_SWITCHING);
+        PLAYER(SPECIES_SHEDINJA);
+        PLAYER(SPECIES_SHEDINJA);
+        // No moves to damage player.
+        OPPONENT(SPECIES_LINOONE) { Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_ZIGZAGOON) { Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_LINOONE) { Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_GENGAR) { Moves(MOVE_SHADOW_BALL); }
+    } WHEN {
+        TURN { EXPECT_SWITCH(opponentLeft, 3); };
+    } SCENE {
+        MESSAGE("{PKMN} TRAINER LEAF withdrew Linoone!");
+        MESSAGE("{PKMN} TRAINER LEAF sent out Gengar!");
+        NONE_OF {
+            MESSAGE("{PKMN} TRAINER LEAF withdrew Zigzagoon!");
+            MESSAGE("{PKMN} TRAINER LEAF sent out Gengar!");
         }
     }
 }
@@ -158,11 +181,11 @@ AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_MON_CHOICES: AI will not switch in a Pokemo
     } WHEN {
             TURN { MOVE(player, MOVE_NIGHT_SLASH) ; EXPECT_SEND_OUT(opponent, alakazamFirst ? 1 : 2); } // AI doesn't send out Alakazam if it gets outsped
     } SCENE {
-        MESSAGE("Foe Kadabra fainted!");
+        MESSAGE("The opposing Kadabra fainted!");
         if (alakazamFirst) {
-            MESSAGE("{PKMN} TRAINER LEAF sent out Alakazam!");
+            MESSAGE(AI_TRAINER_NAME " sent out Alakazam!");
         } else {
-            MESSAGE("{PKMN} TRAINER LEAF sent out Blastoise!");
+            MESSAGE(AI_TRAINER_NAME " sent out Blastoise!");
         }
     }
 }
