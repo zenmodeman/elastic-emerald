@@ -19,8 +19,27 @@ script OldaleTown_TechHouse_Master {
         waitstate
         msgbox(format("Come back anytime you want to learn a move!"))
     }else{
-        call(TechTutorRejected)
+        goto(TechTutorRejected)
     }
+    release
+    end
+}
+
+script ChooseTechMoveTutorMon{
+    msgbox(format("Select pokemon to teach."))
+    special(ChooseMonForCenterMoveTutor)
+    waitstate
+    if (var(VAR_0x8004) != PARTY_NOTHING_CHOSEN && var(VAR_0x8005) != 0){
+        msgbox(format("Teach Which Move?"))
+        setvar(VAR_TEMP_9, MOVE_TUTOR_TECH)
+        special(TeachNPCMoveTutorMove)
+    }else{
+        goto(TechTutorRejected)
+    }
+}
+
+script TechTutorRejected{
+    msgbox(format("Too bad, but come back if you change your mind!"))
     release
     end
 }
@@ -82,24 +101,11 @@ script OldaleTown_TechHouse_Walker{
     faceplayer
     msgbox(format("Hey there! If you're into niche strategies, you've come to the right place!"))
     msgbox(format("I’m not as dedicated as the rest of the folks here, but I love listening to their ideas."))
-    msgbox(format("Our leader's known as the Tech Master. He's spent decades perfecting moves most people wouldn’t even consider."))
+    msgbox(format("Our leader's known as the Tech Sage. He's spent decades perfecting moves most people wouldn’t even consider."))
     msgbox(format("You gotta respect that kind of dedication."))
     release
     end
 }
 
-script ChooseTechMoveTutorMon{
-    msgbox(format("Select pokemon to teach."))
-    special(ChooseMonForCenterMoveTutor)
-    waitstate
-    if (var(VAR_0x8004) != PARTY_NOTHING_CHOSEN && var(VAR_0x8005) != 0){
-        msgbox(format("Teach Which Move?"))
-        setvar(VAR_TEMP_9, MOVE_TUTOR_TECH)
-        special(TeachNPCMoveTutorMove)
-    }
-}
 
-script TechTutorRejected{
-    msgbox(format("Too bad, but come back if you change your mind!"))
-}
 
