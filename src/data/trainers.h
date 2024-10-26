@@ -5173,8 +5173,6 @@ F_TRAINER_FEMALE |
             .species = SPECIES_ZIGZAGOON,
 #line 2125
             .gender = TRAINER_MON_FEMALE,
-#line 2125
-            .heldItem = ITEM_RING_TARGET,
 #line 2128
             .ev = TRAINER_PARTY_EVS(0, 0, 32, 0, 8, 32),
 #line 2130
