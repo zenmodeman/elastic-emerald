@@ -873,6 +873,7 @@ static const u8 sText_FickleBeamDoubled[] = _("{B_ATK_NAME_WITH_PREFIX} is going
 
 static const u8 sText_DrainDouse[] = _("{B_DEF_NAME_WITH_PREFIX} was shrouded\n in a draining liquid!");
 static const u8 sText_WagglingAFinger[] = _("Waggling a finger let it use {B_CURRENT_MOVE}!");
+static const u8 sText_DrainedWithLiquid[] = _("{B_ATK_NAME_WITH_PREFIX} drained energy with its liquid!");
 
 const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
 {
@@ -1417,6 +1418,7 @@ const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
     [STRINGID_PKMNSWITCHEDATKANDDEF - BATTLESTRINGS_TABLE_START] = sText_PkmnSwitchedAtkAndDef,
     [STRINGID_PKMNSABILITYSUPPRESSED - BATTLESTRINGS_TABLE_START] = sText_PkmnsAbilitySuppressed,
     [STRINGID_DRAINDOUSESETSDRAINING - BATTLESTRINGS_TABLE_START] = sText_DrainDouse,
+    [STRINGID_DRAINEDWITHLIQUID - BATTLESTRINGS_TABLE_START] = sText_DrainedWithLiquid,
     [STRINGID_SHIELDEDFROMCRITICALHITS - BATTLESTRINGS_TABLE_START] = sText_ShieldedFromCriticalHits,
     [STRINGID_SWITCHEDATKANDSPATK - BATTLESTRINGS_TABLE_START] = sText_SwitchedAtkAndSpAtk,
     [STRINGID_SWITCHEDDEFANDSPDEF - BATTLESTRINGS_TABLE_START] = sText_SwitchedDefAndSpDef,
@@ -1943,7 +1945,8 @@ const u16 gAttractUsedStringIds[] =
 const u16 gAbsorbDrainStringIds[] =
 {
     [B_MSG_ABSORB]      = STRINGID_PKMNENERGYDRAINED,
-    [B_MSG_ABSORB_OOZE] = STRINGID_ITSUCKEDLIQUIDOOZE
+    [B_MSG_ABSORB_OOZE] = STRINGID_ITSUCKEDLIQUIDOOZE,
+    [B_MSG_DRAIN_DOUSED] = STRINGID_DRAINEDWITHLIQUID,
 };
 
 const u16 gSportsUsedStringIds[] =

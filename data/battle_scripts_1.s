@@ -9082,7 +9082,7 @@ BattleScript_ItemHealHP_Ret::
 
 BattleScript_DrainDouseHeal::
 	orword gHitMarker, HITMARKER_IGNORE_BIDE | HITMARKER_IGNORE_SUBSTITUTE | HITMARKER_IGNORE_DISGUISE | HITMARKER_PASSIVE_DAMAGE
-	setbyte cMULTISTRING_CHOOSER, B_MSG_ABSORB
+	setbyte cMULTISTRING_CHOOSER, B_MSG_DRAIN_DOUSED
 	healthbarupdate BS_ATTACKER
 	datahpupdate BS_ATTACKER
 	printfromtable gAbsorbDrainStringIds

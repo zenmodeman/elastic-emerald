@@ -729,8 +729,9 @@
 #define STRINGID_MUDSPORTPREVENTS                    725
 #define STRINGID_WATERSPORTPREVENTS                  726
 #define STRINGID_DRAINDOUSESETSDRAINING              727
+#define STRINGID_DRAINEDWITHLIQUID                   728
 
-#define BATTLESTRINGS_COUNT                           728
+#define BATTLESTRINGS_COUNT                           729
 
 // This is the string id that gBattleStringsTable starts with.
 // String ids before this (e.g. STRINGID_INTROMSG) are not in the table,
@@ -766,6 +767,7 @@
 // gAbsorbDrainStringIds
 #define B_MSG_ABSORB      0
 #define B_MSG_ABSORB_OOZE 1
+#define B_MSG_DRAIN_DOUSED 2
 
 // gLeechSeedStringIds
 #define B_MSG_LEECH_SEED_SET   0
