@@ -871,7 +871,7 @@ static const u8 sText_SupersweetAromaWafts[] = _("A supersweet aroma is wafting 
 static const u8 sText_TidyingUpComplete[] = _("Tidying up complete!");
 static const u8 sText_FickleBeamDoubled[] = _("{B_ATK_NAME_WITH_PREFIX} is going all out for this attack!");
 
-static const u8 sText_DrainDouse[] = _("{B_DEF_NAME_WITH_PREFIX} was shrouded\n in a draining liquid!");
+static const u8 sText_DrainDouse[] = _("{B_DEF_NAME_WITH_PREFIX}'s liquid gives its moves draining!");
 static const u8 sText_WagglingAFinger[] = _("Waggling a finger let it use {B_CURRENT_MOVE}!");
 static const u8 sText_DrainedWithLiquid[] = _("{B_ATK_NAME_WITH_PREFIX} drained energy with its liquid!");
 

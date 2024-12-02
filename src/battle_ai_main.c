@@ -2447,7 +2447,9 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_DO_NOTHING:
-            ADJUST_SCORE(-10);
+            if (move != MOVE_HAPPY_HOUR){
+                ADJUST_SCORE(-10);
+            }
             break;
         case EFFECT_INSTRUCT:
             {
@@ -3678,6 +3680,14 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_DO_NOTHING:
+        if (move == MOVE_HAPPY_HOUR){
+            if (!gBattleStruct->moneyMultiplierMove){
+                //Because Happy Hour usage will be very specific, just incentivize it in movesets that use it.
+                ADJUST_SCORE(DECENT_EFFECT);
+            }else{
+                ADJUST_SCORE(-10);
+            }
+        }
         //todo - check z splash, z celebrate, z happy hour (lol)
         break;
     case EFFECT_TELEPORT: // Either remove or add better logic

@@ -1178,10 +1178,15 @@ script Route104_EventScript_Jimmy{
 	end
 }
 
-script Route104_EventScript_CindyIsWillingToRematch{
-	msgbox(format("That was a good battle. If you ever feel like battling again, feel free to talk to me!"), MSGBOX_AUTOCLOSE)
+script Route104_EventScript_Cindy_NextTimeRoute{
+	msgbox(format("The next time you come back to this route, if you feel like battling again, feel free to talk to me!"))
 	releaseall
 	end
+}
+script Route104_EventScript_CindyIsWillingToRematch{
+	setflag(FLAG_TEMP_1)
+	msgbox(format("My Pokemon are great at earning money from wild battles, but I wanted to prove we could win in real battles too..."))
+	goto(Route104_EventScript_Cindy_NextTimeRoute)
 }
 
 script Route104_EventScript_Cindy{
@@ -1206,10 +1211,27 @@ script  Route104_EventScript_BillyGift{
 }
 
 script Route104_EventScriptCindyRematch{
-	msgbox(format("Hey, {PLAYER}, Would you like a rematch?"), MSGBOX_YESNO)
-	if (var(VAR_RESULT) == 1){
-		msgbox("Then let's get started!")
-		trainerbattle_no_intro(TRAINER_CINDY_1, Route104_Text_CindyDefeat)
-		goto(Route104_EventScript_CindyIsWillingToRematch) 
+	if (flag(FLAG_TEMP_1)){
+		goto(Route104_EventScript_Cindy_NextTimeRoute)
+	}else{
+		msgbox(format("Hey, {PLAYER}, Would you like a rematch?"), MSGBOX_YESNO)
+		if (var(VAR_RESULT) == 1){
+			msgbox("Then let's get started!")
+			trainerbattle_no_intro(TRAINER_CINDY_1, Route104_Text_CindyDefeat)
+			goto(Route104_EventScript_CindyAfterRematch) 
+		}else{
+			msgbox("Aw, I was looking forward to a rematch...")
+			releaseall 
+			end
+		}
+
 	}
+}
+
+script Route104_EventScript_CindyAfterRematch{
+	setflag(FLAG_TEMP_1)
+	msgbox(format("Guess I still couldn't pull it off."))
+	msgbox(format("The next time you come back to this route, if you feel like battling again, I'll be down!"))
+	releaseall
+	end
 }

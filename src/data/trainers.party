@@ -2122,25 +2122,27 @@ Items: Full Restore
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Zigzagoon (F) @ Ring Target  
-Ability: Quick Feet  
+Meowth @ Oran Berry  
+Ability: Pickup  
 Level: 8  
-EVs: 32 Def / 8 SpA / 32 SpD  
-Modest Nature  
-IVs: 10 HP / 0 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
-- Trick  
-- Mud Shot  
-- Round  
-- Charge Beam  
+EVs: 32 Def  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Happy Hour  
+- Pay Day  
 
-Happiny @ Ring Target  
-Ability: Natural Cure  
+Combee @ Honey  
+Ability: Honey Gather  
 Level: 8  
-EVs: 4 HP / 12 Atk / 12 Def / 32 SpD / 12 Spe  
-Serious Nature  
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
-- Trick  
-- Last Resort  
+EVs: 16 Spe  
+- Gust  
+- Bug Bite  
+
+Gimmighoul @ Amulet Coin  
+Level: 8
+Ability: Rattled  
+EVs: 36 Atk
+- Pay Day  
+- Thief  
 
 
 === TRAINER_DAPHNE ===

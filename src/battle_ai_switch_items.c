@@ -2124,7 +2124,9 @@ static bool32 ShouldUseItem(u32 battler)
         switch (ItemId_GetBattleUsage(item))
         {
         case EFFECT_ITEM_HEAL_AND_CURE_STATUS:
+            DebugPrintf("Reached Full Restore check.");
             shouldUse = AI_ShouldHeal(battler, 0);
+            // shouldUse = AI_ShouldHeal(battler, 700);
             break;
         case EFFECT_ITEM_RESTORE_HP:
             shouldUse = AI_ShouldHeal(battler, itemEffects[GetItemEffectParamOffset(battler, item, 4, ITEM4_HEAL_HP)]);
@@ -2177,6 +2179,7 @@ static bool32 ShouldUseItem(u32 battler)
         }
         if (shouldUse)
         {
+            DebugPrintf("Reached the check for ShouldUse");
             // Set selected party ID to current battler if none chosen.
             if (gBattleStruct->itemPartyIndex[battler] == PARTY_SIZE)
                 gBattleStruct->itemPartyIndex[battler] = gBattlerPartyIndexes[battler];
@@ -2197,9 +2200,10 @@ static bool32 AI_ShouldHeal(u32 battler, u32 healAmount)
     if (gBattleMons[battler].hp < gBattleMons[battler].maxHP / 4
      || gBattleMons[battler].hp == 0
      || (healAmount != 0 && gBattleMons[battler].maxHP - gBattleMons[battler].hp > healAmount))
-    {
+    {   
         // We have low enough HP to consider healing
         shouldHeal = !AI_OpponentCanFaintAiWithMod(battler, healAmount); // if target can kill us even after we heal, why bother
+        DebugPrintf("Have reached the heal threshold code and ShouldHeal is %d", shouldHeal);
     }
 
     return shouldHeal;

@@ -2325,87 +2325,140 @@ Route104_EventScript_Jimmy::
 	end
 
 
-Route104_EventScript_CindyIsWillingToRematch::
+Route104_EventScript_Cindy_NextTimeRoute::
 # 1182 "data/maps/Route104/scripts.pory"
-	msgbox Route104_EventScript_CindyIsWillingToRematch_Text_0, MSGBOX_AUTOCLOSE
+	msgbox Route104_EventScript_Cindy_NextTimeRoute_Text_0
 # 1183 "data/maps/Route104/scripts.pory"
 	releaseall
 	end
 
 
-Route104_EventScript_Cindy::
+Route104_EventScript_CindyIsWillingToRematch::
+# 1187 "data/maps/Route104/scripts.pory"
+	setflag FLAG_TEMP_1
 # 1188 "data/maps/Route104/scripts.pory"
-	trainerbattle_single TRAINER_CINDY_1, Route104_Text_CindyIntro, Route104_Text_CindyDefeat, Route104_EventScript_CindyIsWillingToRematch
+	msgbox Route104_EventScript_CindyIsWillingToRematch_Text_0
 # 1189 "data/maps/Route104/scripts.pory"
+	goto Route104_EventScript_Cindy_NextTimeRoute
+	return
+
+
+Route104_EventScript_Cindy::
+# 1193 "data/maps/Route104/scripts.pory"
+	trainerbattle_single TRAINER_CINDY_1, Route104_Text_CindyIntro, Route104_Text_CindyDefeat, Route104_EventScript_CindyIsWillingToRematch
+# 1194 "data/maps/Route104/scripts.pory"
 	goto Route104_EventScriptCindyRematch
 	return
 
 
 Route104_EventScript_Billy::
-# 1193 "data/maps/Route104/scripts.pory"
+# 1198 "data/maps/Route104/scripts.pory"
 	trainerbattle_single TRAINER_BILLY, Route104_Text_BillyIntro, Route104_Text_BillyDefeat, Route104_EventScript_BillyGift
-# 1194 "data/maps/Route104/scripts.pory"
+# 1199 "data/maps/Route104/scripts.pory"
 	msgbox Route104_Text_BillyPostBattle, MSGBOX_AUTOCLOSE
 	end
 
 
 Route104_EventScript_BillyGift::
-# 1199 "data/maps/Route104/scripts.pory"
+# 1204 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScript_BillyGift_Text_0
-# 1200 "data/maps/Route104/scripts.pory"
+# 1205 "data/maps/Route104/scripts.pory"
 	giveitem ITEM_SERIOUS_MINT
-# 1201 "data/maps/Route104/scripts.pory"
+# 1206 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq Route104_EventScript_BillyGift_2
 Route104_EventScript_BillyGift_1:
-# 1204 "data/maps/Route104/scripts.pory"
+# 1209 "data/maps/Route104/scripts.pory"
 	releaseall
 	end
 
 Route104_EventScript_BillyGift_2:
-# 1202 "data/maps/Route104/scripts.pory"
+# 1207 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_BillyGift_1
 
 
 Route104_EventScriptCindyRematch::
-# 1209 "data/maps/Route104/scripts.pory"
+# 1214 "data/maps/Route104/scripts.pory"
+	goto_if_set FLAG_TEMP_1, Route104_EventScriptCindyRematch_1
+# 1217 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScriptCindyRematch_Text_0, MSGBOX_YESNO
-# 1210 "data/maps/Route104/scripts.pory"
+# 1218 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, 1
-	goto_if_eq Route104_EventScriptCindyRematch_1
-	return
+	goto_if_eq Route104_EventScriptCindyRematch_4
+# 1223 "data/maps/Route104/scripts.pory"
+	msgbox Route104_EventScriptCindyRematch_Text_2
+# 1224 "data/maps/Route104/scripts.pory"
+	releaseall
+	end
 
 Route104_EventScriptCindyRematch_1:
-# 1211 "data/maps/Route104/scripts.pory"
+# 1215 "data/maps/Route104/scripts.pory"
+	goto Route104_EventScript_Cindy_NextTimeRoute
+	return
+
+Route104_EventScriptCindyRematch_4:
+# 1219 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScriptCindyRematch_Text_1
-# 1212 "data/maps/Route104/scripts.pory"
+# 1220 "data/maps/Route104/scripts.pory"
 	trainerbattle_no_intro TRAINER_CINDY_1, Route104_Text_CindyDefeat
-# 1213 "data/maps/Route104/scripts.pory"
-	goto Route104_EventScript_CindyIsWillingToRematch
+# 1221 "data/maps/Route104/scripts.pory"
+	goto Route104_EventScript_CindyAfterRematch
 	return
 
 
-Route104_EventScript_CindyIsWillingToRematch_Text_0:
+Route104_EventScript_CindyAfterRematch::
+# 1232 "data/maps/Route104/scripts.pory"
+	setflag FLAG_TEMP_1
+# 1233 "data/maps/Route104/scripts.pory"
+	msgbox Route104_EventScript_CindyAfterRematch_Text_0
+# 1234 "data/maps/Route104/scripts.pory"
+	msgbox Route104_EventScript_CindyAfterRematch_Text_1
+# 1235 "data/maps/Route104/scripts.pory"
+	releaseall
+	end
+
+
+Route104_EventScript_Cindy_NextTimeRoute_Text_0:
 # 1182 "data/maps/Route104/scripts.pory"
-	.string "That was a good battle. If you ever feel\n"
-	.string "like battling again, feel free to talk to\l"
-	.string "me!$"
+	.string "The next time you come back to this\n"
+	.string "route, if you feel like battling again,\l"
+	.string "feel free to talk to me!$"
+
+Route104_EventScript_CindyIsWillingToRematch_Text_0:
+# 1188 "data/maps/Route104/scripts.pory"
+	.string "My Pokemon are great at earning money\n"
+	.string "from wild battles, but I wanted to prove\l"
+	.string "we could win in real battles too...$"
 
 Route104_EventScript_BillyGift_Text_0:
-# 1199 "data/maps/Route104/scripts.pory"
+# 1204 "data/maps/Route104/scripts.pory"
 	.string "That was a nice battle! Here, you can\n"
 	.string "have one of the mints that I've been\l"
 	.string "giving to my Pokemon.$"
 
 Route104_EventScriptCindyRematch_Text_0:
-# 1209 "data/maps/Route104/scripts.pory"
+# 1217 "data/maps/Route104/scripts.pory"
 	.string "Hey, {PLAYER}, Would you like a\n"
 	.string "rematch?$"
 
 Route104_EventScriptCindyRematch_Text_1:
-# 1211 "data/maps/Route104/scripts.pory"
+# 1219 "data/maps/Route104/scripts.pory"
 	.string "Then let's get started!$"
+
+Route104_EventScriptCindyRematch_Text_2:
+# 1223 "data/maps/Route104/scripts.pory"
+	.string "Aw, I was looking forward to a rematch...$"
+
+Route104_EventScript_CindyAfterRematch_Text_0:
+# 1233 "data/maps/Route104/scripts.pory"
+	.string "Guess I still couldn't pull it off.$"
+
+Route104_EventScript_CindyAfterRematch_Text_1:
+# 1234 "data/maps/Route104/scripts.pory"
+	.string "The next time you come back to this\n"
+	.string "route, if you feel like battling again,\l"
+	.string "I'll be down!$"
 
 Route104_Text_JimmyIntro::
 # 1163 "data/maps/Route104/scripts.pory"

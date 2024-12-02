@@ -7849,7 +7849,7 @@ static const struct LevelUpMove sWhismurLevelUpLearnset[] = {
 };
 
 static const struct LevelUpMove sLoudredLevelUpLearnset[] = {
-    LEVEL_UP_MOVE( 0, MOVE_BITE),
+    LEVEL_UP_MOVE( 0, MOVE_SNORE),
     LEVEL_UP_MOVE( 1, MOVE_BITE),
     LEVEL_UP_MOVE( 1, MOVE_ASTONISH),
     LEVEL_UP_MOVE( 1, MOVE_POUND),
@@ -7858,6 +7858,7 @@ static const struct LevelUpMove sLoudredLevelUpLearnset[] = {
     LEVEL_UP_MOVE(15, MOVE_REST),
     LEVEL_UP_MOVE(15, MOVE_SLEEP_TALK),
     LEVEL_UP_MOVE(23, MOVE_STOMP),
+    LEVEL_UP_MOVE(26, MOVE_BITE),
     LEVEL_UP_MOVE(29, MOVE_ROAR),
     LEVEL_UP_MOVE(36, MOVE_SUPERSONIC),
     LEVEL_UP_MOVE(43, MOVE_UPROAR),
