@@ -279,15 +279,16 @@ LittlerootTown_ProfessorBirchsLab_EventScript_Aide::
 	faceplayer
 	goto_if_ge VAR_BIRCH_LAB_STATE, 3, LittlerootTown_ProfessorBirchsLab_EventScript_AideReceivedStarter
 	goto_if_set FLAG_BIRCH_AIDE_MET, LittlerootTown_ProfessorBirchsLab_EventScript_AideAlreadyMet
-	msgbox LittlerootTown_ProfessorBirchsLab_Text_BirchAwayOnFieldwork, MSGBOX_DEFAULT
+	msgbox LittlerootTown_ProfessorBirchsLab_Text_Intro, MSGBOX_DEFAULT
 	setflag FLAG_BIRCH_AIDE_MET
 	release
 	end
 
 LittlerootTown_ProfessorBirchsLab_EventScript_AideAlreadyMet::
-	msgbox LittlerootTown_ProfessorBirchsLab_Text_BirchIsntOneForDeskWork, MSGBOX_DEFAULT
+	msgbox LittlerootTown_ProfessorBirchsLab_Text_YourFirstDay, MSGBOX_DEFAULT
 	release
 	end
+
 
 LittlerootTown_ProfessorBirchsLab_EventScript_AideReceivedStarter::
 	msgbox LittlerootTown_ProfessorBirchsLab_Text_BirchEnjoysRivalsHelpToo, MSGBOX_DEFAULT
@@ -674,6 +675,17 @@ LittlerootTown_ProfessorBirchsLab_Text_BirchIsntOneForDeskWork:
 	.string "He's the type of person who would\l"
 	.string "rather go outside and experience\l"
 	.string "things than read about them here.$"
+
+LittlerootTown_ProfessorBirchsLab_Text_Intro:
+	.string "Oh, nice to meet you, {PLAYER}.\p"
+	.string "PROF. BIRCH is often doing fieldwork,\n"
+	.string "but he stayed put for your first day!\n"
+	.string "he can be awfully thoughtful that way.$"
+
+LittlerootTown_ProfessorBirchsLab_Text_YourFirstDay:
+	.string "PROF. BIRCH is often doing fieldwork,\n"
+	.string "but he stayed put for your first day!\n"
+	.string "he can be awfully thoughtful that way.$"
 
 LittlerootTown_ProfessorBirchsLab_Text_BirchEnjoysRivalsHelpToo:
 	.string "PROF. BIRCH is studying the habitats\n"
