@@ -617,8 +617,8 @@
       "x": 14,
       "y": 55,
       "elevation": 3,
-      "item": "ITEM_BOTTLE_CAP",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_BOTTLE_CAP"
+      "item": "ITEM_ABILITY_PATCH",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_ABILITY_PATCH"
     },
     {
       "type": "hidden_item",

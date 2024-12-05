@@ -231,9 +231,28 @@ Music: Aqua
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Poochyena
-Level: 9
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Chewtle @ Apicot Berry  
+Ability: Shell Armor  
+Level: 9  
+EVs: 4 SpD  
+IVs: 12 HP / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Tackle  
+- Chilling Water  
+- Bite  
+- Scary Face  
+
+Tadbulb @ Luminous Moss  
+Ability: Static  
+Level: 10  
+EVs: 24 Def  
+Calm Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Soak  
+- Water Pulse  
+- Thunder Shock  
+- Mud-Slap  
+
+
 
 === TRAINER_MARCEL ===
 Name: MARCEL
@@ -2126,13 +2145,16 @@ Meowth @ Oran Berry
 Ability: Pickup  
 Level: 8  
 EVs: 32 Def  
-IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+Timid Nature  
+IVs: 10 HP / 5 Atk / 10 Def / 5 SpA / 10 SpD / 10 Spe  
 - Happy Hour  
 - Pay Day  
 
 Combee @ Honey  
 Ability: Honey Gather  
 Level: 8  
+Jolly Nature  
+IVs: 10 HP / 2 Atk / 10 Def / 2 SpA / 10 SpD / 10 Spe  
 EVs: 16 Spe  
 - Gust  
 - Bug Bite  
@@ -2140,7 +2162,8 @@ EVs: 16 Spe
 Gimmighoul @ Amulet Coin  
 Level: 8
 Ability: Rattled  
-EVs: 36 Atk
+Bold Nature
+IVs: 10 HP / 2 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Pay Day  
 - Thief  
 
