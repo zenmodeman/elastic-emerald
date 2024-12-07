@@ -11421,21 +11421,42 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Wurmple
-Level: 3
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Cascoon @ Poison Barb  
+Ability: Shed Skin  
+Level: 7  
+EVs: 20 HP / 20 SpD  
+Adamant Nature  
+IVs: 8 HP / 8 Def / 8 SpA / 8 SpD / 8 Spe  
+- Tackle  
+- String Shot  
+- Harden  
+- Poison Sting  
 
-Wurmple
-Level: 3
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Joltik @ Miracle Seed  
+Ability: Compound Eyes  
+Level: 8
+EVs: 20 HP / 20 Def / 20 SpD  
+IVs: 8 HP / 8 Def / 8 SpA / 8 SpD / 8 Spe  
+- Electroweb  
+- Pounce  
+- Absorb  
 
-Wurmple
-Level: 3
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Cutiefly @ Fairy Gem  
+Ability: Honey Gather  
+Level: 9
+EVs: 40 HP  
+Calm Nature  
+IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Powder  
+- Fairy Wind  
+- Absorb  
+- Covet  
 
-Wurmple
-Level: 3
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+
+
+
+
+
 
 === TRAINER_JOSE ===
 Name: JOSE
