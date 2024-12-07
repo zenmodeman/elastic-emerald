@@ -6771,7 +6771,7 @@ static void Cmd_moveend(void)
                 && IsBattlerAlive(gBattlerAttacker)
                 && (B_HEAL_BLOCKING < GEN_5 || !(gStatuses3[gBattlerAttacker] & STATUS3_HEAL_BLOCK)))
                 {
-                    gBattleMoveDamage = drainHealAmount;
+                    gBattleStruct->moveDamage[gBattlerAttacker] = drainHealAmount;
                     // DebugPrintf("Right below setting gBattleMoveDamage");
                     BattleScriptPushCursor();
                     if (drainHealAmount < 0){

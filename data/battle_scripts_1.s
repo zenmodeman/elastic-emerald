@@ -2949,14 +2949,14 @@ BattleScript_MudSportPrevents::
 	pause B_WAIT_TIME_SHORT
 	printstring STRINGID_MUDSPORTPREVENTS
 	waitmessage B_WAIT_TIME_LONG
-	orhalfword gMoveResultFlags, MOVE_RESULT_FAILED
+	setmoveresultflags MOVE_RESULT_FAILED
 	goto BattleScript_MoveEnd
 
 BattleScript_WaterSportPrevents::
 	pause B_WAIT_TIME_SHORT
 	printstring STRINGID_WATERSPORTPREVENTS
 	waitmessage B_WAIT_TIME_LONG
-	orhalfword gMoveResultFlags, MOVE_RESULT_FAILED
+	setmoveresultflags MOVE_RESULT_FAILED
 	goto BattleScript_MoveEnd
 
 BattleScript_FlowerVeilProtectsRet::

@@ -6758,6 +6758,16 @@ bool32 CanBeConfused(u32 battler)
     return TRUE;
 }
 
+bool32 HasEnoughPercentageHp(u32 battler, u32 hpPercent){
+    if (!IsBattlerAlive(battler))
+        return FALSE;
+
+    if (gBattleMons[battler].hp <= (gBattleMons[battler].maxHP * hpPercent)/100)
+        return TRUE;
+
+    return FALSE;
+}
+
 // second argument is 1/X of current hp compared to max hp
 bool32 HasEnoughHpToEatBerry(u32 battler, u32 hpFraction, u32 itemId)
 {
@@ -6786,7 +6796,7 @@ bool32 HasEnoughHpToEatBerry(u32 battler, u32 hpFraction, u32 itemId)
     return FALSE;
 }
 
-static u8 HealConfuseBerry(u32 battler, u32 itemId, u32 flavorId, bool32 end2)
+static u8 HealConfuseBerry(u32 battler, u32 itemId, u32 flavorId, enum ItemEffect caseID)
 {
     if (HasEnoughHpToEatBerry(battler, (B_CONFUSE_BERRIES_HEAL >= GEN_7 ? 4 : 2), itemId)
      && (B_HEAL_BLOCKING < GEN_5 || !(gStatuses3[battler] & STATUS3_HEAL_BLOCK)))

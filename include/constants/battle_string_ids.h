@@ -735,9 +735,9 @@
 #define STRINGID_MUDSPORTPREVENTS                    EXPANSION_BATTLE_STRING_LATEST + 1
 #define STRINGID_WATERSPORTPREVENTS                  EXPANSION_BATTLE_STRING_LATEST + 2
 #define STRINGID_DRAINDOUSESETSDRAINING              EXPANSION_BATTLE_STRING_LATEST + 3
-#define STRINGID_DRAINEDWITHLIQUID                   EXPANSION_BATTLE_STRINGS_LATEST + 4
+#define STRINGID_DRAINEDWITHLIQUID                   EXPANSION_BATTLE_STRING_LATEST + 4
 
-#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRINGS_LATEST + 5
+#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRING_LATEST + 5
 
 // This is the string id that gBattleStringsTable starts with.
 // String ids before this (e.g. STRINGID_INTROMSG) are not in the table,
