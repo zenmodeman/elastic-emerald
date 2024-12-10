@@ -11524,20 +11524,34 @@ IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
 === TRAINER_JAMES_1 ===
 Name: JAMES
-Class: Bug Catcher
-Pic: Bug Catcher
+Class: Youngster
+Pic: Youngster
 Gender: Male
 Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Nincada
-Level: 6
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Zigzagoon @ Ring Target  
+Ability: Quick Feet  
+Level: 9  
+EVs: 12 HP / 16 Spe  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Trick  
+- Headbutt  
+- Mud Shot  
+- Shock Wave  
 
-Nincada
-Level: 6
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Impidimp @ Mirror Herb  
+Ability: Prankster  
+Level: 10  
+EVs: 32 Spe  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 12 Spe  
+- Flatter  
+- Punishment  
+- Fake Out  
+- Round  
+
+
 
 === TRAINER_JAMES_2 ===
 Name: JAMES

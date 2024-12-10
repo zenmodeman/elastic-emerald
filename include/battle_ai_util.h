@@ -119,6 +119,7 @@ bool32 HasMoveWithCategory(u32 battler, u32 category);
 
 bool32 HasNoMovesKnown(u32 battler);
 bool32 HasNoKnownNonProtectingMoves(u32 battler);
+bool32 HasAllKnownMoves(u32 battler);
 
 bool32 HasMoveWithType(u32 battler, u32 type);
 bool32 HasMoveEffect(u32 battlerId, u32 moveEffect);

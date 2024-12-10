@@ -2370,7 +2370,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_POWDER:
-            if (!HasMoveWithType(battlerDef, TYPE_FIRE)
+            //TODO: test HasAllKnownMoves; the intent is to make it so the logic only applies if the AI has enough information to conclude there's no Fire move
+            if ((HasAllKnownMoves(battlerDef) && !HasMoveWithType(battlerDef, TYPE_FIRE))
               || PartnerMoveIsSameAsAttacker(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
                 ADJUST_SCORE(-10);
             break;
@@ -4508,8 +4509,13 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_POWDER:
-        if (predictedMove != MOVE_NONE && !IS_MOVE_STATUS(predictedMove) && gMovesInfo[predictedMove].type == TYPE_FIRE)
+        //give ~50% chance
+        if (predictedMove != MOVE_NONE && !IS_MOVE_STATUS(predictedMove) && gMovesInfo[predictedMove].type == TYPE_FIRE && AI_RandLessThan(128))
             ADJUST_SCORE(DECENT_EFFECT);
+        //Chance if the opposing mon is a Fire type. Should potentially add logic for whether there's the possibility of the Fire type having a Fire move.
+        else if ((gBattleMons[battlerDef].types[0] == TYPE_FIRE || gBattleMons[battlerDef].types[1] == TYPE_FIRE) && AI_RandLessThan(128)){
+            ADJUST_SCORE(DECENT_EFFECT);
+        }
         break;
     case EFFECT_TELEKINESIS:
         if (HasMoveWithLowAccuracy(battlerAtk, battlerDef, 90, FALSE, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], aiData->holdEffects[battlerAtk], aiData->holdEffects[battlerDef])
@@ -5048,7 +5054,7 @@ static bool32 ShouldPermitImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move){
              && gMovesInfo[moves[j]].power){
                 // DebugPrintf("Move check has been reached for move number %d", moves[j]);
                 if (gMovesInfo[moves[j]].type == TYPE_GHOST && ((gSpeciesInfo[aiMons[i].species].types[0] == TYPE_NORMAL) ||
-                 (gSpeciesInfo[aiMons[i].species].types[0] == TYPE_NORMAL))){
+                 (gSpeciesInfo[aiMons[i].species].types[1] == TYPE_NORMAL))){
 
                     if (Random() & 1){
                         return TRUE;

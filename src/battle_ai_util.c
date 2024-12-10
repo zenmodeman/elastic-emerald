@@ -2103,6 +2103,23 @@ bool32 HasNoKnownNonProtectingMoves(u32 battler){
     return TRUE; 
 }
 
+bool32 HasAllKnownMoves(u32 battler){
+    DebugPrintf("HasAllKnownMoves called");
+    u32 i;
+    u16 *moves = GetMovesArray(battler);
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        u32 move = moves[i];
+        DebugPrintf("This move is %d", move);
+        if (move == MOVE_NONE || move == MOVE_UNAVAILABLE){
+            DebugPrintf("Reached HasAllKnownMoves False case");
+            return FALSE;
+        }
+    }
+    DebugPrintf("Reached HasAllKnownMoves True case");
+
+    return TRUE; 
+}
 bool32 HasMoveWithType(u32 battler, u32 type)
 {
     s32 i;

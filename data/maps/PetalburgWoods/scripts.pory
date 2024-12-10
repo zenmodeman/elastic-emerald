@@ -279,7 +279,7 @@ PetalburgWoods_EventScript_Lyle::
 	end
 
 PetalburgWoods_EventScript_James::
-	trainerbattle_single TRAINER_JAMES_1, PetalburgWoods_Text_InstantlyPopularWithBugPokemon, PetalburgWoods_Text_CantBePopularIfILose, PetalburgWoods_EventScript_TryRegisterJames
+	trainerbattle_single TRAINER_JAMES_1, PetalburgWoods_Text_FoundStrangeItems, PetalburgWoods_Text_DidntHelp, PetalburgWoods_EventScript_TryRegisterJames
 	specialvar VAR_RESULT, ShouldTryRematchBattle
 	goto_if_eq VAR_RESULT, TRUE, PetalburgWoods_EventScript_JamesRematch
 	setvar VAR_0x8004, TRAINER_JAMES_1
@@ -400,9 +400,15 @@ PetalburgWoods_Text_ImOutOfPokeBalls:
 PetalburgWoods_Text_InstantlyPopularWithBugPokemon:
 	.string "If you take BUG POKéMON to school,\n"
 	.string "you get to be instantly popular!$"
+PetalburgWoods_Text_FoundStrangeItems:
+	.string "My brother gave me some weird items,\n"
+	.string "I've been playing around with them!$"
+PetalburgWoods_Text_DidntHelp:
+	.string "Guess they didn't help.$"
 
 PetalburgWoods_Text_CantBePopularIfILose:
 	.string "I can't be popular if I lose.$"
+
 
 PetalburgWoods_Text_PeopleRespectYou:
 	.string "If you have a big BUG POKéMON,\n"
