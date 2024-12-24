@@ -4731,6 +4731,25 @@ static void Cmd_getexp(void)
             s32 viaSentIn = 0;
             s32 viaExpShare = 0;
 
+            //Added 
+            u32 badgeCount = 0;
+            u32 badge_idx = 0;
+           uq4_12_t badgeRatio = 0;
+           uq4_12_t splitRatio = 0;
+           uq4_12_t participantFactor = 0; 
+
+
+        //get number of badges
+        for (badge_idx = FLAG_BADGE01_GET; badge_idx < FLAG_BADGE01_GET + NUM_BADGES; badge_idx++)
+        {
+            if (FlagGet(badge_idx))
+                badgeCount++;
+        }
+
+        badgeRatio = (UQ_4_12(1) / NUM_BADGES) * badgeCount;
+        
+        splitRatio = (UQ_4_12(1) - badgeRatio);
+
             for (i = 0; i < PARTY_SIZE; i++)
             {
                 if (!IsValidForBattle(&gPlayerParty[i]))
@@ -4768,11 +4787,21 @@ static void Cmd_getexp(void)
             if (B_TRAINER_EXP_MULTIPLIER <= GEN_7 && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
                 calculatedExp = (calculatedExp * 150) / 100;
 
-            if (B_SPLIT_EXP < GEN_6)
+            // if (B_SPLIT_EXP < GEN_6)
+
+            //Replacing split exp code with badgeRatio code
+
+            //Do the scaling logic if user has less than 8 badges and sent out more than one Pokemon 
+            if ((badgeRatio < UQ_4_12(1)) && (viaSentIn) > 1 ) 
             {
+                //get the participant scaling factor which is 1/participants if 0 badges and 0 if all badges
+                participantFactor =  (splitRatio / viaSentIn);
+                // DebugPrintf("viaSentIn is %d, participantFactor is %d, splitRatio is %d", viaSentIn, participantFactor, splitRatio);
+
                 if (viaExpShare) // at least one mon is getting exp via exp share
                 {
-                    *exp = SAFE_DIV(calculatedExp / 2, viaSentIn);
+                    // *exp = SAFE_DIV(calculatedExp / 2, viaSentIn);
+                    *exp = UQ_4_12_TO_INT((calculatedExp/2) *(badgeRatio + participantFactor));
                     if (*exp == 0)
                         *exp = 1;
 
@@ -4782,7 +4811,11 @@ static void Cmd_getexp(void)
                 }
                 else
                 {
-                    *exp = SAFE_DIV(calculatedExp, viaSentIn);
+
+                    // *exp = SAFE_DIV(calculatedExp, viaSentIn);
+                    *exp = UQ_4_12_TO_INT(calculatedExp *(badgeRatio + participantFactor));
+                    // DebugPrintf("badgeRatio is %d, participantFactor is %d, Calculated exp is %d and scaledExp is %d", badgeRatio, participantFactor, calculatedExp, *exp);
+
                     if (*exp == 0)
                         *exp = 1;
                     gBattleStruct->expShareExpValue = 0;
