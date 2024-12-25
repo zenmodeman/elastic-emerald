@@ -138,7 +138,7 @@
 #define TRAINER_JESSICA_2                   132
 #define TRAINER_JESSICA_3                   133
 #define TRAINER_JESSICA_4                   134
-#define TRAINER_JESSICA_5                   135
+#define TRAINER_AYUMU                       135
 #define TRAINER_WINSTON_1                   136
 #define TRAINER_MOLLIE                      137
 #define TRAINER_GARRET                      138

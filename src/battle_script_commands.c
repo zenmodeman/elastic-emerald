@@ -12097,6 +12097,18 @@ static u16 ReverseStatChangeMoveEffect(u16 moveEffect)
     }
 }
 
+static bool32 CurrentMoveIsEnticing(){
+
+    // DebugPrintf("From CurrentMoveIsEnticing, currentMove is %d", gCurrentMove);
+
+    //The sensible choice would be to add this as a move category, but for now just doing a raw chain of or clauses statements.
+    if (gCurrentMove == MOVE_CHARM || gCurrentMove == MOVE_CAPTIVATE || gCurrentMove == MOVE_BABY_DOLL_EYES || gCurrentMove == MOVE_TEARFUL_LOOK || gCurrentMove == MOVE_PLAY_NICE
+    || gCurrentMove == MOVE_CONFIDE || gCurrentMove == MOVE_FAKE_TEARS){
+        return TRUE;
+    }
+    return FALSE;
+}
+
 static u32 ChangeStatBuffs(s8 statValue, u32 statId, u32 flags, const u8 *BS_ptr)
 {
     bool32 certain = FALSE;
@@ -12139,6 +12151,11 @@ static u32 ChangeStatBuffs(s8 statValue, u32 statId, u32 flags, const u8 *BS_ptr
     else if (battlerAbility == ABILITY_SIMPLE)
     {
         statValue = (SET_STAT_BUFF_VALUE(GET_STAT_BUFF_VALUE(statValue) * 2)) | ((statValue <= -1) ? STAT_BUFF_NEGATIVE : 0);
+    }
+    else if (GetBattlerAbility(gBattlerAttacker) == ABILITY_CUTE_CHARM && AreBattlersOfOppositeGender(gBattlerAttacker, battler) 
+    && GetBattlerAbility(battler) != ABILITY_OBLIVIOUS && CurrentMoveIsEnticing()){
+        // DebugPrintf("The Cute Charm stat debuff area has been reached. ");
+        statValue = (SET_STAT_BUFF_VALUE(GET_STAT_BUFF_VALUE(statValue) +1)) | ((statValue <= -1) ? STAT_BUFF_NEGATIVE : 0);
     }
 
     PREPARE_STAT_BUFFER(gBattleTextBuff1, statId);

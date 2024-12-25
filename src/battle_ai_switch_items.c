@@ -2131,9 +2131,9 @@ static bool32 ShouldUseItem(u32 battler)
         switch (ItemId_GetBattleUsage(item))
         {
         case EFFECT_ITEM_HEAL_AND_CURE_STATUS:
-            DebugPrintf("Reached Full Restore check.");
-            shouldUse = AI_ShouldHeal(battler, 0);
-            // shouldUse = AI_ShouldHeal(battler, 700);
+            // DebugPrintf("Reached Full Restore check.");
+            // shouldUse = AI_ShouldHeal(battler, 0);
+            shouldUse = AI_ShouldHeal(battler, 700);
             break;
         case EFFECT_ITEM_RESTORE_HP:
             shouldUse = AI_ShouldHeal(battler, itemEffects[GetItemEffectParamOffset(battler, item, 4, ITEM4_HEAL_HP)]);

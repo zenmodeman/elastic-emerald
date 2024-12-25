@@ -1169,7 +1169,7 @@ text Route104_Text_JimmyDefeat{
 }
 
 text Route104_Text_JimmyPostBattle{
-    format("Sand is great to explore. Sometimes I find cool items and gems on the ground.")
+    format("Sand is great to explore. Sometimes I find cool items on the ground.")
 }
 
 script Route104_EventScript_Jimmy{
@@ -1178,37 +1178,22 @@ script Route104_EventScript_Jimmy{
 	end
 }
 
-script Route104_EventScript_Cindy_NextTimeRoute{
-	msgbox(format("The next time you come back to this route, if you feel like battling again, feel free to talk to me!"))
-	releaseall
+script Route104_EventScript_Ayumu{
+	trainerbattle_single(TRAINER_AYUMU, format("My darling Pokemon are simply irresistible"), format("What? Even their charm wasn't enough?"), Route104_EventScript_Ayumu_PostBattle)
+	msgbox(format(""))
 	end
 }
-script Route104_EventScript_CindyIsWillingToRematch{
-	setflag(FLAG_TEMP_1)
-	msgbox(format("My Pokemon are great at earning money from wild battles, but I wanted to prove we could win in real battles too..."))
-	goto(Route104_EventScript_Cindy_NextTimeRoute)
+
+script Route104_EventScript_Ayumu_PostBattle{
+	msgbox(format("Oh, we couldn’t win... but wasn’t their charm simply enchanting?"))
+	msgbox(format("With Cute Charm on their side, moves like Charm and Fake Tears shine even brighter when used against the right foe!"))
+	end
 }
 
 script Route104_EventScript_Cindy{
 	trainerbattle_single(TRAINER_CINDY_1, Route104_Text_CindyIntro, Route104_Text_CindyDefeat, Route104_EventScript_CindyIsWillingToRematch)
 	goto(Route104_EventScriptCindyRematch)
 } 
-
-script Route104_EventScript_Billy{
-	trainerbattle_single(TRAINER_BILLY, Route104_Text_BillyIntro, Route104_Text_BillyDefeat, Route104_EventScript_BillyGift)
-	msgbox(Route104_Text_BillyPostBattle, MSGBOX_AUTOCLOSE)
-	end
-}
-
-script  Route104_EventScript_BillyGift{
-	msgbox(format("That was a nice battle! Here, you can have one of the mints that I've been giving to my Pokemon."))
-	giveitem(ITEM_SERIOUS_MINT)
-    if (var(VAR_RESULT) == FALSE){
-    	call(Common_EventScript_ShowBagIsFull)
-    }
-	releaseall
-	end
-}
 
 script Route104_EventScriptCindyRematch{
 	if (flag(FLAG_TEMP_1)){
@@ -1228,10 +1213,38 @@ script Route104_EventScriptCindyRematch{
 	}
 }
 
+script Route104_EventScript_Cindy_NextTimeRoute{
+	msgbox(format("The next time you come back to this route, if you feel like battling again, feel free to talk to me!"))
+	releaseall
+	end
+}
+
+script Route104_EventScript_CindyIsWillingToRematch{
+	setflag(FLAG_TEMP_1)
+	msgbox(format("My Pokemon are great at earning money from wild battles, but I wanted to prove we could win in real battles too..."))
+	goto(Route104_EventScript_Cindy_NextTimeRoute)
+}
+
 script Route104_EventScript_CindyAfterRematch{
 	setflag(FLAG_TEMP_1)
 	msgbox(format("Guess I still couldn't pull it off."))
 	msgbox(format("The next time you come back to this route, if you feel like battling again, I'll be down!"))
+	releaseall
+	end
+}
+
+script Route104_EventScript_Billy{
+	trainerbattle_single(TRAINER_BILLY, Route104_Text_BillyIntro, Route104_Text_BillyDefeat, Route104_EventScript_BillyGift)
+	msgbox(Route104_Text_BillyPostBattle, MSGBOX_AUTOCLOSE)
+	end
+}
+
+script  Route104_EventScript_BillyGift{
+	msgbox(format("That was a nice battle! Here, you can have one of the mints that I've been giving to my Pokemon."))
+	giveitem(ITEM_SERIOUS_MINT)
+    if (var(VAR_RESULT) == FALSE){
+    	call(Common_EventScript_ShowBagIsFull)
+    }
 	releaseall
 	end
 }

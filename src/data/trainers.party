@@ -2533,8 +2533,8 @@ IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 - Glare
 - Crunch
 
-=== TRAINER_JESSICA_5 ===
-Name: JESSICA
+=== TRAINER_AYUMU ===
+Name: AYUMU
 Class: Beauty
 Pic: Beauty
 Gender: Female
@@ -2542,21 +2542,29 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Kecleon
-Level: 44
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
-- Bind
-- Lick
-- Fury Swipes
-- Feint Attack
+Clefairy (F) @ White Herb  
+Ability: Cute Charm  
+Level: 8  
+EVs: 28 Def  
+Calm Nature  
+IVs: 10 HP / 0 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Charm  
+- Fake Tears  
+- Disarming Voice  
+- Attract  
 
-Seviper
-Level: 44
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
-- Poison Tail
-- Screech
-- Glare
-- Crunch
+Stufful (M) @ Rawst Berry  
+Ability: Cute Charm  
+Level: 8  
+EVs: 12 Def / 12 SpD / 12 Spe  
+Impish Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Attract  
+- Baby-Doll Eyes  
+- Confide  
+- Tackle  
+
+
 
 === TRAINER_WINSTON_1 ===
 Name: WINSTON
