@@ -2372,8 +2372,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_POWDER:
             //TODO: test HasAllKnownMoves; the intent is to make it so the logic only applies if the AI has enough information to conclude there's no Fire move
             if ((HasAllKnownMoves(battlerDef) && !HasMoveWithType(battlerDef, TYPE_FIRE))
-              || PartnerMoveIsSameAsAttacker(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
-                ADJUST_SCORE(-10);
+              || PartnerMoveIsSameAsAttacker(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove)){
+                            DebugPrintf("Reached true case for negative powder.");
+                                ADJUST_SCORE(-10);
+              }
             break;
         case EFFECT_TELEKINESIS:
             if (gStatuses3[battlerDef] & (STATUS3_TELEKINESIS | STATUS3_ROOTED | STATUS3_SMACKED_DOWN)
@@ -3275,7 +3277,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     //Throat Spray logic
     if (gMovesInfo[move].soundMove 
     && aiData->holdEffects[battlerAtk] == HOLD_EFFECT_THROAT_SPRAY 
-    && HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)){
+    && HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL)){
         ADJUST_SCORE(WEAK_EFFECT);
         //Conditional additional score raise
         if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_RandLessThan(127)){
@@ -3283,6 +3285,16 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
     }
     
+    //Gem Logic with Thief and Covet; in the future, maybe extend to effects such as Acrobatics
+    //Give a chance of incentivizing the strongest move compatible with a gem if a stealing move is available
+    if (aiData -> holdEffects[battlerAtk] == HOLD_EFFECT_GEMS && HasMoveEffect(battlerAtk, MOVE_EFFECT_STEAL_ITEM)
+    && move == GetBestDmgMoveofType(battlerAtk, battlerDef, ItemId_GetSecondaryId(aiData->items[battlerAtk]))){
+        //This is a multi-turn combo, so if AI will faint, doesn't make sense to get an incentive here.
+        if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+
+    }
     //Priority Moves v.s. Upper Hand logic
     if (gMovesInfo[move].power && (HasMove(battlerDef, MOVE_UPPER_HAND) || HasMove(battlerDef, MOVE_QUICK_GUARD)) && gMovesInfo[move].priority > 0 && AI_RandLessThan(127)){
         // DebugPrintf("The Upper Hand RNG check has been hit.");

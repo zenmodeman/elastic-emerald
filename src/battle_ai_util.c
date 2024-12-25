@@ -2022,6 +2022,7 @@ u16 *GetMovesArray(u32 battler)
         return gBattleResources->battleHistory->usedMoves[battler];
 }
 
+//zenmodeman function
 static void AddSTABToMovesList(u16 *moves, u32 battler){
     u32 i;
     u32 currentMove;
@@ -2033,7 +2034,10 @@ static void AddSTABToMovesList(u16 *moves, u32 battler){
     }
 }
 
-/*When computing moves of non-AI battlers, also read unrevealed STAB damaging moves.
+/*
+zenmodeman function
+
+When computing moves of non-AI battlers, also read unrevealed STAB damaging moves.
 This is important for better damage threshold estimates, and will eventually be used in the switch logic.
 But ordinary GetMovesArray should be used for move-specific logic, such as whether the player has revealed Brick Break. 
 */
@@ -2076,6 +2080,7 @@ bool32 HasMoveWithCategory(u32 battler, u32 category)
     return FALSE;
 }
 
+//Zenmodeman function
 bool32 HasNoMovesKnown(u32 battler){
 
     u32 i;
@@ -2089,7 +2094,7 @@ bool32 HasNoMovesKnown(u32 battler){
     return TRUE;
 }
 
-
+//Zenmodeman function
 bool32 HasNoKnownNonProtectingMoves(u32 battler){
     u32 i;
     u16 *moves = GetMovesArray(battler);
@@ -2103,23 +2108,47 @@ bool32 HasNoKnownNonProtectingMoves(u32 battler){
     return TRUE; 
 }
 
+//Zenmodeman function
 bool32 HasAllKnownMoves(u32 battler){
-    DebugPrintf("HasAllKnownMoves called");
+    // DebugPrintf("HasAllKnownMoves called");
     u32 i;
     u16 *moves = GetMovesArray(battler);
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         u32 move = moves[i];
-        DebugPrintf("This move is %d", move);
+        // DebugPrintf("This move is %d", move);
         if (move == MOVE_NONE || move == MOVE_UNAVAILABLE){
-            DebugPrintf("Reached HasAllKnownMoves False case");
+            // DebugPrintf("Reached HasAllKnownMoves False case");
             return FALSE;
         }
     }
-    DebugPrintf("Reached HasAllKnownMoves True case");
+    // DebugPrintf("Reached HasAllKnownMoves True case");
 
     return TRUE; 
 }
+
+/*Zenmodeman function
+Used for logic such as gem use, getting strongest attack of a given type
+Can also be used to check if a mon has a move of a given type that does damage, by checking that the return value is not MOVE_NONE
+*/
+u32 GetBestDmgMoveofType(u32 battlerAtk, u32 battlerDef, u32 type){
+    u32 bestMove = MOVE_NONE;
+    u32 bestDmg = 0;
+    u32 i;
+    u16 *moves = GetMovesArray(battlerAtk);
+
+    for (i = 0; i < MAX_MON_MOVES; i++){
+        if ((moves[i] == MOVE_NONE || moves[i] == MOVE_UNAVAILABLE || gMovesInfo[moves[i]].type != type)){
+            continue;
+        }
+        if (AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected > bestDmg){
+            bestMove = moves[i];
+            bestDmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected;
+        }
+    }
+    return bestMove;
+}
+
 bool32 HasMoveWithType(u32 battler, u32 type)
 {
     s32 i;
