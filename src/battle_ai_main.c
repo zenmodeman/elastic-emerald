@@ -451,7 +451,7 @@ static void SetBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u3
 
             if (move != 0
              && move != 0xFFFF
-             //&& gMovesInfo[move].power != 0  /* we want to get effectiveness and accuracy of status moves */
+             //&& !IS_MOVE_STATUS(gMovesInfo[move])  /* we want to get effectiveness and accuracy of status moves */
              && !(aiData->moveLimitations[battlerAtk] & (1u << moveIndex)))
             {
                 dmg = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, TRUE, weather, rollType);
@@ -1693,7 +1693,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             else
             {
-                if (AtMaxHp(battlerAtk))
+                if (AI_BattlerAtMaxHp(battlerAtk))
                     ADJUST_SCORE(-10);
                 else if (aiData->hpPercents[battlerAtk] >= 80)
                     ADJUST_SCORE(-5); // do it if nothing better
@@ -1833,7 +1833,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_RESTORE_HP:
         case EFFECT_SOFTBOILED:
         case EFFECT_ROOST:
-            if (AtMaxHp(battlerAtk))
+            if (AI_BattlerAtMaxHp(battlerAtk))
                 ADJUST_SCORE(-10);
             else if (aiData->hpPercents[battlerAtk] >= 90)
                 ADJUST_SCORE(-9); //No point in healing, but should at least do it if nothing better
@@ -1843,7 +1843,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_MOONLIGHT:
             if ((AI_GetWeather(aiData) & (B_WEATHER_RAIN | B_WEATHER_SANDSTORM | B_WEATHER_HAIL | B_WEATHER_SNOW | B_WEATHER_FOG)))
                 ADJUST_SCORE(-3);
-            else if (AtMaxHp(battlerAtk))
+            else if (AI_BattlerAtMaxHp(battlerAtk))
                 ADJUST_SCORE(-10);
             else if (aiData->hpPercents[battlerAtk] >= 90)
                 ADJUST_SCORE(-9); //No point in healing, but should at least do it if nothing better
@@ -1853,7 +1853,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             else if (battlerDef == BATTLE_PARTNER(battlerAtk))
                 break; //Always heal your ally
-            else if (AtMaxHp(battlerAtk))
+            else if (AI_BattlerAtMaxHp(battlerAtk))
                 ADJUST_SCORE(-10);
             else if (aiData->hpPercents[battlerAtk] >= 90)
                 ADJUST_SCORE(-8); //No point in healing, but should at least do it if nothing better
@@ -2425,7 +2425,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             {
                 if (gStatuses3[battlerDef] & STATUS3_HEAL_BLOCK)
                     return 0; // cannot even select
-                if (AtMaxHp(battlerDef))
+                if (AI_BattlerAtMaxHp(battlerDef))
                     ADJUST_SCORE(-10);
                 else if (gBattleMons[battlerDef].hp > gBattleMons[battlerDef].maxHP / 2)
                     ADJUST_SCORE(-5);
@@ -2593,8 +2593,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_JUNGLE_HEALING:
-           if (AtMaxHp(battlerAtk)
-            && AtMaxHp(BATTLE_PARTNER(battlerAtk))
+           if (AI_BattlerAtMaxHp(battlerAtk)
+            && AI_BattlerAtMaxHp(BATTLE_PARTNER(battlerAtk))
             && !(gBattleMons[battlerAtk].status1 & STATUS1_ANY)
             && !(gBattleMons[BATTLE_PARTNER(battlerAtk)].status1 & STATUS1_ANY))
                 ADJUST_SCORE(-10);
@@ -2657,8 +2657,8 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
         return score;
 
-    if (gMovesInfo[move].power == 0)
-        return score; // can't make anything faint with no power
+    if (IS_MOVE_STATUS(move))
+        return score; // status moves aren't accounted here
 
     //In Double Battles, if the faster attacker has kill on target, the slower attacker shouldn't be incentivised to go for kill
 
@@ -2735,7 +2735,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             if (IsMoveEffectWeather(move))
                 ADJUST_SCORE(-10);
             break;
-        }   
+        }
     } // check partner move effect
 
     // Adjust for always crit moves
@@ -4542,7 +4542,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_SOAK:
-        if (HasMoveWithType(battlerAtk, TYPE_ELECTRIC) || HasMoveWithType(battlerAtk, TYPE_GRASS) || (HasMoveEffect(battlerAtk, EFFECT_SUPER_EFFECTIVE_ON_ARG) && gMovesInfo[move].argument == TYPE_WATER) )
+        if (HasMoveWithType(battlerAtk, TYPE_ELECTRIC) || HasMoveWithType(battlerAtk, TYPE_GRASS) || (HasMoveEffect(battlerAtk, EFFECT_SUPER_EFFECTIVE_ON_ARG) && gMovesInfo[move].argument.type == TYPE_WATER) )
             ADJUST_SCORE(DECENT_EFFECT); // Get some super effective moves
         else{
             u32 bestDamagingMove = GetBestDmgMoveFromBattler(battlerAtk, battlerDef);
@@ -5436,7 +5436,7 @@ static s32 AI_PreferBatonPass(u32 battlerAtk, u32 battlerDef, u32 move, s32 scor
 {
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef)
       || CountUsablePartyMons(battlerAtk) == 0
-      || gMovesInfo[move].power != 0
+      || !IS_MOVE_STATUS(move)
       || !HasMoveEffect(battlerAtk, EFFECT_BATON_PASS)
       || IsBattlerTrapped(battlerAtk, TRUE))
         return score;
