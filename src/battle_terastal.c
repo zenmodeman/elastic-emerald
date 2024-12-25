@@ -69,17 +69,13 @@ bool32 CanTerastallize(u32 battler)
         return FALSE;
 
     //For monotypes, only permit teras that don't remove the type relevant to the monotype
-    if (VarGet(VAR_MONOTYPE) != 0){
-        monotype = GetTypeFromVar(VarGet(VAR_MONOTYPE));
-        if (teraType != monotype && teraType != TYPE_STELLAR){
-            return FALSE;
-        }
-    }
+
 
     if (TESTING || GetBattlerSide(battler) == B_SIDE_OPPONENT)
     {
         // Skip all other checks in this block, go to HasTrainerUsedGimmick
     }
+
 
     else if (!CheckBagHasItem(ITEM_TERA_ORB, 1))
     {
@@ -92,6 +88,16 @@ bool32 CanTerastallize(u32 battler)
     else if (!FlagGet(B_FLAG_TERA_ORB_CHARGED))
     {
         return FALSE;
+    }
+
+    //Note depending on what AI battles are going to be incorporated,
+    //May have to add additional logic to not require the tera orb checks
+    //for AI battles
+    else if (VarGet(VAR_MONOTYPE) != 0 && !(FlagGet(B_FLAG_AI_VS_AI_BATTLE))){
+        monotype = GetTypeFromVar(VarGet(VAR_MONOTYPE));
+        if (teraType != monotype && teraType != TYPE_STELLAR){
+            return FALSE;
+        }
     }
 
     // Check if Trainer has already Terastallized.
