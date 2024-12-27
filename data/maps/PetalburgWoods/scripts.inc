@@ -1038,7 +1038,7 @@ PetalburgWoods_EventScript_Aurelio_Text_3:
 
 PetalburgWoods_EventScript_Aurelio_Text_4:
 # 499 "data/maps/PetalburgWoods/scripts.pory"
-	.string "If you win, I'll give you a Jaboca Berry. \n$"
+	.string "If you win, I'll give you some berries. \n$"
 
 PetalburgWoods_EventScript_Aurelio_Text_5:
 # 500 "data/maps/PetalburgWoods/scripts.pory"

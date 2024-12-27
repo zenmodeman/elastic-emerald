@@ -413,7 +413,7 @@ F_TRAINER_FEMALE |
 #line 235
             .ability = ABILITY_SHELL_ARMOR,
 #line 236
-            .lvl = 9,
+            .lvl = 10,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
@@ -437,7 +437,7 @@ F_TRAINER_FEMALE |
 #line 245
             .ability = ABILITY_STATIC,
 #line 246
-            .lvl = 10,
+            .lvl = 11,
 #line 248
             .nature = NATURE_CALM,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -29143,7 +29143,7 @@ F_TRAINER_FEMALE |
 #line 11652
             .ability = ABILITY_PICKPOCKET,
 #line 11653
-            .lvl = 10,
+            .lvl = 11,
 #line 11655
             .nature = NATURE_SERIOUS,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -29169,7 +29169,7 @@ F_TRAINER_FEMALE |
 #line 11663
             .ability = ABILITY_RIPEN,
 #line 11664
-            .lvl = 11,
+            .lvl = 12,
 #line 11666
             .nature = NATURE_IMPISH,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,

@@ -233,7 +233,7 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Chewtle @ Apicot Berry  
 Ability: Shell Armor  
-Level: 9  
+Level: 10  
 EVs: 4 SpD  
 IVs: 12 HP / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 - Tackle  
@@ -243,7 +243,7 @@ IVs: 12 HP / 12 Def / 12 SpA / 12 SpD / 12 Spe
 
 Tadbulb @ Luminous Moss  
 Ability: Static  
-Level: 10  
+Level: 11 
 EVs: 24 Def  
 Calm Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
@@ -11650,7 +11650,7 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 
 Shroodle (M) @ Jaboca Berry  
 Ability: Pickpocket  
-Level: 10  
+Level: 11  
 EVs: 32 HP / 32 Spe  
 Serious Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
@@ -11661,7 +11661,7 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 
 Applin (M) @ Maranga Berry  
 Ability: Ripen  
-Level: 11  
+Level: 12  
 EVs: 20 HP / 28 Def / 20 SpD  
 Impish Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  

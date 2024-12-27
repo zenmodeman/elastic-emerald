@@ -231,123 +231,131 @@ MartItemsResourceEVless:
 # 104 "data/maps/PetalburgCity_Mart/scripts.pory"
 	.2byte ITEM_SUPER_POTION
 # 105 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_EXP_CANDY_XS
 # 106 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ANTIDOTE
 # 107 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_PARALYZE_HEAL
 # 108 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_AWAKENING
 # 109 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_ESCAPE_ROPE
 # 110 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_SPEED
+	.2byte ITEM_REPEL
 # 111 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_ATTACK
+	.2byte ITEM_X_SPEED
 # 112 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_X_ATTACK
 # 113 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_X_DEFENSE
+# 114 "data/maps/PetalburgCity_Mart/scripts.pory"
 	.2byte ITEM_ORANGE_MAIL
 	.2byte ITEM_NONE
 
 	.align 2
-# 116 "data/maps/PetalburgCity_Mart/scripts.pory"
-MartItemsResourceEVs:
 # 117 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
+MartItemsResourceEVs:
 # 118 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_GREAT_BALL
+	.2byte ITEM_POKE_BALL
 # 119 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_GREAT_BALL
 # 120 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_POTION
 # 121 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_EXP_CANDY_XS
 # 122 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_SUPER_POTION
 # 123 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_ANTIDOTE
 # 124 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_PARALYZE_HEAL
 # 125 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_AWAKENING
 # 126 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_SPEED
+	.2byte ITEM_ESCAPE_ROPE
 # 127 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_ATTACK
+	.2byte ITEM_REPEL
 # 128 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_X_SPEED
 # 129 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ORANGE_MAIL
+	.2byte ITEM_X_ATTACK
 # 130 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_X_DEFENSE
+# 131 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_ORANGE_MAIL
+# 132 "data/maps/PetalburgCity_Mart/scripts.pory"
 	.2byte ITEM_RESIST_FEATHER
 	.2byte ITEM_NONE
 
 	.align 2
-# 133 "data/maps/PetalburgCity_Mart/scripts.pory"
-MartItemsResourcefulEVless:
-# 134 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
 # 135 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_GREAT_BALL
+MartItemsResourcefulEVless:
 # 136 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_POKE_BALL
 # 137 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_GREAT_BALL
 # 138 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POTION
 # 139 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_SUPER_POTION
 # 140 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_EXP_CANDY_XS
 # 141 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_ANTIDOTE
 # 142 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_PARALYZE_HEAL
 # 143 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_SPEED
+	.2byte ITEM_AWAKENING
 # 144 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_ATTACK
+	.2byte ITEM_ESCAPE_ROPE
 # 145 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_REPEL
 # 146 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ORANGE_MAIL
+	.2byte ITEM_X_SPEED
 # 147 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_X_ATTACK
+# 148 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_X_DEFENSE
+# 149 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_ORANGE_MAIL
+# 150 "data/maps/PetalburgCity_Mart/scripts.pory"
 	.2byte ITEM_LAX_MINT
 	.2byte ITEM_NONE
 
 	.align 2
-# 150 "data/maps/PetalburgCity_Mart/scripts.pory"
-MartItemsResourcefulEVs:
-# 151 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
-# 152 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_GREAT_BALL
 # 153 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_POTION
+MartItemsResourcefulEVs:
 # 154 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_POKE_BALL
 # 155 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_GREAT_BALL
 # 156 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_POTION
 # 157 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_SUPER_POTION
 # 158 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_EXP_CANDY_XS
 # 159 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_ANTIDOTE
 # 160 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_SPEED
+	.2byte ITEM_PARALYZE_HEAL
 # 161 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_ATTACK
+	.2byte ITEM_AWAKENING
 # 162 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_ESCAPE_ROPE
 # 163 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_ORANGE_MAIL
+	.2byte ITEM_REPEL
 # 164 "data/maps/PetalburgCity_Mart/scripts.pory"
-	.2byte ITEM_LAX_MINT
+	.2byte ITEM_X_SPEED
 # 165 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_X_ATTACK
+# 166 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_X_DEFENSE
+# 167 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_ORANGE_MAIL
+# 168 "data/maps/PetalburgCity_Mart/scripts.pory"
+	.2byte ITEM_LAX_MINT
+# 169 "data/maps/PetalburgCity_Mart/scripts.pory"
 	.2byte ITEM_RESIST_FEATHER
 	.2byte ITEM_NONE
 

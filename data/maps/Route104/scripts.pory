@@ -1179,14 +1179,15 @@ script Route104_EventScript_Jimmy{
 }
 
 script Route104_EventScript_Ayumu{
-	trainerbattle_single(TRAINER_AYUMU, format("My darling Pokemon are simply irresistible"), format("What? Even their charm wasn't enough?"), Route104_EventScript_Ayumu_PostBattle)
-	msgbox(format(""))
+	trainerbattle_single(TRAINER_AYUMU, format("My darling Pokemon are simply irresistible."), format("What? Even their charm wasn't enough?"), Route104_EventScript_Ayumu_PostBattle)
+	msgbox(format("We'll continue to hone our cuteness!"), MSGBOX_AUTOCLOSE)
 	end
 }
 
 script Route104_EventScript_Ayumu_PostBattle{
 	msgbox(format("Oh, we couldn’t win... but wasn’t their charm simply enchanting?"))
 	msgbox(format("With Cute Charm on their side, moves like Charm and Fake Tears shine even brighter when used against the right foe!"))
+	releaseall
 	end
 }
 

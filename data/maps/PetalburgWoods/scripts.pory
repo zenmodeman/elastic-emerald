@@ -496,7 +496,7 @@ script PetalburgWoods_EventScript_Aurelio{
 	if(flag(TRAINER_FLAGS_START + TRAINER_JAMES_1) && flag(TRAINER_FLAGS_START + TRAINER_LYLE)){
 		msgbox("I see that you've beaten the other \n trainers in this area.\n")
 		msgbox("I'm interested in seeing how you battle. \n")
-		msgbox("If you win, I'll give you a Jaboca Berry. \n")
+		msgbox("If you win, I'll give you some berries. \n")
 		msgbox("How about it? \n", MSGBOX_YESNO)
         if (var(VAR_RESULT) == 1){
             msgbox("Then let's get started! \n")
