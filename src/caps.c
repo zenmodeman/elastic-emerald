@@ -12,7 +12,7 @@ u32 GetCurrentLevelCap(bool32 isHardCap)
     static const u32 sLevelCapFlagMap[][2] =
     {   
         {TRAINER_FLAGS_START + TRAINER_TIANA, 8},
-        {TRAINER_FLAGS_START + TRAINER_GRUNT_PETALBURG_WOODS, 10},
+        {TRAINER_FLAGS_START + TRAINER_GRUNT_PETALBURG_WOODS, 11},
         {FLAG_BADGE01_GET, 15},
         {FLAG_BADGE02_GET, 19},
         {FLAG_BADGE03_GET, 26},

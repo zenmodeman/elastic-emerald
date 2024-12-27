@@ -50,7 +50,7 @@
 #define FLAG_LEVEL_CAP    0x24 //Whether there's a level cap; formerly un used flag
 #define FLAG_TERA_CHARGED    0x25 // Flag to store tera charge; formerly un used flag
 #define FLAG_CURATED_TERA    0x26 // Flag to determine whether to curate teras; formerly un used flag
-#define FLAG_UNUSED_0x027    0x27 // Unused Flag
+#define FLAG_AI_AI_BATTLE    0x27 //Flag to determine whether AI v.s. AI battle is done; formerly un used flag
 #define FLAG_UNUSED_0x028    0x28 // Unused Flag
 #define FLAG_UNUSED_0x029    0x29 // Unused Flag
 #define FLAG_UNUSED_0x02A    0x2A // Unused Flag
