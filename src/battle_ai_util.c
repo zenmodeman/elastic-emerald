@@ -3282,7 +3282,7 @@ bool32 ShouldFakeOut(u32 battlerAtk, u32 battlerDef, u32 move)
     return TRUE;
 }
 
-static u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x)
+u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x)
 {
     s32 i, index = BATTLE_HISTORY->moveHistoryIndex[battlerId];
     for (i = 0; i < x; i++)

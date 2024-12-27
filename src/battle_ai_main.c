@@ -4102,6 +4102,10 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             break;
         }
     case EFFECT_TRICK:
+        //Have a 50% chance to ignore all possibilities of using Trick if used the previous turn.
+        if (FindMoveUsedXTurnsAgo(battlerAtk, 1) == move && AI_RandLessThan(127)){
+            break;
+        }
         switch (aiData->holdEffects[battlerAtk])
         {
         case HOLD_EFFECT_CHOICE_SCARF:
@@ -4110,11 +4114,14 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         case HOLD_EFFECT_CHOICE_BAND:
             if (!HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
                 ADJUST_SCORE(DECENT_EFFECT);
-            break;
+            break;            
         case HOLD_EFFECT_CHOICE_SPECS:
             if (!HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
                 ADJUST_SCORE(DECENT_EFFECT);
             break;
+        case HOLD_EFFECT_RING_TARGET:
+            //Just assume it makes sense to Trick Ring Target
+            ADJUST_SCORE(WEAK_EFFECT);
         case HOLD_EFFECT_TOXIC_ORB:
             if (!ShouldPoisonSelf(battlerAtk, aiData->abilities[battlerAtk]))
                 ADJUST_SCORE(DECENT_EFFECT);
@@ -4542,8 +4549,29 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_SOAK:
-        if (HasMoveWithType(battlerAtk, TYPE_ELECTRIC) || HasMoveWithType(battlerAtk, TYPE_GRASS) || (HasMoveEffect(battlerAtk, EFFECT_SUPER_EFFECTIVE_ON_ARG) && gMovesInfo[move].argument.type == TYPE_WATER) )
-            ADJUST_SCORE(DECENT_EFFECT); // Get some super effective moves
+        if (CanAIFaintTarget(battlerAtk, battlerDef, 2) //Makes little sense if AI can 2KO 
+        || CanTargetFaintAi(battlerDef, battlerAtk)){
+            //Not allow right now, but there may be reason to soak when target can faint AI, if it would support AI's back mon
+            break;
+        }
+        if (HasMoveWithType(battlerAtk, TYPE_ELECTRIC) || HasMoveWithType(battlerAtk, TYPE_GRASS) || 
+            (HasMoveEffect(battlerAtk, EFFECT_SUPER_EFFECTIVE_ON_ARG) && gMovesInfo[move].argument.type == TYPE_WATER)){
+                //If AI can make good progress without using Soak, make it only a chance
+                if (CanAIFaintTarget(battlerAtk, battlerDef, 3)){
+                    if (AI_RandLessThan(127)){
+                        ADJUST_SCORE(DECENT_EFFECT); // Get some super effective moves
+                    }
+                }
+                //Have only a chance if Soak has been used recently
+                else if (FindMoveUsedXTurnsAgo(battlerAtk, 2) == move || FindMoveUsedXTurnsAgo(battlerAtk, 3) == move){
+                    if (AI_RandLessThan(127)){
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    }
+                }else{
+                    ADJUST_SCORE(DECENT_EFFECT);
+                } 
+
+            }
         else{
             u32 bestDamagingMove = GetBestDmgMoveFromBattler(battlerAtk, battlerDef);
             // DebugPrintf("Best damaging move is %d", bestDamagingMove);
@@ -4552,9 +4580,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             // DebugPrintf("CanAiFaintTarget is %d", CanAIFaintTarget(battlerAtk, battlerDef, 1));
             if (bestDamagingMove != MOVE_NONE && bestDamagingMove != MOVE_UNAVAILABLE 
             && AI_GetTypeEffectiveness(bestDamagingMove, battlerAtk, battlerDef) <  UQ_4_12(2.0)
-            && GetTypeModifier(gMovesInfo[bestDamagingMove].type, TYPE_WATER) >= UQ_4_12(1.0)
-            && !CanAIFaintTarget(battlerAtk, battlerDef, 1)
-            && AI_RandLessThan(127)
             ){
                 ADJUST_SCORE(WEAK_EFFECT);
             }
