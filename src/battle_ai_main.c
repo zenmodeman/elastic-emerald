@@ -4007,13 +4007,21 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     case EFFECT_SWAGGER:
     case EFFECT_FLATTER:
-        if (HasMoveEffect(battlerAtk, EFFECT_FOUL_PLAY)
+        if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_MIRROR_HERB){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+        if ((HasMoveEffect(battlerAtk, EFFECT_FOUL_PLAY) && moveEffect == EFFECT_SWAGGER)
          || HasMoveEffect(battlerAtk, EFFECT_PSYCH_UP)
-         || HasMoveWithAdditionalEffect(battlerAtk, MOVE_EFFECT_SPECTRAL_THIEF))
-            ADJUST_SCORE(DECENT_EFFECT);
+         || HasMoveEffect(battlerAtk, EFFECT_PUNISHMENT)
+         || HasMoveWithAdditionalEffect(battlerAtk, MOVE_EFFECT_SPECTRAL_THIEF)
+         )
+            ADJUST_SCORE(WEAK_EFFECT);
         if (aiData->abilities[battlerDef] == ABILITY_CONTRARY)
-            ADJUST_SCORE(GOOD_EFFECT);
-        IncreaseConfusionScore(battlerAtk, battlerDef, move, &score);
+            ADJUST_SCORE(DECENT_EFFECT);
+        if (AI_RandLessThan(50)){ //About a ~20% chance to consider confusion logic
+            IncreaseConfusionScore(battlerAtk, battlerDef, move, &score);
+        }
+
         break;
     case EFFECT_FURY_CUTTER:
         if (!isDoubleBattle && aiData->holdEffects[battlerAtk] == HOLD_EFFECT_METRONOME)
@@ -4119,13 +4127,10 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             if (!HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
                 ADJUST_SCORE(DECENT_EFFECT);
             break;
-        case HOLD_EFFECT_RING_TARGET:
-            //Just assume it makes sense to Trick Ring Target
-            ADJUST_SCORE(WEAK_EFFECT);
         case HOLD_EFFECT_TOXIC_ORB:
             if (!ShouldPoisonSelf(battlerAtk, aiData->abilities[battlerAtk]))
                 ADJUST_SCORE(DECENT_EFFECT);
-            break;
+            break;            
         case HOLD_EFFECT_FLAME_ORB:
             if (!ShouldBurnSelf(battlerAtk, aiData->abilities[battlerAtk]) && CanBeBurned(battlerAtk, aiData->abilities[battlerDef]))
                 ADJUST_SCORE(DECENT_EFFECT);
@@ -4177,7 +4182,12 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 ADJUST_SCORE(DECENT_EFFECT); // Force 'em out next turn
             break;
         default:
-            if (gMovesInfo[move].effect != EFFECT_BESTOW && aiData->items[battlerAtk] == ITEM_NONE && aiData->items[battlerDef] != ITEM_NONE)
+            if (gMovesInfo[move].effect != EFFECT_BESTOW 
+            //Let Ring target function as if the holder has no held item
+            //If I later want to give Ring Target specific logic, I may want to turn the below item checks into a function so that it can be reused,
+            //for both the no held item case and for select held items. 
+            && (aiData->items[battlerAtk] == ITEM_NONE || aiData->items[battlerAtk] == ITEM_RING_TARGET)
+            && aiData->items[battlerDef] != ITEM_NONE)
             {
                 switch (aiData->holdEffects[battlerDef])
                 {
@@ -4201,6 +4211,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                     break;
                 case HOLD_EFFECT_LAGGING_TAIL:
                 case HOLD_EFFECT_STICKY_BARB:
+                case HOLD_EFFECT_RING_TARGET:
                     break;
                 default:
                     ADJUST_SCORE(WEAK_EFFECT);    //other hold effects generally universally good
@@ -5343,9 +5354,21 @@ static s32 AI_ForceSetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 
     case EFFECT_CHILLY_RECEPTION:
     case EFFECT_GEOMANCY:
     case EFFECT_VICTORY_DANCE:
-        //Originally was decent effect, but make it just a lesser free score, so that further logic is still required to be guarenteed.
-        ADJUST_SCORE(WEAK_EFFECT);
+        //Give a good chance of 
+        ADJUST_SCORE(DECENT_EFFECT);
         break;
+    
+    case EFFECT_TRICK:
+        switch (AI_DATA->holdEffects[battlerAtk])
+        {
+        case HOLD_EFFECT_RING_TARGET:
+            //Do just a weak incentive for now since there's other logic that should incentivize this scenario.
+            DebugPrintf("The Ring Target Trick Setup scenario is reached.");
+            ADJUST_SCORE(WEAK_EFFECT);
+            break;
+        default:
+            break;
+        }
     case EFFECT_HIT:
     {
         // TEMPORARY - should applied to all moves regardless of EFFECT

@@ -28901,7 +28901,7 @@ F_TRAINER_FEMALE |
 #line 11555
         .doubleBattle = FALSE,
 #line 11556
-        .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES,
+        .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_FORCE_SETUP_FIRST_TURN,
         .partySize = 2,
         .party = (const struct TrainerMon[])
         {
@@ -28949,7 +28949,7 @@ F_TRAINER_FEMALE |
 #line 11573
                 MOVE_FLATTER,
                 MOVE_PUNISHMENT,
-                MOVE_FAKE_OUT,
+                MOVE_DRAINING_KISS,
                 MOVE_ROUND,
             },
             },

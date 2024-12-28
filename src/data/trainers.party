@@ -11553,7 +11553,7 @@ Pic: Youngster
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices/ Force Setup First Turn
 
 Zigzagoon @ Ring Target  
 Ability: Quick Feet  
@@ -11572,7 +11572,7 @@ EVs: 32 Spe
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 12 Spe  
 - Flatter  
 - Punishment  
-- Fake Out  
+- Draining Kiss  
 - Round  
 
 
