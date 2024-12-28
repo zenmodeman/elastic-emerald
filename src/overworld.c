@@ -72,6 +72,8 @@
 #include "constants/trainer_hill.h"
 #include "constants/weather.h"
 
+
+
 struct CableClubPlayer
 {
     u8 playerId;
@@ -428,6 +430,7 @@ void Overworld_ResetBattleFlagsAndVars(void)
     FlagClear(B_FLAG_SKY_BATTLE);
 }
 #endif
+
 
 static void Overworld_ResetStateAfterWhiteOut(void)
 {

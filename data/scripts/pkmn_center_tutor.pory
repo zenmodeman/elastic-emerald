@@ -1,24 +1,36 @@
 script Common_EventScript_PkmnCenterTutor{
     lock
     faceplayer
-    
+    msgbox(format("Welcome, to the Pokemon Center Service Station. How May I help you?"))
+    dynmultichoice(0, 100, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Tutor Move", "Take a Rest", "Cancel")
+    if (var(VAR_RESULT) == 0){
+        call(CenterMoveTutor)
+    }elif(var(VAR_RESULT) == 1){
+        call(TakeCenterNap)
+    }elif(var(VAR_RESULT) == 2 || var(VAR_RESULT) ==  MULTI_B_PRESSED){
+        goto(CenterRejected)
+    }
+    msgbox(format("Have a nice day!"))
+    release
+}
+
+script CenterMoveTutor{
     if (flag(FLAG_RESOURCE_MODE) && var(VAR_REMAINING_TUTOR) == 0){
-        msgbox(format("Sorry, you don't have any tutor points. Come back when you have acquired a gym badge."))
+        msgbox(format("Sorry, you don't have any tutor points. You can get more points by acquiring gym badges."))
     }elif(flag(FLAG_RESOURCE_MODE) && var(VAR_REMAINING_TUTOR) > 0) {
         buffernumberstring(STR_VAR_1, VAR_REMAINING_TUTOR)
-        msgbox(format("Welcome, you have {STR_VAR_1} tutor points. Are you interested in teaching a move?"), MSGBOX_YESNO)
+        msgbox(format("You have {STR_VAR_1} tutor points. Are you interested in teaching a move?"), MSGBOX_YESNO)
         if (var(VAR_RESULT) == 1){
             call(ChooseMoveTutorMon)
         }
     }else{
-        msgbox(format("Welcome, are you interested in teaching a move?"), MSGBOX_YESNO)
+        msgbox(format("Are you interested in teaching a move?"), MSGBOX_YESNO)
         if (var(VAR_RESULT) == 1){
             call(ChooseMoveTutorMon)
         }
     }
-    releaseall
-}
 
+}
 script ChooseMoveTutorMon{
     msgbox(format("Select pokemon to teach"))
     special(ChooseMonForCenterMoveTutor)
@@ -27,5 +39,23 @@ script ChooseMoveTutorMon{
         msgbox(format("Teach Which Move?"))
         setvar(VAR_TEMP_9, MOVE_TUTOR_CENTER)
         special(TeachNPCMoveTutorMove)
+    }else{
+        goto(CenterRejected)
     }
+}
+
+script TakeCenterNap{
+    msgbox(format("Would you like to take an 8-hour rest here?"), MSGBOX_YESNO)
+    if(var(VAR_RESULT) == 1){
+        fadescreen(FADE_TO_BLACK)
+        special(NpcAdvanceTime)
+        fadescreen(FADE_FROM_BLACK)
+        msgbox(format("Hope you had a nice rest!"))
+    }
+}
+
+script CenterRejected{
+    msgbox(format("Come back if you change your mind!"))
+    release
+    end
 }

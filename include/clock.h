@@ -6,4 +6,6 @@
 void InitTimeBasedEvents(void);
 void DoTimeBasedEvents(void);
 
+void NpcAdvanceTime(void);
+
 #endif // GUARD_CLOCK_H

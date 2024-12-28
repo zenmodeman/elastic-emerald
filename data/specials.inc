@@ -561,3 +561,4 @@ gSpecials::
 	def_special TrainMaxIV
 	def_special TrainMaxIVs
 	def_special UseBlankMessageToCancelPokemonPic
+	def_special NpcAdvanceTime

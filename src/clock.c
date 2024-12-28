@@ -13,6 +13,8 @@
 #include "wallclock.h"
 #include "constants/form_change_types.h"
 
+#include "fake_rtc.h"
+
 static void UpdatePerDay(struct Time *localTime);
 static void UpdatePerMinute(struct Time *localTime);
 static void FormChangeTimeUpdate();
@@ -29,6 +31,7 @@ void DoTimeBasedEvents(void)
 {
     if (FlagGet(FLAG_SYS_CLOCK_SET) && !InPokemonCenter())
     {
+        // DebugPrintf("This is inside of DoTimeBasedEvents");
         RtcCalcLocalTime();
         UpdatePerDay(&gLocalTime);
         UpdatePerMinute(&gLocalTime);
@@ -37,12 +40,23 @@ void DoTimeBasedEvents(void)
 
 static void UpdatePerDay(struct Time *localTime)
 {
+    struct Time* fakeRtcTime = FakeRtc_GetCurrentTime();
+
+    // DebugPrintf("At the start of UpdatePerDay");
+
     u16 *days = GetVarPointer(VAR_DAYS);
     u16 daysSince;
 
+    //This is to correct potential issues with swithcing from rtc to fake rtc.
+    #if OW_USE_FAKE_RTC
+        localTime->days = fakeRtcTime->days;
+    #endif
+
+    // DebugPrintf("days: %d; localDays: %d", *days, localTime->days);
     if (*days != localTime->days && *days <= localTime->days)
     {
         daysSince = localTime->days - *days;
+        // DebugPrintf("Inside of the change day block with daysSince: %d", daysSince);
         ClearDailyFlags();
         UpdateDewfordTrendPerDay(daysSince);
         UpdateTVShowsPerDay(daysSince);
@@ -56,16 +70,28 @@ static void UpdatePerDay(struct Time *localTime)
         SetRandomLotteryNumber(daysSince);
         UpdateDaysPassedSinceFormChange(daysSince);
         *days = localTime->days;
+        DebugPrintf("Updating days to %d", *days);
     }
 }
+
+//Advances time by 8 hours to represent rest
+void NpcAdvanceTime(void){
+    FakeRtc_AdvanceTimeBy(8, 0, 0);
+}
+
 
 static void UpdatePerMinute(struct Time *localTime)
 {
     struct Time difference;
     int minutes;
-
     CalcTimeDifference(&difference, &gSaveBlock2Ptr->lastBerryTreeUpdate, localTime);
     minutes = 24 * 60 * difference.days + 60 * difference.hours + difference.minutes;
+    
+    //Hacky fix for weird negatives between rtc and real time.
+    if (minutes < 0){
+        gSaveBlock2Ptr->lastBerryTreeUpdate = *localTime;
+    }
+    DebugPrintf("Berries local Time days: %d; minutes: %d", localTime->days, minutes);
     if (minutes != 0)
     {
         if (minutes >= 0)

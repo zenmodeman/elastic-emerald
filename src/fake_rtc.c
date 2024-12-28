@@ -57,6 +57,7 @@ void FakeRtc_AdvanceTimeBy(u32 hours, u32 minutes, u32 seconds)
     while(hours >= HOURS_PER_DAY)
     {
         time->days++;
+        // VarSet(VAR_DAYS, time->days);
         hours -= HOURS_PER_DAY;
     }
 
