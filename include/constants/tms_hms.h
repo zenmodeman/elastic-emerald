@@ -10,7 +10,7 @@
     F(TOXIC) \
     F(HAIL) \
     F(BULK_UP) \
-    F(BULLET_SEED) \
+    F(HELPING_HAND) \
     F(HIDDEN_POWER) \
     F(SUNNY_DAY) \
     F(TAUNT) \
@@ -54,7 +54,6 @@
     F(OVERHEAT)\
     F(THROAT_CHOP)\
     F(SPEED_SWAP)\
-    F(HELPING_HAND)\
     F(HARD_PRESS)
 
 #define FOREACH_HM(F) \
