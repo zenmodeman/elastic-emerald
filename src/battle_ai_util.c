@@ -652,8 +652,13 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
     if (moveEffect == EFFECT_NATURE_POWER)
         move = GetNaturePowerMove(battlerAtk);
 
+    //To Do: After adding a ShouldTera logic check, should use that for determining whether the AI should compute tera calculations
+    //May want to also see if this can be added defensively as well.
+
     // Temporarily enable gimmicks for damage calcs if planned
-    if (gBattleStruct->gimmick.usableGimmick[battlerAtk] && GetActiveGimmick(battlerAtk) == GIMMICK_NONE
+    if (gBattleStruct->gimmick.usableGimmick[battlerAtk] 
+    && (GetBattlerSide(battlerAtk) != B_SIDE_PLAYER) //Don't compute player Teras that haven't been executed yet
+    && GetActiveGimmick(battlerAtk) == GIMMICK_NONE
         && !(gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_Z_MOVE && !considerZPower))
     {
         // Set Z-Move variables if needed
@@ -2592,7 +2597,7 @@ bool32 HasDamagingMoveOfType(u32 battlerId, u32 type)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
-          && gMovesInfo[moves[i]].type == type && !IS_MOVE_STATUS(moves[i]))
+          && !IS_MOVE_STATUS(moves[i]].type == type && gMovesInfo[moves[i]))
             return TRUE;
     }
 

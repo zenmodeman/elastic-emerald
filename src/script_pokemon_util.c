@@ -544,8 +544,6 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
     u8 ivs[NUM_STATS]        = {hpIv, atkIv, defIv, speedIv, spAtkIv, spDefIv};
     u16 moves[MAX_MON_MOVES] = {move1, move2, move3, move4};
 
-    u8 i;
-
     if (NUMBER_OF_GIVE_MON_PERFECT_IVS > 0){
         for (i=0; i < NUMBER_OF_GIVE_MON_PERFECT_IVS && i < NUM_STATS; i++){
             ivs[i] = MAX_PER_STAT_IVS;
