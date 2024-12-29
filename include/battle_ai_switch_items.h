@@ -7,4 +7,5 @@ u32 GetMostSuitableMonToSwitchInto(u32 battler, bool32 switchAfterMonKOd);
 bool32 ShouldSwitch(u32 battler);
 bool32 IsMonGrounded(u16 heldItemEffect, u32 ability, u8 type1, u8 type2);
 
+bool32 HasHealItemWithEffect(u8 battleUsageID);
 #endif // GUARD_BATTLE_AI_SWITCH_ITEMS_H

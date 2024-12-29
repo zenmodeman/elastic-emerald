@@ -2542,16 +2542,15 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Clefairy (F) @ White Herb  
+Skitty @ Oran Berry  
 Ability: Cute Charm  
 Level: 8  
-EVs: 28 Def  
 Calm Nature  
-IVs: 10 HP / 0 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Charm  
-- Fake Tears  
+- Fake Out  
 - Disarming Voice  
-- Attract  
+- Attract
 
 Stufful (M) @ Rawst Berry  
 Ability: Cute Charm  
@@ -2576,9 +2575,16 @@ Items: Full Restore
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Zigzagoon @ Nugget
-Level: 7
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Bonsly @ Rindo Berry  
+Ability: Sturdy  
+Level: 9  
+EVs: 8 HP / 16 SpA / 16 Spe  
+Quiet Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Natural Gift  
+- Power Gem  
+- Low Kick  
+- Tearful Look
 
 === TRAINER_MOLLIE ===
 Name: MOLLIE
@@ -8945,13 +8951,24 @@ Music: Twins
 Double Battle: Yes
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Seedot
-Level: 6
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Milcery @ Maranga Berry  
+Ability: Aroma Veil  
+Level: 10  
+IVs: 0 Atk  
+- Sweet Kiss  
+- Sweet Scent  
+- Draining Kiss  
+- Baby-Doll Eyes  
 
-Lotad
-Level: 6
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Stunky @ Chesto Berry  
+Ability: Keen Eye  
+Level: 10  
+- Corrosive Gas  
+- Poison Gas  
+- Fury Cutter  
+- Smog  
+
+
 
 === TRAINER_MIU_AND_YUKI ===
 Name: MIU & YUKI
@@ -11214,8 +11231,8 @@ Level: 8
 EVs: 20 HP / 20 Def / 20 Spe  
 Adamant Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 20 SpD / 15 Spe  
-- Constrict  
-- Pain Split  
+- Rage  
+- Rest 
 - Synthesis  
 - Amnesia
 
@@ -11229,13 +11246,26 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Lotad
-Level: 6
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Marill @ Cell Battery  
+Ability: Huge Power  
+Level: 8  
+EVs: 12 Def / 12 SpD  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Aqua Jet  
+- Covet  
+- Aqua Ring  
+- Fling  
 
-Shroomish
-Level: 6
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Vulpix-Alola @ Persim Berry  
+Ability: Snow Cloak  
+Level: 8  
+EVs: 8 HP / 12 SpA  
+Docile Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Disable  
+- Confuse Ray  
+- Powder Snow  
+- Tail Slap  
 
 === TRAINER_JANICE ===
 Name: JANICE
@@ -11644,7 +11674,7 @@ EVs: 32 HP / 8 Def / 32 SpA
 Bold Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 - Trick  
-- Icy Wind  
+- Charge Beam  
 - Charm  
 - Disarming Voice  
 
@@ -11659,7 +11689,7 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Leer  
 - Super Fang  
 
-Applin (M) @ Maranga Berry  
+Applin (M) @ Rowap Berry  
 Ability: Ripen  
 Level: 12  
 EVs: 20 HP / 28 Def / 20 SpD  

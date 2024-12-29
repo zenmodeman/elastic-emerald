@@ -1321,10 +1321,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             break;
         case EFFECT_NOBLE_ROAR:
-            if (!ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_SPATK))
+            if (!ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_SPATK) 
+            && !ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_ATK)){
                 ADJUST_SCORE(-10);
-            else if (!ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_ATK))
-                ADJUST_SCORE(-8);
+            }
             break;
         case EFFECT_CAPTIVATE:
             if (!AreBattlersOfOppositeGender(battlerAtk, battlerDef))
@@ -2679,11 +2679,15 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     else if (CanTargetFaintAi(battlerDef, battlerAtk)
             && GetWhichBattlerFasterOrTies(battlerAtk, battlerDef, TRUE) != AI_IS_FASTER
             && GetMovePriority(battlerAtk, move) > 0
-            //About 98% chance to go for priority, to prevent guarenteed abuse of this logic
-            && AI_RandLessThan(250)
             )
     {
-        ADJUST_SCORE(LAST_CHANCE);
+        if (AI_DATA->lastUsedMove[battlerDef] == MOVE_NONE || IS_MOVE_STATUS(AI_DATA->lastUsedMove[battlerDef])){
+            if (AI_RandLessThan(127)){
+                ADJUST_SCORE(LAST_CHANCE);
+            }
+        }else{
+            ADJUST_SCORE(LAST_CHANCE);
+        }
     }
 
     return score;
@@ -3298,7 +3302,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     //Priority Moves v.s. Upper Hand logic
     if (gMovesInfo[move].power && (HasMove(battlerDef, MOVE_UPPER_HAND) || HasMove(battlerDef, MOVE_QUICK_GUARD)) && gMovesInfo[move].priority > 0 && AI_RandLessThan(127)){
         // DebugPrintf("The Upper Hand RNG check has been hit.");
-        score -= 2;
+        score -= 3;
     }
 
     // move effect checks
@@ -3375,13 +3379,28 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_EVASION_UP:
     case EFFECT_EVASION_UP_2:
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_EVASION));
-        break;
+        break;   
     //In the future, probably take into account expected survival
+    case EFFECT_NOBLE_ROAR:
+        if (ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]) 
+            || ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
+            
+            //Get a boost for having the ability to heal all HP, provided cannot 2KO
+            if (HasHealItemWithEffect(EFFECT_ITEM_HEAL_AND_CURE_STATUS) && !CanAIFaintTarget(battlerAtk, battlerDef, 2)){
+                ADJUST_SCORE(1);
+            }    
+            //Chance to get incentive
+            if (AI_RandLessThan(127)){
+                ADJUST_SCORE(1);
+            }
+        }   
+        if ((aiData->hpPercents[battlerAtk] < 50 && !AI_RandLessThan(50))){
+                        ADJUST_SCORE(-2);
+        }
+        break;    
     case EFFECT_ATTACK_DOWN:
     case EFFECT_ATTACK_DOWN_2:
-        if (!ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
-            ADJUST_SCORE(-2);
-        }else if (AI_RandLessThan(127)){
+        if (ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
             ADJUST_SCORE(1);
         }   
         if ((aiData->hpPercents[battlerAtk] < 50 && !AI_RandLessThan(50))
@@ -3392,11 +3411,9 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_DEFENSE_DOWN:
     case EFFECT_DEFENSE_DOWN_2:
         //Worth noting that with the current logic, the effects will be disincentivized if the user doesn't have a physical move
-        if (!ShouldLowerDefense(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
-            ADJUST_SCORE(-2);
-        }else if (AI_RandLessThan(127)){
+        if (ShouldLowerDefense(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
             ADJUST_SCORE(1);
-        }
+        }   
             
         if ((aiData->hpPercents[battlerAtk] < 70 && !AI_RandLessThan(50))
           || (gBattleMons[battlerDef].statStages[STAT_DEF] <= 3 && !AI_RandLessThan(50))){
@@ -3416,7 +3433,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_SPECIAL_ATTACK_DOWN:
     case EFFECT_SPECIAL_ATTACK_DOWN_2:
 
-        if (ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
+        if (ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
             ADJUST_SCORE(1);
         }
 
@@ -3428,9 +3445,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_SPECIAL_DEFENSE_DOWN:
     case EFFECT_SPECIAL_DEFENSE_DOWN_2:
         //Worth noting that with the current logic, the effects will be disincentivized if the user doesn't have a special move
-        if (!ShouldLowerSpDef(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
-            ADJUST_SCORE(-2);
-        }else if (AI_RandLessThan(127)){
+        if (ShouldLowerSpDef(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
             ADJUST_SCORE(1);
         }
             
@@ -3438,16 +3453,14 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
           || (gBattleMons[battlerDef].statStages[STAT_SPDEF] <= 3 && !AI_RandLessThan(50))){
             ADJUST_SCORE(-2);
           }
-        if (aiData->hpPercents[battlerDef] <= 60){
+        if (aiData->hpPercents[battlerDef] <= 50){
             ADJUST_SCORE(-2);
         }
         break;
     case EFFECT_ACCURACY_DOWN:
     case EFFECT_ACCURACY_DOWN_2:
-        if (!ShouldLowerAccuracy(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
+        if (ShouldLowerAccuracy(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
             ADJUST_SCORE(-2);
-        }else if (AI_RandLessThan(127)){
-            ADJUST_SCORE(WEAK_EFFECT);
         }
         if ((aiData->hpPercents[battlerAtk] < 70 || aiData->hpPercents[battlerDef] < 70) && AI_RandLessThan(100))
             ADJUST_SCORE(-1);
@@ -4233,7 +4246,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             case HOLD_EFFECT_STICKY_BARB:
                 break;
             default:
-                ADJUST_SCORE(DECENT_EFFECT);
+                ADJUST_SCORE(WEAK_EFFECT);
                 break;
             }
         }

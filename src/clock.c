@@ -91,7 +91,7 @@ static void UpdatePerMinute(struct Time *localTime)
     if (minutes < 0){
         gSaveBlock2Ptr->lastBerryTreeUpdate = *localTime;
     }
-    DebugPrintf("Berries local Time days: %d; minutes: %d", localTime->days, minutes);
+    // DebugPrintf("Berries local Time days: %d; minutes: %d", localTime->days, minutes);
     if (minutes != 0)
     {
         if (minutes >= 0)

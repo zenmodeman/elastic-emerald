@@ -2087,6 +2087,25 @@ static bool32 AiExpectsToFaintPlayer(u32 battler)
     return FALSE;
 }
 
+//battleUsageID example: EFFECT_ITEM_HEAL_AND_CURE_STATUS
+bool32 HasHealItemWithEffect(u8 battleUsageID){
+    s32 i;
+    for (i = 0; i < MAX_TRAINER_ITEMS; i++){
+        u16 item;
+        const u8 *itemEffects;
+        item = gBattleResources->battleHistory->trainerItems[i];
+        if (item == ITEM_NONE)
+            continue;
+        itemEffects = ItemId_GetEffect(item);
+        if (itemEffects == NULL)
+            continue;
+        if (ItemId_GetBattleUsage(item) == battleUsageID){
+            DebugPrintf("Item match holds true.");
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 static bool32 ShouldUseItem(u32 battler)
 {
     struct Pokemon *party;
@@ -2205,7 +2224,18 @@ static bool32 ShouldUseItem(u32 battler)
 
 static bool32 AI_ShouldHeal(u32 battler, u32 healAmount)
 {
+    //Should be refined in the future and probably not just use the opposite slot
+    u32 battlerOpposite = BATTLE_OPPOSITE(GetBattlerPosition(battler));
     bool32 shouldHeal = FALSE;
+
+    //Idea is that if there are no Pokemon left, AI mon would faint, and is slower, might as well heal. 
+    if (CountUsablePartyMons(battler) == 0 && CanTargetFaintAi(battlerOpposite, battler)
+    //Current hacky method of not taking priority into account and not computing the mon's next move
+    && !AI_IsFaster(battler, battlerOpposite, MOVE_TACKLE))
+    {
+        shouldHeal = TRUE;
+        return shouldHeal;
+    }
 
     if (gBattleMons[battler].hp < gBattleMons[battler].maxHP / 4
      || gBattleMons[battler].hp == 0

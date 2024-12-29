@@ -688,6 +688,7 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
         damageCalcData.randomFactor = FALSE;
         damageCalcData.updateFlags = FALSE;
 
+
         critChanceIndex = CalcCritChanceStageArgs(battlerAtk, battlerDef, move, FALSE, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], aiData->holdEffects[battlerAtk]);
         if (critChanceIndex > 1) // Consider crit damage only if a move has at least +2 crit chance
         {
@@ -703,6 +704,8 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
                                                   aiData->abilities[battlerAtk], aiData->abilities[battlerDef]);
 
             u32 critOdds = GetCritHitOdds(critChanceIndex);
+ 
+
             // With critOdds getting closer to 1, dmg gets closer to critDmg.
             simDamage.expected = GetDamageByRollType((critDmg + nonCritDmg * (critOdds - 1)) / critOdds, rollType);
             if (critOdds == 1)
@@ -740,6 +743,7 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
                                                      effectivenessMultiplier, weather,
                                                      aiData->holdEffects[battlerAtk], aiData->holdEffects[battlerDef],
                                                      aiData->abilities[battlerAtk], aiData->abilities[battlerDef]);
+                // DebugPrintf("For move %d, nonCritDmg = %d", move, nonCritDmg);
             }
             simDamage.expected = GetDamageByRollType(nonCritDmg, rollType);
             simDamage.minimum = LowestRollDmg(nonCritDmg);
@@ -1192,10 +1196,13 @@ bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
+        // DebugPrintf("For move %d, simulated damage is %d", moves[i], AI_DATA->simulatedDmg[battlerDef][battlerAtk][i].expected);
+
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && !(unusable & (1u << i))
             && AI_DATA->simulatedDmg[battlerDef][battlerAtk][i].expected >= gBattleMons[battlerAtk].hp
             && !CanEndureHit(battlerDef, battlerAtk, moves[i]))
         {
+            DebugPrintf("AI is expecting to faint here.");
             return TRUE;
         }
     }
