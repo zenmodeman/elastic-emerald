@@ -1,6 +1,15 @@
 Elastic Emerald built on top of pokeemerald-expansion
 
-# pokeemerald-expansion
+
+# Elastic Emerald
+
+## Credits
+Thunderbyrd25: [Menufly](https://github.com/Thunderbyrd25/pokeemerald/compare/master...menufly)
+
+Full credits of expansion contributers eventually
+
+## Pokeemerald-expansion
+
 
 ### Important: DO NOT use GitHub's "Download Zip" option. Using this option will not download the commit history required to update your expansion version or merge other feature branches. Instead, please read [this guide](https://github.com/Pawkkie/Team-Aquas-Asset-Repo/wiki/The-Basics-of-GitHub) to learn how to fork the repository and clone locally from there.
 

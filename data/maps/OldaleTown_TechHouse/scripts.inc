@@ -350,10 +350,9 @@ OldaleTown_TechHouse_Embargo_Maniac_Text_3:
 
 OldaleTown_TechHouse_Embargo_Maniac_Text_4:
 # 82 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	.string "Sure, there’s the obvious stuff like\n"
-	.string "Neutralizing Gas or Mold Breaker, which\l"
-	.string "he knew about but was hoping people\l"
-	.string "wouldn't use on him.$"
+	.string "Sure, he had Gastro Acid for obvious\n"
+	.string "stuff like Neutralizing Gas or Mold\l"
+	.string "Breaker.$"
 
 OldaleTown_TechHouse_Embargo_Maniac_Text_5:
 # 83 "data/maps/OldaleTown_TechHouse/scripts.pory"

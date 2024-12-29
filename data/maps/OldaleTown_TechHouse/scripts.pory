@@ -79,7 +79,7 @@ script OldaleTown_TechHouse_Embargo_Maniac{
     msgbox(format("He's obsessed with held items that rely on lucky chances, like Focus Band and Starf Berry."))
     msgbox(format("And he only collects Pokemon with the ability Sticky Hold, to avoid counterplay like Knock Off, Trick, and Corrosive Gas."))
     msgbox(format("But... I’ve found plenty of ways to mess up his plan, hehe."))
-    msgbox(format("Sure, there’s the obvious stuff like Neutralizing Gas or Mold Breaker, which he knew about but was hoping people wouldn't use on him."))
+    msgbox(format("Sure, he had Gastro Acid for obvious stuff like Neutralizing Gas or Mold Breaker."))
     msgbox(format("But he never saw Embargo or Magic Room coming! Sticky Hold can't protect him from those, what a rookie!"))
     release
     end

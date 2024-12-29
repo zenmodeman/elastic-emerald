@@ -488,11 +488,11 @@ script PetalburgWoods_EventScript_Aurelio{
     lockall
     faceplayer
 	if (flag(TRAINER_FLAGS_START + TRAINER_AURELIO)){
-		msgbox("You put up a good fight!")
+		msgbox(format("You put up a good fight! Keep it up, and make sure to use those berries skillfully."))
 		releaseall
 		return
 	}
-    msgbox("These Woods are a beautiful place!")
+    msgbox(format("I've always been fond of these woods."))
 	if(flag(TRAINER_FLAGS_START + TRAINER_JAMES_1) && flag(TRAINER_FLAGS_START + TRAINER_LYLE)){
 		msgbox("I see that you've beaten the other \n trainers in this area.\n")
 		msgbox("I'm interested in seeing how you battle. \n")
@@ -502,15 +502,43 @@ script PetalburgWoods_EventScript_Aurelio{
             msgbox("Then let's get started! \n")
             trainerbattle_no_intro(TRAINER_AURELIO, Aurelio_Defeat)
 			msgbox("Here you go, as promised!")
-			giveItem(ITEM_JABOCA_BERRY)
+			if (flag(FLAG_RESOURCE_MODE)){
+				call(ResourcefulModeAurelioBerries)
+			}else{
+				call(ResourcefulModeAurelioBerries)
+			}
+			msgbox(format("I hope you can use those berries well. When you take damage while holding them, so does your opponent!"))
 		}
 	}
 	else{
-		msgbox("If you fight all the trainers here, \n I'd be willing to see how you battle.")
+		msgbox(format("I've gotten quite accustomed with the regulars here. If you fight all the trainers here, I'd be willing to see how you battle."))
 	}
     releaseall
 }
 
+script ResourceModeAurelioBerries{
+ 	giveItem(ITEM_JABOCA_BERRY, 3)
+	if (var(VAR_RESULT) == FALSE){
+    	call(Common_EventScript_ShowBagIsFull)
+    }else{
+		giveItem(ITEM_ROWAP_BERRY, 3)
+		if (var(VAR_RESULT) == FALSE){
+			call(Common_EventScript_ShowBagIsFull)
+		}
+	}
+}
+
+script ResourcefulModeAurelioBerries{
+ 	giveItem(ITEM_JABOCA_BERRY)
+	if (var(VAR_RESULT) == FALSE){
+    	call(Common_EventScript_ShowBagIsFull)
+    }else{
+		giveItem(ITEM_ROWAP_BERRY)
+		if (var(VAR_RESULT) == FALSE){
+			call(Common_EventScript_ShowBagIsFull)
+		}
+	}
+}
 text Aurelio_Defeat{
     "Impressive work."
 }

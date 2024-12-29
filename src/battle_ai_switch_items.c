@@ -878,38 +878,41 @@ static bool32 ShouldSwitchIfAttackingStatsLowered(u32 battler)
     if (!(AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING))
         return FALSE;
 
-    // Physical attacker
+    // Physical attacker (This check needs improvement)
     if (gBattleMons[battler].attack > gBattleMons[battler].spAttack)
     {
-        // Don't switch if attack isn't below -1
-        if (attackingStage > DEFAULT_STAT_STAGE - 2)
+        //Being a little more aggressive for now; in the future, stage checks will be less frequent
+        //Because I'll incorporate damage checks
+
+        // Don't switch if attack isn't below -3
+        if (attackingStage > DEFAULT_STAT_STAGE - 4)
             return FALSE;
-        // 50% chance if attack at -2 and have a good candidate mon
-        else if (attackingStage == DEFAULT_STAT_STAGE - 2)
+        // 50% chance if attack at -4 and have a good candidate mon
+        else if (attackingStage <= DEFAULT_STAT_STAGE - 4)
         {
             if (AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_STATS_LOWERED, 50))
                 return SetSwitchinAndSwitch(battler, PARTY_SIZE);
         }
-        // If at -3 or worse, switch out regardless
-        else if (attackingStage < DEFAULT_STAT_STAGE - 2)
-            return SetSwitchinAndSwitch(battler, PARTY_SIZE);
+        // // If at -6, switch out regardless
+        // else if (attackingStage == DEFAULT_STAT_STAGE - 6)
+        //     return SetSwitchinAndSwitch(battler, PARTY_SIZE);
     }
 
-    // Special attacker
+    // Special attacker (This check needs improvement)
     else
     {
-        // Don't switch if attack isn't below -1
-        if (spAttackingStage > DEFAULT_STAT_STAGE - 2)
+        // Don't switch if attack isn't below -3
+        if (spAttackingStage > DEFAULT_STAT_STAGE - 4)
             return FALSE;
-        // 50% chance if attack at -2 and have a good candidate mon
-        else if (spAttackingStage == DEFAULT_STAT_STAGE - 2)
+        // 50% chance if attack at -4 and have a good candidate mon
+        else if (spAttackingStage <= DEFAULT_STAT_STAGE - 4)
         {
             if (AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_STATS_LOWERED, 50))
                 return SetSwitchinAndSwitch(battler, PARTY_SIZE);
         }
-        // If at -3 or worse, switch out regardless
-        else if (spAttackingStage < DEFAULT_STAT_STAGE - 2)
-            return SetSwitchinAndSwitch(battler, PARTY_SIZE);
+        // If at -6, switch out regardless
+        // else if (spAttackingStage == DEFAULT_STAT_STAGE - 6)
+        //     return SetSwitchinAndSwitch(battler, PARTY_SIZE);
     }
     return FALSE;
 }
