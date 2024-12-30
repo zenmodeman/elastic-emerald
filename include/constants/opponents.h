@@ -145,7 +145,7 @@
 #define TRAINER_WINSTON_2                   139
 #define TRAINER_WINSTON_3                   140
 #define TRAINER_WINSTON_4                   141
-#define TRAINER_WINSTON_5                   142
+#define TRAINER_DARREN                      142
 #define TRAINER_STEVE_1                     143
 #define TRAINER_THALIA_1                    144
 #define TRAINER_MARK                        145

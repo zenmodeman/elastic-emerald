@@ -22,6 +22,8 @@ enum AIPivot
     SHOULD_PIVOT,
 };
 
+//Some of the functions I added
+bool32 HasMinimizeDoubleMove(u32 battlerId);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);

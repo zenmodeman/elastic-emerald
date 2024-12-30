@@ -1239,6 +1239,13 @@ script  Route104_EventScript_BillyGift{
 	end
 }
 
+script Route104_EventScript_Darren{
+	trainerbattle_single(TRAINER_DARREN, format("My prized Pokemon won't let me down!"), format("How could this be?"))
+	msgbox(format("Maybe I haven't used my Pokemon's potential."))
+	releaseall
+	end
+}
+
 script Route104_EventScript_Boy2{
 	lock 
 	faceplayer

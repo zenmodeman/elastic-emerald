@@ -46,7 +46,7 @@ Optional fields for Pokemon:
           (Order does not matter)
     - EVs (252 HP / 128 Spe / 48 Def, defaults to all 0, is not capped at 512 total)
           (Order does not matter)
-    - Ball (Poke Ball or ITEM_POKE_BALL, defaults to Poke Ball
+    - Ball (Poke Ball or ITEM_POKE_BALL, defaults to Poke Ball)
     - Happiness (Number between 1 and 255)
     - Nature (Rash or NATURE_RASH, defaults to Hardy)
     - Shiny (Yes/No, defaults to No)
@@ -2659,23 +2659,37 @@ Linoone @ Nugget
 Level: 33
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
-=== TRAINER_WINSTON_5 ===
-Name: WINSTON
-Class: Rich Boy
-Pic: Rich Boy
+=== TRAINER_DARREN ===
+Name: DARREN
+Class: Collector
+Pic: Collector
 Gender: Male
-Music: Rich
-Items: Full Restore
+Music: Suspicious
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Linoone @ Nugget
-Level: 36
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-- Fury Swipes
-- Mud Sport
-- Odor Sleuth
-- Sand Attack
+Sandile @ Wide Lens  
+Ability: Intimidate  
+Level: 12  
+EVs: 32 SpA  
+IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Sand Tomb  
+- Torment  
+- Snarl  
+- Mud-Slap  
+
+Jigglypuff @ Leftovers  
+Ability: Competitive  
+Level: 13  
+EVs: 12 HP / 20 Def / 4 SpA / 32 SpD  
+Calm Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Stockpile  
+- Swallow  
+- Minimize  
+- Echoed Voice
+
+
 
 === TRAINER_STEVE_1 ===
 Name: STEVE

@@ -4929,11 +4929,11 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     [SPECIES_JIGGLYPUFF] =
     {
         .baseHP        = 115,
-        .baseAttack    = 45,
-        .baseDefense   = 20,
+        .baseAttack    = 50,
+        .baseDefense   = 30,
         .baseSpeed     = 20,
-        .baseSpAttack  = 45,
-        .baseSpDefense = 25,
+        .baseSpAttack  = 55,
+        .baseSpDefense = 40,
         .types = JIGGLYPUFF_FAMILY_TYPES,
         .catchRate = 170,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 95 : 76,

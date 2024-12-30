@@ -2000,7 +2000,8 @@ bool32 ShouldLowerEvasion(u32 battlerAtk, u32 battlerDef, u32 defAbility)
             && CanAIFaintTarget(battlerAtk, battlerDef, 0))
         return FALSE; // Don't bother lowering stats if can kill enemy.
 
-    if (gBattleMons[battlerDef].statStages[STAT_EVASION] > DEFAULT_STAT_STAGE
+    //Was originally just DEFAULT_STAT_STAGE, but I think that's too punishing
+    if (gBattleMons[battlerDef].statStages[STAT_EVASION] > DEFAULT_STAT_STAGE - 3
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
@@ -2190,6 +2191,19 @@ bool32 HasMoveEffect(u32 battlerId, u32 effect)
     return FALSE;
 }
 
+bool32 HasMinimizeDoubleMove(u32 battlerId){
+    s32 i;
+    u16 *moves = GetMovesArray(battlerId);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
+            && gMovesInfo[moves[i]].minimizeDoubleDamage == TRUE)
+            return TRUE;
+    }
+
+    return FALSE;
+}
 bool32 IsPowerBasedOnStatus(u32 battlerId, u32 effect, u32 argument)
 {
     s32 i;
@@ -3902,24 +3916,38 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statI
     u32 aiIsFaster = AI_IsFaster(battlerAtk, battlerDef, TRUE);
     u32 shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
 
+
+
     if (considerContrary && AI_DATA->abilities[battlerAtk] == ABILITY_CONTRARY)
         return NO_INCREASE;
 
+
+
     // Don't increase stat if AI is at +4
+
     if (gBattleMons[battlerAtk].statStages[statId] >= MAX_STAT_STAGE - 2)
         return NO_INCREASE;
+
+
 
     // Don't increase stat if AI has less then 70% HP and number of hits isn't known
     if (AI_DATA->hpPercents[battlerAtk] < 70 && noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
         return NO_INCREASE;
 
+
+    
+
     // Don't set up if AI is dead to residual damage from weather
     if (GetBattlerSecondaryDamage(battlerAtk) >= gBattleMons[battlerAtk].hp)
         return NO_INCREASE;
+    
 
     // Don't increase stats if opposing battler has Opportunist
     if (AI_DATA->abilities[battlerDef] == ABILITY_OPPORTUNIST)
         return NO_INCREASE;
+
+    
+    // DebugPrintf("statId is %d", statId);
 
     switch (statId)
     {
@@ -3988,8 +4016,12 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statI
             tempScore += WEAK_EFFECT;
         break;
     case STAT_CHANGE_EVASION:
-        if (noOfHitsToFaint > 3 || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
+        DebugPrintf("STAT_CHANGE_EVASION case reached");
+        if (noOfHitsToFaint > 3 || noOfHitsToFaint == UNKNOWN_NO_OF_HITS){
+            DebugPrintf("Reached +2 of stat change evasion"); 
             tempScore += DECENT_EFFECT;
+        }
+
         else
             tempScore += WEAK_EFFECT;
         break;
@@ -3999,7 +4031,7 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statI
 }
 
 u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statId)
-{
+{   
     return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statId, TRUE);
 }
 
