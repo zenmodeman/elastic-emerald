@@ -1,5 +1,10 @@
 raw`
+.set LOCALID_RIVAL, 8
+.set LOCALID_TEACHER, 6
+.set LOCALID_ROXANNE, 9
+
 RustboroCity_PokemonSchool_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, TrainerSchoolTransition
 	.byte 0
 
 RustboroCity_PokemonSchool_EventScript_Blackboard::
@@ -351,6 +356,10 @@ RustboroCity_PokemonSchool_Text_ScottMetAlreadyStoneBadge:
 	.string "a TRAINER from a LEAGUE BADGE.$"
 `
 
+script TrainerSchoolTransition{
+	call(Common_EventScript_SetupRivalGfxId)
+}
+
 script RustboroCity_PokemonSchool_EventScript_Teacher{
     lock
     msgbox(format("Roxanne is going to help me demonstrate Terastallization to the class."))
@@ -358,5 +367,170 @@ script RustboroCity_PokemonSchool_EventScript_Teacher{
     msgbox(format("Hope that was a good showcase."))
     release
     end
-
 }
+
+
+
+
+script TrainerSchool_Lecture{
+	call(TrainerSchool_TeacherIntro)
+}
+
+
+script TrainerSchool_TeacherIntro{
+	applymovement(LOCALID_TEACHER, TeacherLecture_MovesTowardsClass)
+	waitmovement(LOCALID_TEACHER)
+	msgbox(format("Welcome again class. Today is a special lesson, since as you can see, Roxanne has joined us."))
+	msgbox(format("She's now our City's Gym Leader but some of you were here when she was one of our school's brightest pupils."))
+	msgbox(format("She has an interesting perspective on our topic today."))
+	applymovement(LOCALID_TEACHER, TeacherLecture_Right_And_Face_Down)
+	waitmovement(LOCALID_TEACHER)
+	msgbox(format("Today's lesson is on the Terastal phenomenon discovered in Paldea not too long ago."))
+	msgbox(format("With progressing advancements in Tera Orbs, the phenomenon can now manifest across the globe."))
+	msgbox(format("Tera Orbs are still expensive to manufacture, but our very own Devon Corp is working towards their accessibility!"))
+	applymovement(LOCALID_TEACHER, TeacherLecture_Left_And_Face_Down)
+	waitmovement(LOCALID_TEACHER)
+	msgbox(format("Terastalization is the biggest gamechanger to Pokemon battles."))
+	msgbox(format("It adds several dimensions to every Pokemon, and unlocks possibilites never seen before."))
+	msgbox(format("Naturally, Hoenn's Gym Leaders, our region's Type Experts,"))
+	msgbox(format("were some of the first in our region to get Tera Orbs."))
+	msgbox(format("Now give it up to Roxanne, who's going to talk about what Terastalization means to her."))
+	applymovement(LOCALID_TEACHER, TeacherLecture_MovesAwayFromClass)
+	waitmovement(LOCALID_TEACHER)
+}
+
+movement TeacherLecture_Right_And_Face_Down{
+	walk_right
+	face_down
+	step_end
+}
+
+movement TeacherLecture_Left_And_Face_Down{
+	walk_left
+	face_down
+	step_end
+}
+
+movement TeacherLecture_MovesTowardsClass{
+	walk_left
+	walk_down
+	walk_down
+	walk_right
+	face_down
+	step_end
+}
+
+movement TeacherLecture_MovesAwayFromClass{
+	walk_left
+	walk_up
+	walk_up
+	walk_right
+	face_down
+	step_end
+}
+text ClassStartsMessage{
+	format("Get seated everybody. Class is in session.")
+}
+script TrainerSchool_TriggerLeft{
+    lockall
+    msgbox(ClassStartsMessage)
+    applymovement(OBJ_EVENT_ID_PLAYER, LeftTriggerMovement)
+    waitmovement(OBJ_EVENT_ID_PLAYER) 
+	call(TrainerSchool_Lecture)
+    releaseall
+    end
+}
+
+
+movement LeftTriggerMovement{
+	walk_up
+    walk_up
+    walk_up
+    walk_up
+    walk_up
+	walk_up
+	walk_up
+	walk_up
+    walk_right
+    walk_right
+	walk_right
+	walk_right
+    face_up
+	step_end
+}
+
+script TrainerSchool_TriggerUp{
+	lockall
+    msgbox(ClassStartsMessage)
+    applymovement(OBJ_EVENT_ID_PLAYER, UpTriggerMovement)
+    waitmovement(OBJ_EVENT_ID_PLAYER) // Wait until the movement finishes
+	call(TrainerSchool_Lecture)
+    releaseall
+    end
+}
+
+movement UpTriggerMovement{
+	walk_up
+    walk_up
+    walk_up
+    walk_up
+    walk_up
+	walk_up
+	walk_up
+    walk_right
+    walk_right
+    walk_right
+    face_up
+	step_end
+}
+
+script TrainerSchool_TriggerUpRight{
+	lockall
+    msgbox(ClassStartsMessage)
+    applymovement(OBJ_EVENT_ID_PLAYER, UpRightTriggerMovement)
+    waitmovement(OBJ_EVENT_ID_PLAYER)
+	call(TrainerSchool_Lecture)
+    releaseall
+    end
+}
+
+movement UpRightTriggerMovement{
+	walk_up
+    walk_up
+    walk_up
+    walk_up
+    walk_up
+	walk_up
+	walk_up
+    walk_right
+    walk_right
+    face_up
+	step_end
+}
+
+
+script TrainerSchool_TriggerRight{
+    lockall
+    face_up 
+   msgbox(ClassStartsMessage)
+    applymovement(OBJ_EVENT_ID_PLAYER, RightTriggerMovement)
+    waitmovement(OBJ_EVENT_ID_PLAYER) 
+	call(TrainerSchool_Lecture)
+    releaseall
+    end
+}
+
+movement RightTriggerMovement{
+	walk_up
+    walk_up
+    walk_up
+    walk_up
+    walk_up
+	walk_up
+	walk_up
+	walk_up
+    walk_right
+    face_up
+	step_end
+}
+
