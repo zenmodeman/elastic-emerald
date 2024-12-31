@@ -261,8 +261,8 @@
 #define TRAINER_MICAH                       255
 #define TRAINER_THOMAS                      256
 #define TRAINER_WALTER_2                    257
-#define TRAINER_WALTER_3                    258
-#define TRAINER_WALTER_4                    259
+#define TRAINER_BRENDAN_TRAINER_SCHOOL      258
+#define TRAINER_MAY_TRAINER_SCHOOL          259
 #define TRAINER_WALTER_5                    260
 #define TRAINER_SIDNEY                      261
 #define TRAINER_PHOEBE                      262

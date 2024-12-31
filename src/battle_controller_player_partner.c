@@ -293,7 +293,8 @@ static void PlayerPartnerHandleSwitchInAnim(u32 battler)
 // which use the front sprite for both the player and the partner as opposed to any other battles (including the one with Steven) that use the back pic as well as animate it
 static void PlayerPartnerHandleDrawTrainerPic(u32 battler)
 {
-    bool32 isFrontPic;
+    //Opting to initialize FrontPic as True and just change it if conditions are met
+    bool32 isFrontPic = TRUE;
     s16 xPos, yPos;
     u32 trainerPicId;
 
@@ -308,6 +309,19 @@ static void PlayerPartnerHandleDrawTrainerPic(u32 battler)
         trainerPicId = GetTrainerPicFromId(gPartnerTrainerId);
         xPos = 60;
         yPos = 80;
+
+        //This is too repetitive, but trying to go for functional implementations first
+        if (trainerPicId == TRAINER_PIC_MAY){
+            trainerPicId = TRAINER_BACK_PIC_MAY;
+            xPos = 90;
+            yPos = (8 - gTrainerBacksprites[trainerPicId].coordinates.size) * 4 + 80;
+            isFrontPic = FALSE;
+        }else if (trainerPicId == TRAINER_PIC_BRENDAN){
+            trainerPicId = TRAINER_BACK_PIC_BRENDAN;
+            xPos = 90;
+            yPos = (8 - gTrainerBacksprites[trainerPicId].coordinates.size) * 4 + 80;
+            isFrontPic = FALSE;
+        }
     }
     else
     {
@@ -319,8 +333,10 @@ static void PlayerPartnerHandleDrawTrainerPic(u32 battler)
     // Use back pic only if the partner Steven or is custom.
     if (gPartnerTrainerId > TRAINER_PARTNER(PARTNER_NONE))
         isFrontPic = FALSE;
-    else
-        isFrontPic = TRUE;
+
+    //Removing this because now I'm presetting frontPic to true and setting it to false with conditions
+    // else
+    //     isFrontPic = TRUE;
 
     BtlController_HandleDrawTrainerPic(battler, trainerPicId, isFrontPic, xPos, yPos, -1);
 }
@@ -429,8 +445,15 @@ static void PlayerPartnerHandleIntroTrainerBallThrow(u32 battler)
 
     if (gPartnerTrainerId > TRAINER_PARTNER(PARTNER_NONE))
         trainerPal = gTrainerBacksprites[gBattlePartners[gPartnerTrainerId - TRAINER_PARTNER(PARTNER_NONE)].trainerPic].palette.data;
-    else if (IsAiVsAiBattle())
-        trainerPal = gTrainerSprites[GetTrainerPicFromId(gPartnerTrainerId)].palette.data;
+    else if (IsAiVsAiBattle()){
+        if (GetTrainerPicFromId(gPartnerTrainerId) == TRAINER_PIC_MAY){
+            trainerPal = gTrainerBacksprites[TRAINER_BACK_PIC_MAY].palette.data;
+        }else if (GetTrainerPicFromId(gPartnerTrainerId) == TRAINER_PIC_BRENDAN){
+            trainerPal = gTrainerBacksprites[TRAINER_BACK_PIC_BRENDAN].palette.data;
+        }else{
+             trainerPal = gTrainerSprites[GetTrainerPicFromId(gPartnerTrainerId)].palette.data;
+        }
+    }
     else
         trainerPal = gTrainerSprites[GetFrontierTrainerFrontSpriteId(gPartnerTrainerId)].palette.data; // 2 vs 2 multi battle in Battle Frontier, load front sprite and pal.
 

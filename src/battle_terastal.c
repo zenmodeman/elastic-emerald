@@ -81,6 +81,11 @@ bool32 CanTerastallize(u32 battler)
     {
         return FALSE;
     }
+
+    //For now, disable tera when AI is taking the player side, but this may need to be adjusted in the future
+    else if (FlagGet(B_FLAG_AI_VS_AI_BATTLE)){
+        return FALSE;
+    }
     else if (FlagGet(B_FLAG_TERA_ORB_NO_COST))
     {
         // Tera Orb is not depleted, go to HasTrainerUsedGimmick
