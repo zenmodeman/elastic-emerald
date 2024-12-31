@@ -2678,17 +2678,16 @@ IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Snarl  
 - Mud-Slap  
 
-Jigglypuff @ Leftovers  
-Ability: Competitive  
+Jigglypuff (M) @ Leftovers  
+Ability: Friend Guard  
 Level: 13  
-EVs: 16 Def / 32 SpA / 8 SpD  
-Calm Nature  
+EVs: 28 HP / 12 SpD  
+Careful Nature  
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Stockpile  
 - Swallow  
 - Minimize  
-- Echoed Voice
-
+- Skull Bash
 
 
 === TRAINER_STEVE_1 ===
@@ -4571,45 +4570,37 @@ Manectric
 Level: 34
 IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
 
-=== TRAINER_WALTER_3 ===
-Name: WALTER
-Class: Gentleman
-Pic: Gentleman
+=== TRAINER_BRENDAN_TRAINER_SCHOOL ===
+Name: BRENDAN
+Class: Rival
+Pic: Brendan
 Gender: Male
-Music: Rich
+Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Linoone
-Level: 36
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
-- Headbutt
-- Sand Attack
-- Odor Sleuth
-- Fury Swipes
-
-Manectric
-Level: 36
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
-- Quick Attack
-- Spark
-- Odor Sleuth
-- Roar
-
-=== TRAINER_WALTER_4 ===
-Name: Teacher
-Class: Gentleman
-Pic: Gentleman
-Gender: Male
-Music: Rich
-Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
-
-Zigzagoon
-Level: 9
+Poochyena
+Level: 10
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 31 Spe
+Jolly Nature
 Tera Type: TYPE_NONE
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
-- Pursuit
+- Bite
+
+=== TRAINER_MAY_TRAINER_SCHOOL ===
+Name: MAY
+Class: Rival
+Pic: May
+Gender: Female
+Music: Female
+Double Battle: No
+AI: Smart Trainer
+
+Poochyena
+Level: 10
+IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 31 Spe
+Jolly Nature
+Tera Type: TYPE_NONE
+- Bite
 
 
 === TRAINER_WALTER_5 ===
@@ -14522,18 +14513,18 @@ Class: Leader
 Pic: Leader Roxanne
 Gender: Female
 Music: Female
-Items: Full Restore / Full Restore / Full Restore
 Double Battle: No
-AI: Smart Trainer
+AI: Smart Trainer / Force Setup First Turn
 
-Yamask-Galar (F) @ Smooth Rock  
+Yamask-Galar (F) @ Covert Cloak
 Ability: Wandering Spirit  
-Level: 12  
+Level: 14  
 Tera Type: Rock  
 EVs: 16 HP / 8 Def / 32 SpD / 12 Spe  
 Careful Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 - Rock Tomb
+- Curse
 
 === TRAINER_ROXANNE_5 ===
 Name: ROXANNE

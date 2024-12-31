@@ -24,6 +24,13 @@ enum AIPivot
 
 //Some of the functions I added
 bool32 HasMinimizeDoubleMove(u32 battlerId);
+u32 GetStatusMoveCount(u32 battler);
+bool32 HasNoMovesKnown(u32 battler);
+bool32 HasNoKnownNonProtectingMoves(u32 battler);
+bool32 HasAllKnownMoves(u32 battler);
+u16 *GetMovesArrayWithHiddenSTAB(u32 battler);
+u32 GetBestDmgMoveofType(u32 battlerAtk, u32 battlerDef, u32 type);
+bool32 AI_ShouldTerastal(u32 battler);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);
@@ -116,15 +123,14 @@ u32 GetCurrDamageHpPercent(u32 battlerAtk, u32 battlerDef);
 uq4_12_t AI_GetTypeEffectiveness(u32 move, u32 battlerAtk, u32 battlerDef);
 u32 AI_GetMoveEffectiveness(u32 move, u32 battlerAtk, u32 battlerDef);
 u16 *GetMovesArray(u32 battler);
-u16 *GetMovesArrayWithHiddenSTAB(u32 battler);
+
 
 bool32 IsConfusionMoveEffect(u32 moveEffect);
 bool32 HasMove(u32 battlerId, u32 move);
 bool32 HasOnlyMovesWithCategory(u32 battlerId, u32 category, bool32 onlyOffensive);
 bool32 HasMoveWithCategory(u32 battler, u32 category);
 
-bool32 HasNoMovesKnown(u32 battler);
-bool32 HasNoKnownNonProtectingMoves(u32 battler);
+
 bool32 HasAllKnownMoves(u32 battler);
 u32 GetBestDmgMoveofType(u32 battlerAtk, u32 battlerDef, u32 type);
 bool32 HasMoveWithType(u32 battler, u32 type);

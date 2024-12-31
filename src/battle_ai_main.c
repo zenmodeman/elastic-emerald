@@ -751,8 +751,15 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     if (IsSemiInvulnerable(battlerDef, move) && moveEffect != EFFECT_SEMI_INVULNERABLE && AI_IsFaster(battlerAtk, battlerDef, move))
         RETURN_SCORE_MINUS(10);
 
-    if (IsTwoTurnNotSemiInvulnerableMove(battlerAtk, move) && CanTargetFaintAi(battlerDef, battlerAtk))
-        RETURN_SCORE_MINUS(10);
+    if (IsTwoTurnNotSemiInvulnerableMove(battlerAtk, move) && CanTargetFaintAi(battlerDef, battlerAtk)){
+        //If the two-turn move is the only attacking move, it should be punished as much.
+        if (GetStatusMoveCount(battlerAtk) >= 3){
+            RETURN_SCORE_MINUS(1);
+        }else{
+            RETURN_SCORE_MINUS(10);
+        }
+    }
+        
     
     if (gBattleStruct->commandingDondozo & (1u << battlerDef))
         RETURN_SCORE_MINUS(20);
@@ -3391,7 +3398,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         //Compound logic for a particular trainer
         if (HasMoveEffect(battlerAtk, EFFECT_STOCKPILE) && HasMoveEffect(battlerAtk, EFFECT_SWALLOW)){
             if (gBattleMons[battlerAtk].statStages[STAT_EVASION] < DEFAULT_STAT_STAGE +2){
-                DebugPrintf("The Stockpile Swallow logic is reached.");
+                // DebugPrintf("The Stockpile Swallow logic is reached.");
                 ADJUST_SCORE(DECENT_EFFECT);
             }
         }

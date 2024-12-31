@@ -1861,6 +1861,8 @@ u32 CountNegativeStatStages(u32 battlerId)
     }
     return count;
 }
+
+//Static zenmodeman function
 //Give more leeway in earlier levels
 static u16 GetAtkSpAtkGapThreshold(u32 battlerDef){
     u32 level = gBattleMons[battlerDef].level;
@@ -2035,7 +2037,7 @@ u16 *GetMovesArray(u32 battler)
         return gBattleResources->battleHistory->usedMoves[battler];
 }
 
-//zenmodeman function
+//static zenmodeman function
 static void AddSTABToMovesList(u16 *moves, u32 battler){
     u32 i;
     u32 currentMove;
@@ -2048,8 +2050,6 @@ static void AddSTABToMovesList(u16 *moves, u32 battler){
 }
 
 /*
-zenmodeman function
-
 When computing moves of non-AI battlers, also read unrevealed STAB damaging moves.
 This is important for better damage threshold estimates, and will eventually be used in the switch logic.
 But ordinary GetMovesArray should be used for move-specific logic, such as whether the player has revealed Brick Break. 
@@ -2093,7 +2093,6 @@ bool32 HasMoveWithCategory(u32 battler, u32 category)
     return FALSE;
 }
 
-//Zenmodeman function
 bool32 HasNoMovesKnown(u32 battler){
 
     u32 i;
@@ -2107,7 +2106,20 @@ bool32 HasNoMovesKnown(u32 battler){
     return TRUE;
 }
 
-//Zenmodeman function
+u32 GetStatusMoveCount(u32 battler){
+    u32 statusCount = 0;
+    u32 i;
+    u16 *moves = GetMovesArray(battler);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && IS_MOVE_STATUS(moves[i])){
+            statusCount += 1;
+        }
+    }
+    return statusCount;
+}
+
 bool32 HasNoKnownNonProtectingMoves(u32 battler){
     u32 i;
     u16 *moves = GetMovesArray(battler);
@@ -2121,7 +2133,6 @@ bool32 HasNoKnownNonProtectingMoves(u32 battler){
     return TRUE; 
 }
 
-//Zenmodeman function
 bool32 HasAllKnownMoves(u32 battler){
     // DebugPrintf("HasAllKnownMoves called");
     u32 i;
@@ -2140,7 +2151,7 @@ bool32 HasAllKnownMoves(u32 battler){
     return TRUE; 
 }
 
-/*Zenmodeman function
+/*
 Used for logic such as gem use, getting strongest attack of a given type
 Can also be used to check if a mon has a move of a given type that does damage, by checking that the return value is not MOVE_NONE
 */
@@ -4219,6 +4230,19 @@ bool32 ShouldUseZMove(u32 battlerAtk, u32 battlerDef, u32 chosenMove)
 
     return FALSE;
 }
+
+bool32 AI_ShouldTerastal(u32 battler){
+    u32 battlerToFocus = BATTLE_OPPOSITE(battler);
+
+    //Want to improve this in the future, but just working with slots for now
+    if (IsDoubleBattle() && !IsBattlerAlive(battlerToFocus)){
+        battlerToFocus = BATTLE_PARTNER(battlerToFocus);
+    }
+
+    // CalcTypeEffectivenessMultiplier(move, moveType, battlerAtk, battlerDef, aiData->abilities[battlerDef], FALSE);
+     
+    return TRUE;
+} 
 
 bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId)
 {

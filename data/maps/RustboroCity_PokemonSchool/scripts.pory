@@ -1,7 +1,7 @@
 raw`
-.set LOCALID_RIVAL, 8
-.set LOCALID_TEACHER, 6
-.set LOCALID_ROXANNE, 9
+.set LOCALID_RIVAL, 7
+.set LOCALID_TEACHER, 5
+.set LOCALID_ROXANNE, 8
 
 RustboroCity_PokemonSchool_MapScripts::
 	map_script MAP_SCRIPT_ON_TRANSITION, TrainerSchoolTransition
@@ -80,7 +80,7 @@ RustboroCity_PokemonSchool_EventScript_StudentNotebook::
 	msgbox RustboroCity_PokemonSchool_Text_StudentsNotes, MSGBOX_SIGN
 	end
 
-RustboroCity_PokemonSchool_EventScript_TeacherOld::
+RustboroCity_PokemonSchool_EventScript_Teacher::
 	lock
 	faceplayer
 	goto_if_set FLAG_RECEIVED_QUICK_CLAW, RustboroCity_PokemonSchool_EventScript_GaveQuickClaw
@@ -360,43 +360,136 @@ script TrainerSchoolTransition{
 	call(Common_EventScript_SetupRivalGfxId)
 }
 
-script RustboroCity_PokemonSchool_EventScript_Teacher{
-    lock
-    msgbox(format("Roxanne is going to help me demonstrate Terastallization to the class."))
-    ai_vs_ai_battle(TRAINER_ROXANNE_4, TRAINER_WALTER_4)
-    msgbox(format("Hope that was a good showcase."))
-    release
-    end
-}
-
-
-
 
 script TrainerSchool_Lecture{
 	call(TrainerSchool_TeacherIntro)
+	call(TrainerSchool_RoxanneSpeech)
+	call(TrainerSchool_RivalInterjection)
+	call(TrainerSchool_RoxanneReply)
+	call(TrainerSchool_RivalReadyForRoxanneBattle)
+	call(TrainerSchool_TeacherFinalRemarks)
 }
+
 
 
 script TrainerSchool_TeacherIntro{
 	applymovement(LOCALID_TEACHER, TeacherLecture_MovesTowardsClass)
 	waitmovement(LOCALID_TEACHER)
-	msgbox(format("Welcome again class. Today is a special lesson, since as you can see, Roxanne has joined us."))
-	msgbox(format("She's now our City's Gym Leader but some of you were here when she was one of our school's brightest pupils."))
-	msgbox(format("She has an interesting perspective on our topic today."))
+	msgbox(format("Good morning, class! Today, we have a special guest joining us - Roxanne!"))
+	msgbox(format("You know her as our city's Gym Leader, but some of you remember her as one of our star pupils!"))
+	msgbox(format("She's here to share her insider perspective on today's topic."))
 	applymovement(LOCALID_TEACHER, TeacherLecture_Right_And_Face_Down)
 	waitmovement(LOCALID_TEACHER)
-	msgbox(format("Today's lesson is on the Terastal phenomenon discovered in Paldea not too long ago."))
-	msgbox(format("With progressing advancements in Tera Orbs, the phenomenon can now manifest across the globe."))
-	msgbox(format("Tera Orbs are still expensive to manufacture, but our very own Devon Corp is working towards their accessibility!"))
+	msgbox(format("Our lesson today is about the Terastal phenomenon, first discovered in the Paldea region."))
+	msgbox(format("Thanks to advances in Tera Orbs, trainers worldwide can now use this incredible technique."))
+	msgbox(format("While Tera Orbs are still pricey to produce, our own Devon Corp is working hard to make them available to more trainers!"))
 	applymovement(LOCALID_TEACHER, TeacherLecture_Left_And_Face_Down)
 	waitmovement(LOCALID_TEACHER)
-	msgbox(format("Terastalization is the biggest gamechanger to Pokemon battles."))
-	msgbox(format("It adds several dimensions to every Pokemon, and unlocks possibilites never seen before."))
-	msgbox(format("Naturally, Hoenn's Gym Leaders, our region's Type Experts,"))
-	msgbox(format("were some of the first in our region to get Tera Orbs."))
-	msgbox(format("Now give it up to Roxanne, who's going to talk about what Terastalization means to her."))
+	msgbox(format("Terastalization has revolutionized Pokemon battles."))
+	msgbox(format("It opens up new strategies and brings out unexpected strengths in every Pokemon."))
+	msgbox(format("Naturally, Hoenn's Gym Leaders - our region's Type Experts,"))
+	msgbox(format("were among the first to receive Tera Orbs."))
+	msgbox(format("And now, let's hear from Roxanne, who'll share what Terastalization means to her!"))
 	applymovement(LOCALID_TEACHER, TeacherLecture_MovesAwayFromClass)
 	waitmovement(LOCALID_TEACHER)
+}
+
+script TrainerSchool_RoxanneSpeech{
+	applymovement(LOCALID_ROXANNE, RoxanneLecture_MoveTowardsClass)
+	waitmovement(LOCALID_ROXANNE)
+	msgbox(format("Thank you for having me here today. It's an honor to speak with the next generation of Hoenn's finest trainers."))
+	msgbox(format("Terastalization is a fascinating phenomenon, one that initially challenged my perspective."))
+	msgbox(format("As many of you know, I have a deep admiration for Rocks and Rock-type Pokemon."))
+	msgbox(format("To me, Rock Pokemon represent resilience, stability, and timeless beauty. Their legacy is as enduring as the earth itself."))
+	msgbox(format("When I was younger, seeing a Geodude use Rock Polish for the first time inspired me to study harder."))
+	msgbox(format("When I was learning, it felt as though I was polishing myself into a gem, just like my beloved Rock-types."))
+	msgbox(format("Rocks have always held a special place in my heart, their beauty as timeless and awe-inspiring as the stars in the night sky."))
+	msgbox(format("So, when I first saw non-Rock Pokemon Terastalizing into Rock-types, I felt conflicted."))
+	msgbox(format("I worried it might diminish what made Rock-types special."))
+	msgbox(format("But then I met a Runerigus and her daughter - Galarian Yamask - while exploring an ancient ruins."))
+	msgbox(format("Runerigus captivated me, with her rune-carved form exuding the same elegance and durability I cherish in Rock Pokemon."))
+	msgbox(format("Though she wasn't a Rock-type, she resonated with me in a way that felt deeply familiar."))
+	msgbox(format("The first time she Terastalized into a Rock-type, it was breathtaking."))
+	msgbox(format("She embodied the rugged beauty and unyielding strength of stone, as if she had been one all along."))
+	msgbox(format("To those who, like me, are devoted to one Type, I encourage you to embrace the possibilities Terastalization offers."))
+	msgbox(format("Your beloved Type can find new expressions through Terastalization, revealing forms and qualities you may come to cherish just as much."))
+	msgbox(format("And to those of you who might challenge my gym in the future - "))
+	msgbox(format("My Yamask and Runerigus will shine like the finest gemstones, and I look forward to sharing that brilliance with you!"))
+	playse(SE_APPLAUSE)
+	waitse
+}
+
+script TrainerSchool_RivalInterjection{
+	applymovement(LOCALID_RIVAL, Common_Movement_FaceLeft)
+	waitmovement(LOCALID_RIVAL)
+	msgbox(format("{RIVAL}: Hmm, that's an interesting speech, but I think it'd be nice if we got to see Terastalization in action."))
+	msgbox(format("I'd like you have a fight if you wouldn't mind."))
+}
+
+script TrainerSchool_RoxanneReply{
+	applymovement(LOCALID_ROXANNE, Common_Movement_FaceRight)
+	waitmovement(LOCALID_ROXANNE)
+	msgbox(format("Roxanne: Ah that boldness, you definitely take after Birch."))
+	msgbox(format("Sure, I'm down for a quick one-on-one demonstration. It'd be a good lesson for the class too."))	
+}
+
+
+script TrainerSchool_RivalReadyForRoxanneBattle{
+	msgbox(format("{RIVAL}: Great!"))
+	applymovement(LOCALID_RIVAL, RivalLecture_MoveTowardsRoxanne)
+	waitmovement(LOCALID_RIVAL)
+	msgbox(format("I can't wait to see what Tera is like."), MSGBOX_AUTOCLOSE)
+	checkplayergender
+	if (var(VAR_RESULT) == MALE){
+		ai_vs_ai_battle(TRAINER_MAY_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("The battle has concluded!"))
+	}else{
+		ai_vs_ai_battle(TRAINER_BRENDAN_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("The battle has concluded!"))
+	}
+	clearflag(FLAG_AI_AI_BATTLE)
+	msgbox(format("{RIVAL}: Wow, I had the type advantage but I completely lost!"))
+	msgbox(format("Roxanne: My Yamask shines brilliantly when she becomes Rock-type!"))
+	applymovement(LOCALID_ROXANNE, Common_Movement_FaceDown)
+	msgbox(format("Roxanne: Did you see class? When Yamask becomes Rock-type, her move Curse takes a whole new form."))
+	msgbox(format("With it, she sharpens both her defense and offense like a Rock-type would!"))
+	msgbox(format("{RIVAL}: Fascinating indeed, I can see how Yamask becomes more flexible with Tera. Now I'm excited for the Terastal era!"))
+}
+
+script TrainerSchool_TeacherFinalRemarks{
+	msgbox(format("Teacher: Well, unexpected as that fight was, it sure made for an interesting learning experience."))
+	msgbox(format("Thank you Roxanne and {RIVAL}."))
+	msgbox(format("Our time is up, so class is dismissed. I hope to see you all again for the next lesson!"))
+	fadescreen(FADE_TO_BLACK)
+	setflag(FLAG_HIDE_AFTER_LECTURE)
+	setvar(VAR_TRAINER_SCHOOL_STATE, 1)
+	removeobject(LOCALID_ROXANNE)
+	removeobject(LOCALID_RIVAL)
+	removeobject(9)
+	removeobject(11)
+	removeobject(12)
+	removeobject(13)
+	removeobject(14)
+	fadescreen(FADE_FROM_BLACK)
+}
+
+movement RivalLecture_MoveTowardsRoxanne{
+	walk_left
+	walk_up
+	walk_up
+	walk_left
+	walk_left 
+	walk_left
+	walk_left
+	walk_down
+	face_left
+	step_end
+}
+movement RoxanneLecture_MoveTowardsClass{
+	walk_right
+	walk_down
+	walk_down
+	walk_left
+	face_down
+	step_end
 }
 
 movement TeacherLecture_Right_And_Face_Down{
