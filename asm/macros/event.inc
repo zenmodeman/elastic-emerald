@@ -699,6 +699,8 @@
 		.4byte \pointer3 @ event script
 	.elseif \type == TRAINER_BATTLE_SINGLE_NO_INTRO_TEXT
 		.4byte \pointer1 @ text
+	.elseif \type == TRAINER_BATTLE_CONTINUE_AFTER_LOSE
+		.4byte \pointer1 @ text
 	.elseif \type == TRAINER_BATTLE_DOUBLE
 		.4byte \pointer1 @ text
 		.4byte \pointer2 @ text
@@ -775,6 +777,12 @@
 	.macro trainerbattle_no_intro trainer:req, lose_text:req
 	trainerbattle TRAINER_BATTLE_SINGLE_NO_INTRO_TEXT, \trainer, 0, \lose_text
 	.endm
+
+	@ Starts a trainer battle, skipping intro text. Returns the overworld if the player loses or wins. Takes a trainer and loss text
+	.macro trainerbattle_continue_after_lose trainer:req, lose_text:req
+	trainerbattle TRAINER_BATTLE_CONTINUE_AFTER_LOSE, \trainer, 0, \lose_text
+	.endm
+
 
 	@ Starts a double battle with the player against two trainers
 	@ Takes two trainers and defeat text for each
@@ -2180,11 +2188,11 @@
 	special TrySpecialOverworldEvo
 	.endm
 
-	.macro ai_vs_ai_battle trainer1:req, trainer2:req
+	.macro ai_vs_ai_battle trainer1:req, trainer2:req, battletext:req
 	setflag B_FLAG_AI_VS_AI_BATTLE
 	setvar VAR_0x8004, \trainer1
 	callnative CreateTrainerPartyForPlayer
-	trainerbattle_no_intro \trainer2, NULL
+	trainerbattle_continue_after_lose \trainer2, \battletext
 	.endm
 
 	@ Sets VAR_RESULT to TRUE if stat can be hyper trained, or to

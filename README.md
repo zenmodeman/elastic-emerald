@@ -5,6 +5,7 @@ Elastic Emerald built on top of pokeemerald-expansion
 
 ## Credits
 Thunderbyrd25: [Menufly](https://github.com/Thunderbyrd25/pokeemerald/compare/master...menufly)
+psf and Jaizu: [No Whiteout After Player Loss](https://github.com/PokemonSanFran/pokeemerald/wiki/No-Whiteout-After-Player-Loss)
 
 Full credits of expansion contributers eventually
 

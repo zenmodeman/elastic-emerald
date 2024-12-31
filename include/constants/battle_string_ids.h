@@ -728,7 +728,7 @@
 #define STRINGID_NOTVERYEFFECTIVETWOFOES              726
 #define STRINGID_ITDOESNTAFFECTTWOFOES                727
 
-//Keep out of latest expansion stringId               
+//Keep track  of latest expansion stringId               
 #define EXPANSION_BATTLE_STRING_LATEST                727
 
 //Custom string ids
@@ -736,8 +736,8 @@
 #define STRINGID_WATERSPORTPREVENTS                  EXPANSION_BATTLE_STRING_LATEST + 2
 #define STRINGID_DRAINDOUSESETSDRAINING              EXPANSION_BATTLE_STRING_LATEST + 3
 #define STRINGID_DRAINEDWITHLIQUID                   EXPANSION_BATTLE_STRING_LATEST + 4
-
-#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRING_LATEST + 5
+#define STRINGID_PLAYERWHITEOUT3                      EXPANSION_BATTLE_STRING_LATEST + 5
+#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRING_LATEST + 6
 
 // This is the string id that gBattleStringsTable starts with.
 // String ids before this (e.g. STRINGID_INTROMSG) are not in the table,

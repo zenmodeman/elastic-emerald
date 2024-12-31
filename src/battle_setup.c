@@ -88,6 +88,9 @@ static void SaveChangesToPlayerParty(void);
 static void HandleBattleVariantEndParty(void);
 static void CB2_EndTrainerBattle(void);
 static bool32 IsPlayerDefeated(u32 battleOutcome);
+
+static bool8 ShouldContinueAfterLose(void);
+
 #if FREE_MATCH_CALL == FALSE
 static u16 GetRematchTrainerId(u16 trainerId);
 #endif //FREE_MATCH_CALL
@@ -1178,6 +1181,7 @@ const u8 *BattleSetup_ConfigureTrainerBattle(const u8 *data)
     switch (sTrainerBattleMode)
     {
     case TRAINER_BATTLE_SINGLE_NO_INTRO_TEXT:
+    case TRAINER_BATTLE_CONTINUE_AFTER_LOSE:
         TrainerBattleLoadArgs(sOrdinaryNoIntroBattleParams, data);
         return EventScript_DoNoIntroTrainerBattle;
     case TRAINER_BATTLE_DOUBLE:
@@ -1331,6 +1335,14 @@ static void UNUSED SetBattledTrainerFlag(void)
     FlagSet(GetTrainerAFlag());
 }
 
+static bool8 ShouldContinueAfterLose()
+{
+    if (sTrainerBattleMode == TRAINER_BATTLE_CONTINUE_AFTER_LOSE)
+        return TRUE;
+    else
+        return FALSE;
+}
+
 bool8 HasTrainerBeenFought(u16 trainerId)
 {
     return FlagGet(TRAINER_FLAGS_START + trainerId);
@@ -1453,7 +1465,7 @@ static void CB2_EndTrainerBattle(void)
     }
     else if (IsPlayerDefeated(gBattleOutcome) == TRUE)
     {
-        if (InBattlePyramid() || InTrainerHillChallenge() || (!NoAliveMonsForPlayer()))
+        if (InBattlePyramid() || InTrainerHillChallenge() || ShouldContinueAfterLose() || (!NoAliveMonsForPlayer()))
             SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
         else
             SetMainCallback2(CB2_WhiteOut);
