@@ -3,14 +3,14 @@
   "name": "RustboroCity_PokemonSchool",
   "layout": "LAYOUT_RUSTBORO_CITY_POKEMON_SCHOOL",
   "music": "MUS_SCHOOL",
-  "region_map_section": "MAPSEC_RUSTBORO_CITY",
+  "region_map_section": "MAPSEC_TRAINER_SCHOOL",
   "requires_flash": false,
   "weather": "WEATHER_NONE",
   "map_type": "MAP_TYPE_INDOOR",
   "allow_cycling": false,
   "allow_escaping": false,
   "allow_running": false,
-  "show_map_name": false,
+  "show_map_name": true,
   "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
   "connections": 0,
   "object_events": [
@@ -141,7 +141,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "NULL",
+      "script": "TrainerSchool_BugCatcher",
       "flag": "0"
     },
     {
@@ -168,7 +168,7 @@
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
       "script": "NULL",
-      "flag": "0"
+      "flag": "FLAG_HIDE_AFTER_LECTURE"
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_GIRL_2",
@@ -180,8 +180,8 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "NULL",
-      "flag": "FLAG_HIDE_AFTER_LECTURE"
+      "script": "TrainerSchool_Breeder",
+      "flag": "0"
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_GIRL_3",

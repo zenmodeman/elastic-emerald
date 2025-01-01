@@ -439,6 +439,7 @@ script TrainerSchool_RivalReadyForRoxanneBattle{
 	applymovement(LOCALID_RIVAL, RivalLecture_MoveTowardsRoxanne)
 	waitmovement(LOCALID_RIVAL)
 	msgbox(format("I can't wait to see what Tera is like."), MSGBOX_AUTOCLOSE)
+	special(SavePlayerParty)
 	checkplayergender
 	if (var(VAR_RESULT) == MALE){
 		ai_vs_ai_battle(TRAINER_MAY_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("The battle has concluded!"))
@@ -446,6 +447,7 @@ script TrainerSchool_RivalReadyForRoxanneBattle{
 		ai_vs_ai_battle(TRAINER_BRENDAN_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("The battle has concluded!"))
 	}
 	clearflag(FLAG_AI_AI_BATTLE)
+	special(LoadPlayerParty)
 	msgbox(format("{RIVAL}: Wow, I had the type advantage but I completely lost!"))
 	msgbox(format("Roxanne: My Yamask shines brilliantly when she becomes Rock-type!"))
 	applymovement(LOCALID_ROXANNE, Common_Movement_FaceDown)
@@ -466,10 +468,87 @@ script TrainerSchool_TeacherFinalRemarks{
 	removeobject(9)
 	removeobject(11)
 	removeobject(12)
-	removeobject(13)
 	removeobject(14)
 	fadescreen(FADE_FROM_BLACK)
 }
+
+script TrainerSchool_BugCatcher{
+	lock
+	faceplayer
+	msgbox(format("Roxanne's speech was inspiring!"))
+	msgbox(format("I can't help but wonder - what Pokemon would be the most fascinating to Terastalize into Bug-types?"))
+	release
+}
+
+script TrainerSchool_Breeder{
+	lock
+	faceplayer
+	if (flag(FLAG_RECEIVED_TRAINER_SCHOOL_EGG)){
+		msgbox(format("Please take good care of the egg."))
+	}else{
+		if (var(VAR_MONOTYPE) == 0 || var(VAR_MONOTYPE) == 1 || var(VAR_MONOTYPE) == 18 || var(VAR_MONOTYPE) == 13 
+		|| var(VAR_MONOTYPE) == 4 || var(VAR_MONOTYPE) == 15 || var(VAR_MONOTYPE) == 14){
+			msgbox(format("I love breeding Pokemon, but hatching eggs can be so time-consuming."))
+			msgbox(format("I wonder if there are any ways to help hatch them faster."))
+			msgbox(format("Do you have any ideas?"))
+			dynmultichoice(0, 100, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Aroma Veil", "Flame Body", "Lucky Chant", "Magma Armor", "No Idea")
+			if (var(VAR_RESULT) == 0 || var(VAR_RESULT) == 2){
+				msgbox(format("Hmm, I don't think those would help."))
+			}elif (var(VAR_RESULT) == 1 || var(VAR_RESULT) == 3){
+				msgbox(format("Oh, I think I've vaguely heard of that somewhere before. It might be right!"))
+				msgbox(format("As thanks, here, have one of my eggs."))
+				call(TrainerSchool_GiveEgg)
+			}else{
+				msgbox(format("Oh, too bad you weren't able to help..."))
+			}
+		}else{
+			msgbox(format("I love breeding Pokemon, but hatching eggs can be so time-consuming."))
+			msgbox(format("If only there was a way to help hatch them faster."))
+		}
+	}
+	release
+	end
+}
+
+script TrainerSchool_GiveEgg{
+	if(var(VAR_MONOTYPE) == 0){
+		random(3)
+		if(var(VAR_RESULT) == 0){
+			giveegg(SPECIES_IGGLYBUFF)
+			call(TrainerSchool_ProcessEgg)
+		}elif(var(VAR_RESULT) == 1){
+			giveegg(SPECIES_TOXEL)
+			call(TrainerSchool_ProcessEgg)
+		}elif(var(VAR_RESULT) == 2){
+			giveegg(SPECIES_SMOOCHUM)
+			call(TrainerSchool_ProcessEgg)
+		}
+	}elif(var(VAR_MONOTYPE) == 1 || var(VAR_MONOTYPE) == 18){
+		giveegg(SPECIES_IGGLYBUFF)
+		call(TrainerSchool_ProcessEgg)
+	}elif(var(VAR_MONOTYPE) == 13 || var(VAR_MONOTYPE) == 4){
+		giveegg(SPECIES_TOXEL)
+		call(TrainerSchool_ProcessEgg)
+	}elif(var(VAR_MONOTYPE) == 15 || var(VAR_MONOTYPE) == 14){
+		giveegg(SPECIES_SMOOCHUM)
+		call(TrainerSchool_ProcessEgg)
+	}
+}
+
+script TrainerSchool_ProcessEgg{
+	if(var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+		playfanfare(MUS_OBTAIN_ITEM)
+		msgbox(format("The egg was added to your party!"))
+		setflag(FLAG_RECEIVED_TRAINER_SCHOOL_EGG)
+	}elif(var(VAR_RESULT) == MON_GIVEN_TO_PC){
+		playfanfare(MUS_OBTAIN_ITEM)
+		msgbox(format("The egg was added to your PC!"))
+		setflag(FLAG_RECEIVED_TRAINER_SCHOOL_EGG)
+	}else{
+		msgbox(format("Sorry, you didn't have space for the egg."))
+	}
+}
+
 
 movement RivalLecture_MoveTowardsRoxanne{
 	walk_left
