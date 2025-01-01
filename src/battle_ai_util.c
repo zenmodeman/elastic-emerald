@@ -4232,14 +4232,42 @@ bool32 ShouldUseZMove(u32 battlerAtk, u32 battlerDef, u32 chosenMove)
 }
 
 bool32 AI_ShouldTerastal(u32 battler){
+    u32 opponentTypes[3];
     u32 battlerToFocus = BATTLE_OPPOSITE(battler);
+    u32 teraType = GetBattlerTeraType(battler);
+
+    //No type cost to tera, so always tera
+    if (teraType == TYPE_STELLAR){
+        return TRUE;
+    }
 
     //Want to improve this in the future, but just working with slots for now
     if (IsDoubleBattle() && !IsBattlerAlive(battlerToFocus)){
         battlerToFocus = BATTLE_PARTNER(battlerToFocus);
     }
+    GetBattlerTypes(battlerToFocus, FALSE, opponentTypes);
+    //If player STABs are already SE, might as well tera
+    if (
+    CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, opponentTypes[0], battlerToFocus, battler, AI_DATA->abilities[battlerToFocus], FALSE) > UQ_4_12(1.0)
+    || CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, opponentTypes[1], battlerToFocus, battler, AI_DATA->abilities[battlerToFocus], FALSE) > UQ_4_12(1.0)
+    ){
+        return TRUE;
+    }
+    //If STABs are not SE against current type but are SE against Tera type, do not tera
+    else if (GetTypeModifier(opponentTypes[0], teraType) > UQ_4_12(1.0) || GetTypeModifier(opponentTypes[1], teraType) > UQ_4_12(1.0)){
+        return FALSE;
+    }
 
-    // CalcTypeEffectivenessMultiplier(move, moveType, battlerAtk, battlerDef, aiData->abilities[battlerDef], FALSE);
+    //If both STABs are resisted by existing type, but tera is not resisted by at least one of the types, do not tera
+    if (
+       CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, opponentTypes[0], battlerToFocus, battler, AI_DATA->abilities[battlerToFocus], FALSE) < UQ_4_12(1.0)
+       && CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, opponentTypes[1], battlerToFocus, battler, AI_DATA->abilities[battlerToFocus], FALSE) < UQ_4_12(1.0)
+       && (GetTypeModifier(opponentTypes[0], teraType) >= UQ_4_12(1.0) || GetTypeModifier(opponentTypes[1], teraType) >= UQ_4_12(1.0))
+    ){
+        return FALSE;
+    }
+
+    //If no other checks have been met, prioritize tera
      
     return TRUE;
 } 

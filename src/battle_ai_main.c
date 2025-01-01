@@ -5430,6 +5430,11 @@ static s32 AI_ForceSetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 
     case EFFECT_VICTORY_DANCE:
         //Give a good chance of 
         ADJUST_SCORE(DECENT_EFFECT);
+
+        //During AI battles, give especially high incentive
+        if (FlagGet(FLAG_AI_AI_BATTLE)){
+            ADJUST_SCORE(GOOD_EFFECT);
+        }
         break;
     
     case EFFECT_TRICK:

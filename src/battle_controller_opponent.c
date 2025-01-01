@@ -573,8 +573,16 @@ static void OpponentHandleChooseMove(u32 battler)
                         if (gAbsentBattlerFlags & (1u << gBattlerTarget))
                             gBattlerTarget = GetBattlerAtPosition(B_POSITION_PLAYER_RIGHT);
                     }
+
+                    if (gBattleStruct->gimmick.usableGimmick[battler] != GIMMICK_NONE && gBattleStruct->gimmick.usableGimmick[battler] == GIMMICK_TERA){
+                        if (AI_ShouldTerastal(battler)){
+                            BtlController_EmitTwoReturnValues(battler, BUFFER_B, 10, (chosenMoveId) | (RET_GIMMICK) | (gBattlerTarget << 8));
+                        }else{
+                            BtlController_EmitTwoReturnValues(battler, BUFFER_B, 10, (chosenMoveId) | (gBattlerTarget << 8));
+                        }
+                    }
                     // If opponent can and should use a gimmick (considering trainer data), do it
-                    if (gBattleStruct->gimmick.usableGimmick[battler] != GIMMICK_NONE
+                    else if (gBattleStruct->gimmick.usableGimmick[battler] != GIMMICK_NONE
                      && !(gBattleStruct->gimmick.usableGimmick[battler] == GIMMICK_Z_MOVE
                      && !ShouldUseZMove(battler, gBattlerTarget, moveInfo->moves[chosenMoveId])))
                     {
