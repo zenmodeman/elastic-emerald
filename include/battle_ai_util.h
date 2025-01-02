@@ -22,7 +22,7 @@ enum AIPivot
     SHOULD_PIVOT,
 };
 
-//Some of the functions I added
+//Some of the non-static helper functions I added
 bool32 HasMinimizeDoubleMove(u32 battlerId);
 u32 GetStatusMoveCount(u32 battler);
 bool32 HasNoMovesKnown(u32 battler);
@@ -31,6 +31,7 @@ bool32 HasAllKnownMoves(u32 battler);
 u16 *GetMovesArrayWithHiddenSTAB(u32 battler);
 u32 GetBestDmgMoveofType(u32 battlerAtk, u32 battlerDef, u32 type);
 bool32 AI_ShouldTerastal(u32 battler);
+bool32 IsStatReductionGuarded(u32 battler);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);

@@ -5722,6 +5722,10 @@ u8 GetMoveRelearnerMoves(struct Pokemon *mon, u16 *moves)
         if (learnset[i].move == LEVEL_UP_MOVE_END)
             break;
 
+        //Restricted Mode exception for Torch Song
+        if (FlagGet(FLAG_RESTRICTED_MODE) && learnset[i].move == MOVE_TORCH_SONG){
+            continue;
+        }
         moveLevel = learnset[i].level;
 
         if (moveLevel <= level)
@@ -5799,44 +5803,56 @@ u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
     return numMoves;
 }
 
+//Adds tutor moves from a tutorMoves array to an applicable moves pointer
+static u8 AddTutorMoves(u16 species, u16 *applicable_moves, const u16 *tutorMoves, size_t numTutorMoves, u8 currentNumMoves){
+    u8 addedMoves = 0;
+    int i;
+
+    for (i=0; i < numTutorMoves; i++){
+        if (CanLearnTeachableMove(species, tutorMoves[i])){
+            applicable_moves[currentNumMoves + addedMoves++] = tutorMoves[i];
+        }
+
+    }
+    return addedMoves;
+}
 
 static u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
     u8 numMoves = 0;
-    int i;
 
-    for (i=0; i< sizeof(gPreGym1Tutor) / sizeof(gPreGym1Tutor[0]); i++){
-        if (CanLearnTeachableMove(species, gPreGym1Tutor[i])){
-            applicable_moves[numMoves++] = gPreGym1Tutor[i];
+    //pre-badge one, always applies
+    numMoves += AddTutorMoves(species, applicable_moves, gPreGym1Tutor, ARRAY_COUNT(gPreGym1Tutor), numMoves);
+    //pre-badge 1 moves not available in restricted
+    if (!FlagGet(FLAG_RESTRICTED_MODE)){
+        numMoves += AddTutorMoves(species, applicable_moves, gPreGym1TutorSetup, ARRAY_COUNT(gPreGym1TutorSetup), numMoves);   
+    }
+
+    //If acquired one badge
+    if (FlagGet(FLAG_BADGE01_GET)){
+        numMoves += AddTutorMoves(species, applicable_moves, gPreGym2Tutor, ARRAY_COUNT(gPreGym2Tutor), numMoves);
+        if (!FlagGet(FLAG_RESTRICTED_MODE)){
+            numMoves += AddTutorMoves(species, applicable_moves, gPreGym2TutorSetup, ARRAY_COUNT(gPreGym2TutorSetup), numMoves);   
         }
     }
 
-    if (!FlagGet(FLAG_RESTRICTED_MODE)){
-        for (i=0; i< sizeof(gPreGym1TutorSetup) / sizeof(gPreGym1TutorSetup[0]); i++){
-            if (CanLearnTeachableMove(species, gPreGym1TutorSetup[i])){
-                applicable_moves[numMoves++] = gPreGym1TutorSetup[i];
-            }
-        }        
-    }
     return numMoves;    
 }
 
 static u8 GetTechTutorMoveList(u16 species, u16 *applicable_moves){
     u8 numMoves = 0;
-    int i;
 
-    for (i=0; i< sizeof(gTechTutor) / sizeof(gTechTutor[0]); i++){
-        if (CanLearnTeachableMove(species, gTechTutor[i])){
-            applicable_moves[numMoves++] = gTechTutor[i];
-        }
+    //pre-badge one, always applies
+
+    numMoves += AddTutorMoves(species, applicable_moves, gTechTutorAlways, ARRAY_COUNT(gTechTutorAlways), numMoves);
+
+    //If acquired one badge 
+    if (FlagGet(FLAG_BADGE01_GET)){
+        numMoves += AddTutorMoves(species, applicable_moves, gTechTutor1Badge, ARRAY_COUNT(gTechTutor1Badge), numMoves);
     }
-
     return numMoves;    
 }
 
-u8 GetNPCTutorMoveList(u16 species, u16 *applicable_moves){
-    u8 numMoves = 0;
-    int i;
-    
+u8 GetNPCTutorMoveList(u16 species, u16 *applicable_moves){    
     if(VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
         return GetCenterTutorMoveList(species, applicable_moves);
     }else if (VarGet(VAR_TEMP_9) == MOVE_TUTOR_TECH){
@@ -5844,21 +5860,6 @@ u8 GetNPCTutorMoveList(u16 species, u16 *applicable_moves){
     }
 
     return 0;
-
-    for (i=0; i< sizeof(gPreGym1Tutor) / sizeof(gPreGym1Tutor[0]); i++){
-        if (CanLearnTeachableMove(species, gPreGym1Tutor[i])){
-            applicable_moves[numMoves++] = gPreGym1Tutor[i];
-        }
-    }
-
-    if (!FlagGet(FLAG_RESTRICTED_MODE)){
-        for (i=0; i< sizeof(gPreGym1TutorSetup) / sizeof(gPreGym1TutorSetup[0]); i++){
-            if (CanLearnTeachableMove(species, gPreGym1TutorSetup[i])){
-                applicable_moves[numMoves++] = gPreGym1TutorSetup[i];
-            }
-        }        
-    }
-    return numMoves;    
 }
 
 u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
@@ -6876,7 +6877,12 @@ u16 MonTryLearningNewMoveEvolution(struct Pokemon *mon, bool8 firstMove)
         while ((learnset[sLearningMoveTableID].level == 0 || learnset[sLearningMoveTableID].level == level)
              && !(P_EVOLUTION_LEVEL_1_LEARN >= GEN_8 && learnset[sLearningMoveTableID].level == 1))
         {
-            gMoveToLearn = learnset[sLearningMoveTableID].move;
+            //Hardcoding evo move override
+            if (species == SPECIES_SKELEDIRGE && FlagGet(FLAG_RESTRICTED_MODE) && learnset[sLearningMoveTableID].move == MOVE_TORCH_SONG){
+                gMoveToLearn = MOVE_INFERNO;
+            }else{
+                gMoveToLearn = learnset[sLearningMoveTableID].move;
+            }
             sLearningMoveTableID++;
             return GiveMoveToMon(mon, gMoveToLearn);
         }

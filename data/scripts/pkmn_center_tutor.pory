@@ -10,7 +10,6 @@ script Common_EventScript_PkmnCenterTutor{
     }elif(var(VAR_RESULT) == 2 || var(VAR_RESULT) ==  MULTI_B_PRESSED){
         goto(CenterRejected)
     }
-    msgbox(format("Have a nice day!"))
     release
 }
 
@@ -22,14 +21,18 @@ script CenterMoveTutor{
         msgbox(format("You have {STR_VAR_1} tutor points. Are you interested in teaching a move?"), MSGBOX_YESNO)
         if (var(VAR_RESULT) == 1){
             call(ChooseMoveTutorMon)
+            waitstate
+            msgbox(format("Have a nice day."))
         }
     }else{
         msgbox(format("Are you interested in teaching a move?"), MSGBOX_YESNO)
         if (var(VAR_RESULT) == 1){
             call(ChooseMoveTutorMon)
+            waitstate
+            msgbox(format("Have a nice"))
         }
     }
-
+    release
 }
 script ChooseMoveTutorMon{
     msgbox(format("Select pokemon to teach"))
