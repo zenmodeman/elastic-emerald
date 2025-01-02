@@ -6573,7 +6573,7 @@ F_TRAINER_FEMALE |
 #line 2687
                 MOVE_STOCKPILE,
                 MOVE_SWALLOW,
-                MOVE_MINIMIZE,
+                MOVE_DOUBLE_TEAM,
                 MOVE_SKULL_BASH,
             },
             },

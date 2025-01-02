@@ -66,6 +66,11 @@
 #include "config/battle.h"
 #include "data/battle_move_effects.h"
 
+
+//My added static functions
+static u32 GetMonotypeCatchRate(u16 species);
+
+
 // table to avoid ugly powing on gba (courtesy of doesnt)
 // this returns (i^2.5)/4
 // the quarters cancel so no need to re-quadruple them in actual calculation
@@ -15621,6 +15626,16 @@ u8 GetCatchingBattler(void)
         return GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
 }
 
+static u32 GetMonotypeCatchRate(u16 species){
+    switch (species){
+        case SPECIES_DREEPY:
+            return 75;
+        default: 
+            return gSpeciesInfo[species].catchRate;
+    }
+}
+
+
 static void Cmd_handleballthrow(void)
 {
     CMD_ARGS();
@@ -15654,9 +15669,15 @@ static void Cmd_handleballthrow(void)
         gBallToDisplay = gLastThrownBall = gLastUsedItem;
         if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
             catchRate = gBattleStruct->safariCatchFactor * 1275 / 100;
-        else
-            catchRate = gSpeciesInfo[gBattleMons[gBattlerTarget].species].catchRate;
-
+        else{
+            if (VarGet(VAR_MONOTYPE) != 0){
+                catchRate = GetMonotypeCatchRate(gBattleMons[gBattlerTarget].species);
+            }else{
+                catchRate = gSpeciesInfo[gBattleMons[gBattlerTarget].species].catchRate;
+            }
+        }
+            
+        DebugPrintf("The catch rate is %d", catchRate);
         if (gSpeciesInfo[gBattleMons[gBattlerTarget].species].isUltraBeast)
         {
             if (ballId == BALL_BEAST)
@@ -15834,6 +15855,11 @@ static void Cmd_handleballthrow(void)
             * (gBattleMons[gBattlerTarget].maxHP * 3 - gBattleMons[gBattlerTarget].hp * 2)
             / (3 * gBattleMons[gBattlerTarget].maxHP);
 
+
+        //Incorporating gen 9 low level catch modifier
+        if (gBattleMons[gBattlerTarget].level < 13){
+            odds = (odds * (36 - (2*gBattleMons[gBattlerTarget].level)))/10;
+        }
         if (gBattleMons[gBattlerTarget].status1 & (STATUS1_SLEEP | STATUS1_FREEZE))
             odds *= 2;
         if (gBattleMons[gBattlerTarget].status1 & (STATUS1_POISON | STATUS1_BURN | STATUS1_PARALYSIS | STATUS1_TOXIC_POISON | STATUS1_FROSTBITE))
@@ -15841,6 +15867,7 @@ static void Cmd_handleballthrow(void)
 
         if (gBattleResults.catchAttempts[ballId] < 255)
             gBattleResults.catchAttempts[ballId]++;
+        DebugPrintf("The odds is %d", odds);
 
         if (odds > 254) // mon caught
         {

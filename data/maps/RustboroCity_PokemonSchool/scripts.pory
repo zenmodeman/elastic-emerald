@@ -491,7 +491,7 @@ script TrainerSchool_Breeder{
 			msgbox(format("I love breeding Pokemon, but hatching eggs can be so time-consuming."))
 			msgbox(format("I wonder if there are any ways to help hatch them faster."))
 			msgbox(format("Do you have any ideas?"))
-			dynmultichoice(0, 100, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Aroma Veil", "Flame Body", "Lucky Chant", "Magma Armor", "No Idea")
+			dynmultichoice(0, 100, FALSE, 5, 0, DYN_MULTICHOICE_CB_NONE, "Aroma Veil", "Flame Body", "Lucky Chant", "Magma Armor", "No Idea")
 			if (var(VAR_RESULT) == 0 || var(VAR_RESULT) == 2){
 				msgbox(format("Hmm, I don't think those would help."))
 			}elif (var(VAR_RESULT) == 1 || var(VAR_RESULT) == 3){

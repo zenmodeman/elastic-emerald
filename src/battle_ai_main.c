@@ -3406,6 +3406,15 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_EVASION_UP:
     case EFFECT_EVASION_UP_2:
     case EFFECT_MINIMIZE:
+        //If the opponent can stunlock evasion with Sweet Scent, ignore all incentives if Double Team
+        //Have a chance to ignore incentives if Minimize
+        if (HasMoveEffect(battlerDef, EFFECT_EVASION_DOWN_2) && !IsStatReductionGuarded(battlerAtk)){
+            if (moveEffect == EFFECT_EVASION_UP){
+                break;
+            }else if (AI_RandLessThan(127)){
+                break;
+            }
+        }
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_EVASION));
         //Compound logic for a particular trainer
         if (HasMoveEffect(battlerAtk, EFFECT_STOCKPILE) && HasMoveEffect(battlerAtk, EFFECT_SWALLOW)){

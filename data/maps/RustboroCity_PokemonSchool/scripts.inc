@@ -984,7 +984,7 @@ TrainerSchool_Breeder_5:
 # 493 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_Breeder_Text_3
 # 494 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	dynmultichoice 0, 100, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, TrainerSchool_Breeder_Text_4, TrainerSchool_Breeder_Text_5, TrainerSchool_Breeder_Text_6, TrainerSchool_Breeder_Text_7, TrainerSchool_Breeder_Text_8
+	dynmultichoice 0, 100, FALSE, 5, 0, DYN_MULTICHOICE_CB_NONE, TrainerSchool_Breeder_Text_4, TrainerSchool_Breeder_Text_5, TrainerSchool_Breeder_Text_6, TrainerSchool_Breeder_Text_7, TrainerSchool_Breeder_Text_8
 # 495 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 0
 	goto_if_eq TrainerSchool_Breeder_20

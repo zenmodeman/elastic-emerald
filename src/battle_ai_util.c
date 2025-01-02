@@ -657,9 +657,10 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
 
     // Temporarily enable gimmicks for damage calcs if planned
     if (gBattleStruct->gimmick.usableGimmick[battlerAtk] 
-    && (GetBattlerSide(battlerAtk) != B_SIDE_PLAYER) //Don't compute player Teras that haven't been executed yet
+    && (GetBattlerSide(battlerAtk) != B_SIDE_PLAYER) //Don't compute player gimmicks that haven't been executed yet
     && GetActiveGimmick(battlerAtk) == GIMMICK_NONE
-        && !(gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_Z_MOVE && !considerZPower))
+    && !(gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_TERA && !AI_ShouldTerastal(battlerAtk))
+    && !(gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_Z_MOVE && !considerZPower))
     {
         // Set Z-Move variables if needed
         if (gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_Z_MOVE && IsViableZMove(battlerAtk, move))
@@ -1878,6 +1879,7 @@ static u16 GetAtkSpAtkGapThreshold(u32 battlerDef){
     return 1.15;
 }
 
+
 bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
 {
     if (AI_IsFaster(battlerAtk, battlerDef, AI_THINKING_STRUCT->moveConsidered)
@@ -1898,6 +1900,37 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
+    return FALSE;
+}
+
+//Checks if the user has guards against general stat reduction
+bool32 IsStatReductionGuarded(u32 battler){
+    if (AI_DATA->holdEffects[battler] == HOLD_EFFECT_CLEAR_AMULET){
+        return TRUE;
+    }
+
+    if (gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_MIST){
+        return TRUE;
+    }
+    switch (GetBattlerAbility(battler)){
+        case ABILITY_CONTRARY:
+        case ABILITY_CLEAR_BODY:
+        case ABILITY_WHITE_SMOKE:
+        case ABILITY_FULL_METAL_BODY:
+            return TRUE;
+        case ABILITY_COMPETITIVE:
+            if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_SPECIAL)){
+                return TRUE;
+            }
+            break;
+        case ABILITY_DEFIANT:
+            if (HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL)){
+                return TRUE;
+            }
+            break;
+        default:
+            return FALSE;
+    }
     return FALSE;
 }
 

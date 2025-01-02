@@ -651,8 +651,8 @@
       "x": 16,
       "y": 72,
       "elevation": 3,
-      "item": "ITEM_ANTIDOTE",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_ANTIDOTE"
+      "item": "ITEM_QUICK_BALL",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_QUICK_BALL"
     },
     {
       "type": "hidden_item",

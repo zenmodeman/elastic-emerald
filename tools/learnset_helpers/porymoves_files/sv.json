@@ -72807,7 +72807,7 @@
       "MOVE_DRAGON_TAIL",
       "MOVE_SUCKER_PUNCH"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_IMPRISON"]
   },
   "DRAKLOAK": {
     "LevelMoves": [
@@ -82611,7 +82611,7 @@
       "MOVE_SHADOW_SNEAK",
       "MOVE_YAWN"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_IMPRISON"]
   },
   "HOUNDSTONE": {
     "LevelMoves": [
