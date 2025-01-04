@@ -1998,6 +1998,7 @@ bool32 ShouldLowerSpDef(u32 battlerAtk, u32 battlerDef, u32 defAbility)
 
     if (gBattleMons[battlerDef].statStages[STAT_SPDEF] > 4
       && HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL)
+      && !AreAllMovesOfSplitIneffective(battlerAtk, battlerDef, DAMAGE_CATEGORY_SPECIAL)
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
@@ -2006,6 +2007,38 @@ bool32 ShouldLowerSpDef(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
+}
+
+//Various checks to determine whether a move does nothing
+bool32 IsMoveIneffective(u32 move, u32 battlerAtk, u32 battlerDef){
+    if (AI_GetMoveEffectiveness(move, battlerAtk, battlerDef) == AI_EFFECTIVENESS_x0){
+        return TRUE;
+    }
+    if (CanAbilityBlockMove(battlerAtk, battlerDef, move, AI_DATA->abilities[battlerDef])){
+        return TRUE;
+    }
+    if (gDisableStructs[gBattlerAttacker].disabledMove == move){
+        return TRUE;
+    }
+    //Factor pp into this eventually
+    return FALSE;
+}
+
+bool32 AreAllMovesOfSplitIneffective(u32 battlerAtk, u32 battlerDef, u32 category){
+    u32 i;
+    u32 currentMove;
+    for (i = 0; i < MAX_MON_MOVES; i++){
+        currentMove = gBattleMons[battlerAtk].moves[i];
+        //
+        if (GetBattleMoveCategory(currentMove) != category){
+            continue;
+        }
+        //At least one move of the split is effective
+        if (!IsMoveIneffective(currentMove, battlerAtk, battlerDef)){
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
 
 bool32 ShouldLowerAccuracy(u32 battlerAtk, u32 battlerDef, u32 defAbility)

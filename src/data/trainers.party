@@ -235,7 +235,8 @@ Chewtle @ Apicot Berry
 Ability: Shell Armor  
 Level: 10  
 EVs: 4 SpD  
-IVs: 12 HP / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+Sassy Nature  
+IVs: 12 HP / 12 Def / 12 SpA / 12 SpD / 0 Spe  
 - Tackle  
 - Chilling Water  
 - Bite  
@@ -1637,17 +1638,28 @@ Music: Male
 Double Battle: No
 AI: Smart Trainer
 
-Manectric
-Level: 35
-IVs: 17 HP / 17 Atk / 17 Def / 17 SpA / 17 SpD / 17 Spe
+Ekans (M) @ Chesto Berry  
+Ability: Shed Skin  
+Level: 8  
+Quirky Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe   
+EVs: 8 Def
+- Rest  
+- Trailblaze  
+- Mud Bomb  
+- Poison Sting  
 
-Wailmer
-Level: 35
-IVs: 17 HP / 17 Atk / 17 Def / 17 SpA / 17 SpD / 17 Spe
+Sandshrew (M) @ Normal Gem  
+Ability: Sand Veil  
+Level: 9  
+Jolly Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
+EVs: 8 HP
+- Fury Swipes  
+- Bulldoze  
+- Sandstorm  
+- Metal Claw  
 
-Hariyama
-Level: 35
-IVs: 17 HP / 17 Atk / 17 Def / 17 SpA / 17 SpD / 17 Spe
 
 === TRAINER_WARREN ===
 Name: WARREN
@@ -2548,8 +2560,8 @@ Level: 8
 Calm Nature  
 IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Charm  
-- Fake Out  
-- Disarming Voice  
+- Fake Tears  
+- Water Pulse  
 - Attract
 
 Stufful (M) @ Rawst Berry  
@@ -4873,14 +4885,13 @@ Class: Leader
 Pic: Leader Roxanne
 Gender: Female
 Music: Female
-Items: Potion / Potion
 Double Battle: No
 AI: Smart Trainer
 
 
 Yamask-Galar (F) @ Smooth Rock  
 Ability: Wandering Spirit  
-Level: 12  
+Level: 14 
 Tera Type: Rock  
 EVs: 16 HP / 8 Def / 32 SpD / 12 Spe  
 Careful Nature  
@@ -4888,7 +4899,7 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - Sandstorm  
 - Astonish  
 - Rock Tomb  
-- Pain Split
+- Curse
 
 Dwebble (F) @ Berry Juice  
 Ability: Sturdy  
@@ -4919,10 +4930,9 @@ EVs: 12 HP / 24 Def / 12 SpD / 12 Spe
 Hardy Nature  
 IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe  
 - Shock Wave  
-- Torment  
+- Pain Split
 - Rock Tomb  
 - Bulldoze  
-
 
 
 === TRAINER_BRAWLY_1 ===
@@ -5325,26 +5335,59 @@ Medicham
 Level: 32
 IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
 
-=== TRAINER_JERRY_5 ===
-Name: JERRY
-Class: School Kid
-Pic: School Kid M
-Gender: Male
-Music: Male
-Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+=== TRAINER_ROXANNE_1_DOUBLES ===
+Name: ROXANNE
+Class: Leader
+Pic: Leader Roxanne
+Gender: Female
+Music: Female
+Double Battle: Yes
+AI: Smart Trainer
 
-Kirlia
-Level: 34
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Dwebble (F) @ Berry Juice  
+Ability: Sturdy  
+Level: 13  
+EVs: 16 HP / 12 Def / 12 SpD / 36 Spe  
+Impish Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Rock Tomb  
+- Withdraw  
+- Rock Smash  
+- Aerial Ace  
 
-Banette
-Level: 34
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Lileep (F) @ Kee Berry  
+Ability: Storm Drain  
+Level: 13  
+EVs: 12 HP / 16 Def / 28 SpD / 16 Spe  
+Serious Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Mega Drain  
+- Wrap  
+- Rock Tomb  
+- Recover  
 
-Medicham
-Level: 34
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Yamask-Galar (F) @ Smooth Rock  
+Ability: Wandering Spirit  
+Level: 14
+Tera Type: Rock  
+EVs: 16 HP / 8 Def / 32 SpD / 12 Spe  
+Careful Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Sandstorm  
+- Astonish  
+- Rock Tomb  
+- Curse
+
+Nosepass (F) @ Enigma Berry  
+Ability: Sand Force  
+Level: 15  
+EVs: 12 HP / 24 Def / 12 SpD / 12 Spe  
+Hardy Nature  
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe  
+- Shock Wave  
+- Pain Split  
+- Rock Tomb  
+- Bulldoze  
 
 === TRAINER_KAREN_1 ===
 Name: KAREN
@@ -6085,8 +6128,10 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 Meowth-Galar (M) @ Throat Spray  
 Ability: Pickup  
 Level: 7  
+EVs: 20 HP / 36 Def  
 IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
-- Confide  
+Serious Nature
+- Metal Sound  
 - Round  
 - Metal Claw  
 - Growl  
@@ -6094,8 +6139,9 @@ IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
 Tyrogue @ Flame Orb  
 Ability: Guts  
 Level: 8  
-EVs: 24 HP / 24 Atk / 24 Def  
+EVs: 24 HP / 24 Def / 24 SpD  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+Naughty Nature
 - Fake Out  
 - Bullet Punch  
 - Mach Punch  
@@ -6114,11 +6160,20 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Roggenrola @ Oran Berry  
 Ability: Sturdy  
-Level: 11  
-IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
-- Smack Down  
+Level: 10
+IVs: 10 HP / 10 Atk/ 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Rock Throw
 - Tackle  
 - Harden
+
+Geodude @ Clear Amulet
+Ability: Sturdy
+Level: 12
+IVs: 10 HP / 10 Atk/ 10 Def / 10 SpA / 10 SpD / 10 Spe
+- Rock Polish
+- Rollout
+- Defense Curl
+- Tackle
 
 === TRAINER_TOMMY ===
 Name: TOMMY
@@ -6127,15 +6182,28 @@ Pic: Youngster
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Geodude
-Level: 8
-IVs: 13 HP / 13 Atk / 13 Def / 13 SpA / 13 SpD / 13 Spe
+Binacle @ Rindo Berry  
+Ability: Pickpocket  
+Level: 11  
+EVs: 8 Def / 24 SpD  
+Sassy Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Payback  
+- Smack Down  
+- Helping Hand  
+- Water Gun
 
-Geodude
-Level: 8
-IVs: 14 HP / 14 Atk / 14 Def / 14 SpA / 14 SpD / 14 Spe
+Rockruff  
+Ability: Vital Spirit  
+Level: 11  
+Impish Nature  
+IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Helping Hand  
+- Taunt  
+- Tackle  
+- Rock Throw
 
 === TRAINER_JOEY ===
 Name: JOEY
@@ -8963,7 +9031,7 @@ IVs: 0 Atk
 - Sweet Kiss  
 - Sweet Scent  
 - Draining Kiss  
-- Baby-Doll Eyes  
+- Aromatic Mist 
 
 Stunky @ Chesto Berry  
 Ability: Keen Eye  
@@ -10724,15 +10792,28 @@ Pic: Hiker
 Gender: Male
 Music: Hiker
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Geodude
-Level: 8
-IVs: 14 HP / 14 Atk / 14 Def / 14 SpA / 14 SpD / 14 Spe
+Rolycoly @ Absorb Bulb  
+Ability: Steam Engine  
+Level: 11  
+EVs: 12 HP / 48 Spe  
+Hardy Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Incinerate  
+- Ancient Power  
+- Smokescreen  
+- Rapid Spin
 
-Geodude
-Level: 8
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+Rhyhorn  
+Ability: Rock Head  
+Level: 11  
+Careful Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 15 SpD / 10 Spe  
+- Take Down  
+- Tail Whip  
+- Fire Fang
+
 
 === TRAINER_BRENDEN ===
 Name: BRENDEN

@@ -752,7 +752,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         RETURN_SCORE_MINUS(10);
 
     if (IsTwoTurnNotSemiInvulnerableMove(battlerAtk, move) && CanTargetFaintAi(battlerDef, battlerAtk)){
-        //If the two-turn move is the only attacking move, it should be punished as much.
+        //If the two-turn move is the only attacking move, it shouldn't be punished as much.
         if (GetStatusMoveCount(battlerAtk) >= 3){
             RETURN_SCORE_MINUS(1);
         }else{
@@ -3491,7 +3491,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_SPECIAL_DEFENSE_DOWN_2:
         //Worth noting that with the current logic, the effects will be disincentivized if the user doesn't have a special move
         if (ShouldLowerSpDef(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
-            ADJUST_SCORE(1);
+            ADJUST_SCORE(WEAK_EFFECT);
         }
             
         if ((aiData->hpPercents[battlerAtk] < 70 && !AI_RandLessThan(50))
@@ -4849,7 +4849,7 @@ case EFFECT_DISABLE:
                     if (gMovesInfo[move].additionalEffects[i].chance == 100
                      && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
                         //This check is only true against neutral targets, so perhaps improve it later for any stat stages
-                        if ((aiData->speedStats[battlerAtk] * 1.5) > aiData->speedStats[battlerDef]){
+                        if (((aiData->speedStats[battlerAtk] * 150)/100) > aiData->speedStats[battlerDef]){
                             ADJUST_SCORE(DECENT_EFFECT);
                         }else{
                             ADJUST_SCORE(WEAK_EFFECT);
@@ -4942,7 +4942,7 @@ case EFFECT_DISABLE:
                     ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
 
                         //This check is only true against neutral targets, so perhaps improve it later for any stat stages
-                        if ((aiData->speedStats[battlerAtk] * 1.5) > aiData->speedStats[battlerDef]){
+                        if (((aiData->speedStats[battlerAtk] * 150)/100) > aiData->speedStats[battlerDef]){
                             ADJUST_SCORE(DECENT_EFFECT);
                         }else{
                             ADJUST_SCORE(WEAK_EFFECT);

@@ -2402,79 +2402,87 @@ Route104_EventScript_BillyGift::
 # 1233 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScript_BillyGift_Text_0
 # 1234 "data/maps/Route104/scripts.pory"
-	giveitem ITEM_SERIOUS_MINT
-# 1235 "data/maps/Route104/scripts.pory"
-	compare VAR_RESULT, FALSE
-	goto_if_eq Route104_EventScript_BillyGift_2
+	goto_if_set TRAINER_FLAGS_START + TRAINER_GRUNT_PETALBURG_WOODS, Route104_EventScript_BillyGift_2
+# 1237 "data/maps/Route104/scripts.pory"
+	giveitem ITEM_NAUGHTY_MINT
 Route104_EventScript_BillyGift_1:
-# 1238 "data/maps/Route104/scripts.pory"
+# 1240 "data/maps/Route104/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq Route104_EventScript_BillyGift_6
+Route104_EventScript_BillyGift_5:
+# 1243 "data/maps/Route104/scripts.pory"
 	releaseall
 	end
 
 Route104_EventScript_BillyGift_2:
-# 1236 "data/maps/Route104/scripts.pory"
-	call Common_EventScript_ShowBagIsFull
+# 1235 "data/maps/Route104/scripts.pory"
+	giveitem ITEM_SERIOUS_MINT
 	goto Route104_EventScript_BillyGift_1
+
+Route104_EventScript_BillyGift_6:
+# 1241 "data/maps/Route104/scripts.pory"
+	call Common_EventScript_ShowBagIsFull
+	goto Route104_EventScript_BillyGift_5
 
 
 Route104_EventScript_Darren::
-# 1243 "data/maps/Route104/scripts.pory"
+# 1248 "data/maps/Route104/scripts.pory"
 	trainerbattle_single TRAINER_DARREN, Route104_EventScript_Darren_Text_0, Route104_EventScript_Darren_Text_1
-# 1244 "data/maps/Route104/scripts.pory"
+# 1249 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScript_Darren_Text_2
-# 1245 "data/maps/Route104/scripts.pory"
+# 1250 "data/maps/Route104/scripts.pory"
 	releaseall
 	end
 
 
 Route104_EventScript_Boy2::
-# 1250 "data/maps/Route104/scripts.pory"
-	lock
-# 1251 "data/maps/Route104/scripts.pory"
-	faceplayer
-# 1252 "data/maps/Route104/scripts.pory"
-	goto_if_set FLAG_RECEIVED_TM_HELPING_HAND, Route104_EventScript_Boy2_2
 # 1255 "data/maps/Route104/scripts.pory"
-	msgbox Route104_EventScript_Boy2_Text_1
+	lock
 # 1256 "data/maps/Route104/scripts.pory"
-	msgbox Route104_EventScript_Boy2_Text_2
+	faceplayer
 # 1257 "data/maps/Route104/scripts.pory"
+	goto_if_set FLAG_RECEIVED_TM_HELPING_HAND, Route104_EventScript_Boy2_2
+# 1260 "data/maps/Route104/scripts.pory"
+	msgbox Route104_EventScript_Boy2_Text_1
+# 1261 "data/maps/Route104/scripts.pory"
+	msgbox Route104_EventScript_Boy2_Text_2
+# 1262 "data/maps/Route104/scripts.pory"
 	goto_if_set FLAG_RESOURCE_MODE, Route104_EventScript_Boy2_6
-# 1263 "data/maps/Route104/scripts.pory"
+# 1268 "data/maps/Route104/scripts.pory"
 	giveItem ITEM_TM_HELPING_HAND
-# 1264 "data/maps/Route104/scripts.pory"
+# 1269 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq Route104_EventScript_Boy2_11
 Route104_EventScript_Boy2_5:
-# 1268 "data/maps/Route104/scripts.pory"
+# 1273 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScript_Boy2_Text_3
-# 1269 "data/maps/Route104/scripts.pory"
+# 1274 "data/maps/Route104/scripts.pory"
 	setflag FLAG_RECEIVED_TM_HELPING_HAND
 Route104_EventScript_Boy2_1:
-# 1271 "data/maps/Route104/scripts.pory"
+# 1276 "data/maps/Route104/scripts.pory"
 	release
 	end
 
 Route104_EventScript_Boy2_2:
-# 1253 "data/maps/Route104/scripts.pory"
+# 1258 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScript_Boy2_Text_0
 	goto Route104_EventScript_Boy2_1
 
 Route104_EventScript_Boy2_6:
-# 1258 "data/maps/Route104/scripts.pory"
+# 1263 "data/maps/Route104/scripts.pory"
 	giveitem ITEM_TM_HELPING_HAND, 6
-# 1259 "data/maps/Route104/scripts.pory"
+# 1264 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq Route104_EventScript_Boy2_9
 	goto Route104_EventScript_Boy2_5
 
 Route104_EventScript_Boy2_9:
-# 1260 "data/maps/Route104/scripts.pory"
+# 1265 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_Boy2_5
 
 Route104_EventScript_Boy2_11:
-# 1265 "data/maps/Route104/scripts.pory"
+# 1270 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_Boy2_5
 
@@ -2546,35 +2554,35 @@ Route104_EventScript_BillyGift_Text_0:
 	.string "giving to my Pokemon.$"
 
 Route104_EventScript_Darren_Text_0:
-# 1243 "data/maps/Route104/scripts.pory"
+# 1248 "data/maps/Route104/scripts.pory"
 	.string "My prized Pokemon won't let me down!$"
 
 Route104_EventScript_Darren_Text_1:
-# 1243 "data/maps/Route104/scripts.pory"
+# 1248 "data/maps/Route104/scripts.pory"
 	.string "How could this be?$"
 
 Route104_EventScript_Darren_Text_2:
-# 1244 "data/maps/Route104/scripts.pory"
+# 1249 "data/maps/Route104/scripts.pory"
 	.string "Maybe I haven't used my Pokemon's\n"
 	.string "potential.$"
 
 Route104_EventScript_Boy2_Text_0:
-# 1253 "data/maps/Route104/scripts.pory"
+# 1258 "data/maps/Route104/scripts.pory"
 	.string "It's always great to lend a Helping\n"
 	.string "Hand!$"
 
 Route104_EventScript_Boy2_Text_1:
-# 1255 "data/maps/Route104/scripts.pory"
+# 1260 "data/maps/Route104/scripts.pory"
 	.string "Hey there! A team works best when\n"
 	.string "everyone helps each other out. That's\l"
 	.string "especially true for Double Battles!$"
 
 Route104_EventScript_Boy2_Text_2:
-# 1256 "data/maps/Route104/scripts.pory"
+# 1261 "data/maps/Route104/scripts.pory"
 	.string "Here, take this TM and give it a try!$"
 
 Route104_EventScript_Boy2_Text_3:
-# 1268 "data/maps/Route104/scripts.pory"
+# 1273 "data/maps/Route104/scripts.pory"
 	.string "Helping Hand lets your Pokémon boost\n"
 	.string "its ally's power. It's perfect for Double\l"
 	.string "Battles.$"

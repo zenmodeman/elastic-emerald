@@ -1231,7 +1231,12 @@ script Route104_EventScript_Billy{
 
 script  Route104_EventScript_BillyGift{
 	msgbox(format("That was a nice battle! Here, you can have one of the mints that I've been giving to my Pokemon."))
-	giveitem(ITEM_SERIOUS_MINT)
+	if (flag(TRAINER_FLAGS_START + TRAINER_GRUNT_PETALBURG_WOODS)){
+		giveitem(ITEM_SERIOUS_MINT)
+	}else{
+		giveitem(ITEM_NAUGHTY_MINT)
+	}
+	
     if (var(VAR_RESULT) == FALSE){
     	call(Common_EventScript_ShowBagIsFull)
     }

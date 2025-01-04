@@ -282,7 +282,7 @@
 #define TRAINER_JERRY_2                     276
 #define TRAINER_JERRY_3                     277
 #define TRAINER_JERRY_4                     278
-#define TRAINER_JERRY_5                     279
+#define TRAINER_ROXANNE_1_DOUBLES           279
 #define TRAINER_KAREN_1                     280
 #define TRAINER_GEORGIA                     281
 #define TRAINER_KAREN_2                     282

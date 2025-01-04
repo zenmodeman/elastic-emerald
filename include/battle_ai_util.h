@@ -32,6 +32,8 @@ u16 *GetMovesArrayWithHiddenSTAB(u32 battler);
 u32 GetBestDmgMoveofType(u32 battlerAtk, u32 battlerDef, u32 type);
 bool32 AI_ShouldTerastal(u32 battler);
 bool32 IsStatReductionGuarded(u32 battler);
+bool32 IsMoveIneffective(u32 move, u32 battlerAtk, u32 battlerDef);
+bool32 AreAllMovesOfSplitIneffective(u32 battlerAtk, u32 battlerDef, u32 category);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);
