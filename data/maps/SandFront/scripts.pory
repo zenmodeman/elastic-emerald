@@ -1,0 +1,14 @@
+raw `
+SandFront_MapScripts::
+	.byte 0
+`
+
+script Sandfront_IcyRock_Ruin_Maniac{
+    lock
+    faceplayer
+    msgbox(format("The Icy rock that was lying here ..."))
+    msgbox(format("I wonder if it drifted here from somewhere."))
+    msgbox(format("There might be something to explore around here. But alas, I don't have a Surfing Pokemon!"))
+    release
+    end
+}
