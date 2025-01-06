@@ -983,22 +983,22 @@ static void Task_EvolutionScene(u8 taskId)
                 {
                     // Selected move to forget
                     u16 move = GetMonData(mon, var + MON_DATA_MOVE1);
-                    if (IsMoveHM(move))
-                    {
-                        // Can't forget HMs
-                        BattleStringExpandPlaceholdersToDisplayedString(gBattleStringsTable[STRINGID_HMMOVESCANTBEFORGOTTEN]);
-                        BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MSG);
-                        gTasks[taskId].tLearnMoveState = MVSTATE_RETRY_AFTER_HM;
-                    }
-                    else
-                    {
+                    // if (IsMoveHM(move))
+                    // {
+                    //     // Can't forget HMs
+                    //     BattleStringExpandPlaceholdersToDisplayedString(gBattleStringsTable[STRINGID_HMMOVESCANTBEFORGOTTEN]);
+                    //     BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MSG);
+                    //     gTasks[taskId].tLearnMoveState = MVSTATE_RETRY_AFTER_HM;
+                    // }
+                    // else
+                    // {
                         // Forget move
                         PREPARE_MOVE_BUFFER(gBattleTextBuff2, move)
 
                         RemoveMonPPBonus(mon, var);
                         SetMonMoveSlot(mon, gMoveToLearn, var);
                         gTasks[taskId].tLearnMoveState++;
-                    }
+                    // }
                 }
             }
             break;
@@ -1367,14 +1367,13 @@ static void Task_TradeEvolutionScene(u8 taskId)
                 {
                     // Selected move to forget
                     u16 move = GetMonData(mon, var + MON_DATA_MOVE1);
-                    if (IsMoveHM(move))
-                    {
-                        // Can't forget HMs
-                        BattleStringExpandPlaceholdersToDisplayedString(gBattleStringsTable[STRINGID_HMMOVESCANTBEFORGOTTEN]);
-                        DrawTextOnTradeWindow(0, gDisplayedStringBattle, 1);
-                        gTasks[taskId].tLearnMoveState = T_MVSTATE_RETRY_AFTER_HM;
-                    }
-                    else
+                    // if (IsMoveHM(move))
+                    // {
+                    //     // Can't forget HMs
+                    //     BattleStringExpandPlaceholdersToDisplayedString(gBattleStringsTable[STRINGID_HMMOVESCANTBEFORGOTTEN]);
+                    //     DrawTextOnTradeWindow(0, gDisplayedStringBattle, 1);
+                    //     gTasks[taskId].tLearnMoveState = T_MVSTATE_RETRY_AFTER_HM;
+                    // }
                     {
                         // Forget move
                         PREPARE_MOVE_BUFFER(gBattleTextBuff2, move)
