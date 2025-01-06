@@ -44,6 +44,8 @@
 #include "trainer_card.h"
 #include "window.h"
 #include "union_room.h"
+#include "dexnav.h"
+#include "wild_encounter.h"
 #include "constants/battle_frontier.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
@@ -70,6 +72,7 @@ enum
     MENU_ACTION_DEBUG,
     MENU_ACTION_MAP,
     MENU_ACTION_FLY
+    // MENU_ACTION_DEXNAV,
 };
 
 // Save status
@@ -114,6 +117,7 @@ static bool8 StartMenuDebugCallback(void);
 
 static bool8 StartMenuMapCallback(void);
 static bool8 StartMenuFlyCallback(void);
+// static bool8 StartMenuDexNavCallback(void);
 
 // Menu callbacks
 static bool8 SaveStartCallback(void);
@@ -210,6 +214,7 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_DEBUG]           = {sText_MenuDebug,   {.u8_void = StartMenuDebugCallback}},
     [MENU_ACTION_MAP]             = {gText_MenuMap,     {.u8_void = StartMenuMapCallback}},
     [MENU_ACTION_FLY]             = {gText_MenuFly,     {.u8_void = StartMenuFlyCallback}}
+    // [MENU_ACTION_DEXNAV]          = {gText_MenuDexNav,  {.u8_void = StartMenuDexNavCallback}},
 };
 
 static const struct BgTemplate sBgTemplates_LinkBattleSave[] =
@@ -334,22 +339,20 @@ static void AddStartMenuAction(u8 action)
 }
 
 static void BuildNormalStartMenu(void)
-{
+{ 
     if (FlagGet(FLAG_SYS_POKEDEX_GET) == TRUE)
-    {
         AddStartMenuAction(MENU_ACTION_POKEDEX);
-    }
+    
+    // if (FLAG_SYS_DEXNAV_GET != 0 && FlagGet(FLAG_SYS_DEXNAV_GET))
+    //     AddStartMenuAction(MENU_ACTION_DEXNAV);
+    
     if (FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
-    {
         AddStartMenuAction(MENU_ACTION_POKEMON);
-    }
 
     AddStartMenuAction(MENU_ACTION_BAG);
 
     if (FlagGet(FLAG_SYS_POKENAV_GET) == TRUE)
-    {
         AddStartMenuAction(MENU_ACTION_POKENAV);
-    }
 
     if (FlagGet(FLAG_SYS_FLY_GET) == TRUE)
     {
@@ -666,7 +669,10 @@ static bool8 HandleStartMenuInput(void)
             ScriptContext_SetupScript(EventScript_FlyMenuError);
             return TRUE;
         }
-
+        // if (sCurrentStartMenuActions[sStartMenuCursorPos] == MENU_ACTION_DEXNAV
+        //   && MapHasNoEncounterData())
+        //     return FALSE;
+        
         gMenuCallback = sStartMenuItems[sCurrentStartMenuActions[sStartMenuCursorPos]].func.u8_void;
 
         if (gMenuCallback != StartMenuSaveCallback
@@ -691,7 +697,7 @@ static bool8 HandleStartMenuInput(void)
     return FALSE;
 }
 
-static bool8 StartMenuPokedexCallback(void)
+bool8 StartMenuPokedexCallback(void)
 {
     if (!gPaletteFade.active)
     {
@@ -1542,3 +1548,9 @@ void AppendToList(u8 *list, u8 *pos, u8 newEntry)
     list[*pos] = newEntry;
     (*pos)++;
 }
+
+// static bool8 StartMenuDexNavCallback(void)
+// {
+//     CreateTask(Task_OpenDexNavFromStartMenu, 0);
+//     return TRUE;
+// }

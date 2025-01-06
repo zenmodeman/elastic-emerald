@@ -6,6 +6,7 @@
 #define ROCK_WILD_COUNT     5
 #define FISH_WILD_COUNT     10
 #define SHAKE_WILD_COUNT 5
+#define HIDDEN_WILD_COUNT   3
 
 #define NUM_ALTERING_CAVE_TABLES 9
 

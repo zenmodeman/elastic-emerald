@@ -20,6 +20,7 @@
 #include "constants/contest.h"
 #include "constants/daycare.h"
 #include "constants/decorations.h"
+#include "constants/difficulty.h"
 #include "constants/easy_chat.h"
 #include "constants/event_objects.h"
 #include "constants/event_object_movement.h"
@@ -1162,3 +1163,4 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/SandFront/scripts.inc"
 
 	.include "data/maps/OldaleTown_TechHouse/scripts.inc"
+	.include "data/scripts/dexnav.inc"
