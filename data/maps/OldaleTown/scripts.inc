@@ -910,7 +910,8 @@ OldaleTown_EventScript_Taxi_Text_0:
 
 OldaleTown_EventScript_Taxi_Text_1:
 # 448 "data/maps/OldaleTown/scripts.pory"
-	.string "{PLAYER} received the Ride Caller!$"
+	.string "{PLAYER} received the Corviknight\n"
+	.string "Ride Caller!$"
 
 OldaleTown_EventScript_Taxi_Text_2:
 # 451 "data/maps/OldaleTown/scripts.pory"

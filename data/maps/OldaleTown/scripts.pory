@@ -445,7 +445,7 @@ script OldaleTown_EventScript_Taxi{
 	if (!flag(FLAG_SYS_FLY_GET)){
 		msgbox(format("Hello, I manage the Corviknight ride system. I see you're missing out, so I'll give you a ride caller free of charge."))
 		playfanfare(MUS_OBTAIN_ITEM)
-		msgbox(format( "{PLAYER} received the Ride Caller!"))
+		msgbox(format( "{PLAYER} received the Corviknight Ride Caller!"))
 		waitfanfare
 		setflag(FLAG_SYS_FLY_GET)
 		msgbox(format("You should be able to Fly from your menu when you're outdoors. Hope you enjoy!"))
