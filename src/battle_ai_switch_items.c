@@ -234,6 +234,7 @@ static bool32 ShouldSwitchIfTruant(u32 battler)
     return FALSE;
 }
 
+
 static bool32 ShouldSwitchIfAllMovesBad(u32 battler)
 {
     u32 moveIndex;
@@ -258,11 +259,10 @@ static bool32 ShouldSwitchIfAllMovesBad(u32 battler)
         for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
         {
             aiMove = gBattleMons[battler].moves[moveIndex];
-            if (AI_GetMoveEffectiveness(aiMove, battler, opposingBattler) > AI_EFFECTIVENESS_x0 && aiMove != MOVE_NONE)
+            if (!IsMoveIneffective(aiMove, battler, opposingBattler))
                 return FALSE;
         }
     }
-
     return SetSwitchinAndSwitch(battler, PARTY_SIZE);
 }
 
@@ -547,9 +547,13 @@ static bool32 ShouldSwitchIfBadlyStatused(u32 battler)
                 switchMon = TRUE;
 
             //Cursed
-            if (gBattleMons[battler].status2 & STATUS2_CURSED
-                && (hasStatRaised ? RandomPercentage(RNG_AI_SWITCH_CURSED, 20) : RandomPercentage(RNG_AI_SWITCH_CURSED, 50)))
-                switchMon = TRUE;
+            if (gBattleMons[battler].status2 & STATUS2_CURSED){
+                if (HasMoveEffect(opposingBattler, EFFECT_PROTECT) && (hasStatRaised ? RandomPercentage(RNG_AI_SWITCH_CURSED, 20) : RandomPercentage(RNG_AI_SWITCH_CURSED, 50))){
+                    switchMon = TRUE;
+                }else if (!CanAIFaintTarget(battler, opposingBattler, 4) && RandomPercentage(RNG_AI_SWITCH_CURSED, 50)){
+                    switchMon = TRUE;
+                }
+            }
 
             //Nightmare
             if (gBattleMons[battler].status2 & STATUS2_NIGHTMARE

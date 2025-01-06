@@ -1750,10 +1750,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_CORROSIVE_GAS:
             if (aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
                 ADJUST_SCORE(-10);
-            break;
-            if (aiData->items[battlerDef] != ITEM_NONE){
+            else if (aiData->items[battlerDef] == ITEM_NONE){
                 ADJUST_SCORE(-10);
             }
+            break;
         case EFFECT_INGRAIN:
             if (gStatuses3[battlerAtk] & STATUS3_ROOTED)
                 ADJUST_SCORE(-10);
@@ -2956,6 +2956,12 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     RETURN_SCORE_PLUS(GOOD_EFFECT);
                 }
                 break;
+            case EFFECT_AROMATIC_MIST:
+                //Probably add some other adjust score logic here involving the player having special attackers
+                if (aiData->hpPercents[battlerAtkPartner] >= 50){
+                    RETURN_SCORE_PLUS(WEAK_EFFECT);
+                }
+                break;
             case EFFECT_PURIFY:
                 if (gBattleMons[battlerAtkPartner].status1 & STATUS1_ANY)
                 {
@@ -3418,9 +3424,16 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_EVASION));
         //Compound logic for a particular trainer
         if (HasMoveEffect(battlerAtk, EFFECT_STOCKPILE) && HasMoveEffect(battlerAtk, EFFECT_SWALLOW)){
-            if (gBattleMons[battlerAtk].statStages[STAT_EVASION] < DEFAULT_STAT_STAGE +2){
+            if (gBattleMons[battlerAtk].statStages[STAT_EVASION] < DEFAULT_STAT_STAGE +2 && !CanTargetFaintAiWithMod(battlerDef, battlerAtk, 0, 2)){
                 // DebugPrintf("The Stockpile Swallow logic is reached.");
-                ADJUST_SCORE(DECENT_EFFECT);
+
+                //For double team, weighted less after +1.
+                if (moveEffect == EFFECT_EVASION_UP && gBattleMons[battlerAtk].statStages[STAT_EVASION] == DEFAULT_STAT_STAGE +1){
+                    ADJUST_SCORE(WEAK_EFFECT);
+                }else{
+                    ADJUST_SCORE(DECENT_EFFECT);
+
+                }
             }
         }
         break;   
@@ -4088,9 +4101,12 @@ case EFFECT_DISABLE:
         if (aiData->abilities[battlerAtk] == ABILITY_CONTRARY)
             break;
         if (HasMoveEffect(battlerAtk, EFFECT_SWALLOW) || HasMoveEffect(battlerAtk, EFFECT_SPIT_UP))
-            ADJUST_SCORE(DECENT_EFFECT);
-        ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_DEF));
-        ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_SPDEF));
+            ADJUST_SCORE(WEAK_EFFECT);
+        if (IncreaseStatUpScore(battlerAtk, battlerDef, STAT_DEF) > 0){
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_DEF));
+        }else{
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_SPDEF));
+        }
         break;
     case EFFECT_SWAGGER:
     case EFFECT_FLATTER:

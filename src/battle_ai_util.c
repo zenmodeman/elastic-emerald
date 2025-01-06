@@ -2010,7 +2010,13 @@ bool32 ShouldLowerSpDef(u32 battlerAtk, u32 battlerDef, u32 defAbility)
 }
 
 //Various checks to determine whether a move does nothing
+//I ended up adding additional checks to this because the change in switch ai logic means move scores aren't being used anymore
 bool32 IsMoveIneffective(u32 move, u32 battlerAtk, u32 battlerDef){
+    u32 moveEffect = gMovesInfo[move].effect;
+
+    if (move == MOVE_NONE){
+        return TRUE;
+    }
     if (AI_GetMoveEffectiveness(move, battlerAtk, battlerDef) == AI_EFFECTIVENESS_x0){
         return TRUE;
     }
@@ -2018,6 +2024,23 @@ bool32 IsMoveIneffective(u32 move, u32 battlerAtk, u32 battlerDef){
         return TRUE;
     }
     if (gDisableStructs[gBattlerAttacker].disabledMove == move){
+        return TRUE;
+    }
+    
+    switch (moveEffect){
+        case EFFECT_TORMENT:
+            if (moveEffect == EFFECT_TORMENT && gBattleMons[battlerDef].status2 & STATUS2_TORMENT){
+                return TRUE;}
+            break;
+        case EFFECT_DISABLE:
+            if (gDisableStructs[battlerDef].disableTimer > 0){
+                return TRUE;}
+            break;
+        
+        default:
+            break;
+    }
+    if (move == MOVE_TORMENT && gBattleMons[battlerDef].status2 & STATUS2_TORMENT){
         return TRUE;
     }
     //Factor pp into this eventually
@@ -2198,6 +2221,7 @@ bool32 HasNoKnownNonProtectingMoves(u32 battler){
     }
     return TRUE; 
 }
+
 
 bool32 HasAllKnownMoves(u32 battler){
     // DebugPrintf("HasAllKnownMoves called");
@@ -2688,7 +2712,7 @@ bool32 HasDamagingMoveOfType(u32 battlerId, u32 type)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
-          && !IS_MOVE_STATUS(moves[i]].type == type && gMovesInfo[moves[i]))
+          && gMovesInfo[moves[i]].type == type && !IS_MOVE_STATUS(moves[i]))
             return TRUE;
     }
 
@@ -4093,9 +4117,9 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statI
             tempScore += WEAK_EFFECT;
         break;
     case STAT_CHANGE_EVASION:
-        DebugPrintf("STAT_CHANGE_EVASION case reached");
+        // DebugPrintf("STAT_CHANGE_EVASION case reached");
         if (noOfHitsToFaint > 3 || noOfHitsToFaint == UNKNOWN_NO_OF_HITS){
-            DebugPrintf("Reached +2 of stat change evasion"); 
+            // DebugPrintf("Reached +2 of stat change evasion"); 
             tempScore += DECENT_EFFECT;
         }
 

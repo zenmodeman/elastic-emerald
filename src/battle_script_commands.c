@@ -1493,7 +1493,7 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
     evasionStage = gBattleMons[battlerDef].statStages[STAT_EVASION];
     if (atkAbility == ABILITY_UNAWARE) 
         evasionStage = DEFAULT_STAT_STAGE;
-    else if (evasionStage > DEFAULT_STAT_STAGE && (atkAbility == ABILITY_KEEN_EYE || atkAbility == ABILITY_MINDS_EYE
+    else if (evasionStage > DEFAULT_STAT_STAGE && (atkAbility == ABILITY_KEEN_EYE || atkAbility == ABILITY_MINDS_EYE || atkAbility == ABILITY_LONG_REACH
             || (B_ILLUMINATE_EFFECT >= GEN_9 && atkAbility == ABILITY_ILLUMINATE))){
                 evasionStage = DEFAULT_STAT_STAGE;
             }
@@ -1540,20 +1540,22 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
     }
 
     // Target's ability
-    switch (defAbility)
-    {
-    case ABILITY_SAND_VEIL:
-        if (WEATHER_HAS_EFFECT && gBattleWeather & B_WEATHER_SANDSTORM)
-            calc = (calc * 80) / 100; // 1.2 sand veil loss
-        break;
-    case ABILITY_SNOW_CLOAK:
-        if (WEATHER_HAS_EFFECT && (gBattleWeather & (B_WEATHER_HAIL | B_WEATHER_SNOW)))
-            calc = (calc * 80) / 100; // 1.2 snow cloak loss
-        break;
-    case ABILITY_TANGLED_FEET:
-        if (gBattleMons[battlerDef].status2 & STATUS2_CONFUSION)
-            calc = (calc * 50) / 100; // 1.5 tangled feet loss
-        break;
+    if (atkAbility != ABILITY_KEEN_EYE && atkAbility != ABILITY_MINDS_EYE && atkAbility != ABILITY_LONG_REACH){
+        switch (defAbility)
+        {
+        case ABILITY_SAND_VEIL:
+            if (WEATHER_HAS_EFFECT && gBattleWeather & B_WEATHER_SANDSTORM)
+                calc = (calc * 80) / 100; // 1.2 sand veil loss
+            break;
+        case ABILITY_SNOW_CLOAK:
+            if (WEATHER_HAS_EFFECT && (gBattleWeather & (B_WEATHER_HAIL | B_WEATHER_SNOW)))
+                calc = (calc * 80) / 100; // 1.2 snow cloak loss
+            break;
+        case ABILITY_TANGLED_FEET:
+            if (gBattleMons[battlerDef].status2 & STATUS2_CONFUSION)
+                calc = (calc * 50) / 100; // 1.5 tangled feet loss
+            break;
+        }
     }
 
     // Attacker's ally's ability
@@ -1581,16 +1583,20 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
     switch (defHoldEffect)
     {
     case HOLD_EFFECT_EVASION_UP:
-        calc = (calc * (100 - defParam)) / 100;
+        if (atkAbility != ABILITY_KEEN_EYE && atkAbility != ABILITY_LONG_REACH && atkAbility != ABILITY_MINDS_EYE){
+            calc = (calc * (100 - defParam)) / 100;
+        }
         break;
     }
 
     if (gBattleStruct->usedMicleBerry & 1u << battlerAtk)
     {
         if (atkAbility == ABILITY_RIPEN)
-            calc = (calc * 140) / 100;  // ripen gives 40% acc boost
+            calc = calc * 4; 
+            // calc = (calc * 400) / 100;  // ripen gives 40% acc boost
         else
-            calc = (calc * 120) / 100;  // 20% acc boost
+            // calc = (calc * 120) / 100;  // 20% acc boost
+            calc = calc * 2;
     }
 
     if (gFieldStatuses & STATUS_FIELD_GRAVITY)
@@ -3140,6 +3146,11 @@ void SetMoveEffect(bool32 primary, bool32 certain)
     // NULL move effect
     if (gBattleScripting.moveEffect == 0)
         return;
+
+    //Attempt to make Stench inflict Toxic Poison instead of regular Poison
+    if (gBattleScripting.moveEffect == MOVE_EFFECT_POISON && gBattleMons[gBattlerAttacker].ability == ABILITY_STENCH){
+        gBattleScripting.moveEffect = MOVE_EFFECT_TOXIC; 
+    }
 
     if (gSpecialStatuses[gBattlerAttacker].parentalBondState == PARENTAL_BOND_1ST_HIT
         && IsBattlerAlive(gBattlerTarget)
@@ -8230,12 +8241,12 @@ static void Cmd_yesnoboxlearnmove(void)
             else
             {
                 u16 moveId = GetMonData(&gPlayerParty[gBattleStruct->expGetterMonId], MON_DATA_MOVE1 + movePosition);
-                if (IsMoveHM(moveId))
-                {
-                    PrepareStringBattle(STRINGID_HMMOVESCANTBEFORGOTTEN, B_POSITION_PLAYER_LEFT);
-                    gBattleScripting.learnMoveState = 6;
-                }
-                else
+                // if (IsMoveHM(moveId))
+                // {
+                //     PrepareStringBattle(STRINGID_HMMOVESCANTBEFORGOTTEN, B_POSITION_PLAYER_LEFT);
+                //     gBattleScripting.learnMoveState = 6;
+                // }
+                // else
                 {
                     gBattlescriptCurrInstr = cmd->forgotMovePtr;
 

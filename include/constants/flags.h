@@ -1066,7 +1066,7 @@
 #define FLAG_ITEM_ROUTE_113_SUPER_REPEL                             0x3F5
 #define FLAG_ITEM_ROUTE_114_RARE_CANDY                              0x3F6
 #define FLAG_ITEM_ROUTE_114_PROTEIN                                 0x3F7
-#define FLAG_ITEM_ROUTE_115_SUPER_POTION                            0x3F8
+#define FLAG_ITEM_ROUTE_115_LUMINOUS_MOSS                           0x3F8
 #define FLAG_ITEM_ROUTE_115_TM_FOCUS_PUNCH                          0x3F9
 #define FLAG_ITEM_ROUTE_115_IRON                                    0x3FA
 #define FLAG_ITEM_ROUTE_116_ETHER                                   0x3FB
@@ -1222,9 +1222,9 @@
 #define FLAG_ITEM_SAFARI_ZONE_NORTH_EAST_NUGGET                     0x491
 #define FLAG_ITEM_SAFARI_ZONE_SOUTH_EAST_BIG_PEARL                  0x492
 
-#define FLAG_ITEM_OLDALE_RUINS_1F_ABILITY_CAPSULE                   0x493 // Formerly free flag
-#define FLAG_ITEM_PETALBURG_GROVE_BALM_MUSHROOM                     0x494 // Formerly free flag
-#define FLAG_UNUSED_0x495                                           0x495 // Unused Flag
+#define FLAG_ITEM_OLDALE_RUINS_1F_ABILITY_CAPSULE                   0x493 // Formerly un used flag
+#define FLAG_ITEM_PETALBURG_GROVE_BALM_MUSHROOM                     0x494 // Formerly un used flag
+#define FLAG_ITEM_SANDFRONT_ICY_ROCK                                0x495 // Formerly un used flag
 #define FLAG_UNUSED_0x496                                           0x496 // Unused Flag
 #define FLAG_UNUSED_0x497                                           0x497 // Unused Flag
 #define FLAG_UNUSED_0x498                                           0x498 // Unused Flag
