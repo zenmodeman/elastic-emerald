@@ -593,7 +593,7 @@ RustboroCity_Gym_EventScript_Roxanne::
 # 299 "data/maps/RustboroCity_Gym/scripts.pory"
 	lock
 # 300 "data/maps/RustboroCity_Gym/scripts.pory"
-	goto_if_unset TRAINER_FLAGS_START + TRAINER_ROXANNE_1, RustboroCity_Gym_EventScript_Roxanne_2
+	goto_if_unset FLAG_RECEIVED_TM_ROCK_TOMB, RustboroCity_Gym_EventScript_Roxanne_2
 RustboroCity_Gym_EventScript_Roxanne_1:
 # 309 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RustboroCity_Gym_Text_RoxannePostBattle

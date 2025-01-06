@@ -297,7 +297,7 @@ RustboroCity_Gym_Text_RoxanneRematchNeedTwoMons:
 
 script RustboroCity_Gym_EventScript_Roxanne {
     lock
-    if (!flag(TRAINER_FLAGS_START + TRAINER_ROXANNE_1)) {
+    if (!flag(FLAG_RECEIVED_TM_ROCK_TOMB)){
         if (flag(FLAG_RESTRICTED_MODE)) {
             specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
             if (var(VAR_RESULT) == FALSE) {
