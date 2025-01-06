@@ -486,8 +486,8 @@ script TrainerSchool_Breeder{
 	if (flag(FLAG_RECEIVED_TRAINER_SCHOOL_EGG)){
 		msgbox(format("Please take good care of the egg."))
 	}else{
-		if (var(VAR_MONOTYPE) == 0 || var(VAR_MONOTYPE) == 1 || var(VAR_MONOTYPE) == 18 || var(VAR_MONOTYPE) == 13 
-		|| var(VAR_MONOTYPE) == 4 || var(VAR_MONOTYPE) == 15 || var(VAR_MONOTYPE) == 14){
+		if (var(VAR_MONOTYPE) == TYPE_NONE || var(VAR_MONOTYPE) == TYPE_NORMAL || var(VAR_MONOTYPE) == TYPE_FAIRY - 1 || var(VAR_MONOTYPE) == TYPE_ELECTRIC - 1
+		|| var(VAR_MONOTYPE) == TYPE_POISON || var(VAR_MONOTYPE) == TYPE_ICE - 1 || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1){
 			msgbox(format("I love breeding Pokemon, but hatching eggs can be so time-consuming."))
 			msgbox(format("I wonder if there are any ways to help hatch them faster."))
 			msgbox(format("Do you have any ideas?"))
@@ -511,7 +511,7 @@ script TrainerSchool_Breeder{
 }
 
 script TrainerSchool_GiveEgg{
-	if(var(VAR_MONOTYPE) == 0){
+	if(var(VAR_MONOTYPE) == TYPE_NONE){
 		random(3)
 		if(var(VAR_RESULT) == 0){
 			giveegg(SPECIES_IGGLYBUFF)
@@ -523,13 +523,13 @@ script TrainerSchool_GiveEgg{
 			giveegg(SPECIES_SMOOCHUM)
 			call(TrainerSchool_ProcessEgg)
 		}
-	}elif(var(VAR_MONOTYPE) == 1 || var(VAR_MONOTYPE) == 18){
+	}elif(var(VAR_MONOTYPE) == TYPE_NORMAL || var(VAR_MONOTYPE) == TYPE_FAIRY - 1){
 		giveegg(SPECIES_IGGLYBUFF)
 		call(TrainerSchool_ProcessEgg)
-	}elif(var(VAR_MONOTYPE) == 13 || var(VAR_MONOTYPE) == 4){
+	}elif(var(VAR_MONOTYPE) == TYPE_ELECTRIC - 1 || var(VAR_MONOTYPE) == TYPE_POISON){
 		giveegg(SPECIES_TOXEL)
 		call(TrainerSchool_ProcessEgg)
-	}elif(var(VAR_MONOTYPE) == 15 || var(VAR_MONOTYPE) == 14){
+	}elif(var(VAR_MONOTYPE) == TYPE_ICE - 1 || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1){
 		giveegg(SPECIES_SMOOCHUM)
 		call(TrainerSchool_ProcessEgg)
 	}

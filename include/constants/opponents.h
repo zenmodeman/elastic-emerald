@@ -44,9 +44,9 @@
 #define TRAINER_FELIX                        38
 #define TRAINER_VIOLET                       39
 #define TRAINER_ROSE_2                       40
-#define TRAINER_ROSE_3                       41
-#define TRAINER_ROSE_4                       42
-#define TRAINER_ROSE_5                       43
+#define TRAINER_ELIAS                        41
+#define TRAINER_ROXANNE_1_3MON               42
+#define TRAINER_ROXANNE_1_3MON_DOUBLES       43
 #define TRAINER_DUSTY_1                      44
 #define TRAINER_CHIP                         45
 #define TRAINER_FOSTER                       46

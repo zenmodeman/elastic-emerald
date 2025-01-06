@@ -719,6 +719,36 @@ Gloom
 Level: 26
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
 
+=== TRAINER_ELIAS ===
+Name: DREW
+Class: Camper
+Pic: Camper
+Gender: Male
+Music: Male
+Double Battle: No
+AI: Smart Trainer
+
+Scraggy @ Eject Button  
+Ability: Intimidate  
+Level: 12  
+EVs: 12 HP / 28 Spe  
+Jolly Nature  
+- Fake Out  
+- Beat Up  
+- Low Kick  
+- Leer
+
+Sableye @ Eject Button  
+Ability: Prankster  
+Level: 12    
+EVs: 20 HP / 32 SpD  
+Careful Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Reflect  
+- Light Screen  
+- Shadow Sneak  
+- Feint  
+
 === TRAINER_ROSE_2 ===
 Name: ROSE
 Class: Aroma Lady
@@ -729,23 +759,6 @@ Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
 Shroomish
-Level: 26
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
-
-Roselia
-Level: 26
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
-
-=== TRAINER_ROSE_3 ===
-Name: ROSE
-Class: Aroma Lady
-Pic: Aroma Lady
-Gender: Female
-Music: Female
-Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
-
-Shroomish
 Level: 28
 IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
 
@@ -757,47 +770,92 @@ Roselia
 Level: 28
 IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
 
-=== TRAINER_ROSE_4 ===
-Name: ROSE
-Class: Aroma Lady
-Pic: Aroma Lady
+=== TRAINER_ROXANNE_1_3MON ===
+Name: ROXANNE
+Class: Leader
+Pic: Leader Roxanne
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer / Force Setup First Turn
 
-Shroomish
-Level: 31
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 
-Gloom
-Level: 31
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Yamask-Galar (F) @ Smooth Rock  
+Ability: Wandering Spirit  
+Level: 14 
+Tera Type: Rock  
+EVs: 16 HP / 8 Def / 32 SpD / 12 Spe  
+Careful Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Sandstorm  
+- Astonish  
+- Rock Tomb  
+- Curse
 
-Roselia
-Level: 31
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Lileep (F) @ Kee Berry  
+Ability: Storm Drain  
+Level: 13  
+EVs: 12 HP / 16 Def / 28 SpD / 16 Spe  
+Serious Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Mega Drain  
+- Wrap  
+- Rock Tomb  
+- Recover  
 
-=== TRAINER_ROSE_5 ===
-Name: ROSE
-Class: Aroma Lady
-Pic: Aroma Lady
+Nosepass (F) @ Enigma Berry  
+Ability: Sand Force  
+Level: 15  
+EVs: 12 HP / 24 Def / 12 SpD / 12 Spe  
+Hardy Nature  
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe  
+- Rock Smash  
+- Torment
+- Rock Tomb  
+- Bulldoze  
+
+=== TRAINER_ROXANNE_1_3MON_DOUBLES ===
+Name: ROXANNE
+Class: Leader
+Pic: Leader Roxanne
 Gender: Female
 Music: Female
-Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+Double Battle: Yes
+AI: Smart Trainer
 
-Breloom
-Level: 34
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Yamask-Galar (F) @ Berry Juice  
+Ability: Wandering Spirit  
+Level: 14
+Tera Type: Rock  
+EVs: 16 HP / 8 Def / 32 SpD / 12 Spe  
+Careful Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Sandstorm  
+- Astonish  
+- Rock Tomb  
+- Curse
 
-Gloom
-Level: 34
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Lileep (F) @ Kee Berry  
+Ability: Storm Drain  
+Level: 13  
+EVs: 12 HP / 16 Def / 28 SpD / 16 Spe  
+Serious Nature  
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+- Mega Drain  
+- Wrap  
+- Rock Tomb  
+- Recover  
 
-Roselia
-Level: 34
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Nosepass (F) @ Enigma Berry  
+Ability: Sand Force  
+Level: 15  
+EVs: 12 HP / 24 Def / 12 SpD / 12 Spe  
+Hardy Nature  
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe  
+- Shock Wave  
+- Pain Split  
+- Rock Tomb  
+- Bulldoze  
 
 === TRAINER_DUSTY_1 ===
 Name: DUSTY
@@ -2589,7 +2647,7 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Bonsly @ Rindo Berry  
 Ability: Sturdy  
-Level: 9  
+Level: 10  
 EVs: 8 HP / 16 SpA / 16 Spe  
 Quiet Nature  
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
@@ -4886,7 +4944,7 @@ Pic: Leader Roxanne
 Gender: Female
 Music: Female
 Double Battle: No
-AI: Smart Trainer
+AI: Smart Trainer / Force Setup First Turn
 
 
 Yamask-Galar (F) @ Smooth Rock  
@@ -5398,9 +5456,27 @@ Music: Girl
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Shroomish
-Level: 9
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+
+Shroomish (F) @ Big Root  
+Ability: Effect Spore  
+Level: 10  
+Quirky Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Leech Seed  
+- Absorb  
+- Headbutt  
+- Stun Spore  
+
+Cyndaquil (M) @ Leftovers  
+Ability: Flash Fire  
+Level: 10  
+EVs: 16 Def  
+Lonely Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Ember  
+- Smokescreen  
+- Double Kick  
+- Howl 
 
 === TRAINER_GEORGIA ===
 Name: GEORGIA
@@ -6197,7 +6273,7 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 
 Rockruff  
 Ability: Vital Spirit  
-Level: 11  
+Level: 12 
 Impish Nature  
 IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Helping Hand  
@@ -6214,9 +6290,16 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Machop
-Level: 9
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Machop @ Shell Bell  
+Ability: Steadfast  
+Level: 11  
+EVs: 36 Def / 8 SpD  
+Careful Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Focus Energy  
+- Low Kick  
+- Bullet Punch  
+- Leer
 
 === TRAINER_BEN ===
 Name: BEN
@@ -9034,7 +9117,7 @@ IVs: 0 Atk
 - Aromatic Mist 
 
 Stunky @ Chesto Berry  
-Ability: Keen Eye  
+Ability: Stench
 Level: 10  
 - Corrosive Gas  
 - Poison Gas  
@@ -10807,7 +10890,7 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 
 Rhyhorn  
 Ability: Rock Head  
-Level: 11  
+Level: 12  
 Careful Nature  
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 15 SpD / 10 Spe  
 - Take Down  
@@ -11334,7 +11417,7 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Marill @ Cell Battery  
 Ability: Huge Power  
-Level: 8  
+Level: 9  
 EVs: 12 Def / 12 SpD  
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Aqua Jet  
@@ -11344,7 +11427,7 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 
 Vulpix-Alola @ Persim Berry  
 Ability: Snow Cloak  
-Level: 8  
+Level: 9  
 EVs: 8 HP / 12 SpA  
 Docile Nature  
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
@@ -11593,11 +11676,6 @@ IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Covet  
 
 
-
-
-
-
-
 === TRAINER_JOSE ===
 Name: JOSE
 Class: Bug Catcher
@@ -11605,15 +11683,29 @@ Pic: Bug Catcher
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Wurmple
-Level: 8
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Beautifly (M) @ Apicot Berry  
+Ability: Swarm  
+Level: 10  
+Calm Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Gust  
+- Stun Spore  
+- Absorb  
+- Harden  
 
-Nincada
-Level: 8
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Dustox (M) @ Mago Berry  
+Ability: Shield Dust  
+Level: 10  
+Docile Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Poison Powder  
+- Poison Sting  
+- Confusion  
+- Harden  
+
+
 
 === TRAINER_DOUG ===
 Name: DOUG
@@ -11890,11 +11982,18 @@ Pic: Hiker
 Gender: Male
 Music: Hiker
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Geodude
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Nacli @ Oran Berry  
+Ability: Purifying Salt  
+Level: 11  
+EVs: 20 HP / 4 Def / 36 SpD  
+Impish Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Mud Shot  
+- Rock Throw  
+- Iron Defense  
+- Tackle
 
 === TRAINER_ERIC ===
 Name: ERIC
@@ -14202,13 +14301,16 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Geodude
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
-
-Geodude
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Diglett @ Silk Scarf  
+Ability: Sand Veil  
+Level: 11  
+EVs: 16 Def
+Impish Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Scratch  
+- Bulldoze  
+- Screech  
+- Aerial Ace
 
 === TRAINER_JOHNSON ===
 Name: JOHNSON
@@ -14219,13 +14321,26 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Shroomish
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Seedot @ Jaboca Berry  
+Ability: Pickpocket  
+Level: 10  
+Hardy Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Bide  
+- Astonish  
+- Harden  
+- Absorb
 
-Lotad
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Lotad @ White Herb  
+Ability: Swift Swim  
+Level: 10  
+Docile Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Mist  
+- Growl  
+- Water Gun  
+- Astonish
+
 
 === TRAINER_MELINA ===
 Name: MELINA

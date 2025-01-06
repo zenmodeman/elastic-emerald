@@ -942,25 +942,25 @@ TrainerSchool_Breeder::
 # 486 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	goto_if_set FLAG_RECEIVED_TRAINER_SCHOOL_EGG, TrainerSchool_Breeder_2
 # 489 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 0
+	compare VAR_MONOTYPE, TYPE_NONE
 	goto_if_eq TrainerSchool_Breeder_5
 # 489 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 1
+	compare VAR_MONOTYPE, TYPE_NORMAL
 	goto_if_eq TrainerSchool_Breeder_5
 # 489 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 18
+	compare VAR_MONOTYPE, TYPE_FAIRY - 1
 	goto_if_eq TrainerSchool_Breeder_5
 # 489 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 13
+	compare VAR_MONOTYPE, TYPE_ELECTRIC - 1
 	goto_if_eq TrainerSchool_Breeder_5
 # 490 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 4
+	compare VAR_MONOTYPE, TYPE_POISON
 	goto_if_eq TrainerSchool_Breeder_5
 # 490 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 15
+	compare VAR_MONOTYPE, TYPE_ICE - 1
 	goto_if_eq TrainerSchool_Breeder_5
 # 490 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 14
+	compare VAR_MONOTYPE, TYPE_PSYCHIC - 1
 	goto_if_eq TrainerSchool_Breeder_5
 # 505 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_Breeder_Text_1
@@ -1018,25 +1018,25 @@ TrainerSchool_Breeder_21:
 
 TrainerSchool_GiveEgg::
 # 514 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 0
+	compare VAR_MONOTYPE, TYPE_NONE
 	goto_if_eq TrainerSchool_GiveEgg_1
 # 526 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 1
+	compare VAR_MONOTYPE, TYPE_NORMAL
 	goto_if_eq TrainerSchool_GiveEgg_2
 # 526 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 18
+	compare VAR_MONOTYPE, TYPE_FAIRY - 1
 	goto_if_eq TrainerSchool_GiveEgg_2
 # 529 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 13
+	compare VAR_MONOTYPE, TYPE_ELECTRIC - 1
 	goto_if_eq TrainerSchool_GiveEgg_3
 # 529 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 4
+	compare VAR_MONOTYPE, TYPE_POISON
 	goto_if_eq TrainerSchool_GiveEgg_3
 # 532 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 15
+	compare VAR_MONOTYPE, TYPE_ICE - 1
 	goto_if_eq TrainerSchool_GiveEgg_4
 # 532 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	compare VAR_MONOTYPE, 14
+	compare VAR_MONOTYPE, TYPE_PSYCHIC - 1
 	goto_if_eq TrainerSchool_GiveEgg_4
 	return
 
