@@ -2625,12 +2625,30 @@ bool8 FldEff_FieldMoveShowMonInit(void)
             
             FlagClear(FLAG_SYS_MAP_MENU_USED);
             
-    } else {
+    }else if (gSpecialVar_0x8009 == 1){
+        //Just choosing an arbitrary value for the OTID slot
+        gFieldEffectArguments[1] = SPECIES_UNOWN;
+        gFieldEffectArguments[2] = Random32();
+        DebugPrintf("The value of special 0x8008 is %d", gSpecialVar_0x8008);
+        //Custom mon HM check
+        switch (gSpecialVar_0x8008){
+            case MOVE_CUT:
+                gFieldEffectArguments[0] = SPECIES_SCYTHER;
+                break;
+            default: 
+                gFieldEffectArguments[0] = SPECIES_MEW;
+        }
+
+    } 
+    else {
         gFieldEffectArguments[0] = GetMonData(pokemon, MON_DATA_SPECIES);
         gFieldEffectArguments[1] = GetMonData(pokemon, MON_DATA_OT_ID);
         gFieldEffectArguments[2] = GetMonData(pokemon, MON_DATA_PERSONALITY);
     }
     gFieldEffectArguments[0] |= noDucking;
+
+    //Clear the variable for custom mon display
+    gSpecialVar_0x8009 = 0;
     FieldEffectStart(FLDEFF_FIELD_MOVE_SHOW_MON);
     FieldEffectActiveListRemove(FLDEFF_FIELD_MOVE_SHOW_MON_INIT);
     return FALSE;
