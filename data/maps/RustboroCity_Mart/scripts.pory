@@ -84,11 +84,21 @@ script RustboroCity_Mart_EventScript_Clerk{
 	faceplayer
 	message(gText_HowMayIServeYou)
 	waitmessage
+
+    if (flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
+        pokemart(Rustburo_MartItemsResourceEVs)
+    }elif (flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
+            pokemart(Rustburo_MartItemsResourceEVless)
+    }elif (!flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
+            pokemart(Rustburo_MartItemsResourcefulEVless)
+    }elif (!flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
+            pokemart(Rustburo_MartItemsResourcefulEVless)
+    }
 	//Old logic for the .inc version of this script; not having the expanded items for now
 	// goto_if_unset FLAG_MET_DEVON_EMPLOYEE, RustboroCity_Mart_EventScript_PokemartBasic
 	// goto_if_set FLAG_MET_DEVON_EMPLOYEE, RustboroCity_Mart_EventScript_PokemartExpanded
-
-
+    msgbox("Please Come Again")
+    release
 	end
 }
 
