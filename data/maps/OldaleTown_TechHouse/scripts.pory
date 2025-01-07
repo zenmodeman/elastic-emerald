@@ -100,12 +100,64 @@ script OldaleTown_TechHouse_Walker{
     lock
     faceplayer
     msgbox(format("Hey there! If you're into niche strategies, you've come to the right place!"))
-    msgbox(format("I’m not as dedicated as the rest of the folks here, but I love listening to their ideas."))
+    msgbox(format("I'm not as dedicated as the rest of the folks here, but I love listening to their ideas."))
     msgbox(format("Our leader's known as the Tech Sage. He's spent decades perfecting moves most people wouldn’t even consider."))
     msgbox(format("You gotta respect that kind of dedication."))
     release
     end
 }
 
+script TechHouse_Psychic_NicheAbilities{
+    lock
+    faceplayer
+    msgbox(format("The Tech Sage has his way with moves, but I'm more fascinated by niche abilities."))
+    msgbox(format("Using my Psychic powers, I can peer into the potentials of a Pokemon and their special abilities, and unlock them."))
+    msgbox(format("I can't find what isn't there, though."))
+    msgbox(format("Would you like you give it a try with one of your Pokemon?"), MSGBOX_YESNO)
+    if (var(VAR_RESULT) == 1){
+        call(AbilityTutor_ChooseMon)
+        //Get a return of an ability, or ABILITY_NONE (0)
+        specialvar(VAR_RESULT, GetTutorAbility)
+        if(var(VAR_RESULT) == 0){
+            goto(AbilityTutor_NotValid)
+        }else{
+            msgbox(format("{STR_VAR_1} can unlock the ability {STR_VAR_2}. Would you like to??"), MSGBOX_YESNO)
+            if (var(VAR_RESULT) == 0){
+                goto(AbilityTutor_NotInterested)
+            }
+            special(SetTutorAbility)
+            playfanfare(MUS_LEVEL_UP)
+		    waitfanfare
+            msgbox(format("Your Pokemon's Potential has been unlocked!"))
+        }
+    }else{
+        goto(AbilityTutor_NotInterested)
+    }
+    release
+    end
+}
 
 
+script AbilityTutor_ChooseMon{
+		msgbox(format("Alright, Please choose a Pokemon to check."))
+		special(ChoosePartyMon)
+		waitstate
+		if (var(VAR_0x8004) == PARTY_NOTHING_CHOSEN) {
+            goto(AbilityTutor_NotInterested)
+		}
+}
+
+script AbilityTutor_NotInterested{
+    //Clear 0x8009 in case SetAbilityTutor isn't reached
+    setvar(VAR_0x8009, 0)
+    msgbox(format("Not interested? Come back if you change your mind."))
+    waitmessage
+    release
+    end
+}
+
+script AbilityTutor_NotValid{
+    msgbox(format("I'm afraid I couldn't find anything for your Pokemon."))
+    release
+    end
+}

@@ -41,4 +41,7 @@ u8 TrainPlainIV(void);
 u8 TrainMaxIV(void);
 u8 TrainMaxIVs(void);
 
+u16 GetTutorAbility(void);
+void SetTutorAbility(void);
+
 #endif // GUARD_FIELD_SPECIALS_H

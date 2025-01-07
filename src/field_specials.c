@@ -73,6 +73,8 @@
 
 #include "event_data.h"
 
+#include "constants/abilities.h"
+
 #define TAG_ITEM_ICON 5500
 
 #define GFXTAG_MULTICHOICE_SCROLL_ARROWS 2000
@@ -4414,4 +4416,72 @@ u8 TrainMaxIVs(void){
     }
     CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
     return TRUE;
+}
+static bool32 IsAbilityTutorViable(u16 ability){
+    switch (ability){
+        case ABILITY_KEEN_EYE:
+        case ABILITY_DAMP:
+        case ABILITY_LONG_REACH:
+        case ABILITY_ILLUMINATE:
+        case ABILITY_STALWART:
+        case ABILITY_PROPELLER_TAIL:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+//Note: Any context where this function is used, gSpecialVar_0x8009 should be cleared somewhere, such as with SetTutorAbility
+u16 GetTutorAbility(){
+    struct Pokemon *mon = &gPlayerParty[gSpecialVar_0x8004];
+    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
+    DebugPrintf("abilityNum is %d", abilityNum);
+
+    //Checking ability1 slot
+    if (abilityNum != 0){
+        u16 ability1 = gSpeciesInfo[species].abilities[0];
+        //In the future, may want to have specific exception logic, such as if I make Poliwag and Poliwhirl have HA Damp
+        if (IsAbilityTutorViable(ability1)){
+            gSpecialVar_0x8009 = 0;
+            GetMonNickname(mon, gStringVar1);
+            StringCopy(gStringVar2, gAbilitiesInfo[ability1].name);
+            DebugPrintf("ability1 check has been reached with %d", ability1);
+            return ability1;
+        }
+    }
+    if (abilityNum != 1){
+        u16 ability2 = gSpeciesInfo[species].abilities[1];
+        if (IsAbilityTutorViable(ability2)){
+            gSpecialVar_0x8009 = 1;
+            GetMonNickname(mon, gStringVar1);
+            StringCopy(gStringVar2, gAbilitiesInfo[ability2].name);
+             DebugPrintf("ability2 check has been reached with %d", ability2);
+            return ability2;
+        }
+
+    }
+    
+    if (abilityNum !=2){
+        u16 hiddenAbility = gSpeciesInfo[species].abilities[2];
+        if (IsAbilityTutorViable(hiddenAbility)){
+            gSpecialVar_0x8009 = 2;
+            GetMonNickname(mon, gStringVar1);
+            StringCopy(gStringVar2, gAbilitiesInfo[hiddenAbility].name);
+            DebugPrintf("hidden ability check has been reached with %d", hiddenAbility);
+            return hiddenAbility;
+        }
+    }
+    return ABILITY_NONE;
+}
+
+//Relies on gSpecialVar_0x8009 set by GetTutorAbility
+void SetTutorAbility(){
+    u16 species = GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPECIES, NULL);
+    //Safety guard for non-existent ability
+    if (gSpeciesInfo[species].abilities[gSpecialVar_0x8009] == ABILITY_NONE){
+        return;
+    }
+    SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &gSpecialVar_0x8009);   
+    gSpecialVar_0x8009 = 0; 
 }

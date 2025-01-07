@@ -193,6 +193,102 @@ OldaleTown_TechHouse_Walker::
 	end
 
 
+TechHouse_Psychic_NicheAbilities::
+# 111 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	lock
+# 112 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	faceplayer
+# 113 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_Psychic_NicheAbilities_Text_0
+# 114 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_Psychic_NicheAbilities_Text_1
+# 115 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_Psychic_NicheAbilities_Text_2
+# 116 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_Psychic_NicheAbilities_Text_3, MSGBOX_YESNO
+# 117 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_RESULT, 1
+	goto_if_eq TechHouse_Psychic_NicheAbilities_2
+# 134 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	goto AbilityTutor_NotInterested
+TechHouse_Psychic_NicheAbilities_1:
+# 136 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	release
+	end
+
+TechHouse_Psychic_NicheAbilities_2:
+# 118 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	call AbilityTutor_ChooseMon
+# 120 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	specialvar VAR_RESULT, GetTutorAbility
+# 121 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_RESULT, 0
+	goto_if_eq TechHouse_Psychic_NicheAbilities_5
+# 124 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_Psychic_NicheAbilities_Text_4, MSGBOX_YESNO
+# 125 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_RESULT, 0
+	goto_if_eq TechHouse_Psychic_NicheAbilities_9
+TechHouse_Psychic_NicheAbilities_8:
+# 128 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	special SetTutorAbility
+# 129 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	playfanfare MUS_LEVEL_UP
+# 130 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	waitfanfare
+# 131 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_Psychic_NicheAbilities_Text_5
+	goto TechHouse_Psychic_NicheAbilities_1
+
+TechHouse_Psychic_NicheAbilities_5:
+# 122 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	goto AbilityTutor_NotValid
+	goto TechHouse_Psychic_NicheAbilities_1
+
+TechHouse_Psychic_NicheAbilities_9:
+# 126 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	goto AbilityTutor_NotInterested
+	goto TechHouse_Psychic_NicheAbilities_8
+
+
+AbilityTutor_ChooseMon::
+# 142 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox AbilityTutor_ChooseMon_Text_0
+# 143 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	special ChoosePartyMon
+# 144 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	waitstate
+# 145 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
+	goto_if_eq AbilityTutor_ChooseMon_1
+	return
+
+AbilityTutor_ChooseMon_1:
+# 146 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	goto AbilityTutor_NotInterested
+	return
+
+
+AbilityTutor_NotInterested::
+# 152 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	setvar VAR_0x8009, 0
+# 153 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox AbilityTutor_NotInterested_Text_0
+# 154 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	waitmessage
+# 155 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	release
+	end
+
+
+AbilityTutor_NotValid::
+# 160 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox AbilityTutor_NotValid_Text_0
+# 161 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	release
+	end
+
+
 OldaleTown_TechHouse_Master_Text_0:
 # 10 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	.string "Welcome! I'm known around here as the\n"
@@ -387,7 +483,7 @@ OldaleTown_TechHouse_Walker_Text_0:
 
 OldaleTown_TechHouse_Walker_Text_1:
 # 103 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	.string "I’m not as dedicated as the rest of the\n"
+	.string "I'm not as dedicated as the rest of the\n"
 	.string "folks here, but I love listening to their\l"
 	.string "ideas.$"
 
@@ -401,3 +497,50 @@ OldaleTown_TechHouse_Walker_Text_3:
 # 105 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	.string "You gotta respect that kind of\n"
 	.string "dedication.$"
+
+TechHouse_Psychic_NicheAbilities_Text_0:
+# 113 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "The Tech Sage has his way with moves,\n"
+	.string "but I'm more fascinated by niche\l"
+	.string "abilities.$"
+
+TechHouse_Psychic_NicheAbilities_Text_1:
+# 114 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Using my Psychic powers, I can peer into\n"
+	.string "the potentials of a Pokemon and their\l"
+	.string "special abilities, and unlock them.$"
+
+TechHouse_Psychic_NicheAbilities_Text_2:
+# 115 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "I can't find what isn't there, though.$"
+
+TechHouse_Psychic_NicheAbilities_Text_3:
+# 116 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Would you like you give it a try with one\n"
+	.string "of your Pokemon?$"
+
+TechHouse_Psychic_NicheAbilities_Text_4:
+# 124 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Would you like to change\n"
+	.string "{STR_VAR_1}'s ability to\l"
+	.string "{STR_VAR_2}?$"
+
+TechHouse_Psychic_NicheAbilities_Text_5:
+# 131 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Your Pokemon's Potential has been\n"
+	.string "unlocked!$"
+
+AbilityTutor_ChooseMon_Text_0:
+# 142 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Alright, Please choose a Pokemon to\n"
+	.string "check.$"
+
+AbilityTutor_NotInterested_Text_0:
+# 153 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Not interested? Come back if you\n"
+	.string "change your mind.$"
+
+AbilityTutor_NotValid_Text_0:
+# 160 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "I'm afraid I couldn't find anything for\n"
+	.string "your Pokemon.$"
