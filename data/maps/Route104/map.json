@@ -377,9 +377,9 @@
       "movement_range_x": 1,
       "movement_range_y": 1,
       "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "ITEM_POKE_BALL",
+      "trainer_sight_or_berry_tree_id": "ITEM_ABILITY_CAPSULE",
       "script": "Common_EventScript_FindItem",
-      "flag": "FLAG_ITEM_ROUTE_104_POKE_BALL"
+      "flag": "FLAG_ITEM_ROUTE_104_ABILITY_CAPSULE"
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_YOUNGSTER",
@@ -403,9 +403,9 @@
       "movement_range_x": 1,
       "movement_range_y": 1,
       "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "ITEM_X_ACCURACY",
+      "trainer_sight_or_berry_tree_id": "ITEM_WIDE_LENS",
       "script": "Common_EventScript_FindItem",
-      "flag": "FLAG_ITEM_ROUTE_104_X_ACCURACY"
+      "flag": "FLAG_ITEM_ROUTE_104_WIDE_LENS"
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_CUTTABLE_TREE",
@@ -627,16 +627,16 @@
       "x": 7,
       "y": 6,
       "elevation": 3,
-      "item": "ITEM_SUPER_POTION",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_SUPER_POTION"
+      "item": "ITEM_ETHER",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_ETHER"
     },
     {
       "type": "hidden_item",
       "x": 3,
       "y": 9,
       "elevation": 3,
-      "item": "ITEM_POKE_BALL",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_POKE_BALL"
+      "item": "ITEM_GREAT_BALL",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_GREAT_BALL"
     },
     {
       "type": "hidden_item",
@@ -659,8 +659,8 @@
       "x": 16,
       "y": 64,
       "elevation": 3,
-      "item": "ITEM_HEART_SCALE",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_HEART_SCALE"
+      "item": "ITEM_FLOAT_STONE",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_FLOAT_STONE"
     }
   ]
 }

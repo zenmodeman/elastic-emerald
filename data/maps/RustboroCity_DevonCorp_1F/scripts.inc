@@ -391,7 +391,7 @@ RustboroCity_DevonCorp_1F_EventScript_IVTrainer_16:
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_17:
 # 192 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_6
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_9
 # 193 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	waitmessage
 # 194 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
@@ -417,7 +417,7 @@ RustboroCity_DevonCorp_1F_EventScript_IVTrainer_17:
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_18:
 # 209 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_9
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_10
 # 210 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	waitmessage
 # 211 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
@@ -459,7 +459,7 @@ RustboroCity_DevonCorp_1F_EventScript_IVTrainer_26:
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_29:
 # 214 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_10
+	msgbox RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_11
 # 215 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	waitmessage
 # 216 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
@@ -564,11 +564,16 @@ RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_8:
 	.string "stronger now.$"
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_9:
+# 192 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
+	.string "For this capsule, I can maximize one\n"
+	.string "stat.$"
+
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_10:
 # 209 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "For this capsule, I can maximize all your\n"
 	.string "pokemon's stats.$"
 
-RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_10:
+RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_11:
 # 214 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "This Pokemon already exceeds my\n"
 	.string "training capacities for these stats!\l"

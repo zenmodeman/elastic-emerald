@@ -342,9 +342,31 @@ Music: Aqua
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Poochyena
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Clobbopus @ Mystic Water  
+Ability: Technician  
+Level: 14  
+EVs: 28 HP / 32 Def / 28 SpD  
+Impish Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Aqua Jet  
+- Circle Throw  
+- Leer  
+- Feint  
+
+Totodile @ Sea Incense  
+Ability: Torrent  
+Level: 15  
+EVs: 20 HP / 16 Def / 36 SpD  
+Bashful Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Thrash  
+- Water Pulse  
+- Water Sport  
+- Bite  
+
+
+
+
 
 === TRAINER_GRUNT_WEATHER_INST_1 ===
 Name: GRUNT

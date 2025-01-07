@@ -400,7 +400,8 @@ static u32 HandleConditionMenuInput(struct Pokenav_Menu *menu)
             || gMapHeader.mapLayoutId == LAYOUT_EVER_GRANDE_CITY_PHOEBES_ROOM
             || gMapHeader.mapLayoutId == LAYOUT_EVER_GRANDE_CITY_GLACIAS_ROOM
             || gMapHeader.mapLayoutId == LAYOUT_EVER_GRANDE_CITY_DRAKES_ROOM
-            || gMapHeader.mapLayoutId == LAYOUT_EVER_GRANDE_CITY_SIDNEYS_ROOM)
+            || gMapHeader.mapLayoutId == LAYOUT_EVER_GRANDE_CITY_SHORT_HALL
+            ||  gMapHeader.mapLayoutId == LAYOUT_EVER_GRANDE_CITY_CHAMPIONS_ROOM)
             ){
                 menu->callback = HandleCantAccessPCInput;
                 return POKENAV_MENU_FUNC_CANNOT_ACCESS_PC;                

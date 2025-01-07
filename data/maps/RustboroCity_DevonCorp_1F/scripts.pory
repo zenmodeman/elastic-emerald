@@ -189,7 +189,7 @@ script RustboroCity_DevonCorp_1F_EventScript_IVTrainer{
 		msgbox(format("It's done. Your Pokémon looks much stronger now."))
 		waitmessage
 	}elif (var(VAR_RESULT) == ITEM_BOTTLE_CAP){
-		msgbox(format("For this capsule, I can give you moderate training in one stat."))
+		msgbox(format("For this capsule, I can maximize one stat."))
 		waitmessage
 		call(IVTrainer_ChooseStat)
 		call(IVTrainer_ChooseMon)
