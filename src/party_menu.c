@@ -4834,6 +4834,38 @@ void ItemUseCB_AbilityCapsule(u8 taskId, TaskFunc task)
     gTasks[taskId].func = Task_AbilityCapsule;
 }
 
+
+static bool32 IsRestrictedModeAbilityPatchForbidden(u16 species){
+    switch (species){
+        //Moxie
+        case SPECIES_BAGON:
+        case SPECIES_SHELGON:
+        case SPECIES_SALAMENCE:
+        case SPECIES_MAGIKARP:
+        case SPECIES_GYARADOS:
+        //Contrary
+        case SPECIES_SNIVY:
+        case SPECIES_SERVINE:
+        case SPECIES_SERPERIOR:
+        //Drizzle
+        case SPECIES_WINGULL:
+        case SPECIES_PELIPPER:
+        case SPECIES_POLIWAG:
+        case SPECIES_POLIWHIRL:
+        case SPECIES_POLITOED:
+        //Drought
+        case SPECIES_TORKOAL:
+        case SPECIES_VULPIX:
+        case SPECIES_NINETALES:
+        //Select Snow Warning
+        case SPECIES_VULPIX_ALOLA:
+        case SPECIES_NINETALES_ALOLA:
+            return TRUE; 
+
+        default:
+            return FALSE;
+    }
+} 
 void Task_AbilityPatch(u8 taskId)
 {
     static const u8 askText[] = _("Would you like to change {STR_VAR_1}'s\nability to {STR_VAR_2}?");
@@ -4845,7 +4877,7 @@ void Task_AbilityPatch(u8 taskId)
     case 0:
         // Can't use.
         if (gSpeciesInfo[tSpecies].abilities[tAbilityNum] == 0
-            || !tSpecies
+            || !tSpecies || (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeAbilityPatchForbidden(tSpecies))
             )
         {
             gPartyMenuUseExitCallback = FALSE;
