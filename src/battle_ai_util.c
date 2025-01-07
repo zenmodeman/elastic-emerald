@@ -4509,22 +4509,22 @@ void IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *
     if (effect == EFFECT_SUBSTITUTE) // Substitute specific
     {
         if (HasAnyKnownMove(battlerDef) && GetBestDmgFromBattler(battlerDef, battlerAtk) < gBattleMons[battlerAtk].maxHP / 4)
-            ADJUST_SCORE_PTR(GOOD_EFFECT);
+            ADJUST_SCORE_PTR(DECENT_EFFECT);
     }
     else if (effect == EFFECT_SHED_TAIL) // Shed Tail specific
     {
         if ((ShouldPivot(battlerAtk, battlerDef, AI_DATA->abilities[battlerDef], move, AI_THINKING_STRUCT->movesetIndex))
         && (HasAnyKnownMove(battlerDef) && (GetBestDmgFromBattler(battlerDef, battlerAtk) < gBattleMons[battlerAtk].maxHP / 2)))
-            ADJUST_SCORE_PTR(BEST_EFFECT);
+            ADJUST_SCORE_PTR(GOOD_EFFECT);
     }
 
     if (gStatuses3[battlerDef] & STATUS3_PERISH_SONG)
-        ADJUST_SCORE_PTR(GOOD_EFFECT);
+        ADJUST_SCORE_PTR(WEAK_EFFECT);
 
     if (gBattleMons[battlerDef].status1 & STATUS1_SLEEP)
-        ADJUST_SCORE_PTR(GOOD_EFFECT);
-    else if (gBattleMons[battlerDef].status1 & (STATUS1_BURN | STATUS1_PSN_ANY | STATUS1_FROSTBITE))
         ADJUST_SCORE_PTR(DECENT_EFFECT);
+    else if (gBattleMons[battlerDef].status1 & (STATUS1_BURN | STATUS1_PSN_ANY | STATUS1_FROSTBITE))
+        ADJUST_SCORE_PTR(WEAK_EFFECT);
 
     // TODO:
     // if (IsPredictedToSwitch(battlerDef, battlerAtk)
@@ -4536,9 +4536,18 @@ void IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *
      || HasMoveEffect(battlerDef, EFFECT_PARALYZE)
      || HasMoveEffect(battlerDef, EFFECT_WILL_O_WISP)
      || HasMoveEffect(battlerDef, EFFECT_CONFUSE)
-     || HasMoveEffect(battlerDef, EFFECT_LEECH_SEED))
-        ADJUST_SCORE_PTR(GOOD_EFFECT);
+     || HasMoveEffect(battlerDef, EFFECT_LEECH_SEED)){
+        if (AI_RandLessThan(127)){
+            ADJUST_SCORE_PTR(GOOD_EFFECT);
+        }else{
+            ADJUST_SCORE_PTR(WEAK_EFFECT);
+        }
+     }
 
-    if (AI_DATA->hpPercents[battlerAtk] > 70)
+    if (AI_DATA->hpPercents[battlerAtk] > 70){
         ADJUST_SCORE_PTR(WEAK_EFFECT);
+        if ( AI_DATA->holdEffects[battlerAtk] == HOLD_EFFECT_EVASION_UP && AI_RandLessThan(127)){
+            ADJUST_SCORE_PTR(WEAK_EFFECT);
+        }
+    }
 }

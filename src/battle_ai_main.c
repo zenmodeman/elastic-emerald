@@ -5634,8 +5634,12 @@ static s32 AI_PreferBatonPass(u32 battlerAtk, u32 battlerDef, u32 move, s32 scor
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_AQUA_RING:
-        if (!(gStatuses3[battlerAtk] & STATUS3_AQUA_RING))
-            ADJUST_SCORE(DECENT_EFFECT);
+        if (!CanTargetFaintAiWithMod(battlerDef, battlerAtk, gBattleMons[battlerAtk].maxHP / 16, 2)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+        if (GetStatusMoveCount(battlerAtk) >=3 && AI_RandLessThan(127) && !CanAIFaintTarget(battlerAtk, battlerDef, 2)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
         break;
     case EFFECT_PROTECT:
         if (gLastMoves[battlerAtk] == MOVE_PROTECT || gLastMoves[battlerAtk] == MOVE_DETECT)

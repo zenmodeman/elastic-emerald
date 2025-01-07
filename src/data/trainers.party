@@ -5327,8 +5327,8 @@ Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
 Ralts
-Level: 9
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Level: 13
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 === TRAINER_TED ===
 Name: TED
@@ -11203,13 +11203,38 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Lotad
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Wingull @ Berry Juice  
+Ability: Rain Dish  
+Level: 14  
+EVs: 20 HP / 44 Def / 16 SpD  
+Calm Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Supersonic  
+- Water Pulse  
+- Rain Dance  
+- Aqua Ring  
 
-Torchic
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Poochyena @ Tanga Berry  
+Ability: Rattled  
+Level: 14  
+EVs: 32 HP / 32 Def / 32 Spe  
+Jolly Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Yawn  
+- Bite  
+- Trailblaze  
+- Take Down  
+
+Combusken @ Scope Lens  
+Ability: Blaze  
+Level: 16  
+EVs: 16 HP / 16 Atk / 16 Def / 16 SpD / 32 Spe  
+Quirky Nature  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
+- Focus Energy  
+- Double Kick  
+- Incinerate  
+- Quick Attack  
 
 === TRAINER_BRENDAN_RUSTBORO_MUDKIP ===
 Name: BRENDAN
@@ -11220,13 +11245,39 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Wingull
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Wingull @ Berry Juice  
+Ability: Rain Dish  
+Level: 14  
+Tera Type: Water  
+EVs: 20 HP / 44 Def / 16 SpD  
+Calm Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Supersonic  
+- Water Pulse  
+- Rain Dance  
+- Aqua Ring
 
-Treecko
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Poochyena @ Tanga Berry  
+Ability: Rattled  
+Level: 14  
+EVs: 32 HP / 32 Def / 32 Spe  
+Jolly Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Yawn  
+- Bite  
+- Trailblaze  
+- Take Down  
+
+Grovyle @ Bright Powder  
+Ability: Overgrow  
+Level: 16  
+EVs: 20 HP / 36 Def / 28 SpD / 12 Spe  
+Serious Nature  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
+- Aerial Ace  
+- Mega Drain  
+- Fury Cutter  
+- Substitute
 
 === TRAINER_PAXTON ===
 Name: PAXTON
@@ -11327,13 +11378,38 @@ Music: Male
 Double Battle: No
 AI: Smart Trainer
 
-Slugma
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Slugma @ Grip Claw  
+Ability: Flame Body  
+Level: 14  
+EVs: 20 HP / 20 Def / 12 SpA / 20 SpD  
+Bold Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Will-O-Wisp  
+- Recover  
+- Smog  
+- Fire Spin
 
-Mudkip
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Poochyena @ Tanga Berry  
+Ability: Rattled  
+Level: 14  
+EVs: 32 HP / 32 Def / 32 Spe  
+Jolly Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Yawn  
+- Bite  
+- Trailblaze  
+- Take Down  
+
+Marshtomp @ Iapapa Berry  
+Ability: Torrent  
+Level: 16  
+EVs: 36 HP / 12 Def / 16 SpA / 36 SpD  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
+Serious Nature
+- Rock Smash  
+- Supersonic  
+- Mud Bomb  
+- Water Pulse
 
 === TRAINER_MAY_RUSTBORO_MUDKIP ===
 Name: MAY
@@ -11344,13 +11420,38 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Force Setup First Turn
 
-Wingull
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Wingull @ Berry Juice  
+Ability: Rain Dish  
+Level: 14  
+EVs: 20 HP / 44 Def / 16 SpD  
+Calm Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Supersonic  
+- Water Pulse  
+- Rain Dance  
+- Aqua Ring
 
-Treecko
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Poochyena @ Tanga Berry  
+Ability: Rattled  
+Level: 14  
+EVs: 32 HP / 32 Def / 32 Spe  
+Jolly Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Yawn  
+- Bite  
+- Trailblaze  
+- Take Down  
+
+Grovyle @ Bright Powder  
+Ability: Overgrow  
+Level: 16  
+EVs: 20 HP / 36 Def / 28 SpD / 12 Spe  
+Serious Nature  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
+- Aerial Ace  
+- Mega Drain  
+- Fury Cutter  
+- Substitute
 
 === TRAINER_MAXIE_MAGMA_HIDEOUT ===
 Name: MAXIE
@@ -11468,8 +11569,8 @@ Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
 Marill
-Level: 9
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Level: 13
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 === TRAINER_VIVI ===
 Name: VIVI
@@ -13405,13 +13506,27 @@ Music: Rich
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Zigzagoon @ Nugget
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Popplio @ Throat Spray  
+Ability: Liquid Voice  
+Level: 14  
+EVs: 28 HP / 24 Def / 12 SpA / 8 SpD  
+Calm Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Disarming Voice  
+- Draining Kiss  
+- Icy Wind  
+- Life Dew  
 
-Poochyena
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Skwovet @ Sitrus Berry  
+Ability: Cheek Pouch  
+Level: 14  
+EVs: 40 HP / 16 Def / 32 SpD  
+Impish Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Assurance  
+- Bullet Seed  
+- Dig  
+- Tail Whip  
 
 === TRAINER_SARAH ===
 Name: SARAH
@@ -13423,13 +13538,27 @@ Items: Full Restore
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Lotad
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Floette @ Misty Seed  
+Ability: Symbiosis  
+Level: 14  
+EVs: 24 HP / 24 Def / 16 SpD  
+Sassy Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 0 Spe  
+- Misty Terrain  
+- Disarming Voice  
+- Grass Knot  
+- Helping Hand  
 
-Zigzagoon @ Nugget
-Level: 8
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Pachirisu @ Sitrus Berry  
+Ability: Pickup  
+Level: 14  
+EVs: 4 HP / 40 Def / 20 SpD / 12 Spe  
+Careful Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Follow Me  
+- Helping Hand  
+- Nuzzle  
+- Super Fang  
 
 === TRAINER_DARIAN ===
 Name: DARIAN
@@ -14608,13 +14737,38 @@ Music: Female
 Double Battle: No
 AI: Smart Trainer
 
-Lotad
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Wingull @ Berry Juice  
+Ability: Rain Dish  
+Level: 14  
+EVs: 20 HP / 44 Def / 16 SpD  
+Calm Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Supersonic  
+- Water Pulse  
+- Rain Dance  
+- Aqua Ring  
 
-Torchic
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Poochyena @ Tanga Berry  
+Ability: Rattled  
+Level: 14  
+EVs: 32 HP / 32 Def / 32 Spe  
+Jolly Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Yawn  
+- Bite  
+- Trailblaze  
+- Take Down  
+
+Combusken @ Scope Lens  
+Ability: Blaze  
+Level: 16  
+EVs: 16 HP / 16 Atk / 16 Def / 16 SpD / 32 Spe  
+Quirky Nature  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
+- Focus Energy  
+- Double Kick  
+- Incinerate  
+- Quick Attack  
 
 === TRAINER_MAY_RUSTBORO_TORCHIC ===
 Name: MAY
@@ -14625,13 +14779,38 @@ Music: Female
 Double Battle: No
 AI: Smart Trainer
 
-Torkoal
-Level: 13
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Slugma @ Grip Claw  
+Ability: Flame Body  
+Level: 14  
+EVs: 20 HP / 20 Def / 12 SpA / 20 SpD  
+Bold Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Will-O-Wisp  
+- Recover  
+- Smog  
+- Fire Spin
 
-Mudkip
-Level: 15
-IVs: 6 HP / 6 Atk / 6 Def / 6 SpA / 6 SpD / 6 Spe
+Poochyena @ Tanga Berry  
+Ability: Rattled  
+Level: 14  
+EVs: 32 HP / 32 Def / 32 Spe  
+Jolly Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Yawn  
+- Bite  
+- Trailblaze  
+- Take Down  
+
+Marshtomp @ Iapapa Berry  
+Ability: Torrent  
+Level: 16  
+EVs: 36 HP / 12 Def / 16 SpA / 36 SpD  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
+Serious Nature
+- Rock Smash  
+- Supersonic  
+- Mud Bomb  
+- Water Pulse
 
 === TRAINER_ROXANNE_2 ===
 Name: ROXANNE

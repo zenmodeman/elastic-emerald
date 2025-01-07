@@ -121,7 +121,7 @@ script TechHouse_Psychic_NicheAbilities{
         if(var(VAR_RESULT) == 0){
             goto(AbilityTutor_NotValid)
         }else{
-            msgbox(format("{STR_VAR_1} can unlock the ability {STR_VAR_2}. Would you like to??"), MSGBOX_YESNO)
+            msgbox(format("{STR_VAR_1} can unlock the ability {STR_VAR_2}. Would you like to?"), MSGBOX_YESNO)
             if (var(VAR_RESULT) == 0){
                 goto(AbilityTutor_NotInterested)
             }

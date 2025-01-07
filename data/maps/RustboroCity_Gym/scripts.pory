@@ -361,6 +361,13 @@ script Roxanne_Restrict_Item_Clause {
 }
 
 script RustboroCity_Gym_EventScript_GiveRockTomb {
+	if (var(VAR_MONOTYPE) > 0){
+		addvar(VAR_REMAINING_TUTOR, 2)
+		addvar(VAR_REMAINING_RELEARNER, 2)
+	}else{
+		addvar(VAR_REMAINING_TUTOR, 1)
+		addvar(VAR_REMAINING_RELEARNER, 1)
+	}
     if (!flag(FLAG_RESOURCE_MODE)) {
         giveitem(ITEM_TM_ROCK_TOMB)
         goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)

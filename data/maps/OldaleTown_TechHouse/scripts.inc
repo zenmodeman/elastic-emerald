@@ -521,9 +521,8 @@ TechHouse_Psychic_NicheAbilities_Text_3:
 
 TechHouse_Psychic_NicheAbilities_Text_4:
 # 124 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	.string "Would you like to change\n"
-	.string "{STR_VAR_1}'s ability to\l"
-	.string "{STR_VAR_2}?$"
+	.string "{STR_VAR_1} can unlock the ability\n"
+	.string "{STR_VAR_2}. Would you like to?$"
 
 TechHouse_Psychic_NicheAbilities_Text_5:
 # 131 "data/maps/OldaleTown_TechHouse/scripts.pory"

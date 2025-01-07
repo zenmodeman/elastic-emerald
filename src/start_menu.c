@@ -366,7 +366,10 @@ static void BuildNormalStartMenu(void)
     AddStartMenuAction(MENU_ACTION_PLAYER);
     AddStartMenuAction(MENU_ACTION_SAVE);
     AddStartMenuAction(MENU_ACTION_OPTION);
-    AddStartMenuAction(MENU_ACTION_EXIT);
+
+    if (!FlagGet(FLAG_SYS_FLY_GET) || !FlagGet(FLAG_SYS_POKENAV_GET)){
+        AddStartMenuAction(MENU_ACTION_EXIT);
+    }
 }
 
 static void BuildDebugStartMenu(void)
