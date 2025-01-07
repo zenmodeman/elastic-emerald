@@ -556,6 +556,7 @@ const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
     [STRINGID_PKMNPREVENTEDFROMHEALING]             = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} was prevented from healing!"),
     [STRINGID_PKMNSWITCHEDATKANDDEF]                = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} switched its Attack and Defense!"),
     [STRINGID_PKMNSABILITYSUPPRESSED]               = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX}'s Ability was suppressed!"),
+    [STRINGID_MUDSPORTPREVENTS]                     = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} is not affected\nthanks to the mud!"),
     [STRINGID_DRAINDOUSESETSDRAINING] =  COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX}'s liquid gives its moves draining!"),
     [STRINGID_DRAINEDWITHLIQUID] = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} drained energy with its liquid!"),
     [STRINGID_SHIELDEDFROMCRITICALHITS]             = COMPOUND_STRING("Lucky Chant shielded {B_ATK_TEAM2} team from critical hits!"),
@@ -565,6 +566,7 @@ const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
     [STRINGID_POISONSPIKESSCATTERED]                = COMPOUND_STRING("Poison spikes were scattered on the ground all around {B_DEF_TEAM2} team!"),
     [STRINGID_PKMNSWITCHEDSTATCHANGES]              = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} switched stat changes with its target!"),
     [STRINGID_PKMNSURROUNDEDWITHVEILOFWATER]        = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} surrounded itself with a veil of water!"),
+    [STRINGID_WATERSPORTPREVENTS]                   = COMPOUND_STRING("{B_DEF_NAME_WITH_PREFIX} is not affected\nthanks to the water!"),
     [STRINGID_PKMNLEVITATEDONELECTROMAGNETISM]      = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} levitated with electromagnetism!"),
     [STRINGID_PKMNTWISTEDDIMENSIONS]                = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} twisted the dimensions!"),
     [STRINGID_POINTEDSTONESFLOAT]                   = COMPOUND_STRING("Pointed stones float in the air around {B_DEF_TEAM2} team!"),
@@ -1228,7 +1230,8 @@ const u16 gAttractUsedStringIds[] =
 const u16 gAbsorbDrainStringIds[] =
 {
     [B_MSG_ABSORB]      = STRINGID_PKMNENERGYDRAINED,
-    [B_MSG_ABSORB_OOZE] = STRINGID_ITSUCKEDLIQUIDOOZE
+    [B_MSG_ABSORB_OOZE] = STRINGID_ITSUCKEDLIQUIDOOZE,
+    [B_MSG_DRAIN_DOUSED] = STRINGID_DRAINEDWITHLIQUID,
 };
 
 const u16 gSportsUsedStringIds[] =

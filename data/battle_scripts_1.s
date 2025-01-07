@@ -3685,9 +3685,9 @@ BattleScript_EffectParalyze::
 	tryparalyzetype BS_ATTACKER, BS_TARGET, BattleScript_NotAffected
 	jumpifstatus BS_TARGET, STATUS1_ANY, BattleScript_ButItFailed
 	jumpifterrainaffected BS_TARGET, STATUS_FIELD_MISTY_TERRAIN, BattleScript_MistyTerrainPrevents
-	jumpifsportapplied STATUS_FIELD_MUDSPORT, BattleScript_MudSportPrevents
 	accuracycheck BattleScript_ButItFailed, ACC_CURR_MOVE
 	jumpifsafeguard BattleScript_SafeguardProtected
+	jumpifmovetype TYPE_ELECTRIC, BattleScript_MudSportParalysisCheck
 	clearmoveresultflags MOVE_RESULT_SUPER_EFFECTIVE | MOVE_RESULT_NOT_VERY_EFFECTIVE
 	attackanimation
 	waitanimation
@@ -3696,6 +3696,19 @@ BattleScript_EffectParalyze::
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
 
+BattleScript_EffectParalyzeResolution::
+	clearmoveresultflags MOVE_RESULT_SUPER_EFFECTIVE | MOVE_RESULT_NOT_VERY_EFFECTIVE
+	attackanimation
+	waitanimation
+	seteffectprimary MOVE_EFFECT_PARALYSIS
+	resultmessage
+	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_MoveEnd
+
+BattleScript_MudSportParalysisCheck::
+	jumpifsportapplied STATUS_FIELD_MUDSPORT, BattleScript_MudSportPrevents
+	goto BattleScript_EffectParalyzeResolution
+	
 BattleScript_VoltAbsorbHeal:
 	copybyte gBattlerAbility, gBattlerTarget
 	tryhealquarterhealth BS_TARGET BattleScript_MonMadeMoveUseless @ Check if max hp

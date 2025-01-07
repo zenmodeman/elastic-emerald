@@ -2560,3 +2560,9 @@
 	.4byte \sportFlags
 	.4byte \jumpInstr
 	.endm
+
+	.macro jumpifmovetype type:req jumpInstr:req
+	callnative BS_JumpIfMoveType
+	.byte \type
+	.4byte \jumpInstr
+	.endm

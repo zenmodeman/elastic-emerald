@@ -6852,7 +6852,7 @@ bool32 CanBeBurned(u32 battler, u32 ability)
      || ability == ABILITY_PURIFYING_SALT
      || IsAbilityStatusProtected(battler)
      || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN)
-      || gFieldStatuses & STATUS_FIELD_WATERSPORT)
+      || (gFieldStatuses & STATUS_FIELD_WATERSPORT &&  GetBattleMoveType(gCurrentMove) == TYPE_FIRE))
         return FALSE;
     return TRUE;
 }
@@ -6867,7 +6867,7 @@ bool32 CanBeParalyzed(u32 battler, u32 ability)
       || gBattleMons[battler].status1 & STATUS1_ANY
       || IsAbilityStatusProtected(battler)
       || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN)
-        || gFieldStatuses & STATUS_FIELD_MUDSPORT)
+        || (gFieldStatuses & STATUS_FIELD_MUDSPORT &&  GetBattleMoveType(gCurrentMove) == TYPE_ELECTRIC))
         return FALSE;
     return TRUE;
 }

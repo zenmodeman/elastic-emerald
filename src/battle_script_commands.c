@@ -13010,7 +13010,9 @@ static void Cmd_setmist(void)
     }
     else
     {
-        gSideTimers[GetBattlerSide(gBattlerAttacker)].mistTimer = 5;
+        u32 atkHoldEffect = GetBattlerHoldEffect(gBattlerAttacker, TRUE);
+
+        gSideTimers[GetBattlerSide(gBattlerAttacker)].mistTimer = (atkHoldEffect == HOLD_EFFECT_ICY_ROCK) ? 8 : 5;
         gSideTimers[GetBattlerSide(gBattlerAttacker)].mistBattlerId = gBattlerAttacker;
         gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_MIST;
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SET_MIST;
@@ -15377,8 +15379,10 @@ static void Cmd_settypebasedhalvers(void)
         {
             if (!(gFieldStatuses & STATUS_FIELD_MUDSPORT))
             {
+                u32 atkHoldEffect = GetBattlerHoldEffect(gBattlerAttacker, TRUE);        
                 gFieldStatuses |= STATUS_FIELD_MUDSPORT;
-                gFieldTimers.mudSportTimer = 5;
+                gFieldTimers.mudSportTimer = (atkHoldEffect == HOLD_EFFECT_SMOOTH_ROCK) ? 8 :  5;
+                
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_ELECTRIC;
                 worked = TRUE;
             }
@@ -15399,8 +15403,9 @@ static void Cmd_settypebasedhalvers(void)
         {
             if (!(gFieldStatuses & STATUS_FIELD_WATERSPORT))
             {
+                u32 atkHoldEffect = GetBattlerHoldEffect(gBattlerAttacker, TRUE);      
                 gFieldStatuses |= STATUS_FIELD_WATERSPORT;
-                gFieldTimers.waterSportTimer = 5;
+                gFieldTimers.waterSportTimer = (atkHoldEffect == HOLD_EFFECT_DAMP_ROCK) ? 8 :  5;
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_FIRE;
                 worked = TRUE;
             }
@@ -17086,6 +17091,16 @@ void BS_JumpIfMovePropertyArgument(void)
     else
         gBattlescriptCurrInstr = cmd->nextInstr;
 }
+
+void BS_JumpIfMoveType(void)
+{
+    NATIVE_ARGS(u8 argument, const u8 *jumpInstr);
+    if (GetBattleMoveType(gCurrentMove) == cmd->argument)
+        gBattlescriptCurrInstr = cmd->jumpInstr;
+    else 
+        gBattlescriptCurrInstr = cmd->nextInstr;
+}
+
 
 void BS_SetRemoveTerrain(void)
 {
