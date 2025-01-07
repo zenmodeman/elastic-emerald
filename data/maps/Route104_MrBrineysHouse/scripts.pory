@@ -27,6 +27,7 @@ Route104_MrBrineysHouse_EventScript_SetBrineyPeekoPos::
 Route104_MrBrineysHouse_EventScript_Briney::
 	lock
 	faceplayer
+    goto_if_unset FLAG_DEMO_GUARD, BrineysHouse_DemoMessage
 	call_if_unset FLAG_MR_BRINEY_SAILING_INTRO, Route104_MrBrineysHouse_EventScript_SailingIntro
 	goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, Route104_MrBrineysHouse_EventScript_SailBothDeliveries
 	goto_if_unset FLAG_DELIVERED_DEVON_GOODS, Route104_MrBrineysHouse_EventScript_SailDeliverPackage
@@ -163,3 +164,9 @@ Route104_MrBrineysHouse_Text_Peeko:
 
 
 `
+
+script BrineysHouse_DemoMessage{
+    msgbox(format("This demo does not go to Dewford until v.0.2.0 releases."))
+    releaseall
+    end
+}
