@@ -522,14 +522,12 @@ IVTrainer_ChooseMon_1:
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_0:
 # 154 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	.string "Greetings, I am versed in Hyper Training\n"
-	.string "Pokemon. If you have any bottle\l"
-	.string "capsules, I can help you train your\l"
-	.string "pokemon.$"
+	.string "Pokemon. If you have any bottle caps, I\l"
+	.string "can help you train your pokemon.$"
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_1:
 # 155 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	.string "What capsules would you be willing to\n"
-	.string "offer?$"
+	.string "What caps would you be willing to offer?$"
 
 RustboroCity_DevonCorp_1F_EventScript_IVTrainer_Text_2:
 # 159 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"

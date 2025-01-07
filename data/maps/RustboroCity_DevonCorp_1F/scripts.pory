@@ -151,8 +151,8 @@ RustboroCity_DevonCorp_1F_Text_ProductDisplay:
 
 script RustboroCity_DevonCorp_1F_EventScript_IVTrainer{
     lock
-    msgbox(format("Greetings, I am versed in Hyper Training Pokemon. If you have any bottle capsules, I can help you train your pokemon."))
-    msgbox(format("What capsules would you be willing to offer?"))  
+    msgbox(format("Greetings, I am versed in Hyper Training Pokemon. If you have any bottle caps, I can help you train your pokemon."))
+    msgbox(format("What caps would you be willing to offer?"))  
 
 	checkitem(ITEM_PLAIN_BOTTLE_CAP)
 	if (var(VAR_RESULT) == TRUE){
