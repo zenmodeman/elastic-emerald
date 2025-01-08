@@ -328,10 +328,12 @@ Route104_MrBrineysHouse_Text_Peeko:
 BrineysHouse_DemoMessage::
 # 169 "data/maps/Route104_MrBrineysHouse/scripts.pory"
 	msgbox BrineysHouse_DemoMessage_Text_0
-	return
+# 170 "data/maps/Route104_MrBrineysHouse/scripts.pory"
+	releaseall
+	end
 
 
 BrineysHouse_DemoMessage_Text_0:
 # 169 "data/maps/Route104_MrBrineysHouse/scripts.pory"
-	.string "The demo is over. Please wait until 0.2.0\n"
-	.string "releases.$"
+	.string "This demo does not go to Dewford until\n"
+	.string "v.0.2.0 releases.$"
