@@ -2408,4 +2408,11 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .cantBeSwapped = TRUE,
         .cantBeTraced = TRUE,
     },
+    [ABILITY_FUR_LAYER] = 
+    {
+        .name = _("Fur Layer"),
+        .description = COMPOUND_STRING("Prevents added effects."),
+        .aiRating = 5,
+        .breakable = TRUE,
+    }
 };
