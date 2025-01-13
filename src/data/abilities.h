@@ -2414,5 +2414,12 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .description = COMPOUND_STRING("Prevents added effects."),
         .aiRating = 5,
         .breakable = TRUE,
+    },
+    [ABILITY_SOLAR_CORE] = 
+    {
+        .name = _("Solar Core"),
+        .description = COMPOUND_STRING("Doubles Sp.Atk in Sun."),
+        .aiRating = 5,
+        .breakable = TRUE,   
     }
 };

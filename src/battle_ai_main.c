@@ -4272,6 +4272,7 @@ case EFFECT_DISABLE:
             }
             break;
         case HOLD_EFFECT_UTILITY_UMBRELLA:
+            //May need to rework these negation checks.
             if (aiData->abilities[battlerAtk] != ABILITY_SOLAR_POWER && aiData->abilities[battlerAtk] != ABILITY_DRY_SKIN)
             {
                 switch (aiData->abilities[battlerDef])
