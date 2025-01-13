@@ -653,7 +653,7 @@
               {
                 "min_level": 3,
                 "max_level": 5,
-                "species": "SPECIES_MORELULL"
+                "species": "SPECIES_VANILLITE"
               },
               {
                 "min_level": 3,
@@ -708,7 +708,7 @@
               {
                 "min_level": 3,
                 "max_level": 5,
-                "species": "SPECIES_VANILLITE"
+                "species": "SPECIES_NONE"
               },
               {
                 "min_level": 3,
@@ -3300,8 +3300,8 @@
               },
               {
                 "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_NONE"
+                "max_level": 7,
+                "species": "SPECIES_FERROSEED"
               },
               {
                 "min_level": 5,

@@ -4843,6 +4843,9 @@ static bool32 IsRestrictedModeAbilityPatchForbidden(u16 species){
         case SPECIES_SALAMENCE:
         case SPECIES_MAGIKARP:
         case SPECIES_GYARADOS:
+        case SPECIES_SANDILE:
+        case SPECIES_KROKOROK:
+        case SPECIES_HONCHKROW:
         //Contrary
         case SPECIES_SNIVY:
         case SPECIES_SERVINE:
@@ -4861,9 +4864,20 @@ static bool32 IsRestrictedModeAbilityPatchForbidden(u16 species){
         case SPECIES_VULPIX_ALOLA:
         case SPECIES_NINETALES_ALOLA:
             return TRUE; 
+        //Gym 8 progression related
+        case SPECIES_FOMANTIS:
+        case SPECIES_LURANTIS: 
+        case SPECIES_MUDBRAY:
+        case SPECIES_MUDSDALE:
+            if (FlagGet(FLAG_BADGE08_GET)){
+                return FALSE;
+            }else{
+                return TRUE;
+            }
 
         default:
             return FALSE;
+        return FALSE;
     }
 } 
 void Task_AbilityPatch(u8 taskId)

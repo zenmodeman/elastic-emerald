@@ -50091,7 +50091,7 @@
   "VANILLITE": {
     "LevelMoves": [],
     "PreEvoMoves": [],
-    "TMMoves": [],
+    "TMMoves": ["MOVE_CHILLING_WATER"],
     "EggMoves": [],
     "TutorMoves": []
   },
@@ -71029,7 +71029,8 @@
       "MOVE_TERA_BLAST",
       "MOVE_BURNING_JEALOUSY",
       "MOVE_LASH_OUT",
-      "MOVE_THROAT_CHOP"
+      "MOVE_THROAT_CHOP",
+      "MOVE_SNARL"
     ],
     "EggMoves": [
       "MOVE_PARTING_SHOT"
@@ -71131,7 +71132,8 @@
       "MOVE_TERA_BLAST",
       "MOVE_BURNING_JEALOUSY",
       "MOVE_LASH_OUT",
-      "MOVE_THROAT_CHOP"
+      "MOVE_THROAT_CHOP",
+      "MOVE_SNARL"
     ],
     "EggMoves": [
       "MOVE_PARTING_SHOT"
@@ -71259,7 +71261,8 @@
       "MOVE_FOCUS_PUNCH",
       "MOVE_BURNING_JEALOUSY",
       "MOVE_LASH_OUT",
-      "MOVE_THROAT_CHOP"
+      "MOVE_THROAT_CHOP",
+      "MOVE_SNARL"
     ],
     "EggMoves": [
       "MOVE_PARTING_SHOT"
@@ -92293,14 +92296,14 @@
   "ZIGZAGOON_GALAR": {
     "LevelMoves": [],
     "PreEvoMoves": [],
-    "TMMoves": [],
+    "TMMoves": ["ROCK_SMASH"],
     "EggMoves": [],
     "TutorMoves": []
   },
   "LINOONE_GALAR": {
     "LevelMoves": [],
     "PreEvoMoves": [],
-    "TMMoves": [],
+    "TMMoves": ["ROCK_SMASH"],
     "EggMoves": [],
     "TutorMoves": []
   },
