@@ -1612,7 +1612,13 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
 
     if (WEATHER_HAS_EFFECT && gBattleWeather & B_WEATHER_FOG)
         calc = (calc * 60) / 100; // modified by 3/5
-
+    
+    //Assurance accuracy mod
+    if (calc < 100 && GetMoveEffect(move) == EFFECT_ASSURANCE && (gProtectStructs[battlerDef].physicalDmg != 0 || gProtectStructs[battlerDef].specialDmg != 0 
+     || gProtectStructs[battlerDef].confusionSelfDmg  || gProtectStructs[battlerDef].monHurt)){
+        calc = 100;
+    }
+    // DebugPrintf("physDmg: %d, specDmg: %d, confusionDmg %d", gProtectStructs[battlerDef].physicalDmg, gProtectStructs[battlerDef].specialDmg, gProtectStructs[battlerDef].confusionSelfDmg);
     return calc;
 }
 
@@ -4483,6 +4489,7 @@ static void Cmd_tryfaintmon(void)
     const u8 *faintScript;
 
     battler = GetBattlerForBattleScript(cmd->battler);
+    gProtectStructs[battler].monHurt = TRUE;
     if (cmd->isSpikes != 0)
     {
         if (gHitMarker & HITMARKER_FAINTED(battler))

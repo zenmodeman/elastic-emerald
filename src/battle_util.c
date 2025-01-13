@@ -9199,10 +9199,11 @@ static inline u32 CalcMoveBasePower(struct DamageCalculationData *damageCalcData
         basePower = gBattleMons[battlerDef].hp * basePower / gBattleMons[battlerDef].maxHP;
         break;
     case EFFECT_ASSURANCE:
-        if (gProtectStructs[battlerDef].physicalDmg != 0 || gProtectStructs[battlerDef].specialDmg != 0 || gProtectStructs[battlerDef].confusionSelfDmg){
-            DebugPrintf("Assurance double damage step is reached.");
+        //monHurt is a zenmodeman protectStruct value, that may not be needed in the future if expansion implements their own approach.
+        if (gProtectStructs[battlerDef].physicalDmg != 0 || gProtectStructs[battlerDef].specialDmg != 0 
+        || gProtectStructs[battlerDef].confusionSelfDmg || gProtectStructs[battlerDef].monHurt){
+            // DebugPrintf("Assurance double damage step is reached.");
             basePower *= 2;
-
         }
         break;
     case EFFECT_TRUMP_CARD:

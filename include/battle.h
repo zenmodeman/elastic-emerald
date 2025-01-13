@@ -174,7 +174,7 @@ struct ProtectStruct
     u32 statRaised:1;
     u32 usedCustapBerry:1;    // also quick claw
     u32 touchedProtectLike:1;
-    u32 unused:1;
+    u32 monHurt:1; //formerly un used; Attempt to capture that the user took damage from things such as Life Orb
     // End of 32-bit bitfield
     u16 disableEjectPack:1;
     u16 statFell:1;
