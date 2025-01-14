@@ -602,6 +602,8 @@ static void Cmd_unused(void);
 static void Cmd_tryworryseed(void);
 static void Cmd_callnative(void);
 
+static bool32 MoveIsItemInteracting(u32 move);
+
 void (* const gBattleScriptingCommandsTable[])(void) =
 {
     Cmd_attackcanceler,                          //0x0
@@ -1423,6 +1425,12 @@ static bool32 AccuracyCalcHelper(u32 move, u32 battler)
         effect = TRUE;
         ability = ABILITY_NO_GUARD;
     }
+    else if (GetBattlerAbility(gBattlerAttacker) == ABILITY_FRISK
+    && (MoveIsItemInteracting(move))){
+        effect = TRUE;
+        ability = ABILITY_FRISK;
+    }
+
     // If the target has the ability No Guard and they aren't involved in a Sky Drop or the current move isn't Sky Drop, move hits.
     else if (GetBattlerAbility(battler) == ABILITY_NO_GUARD
           && (moveEffect != EFFECT_SKY_DROP || gBattleStruct->skyDropTargets[battler] == 0xFF))
@@ -12107,6 +12115,7 @@ static u16 ReverseStatChangeMoveEffect(u16 moveEffect)
     }
 }
 
+
 static bool32 CurrentMoveIsEnticing(){
 
     // DebugPrintf("From CurrentMoveIsEnticing, currentMove is %d", gCurrentMove);
@@ -12114,6 +12123,17 @@ static bool32 CurrentMoveIsEnticing(){
     //The sensible choice would be to add this as a move category, but for now just doing a raw chain of or clauses statements.
     if (gCurrentMove == MOVE_CHARM || gCurrentMove == MOVE_CAPTIVATE || gCurrentMove == MOVE_BABY_DOLL_EYES || gCurrentMove == MOVE_TEARFUL_LOOK || gCurrentMove == MOVE_PLAY_NICE
     || gCurrentMove == MOVE_CONFIDE || gCurrentMove == MOVE_FAKE_TEARS){
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static bool32 MoveIsItemInteracting(u32 move){
+
+
+    //The sensible choice would be to add this as a move category, but for now just doing a raw chain of or clauses statements.
+    if (move == MOVE_KNOCK_OFF || move == MOVE_THIEF || move == MOVE_COVET || move == MOVE_POLTERGEIST 
+    || move == MOVE_EMBARGO || move == MOVE_TRICK || move == MOVE_SWITCHEROO || move == MOVE_BUG_BITE || move == MOVE_INCINERATE){
         return TRUE;
     }
     return FALSE;

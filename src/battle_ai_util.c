@@ -1584,6 +1584,7 @@ bool32 IsMoveEncouragedToHit(u32 battlerAtk, u32 battlerDef, u32 move)
     if ((weather & B_WEATHER_SUN) && effect == EFFECT_THUNDER)
         return FALSE;
 
+    //May need to add Frisk here
     // increased accuracy but don't always hit
     if ((weather & B_WEATHER_RAIN) && effect == EFFECT_THUNDER)
         return TRUE;
