@@ -4841,8 +4841,18 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_OVERWORLD_STEPS:
-                if (mon == GetFirstLiveMon() && gFollowerSteps >= evolutions[i].param)
+                if (mon == GetFirstLiveMon() && gFollowerSteps >= evolutions[i].param){
+                    level = GetMonData(mon, MON_DATA_LEVEL, 0);
+                    //Level guards for the Let's Go mons
+                    if (
+                        (species == SPECIES_RELLOR && level < 20)
+                        || (species == SPECIES_PAWMO && level < 30)
+                        || (species == SPECIES_BRAMBLIN && level < 25)
+                    ){
+                        break;
+                    }
                     targetSpecies = evolutions[i].targetSpecies;
+                }
                 break;
             }
         }

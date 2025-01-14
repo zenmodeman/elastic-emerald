@@ -2064,7 +2064,7 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
         .levelUpLearnset = sPanchamLevelUpLearnset,
         .teachableLearnset = sPanchamTeachableLearnset,
         .eggMoveLearnset = sPanchamEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL_DARK_TYPE_MON_IN_PARTY, 32, SPECIES_PANGORO}),
+        .evolutions = EVOLUTION({EVO_LEVEL_DARK_TYPE_MON_IN_PARTY, 27, SPECIES_PANGORO}),
     },
 
     [SPECIES_PANGORO] =
@@ -5031,9 +5031,9 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
 
     [SPECIES_BERGMITE] =
     {
-        .baseHP        = 55,
+        .baseHP        = 65,
         .baseAttack    = 69,
-        .baseDefense   = 85,
+        .baseDefense   = 95,
         .baseSpeed     = 28,
         .baseSpAttack  = 32,
         .baseSpDefense = 35,

@@ -3727,12 +3727,12 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 #if P_FAMILY_WIGLETT
     [SPECIES_WIGLETT] =
     {
-        .baseHP        = 10,
+        .baseHP        = 15,
         .baseAttack    = 55,
         .baseDefense   = 25,
         .baseSpeed     = 95,
         .baseSpAttack  = 35,
-        .baseSpDefense = 25,
+        .baseSpDefense = 45,
         .types = MON_TYPES(TYPE_WATER),
         .catchRate = 255,
         .expYield = 49,

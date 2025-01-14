@@ -3709,17 +3709,16 @@ static const u16 sGlameowEggMoveLearnset[] = {
 static const u16 sStunkyEggMoveLearnset[] = {
     MOVE_PURSUIT,
     MOVE_LEER,
-    MOVE_SMOG,
     MOVE_DOUBLE_EDGE,
     MOVE_CRUNCH,
     MOVE_SCARY_FACE,
     MOVE_ASTONISH,
     MOVE_PUNISHMENT,
-    MOVE_HAZE,
     MOVE_IRON_TAIL,
     MOVE_FOUL_PLAY,
     MOVE_FLAME_BURST,
     MOVE_PLAY_ROUGH,
+    MOVE_CLEAR_SMOG,
     MOVE_UNAVAILABLE,
 };
 #endif //P_FAMILY_STUNKY

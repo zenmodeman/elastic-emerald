@@ -803,9 +803,9 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 #if P_FAMILY_POOCHYENA
     [SPECIES_POOCHYENA] =
     {
-        .baseHP        = 35,
+        .baseHP        = 40,
         .baseAttack    = 60,
-        .baseDefense   = 35,
+        .baseDefense   = 40,
         .baseSpeed     = 45,
         .baseSpAttack  = 30,
         .baseSpDefense = 30,
@@ -878,7 +878,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
     {
         .baseHP        = 75,
         .baseAttack    = 90,
-        .baseDefense   = 70,
+        .baseDefense   = 75,
         .baseSpeed     = 80,
         .baseSpAttack  = 60,
         .baseSpDefense = 60,
@@ -4344,7 +4344,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sAronLevelUpLearnset,
         .teachableLearnset = sAronTeachableLearnset,
         .eggMoveLearnset = sAronEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_LAIRON}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 28, SPECIES_LAIRON}),
     },
 
     [SPECIES_LAIRON] =
@@ -6212,7 +6212,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
     [SPECIES_SPOINK] =
     {
         .baseHP        = 60,
-        .baseAttack    = 25,
+        .baseAttack    = 35,
         .baseDefense   = 35,
         .baseSpeed     = 60,
         .baseSpAttack  = 70,
@@ -8442,7 +8442,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sShuppetLevelUpLearnset,
         .teachableLearnset = sShuppetTeachableLearnset,
         .eggMoveLearnset = sShuppetEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 37, SPECIES_BANETTE}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 26, SPECIES_BANETTE}),
     },
 
     [SPECIES_BANETTE] =
@@ -8452,7 +8452,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .baseDefense   = 65,
         .baseSpeed     = 65,
         .baseSpAttack  = 83,
-        .baseSpDefense = 63,
+        .baseSpDefense = 73,
         .types = MON_TYPES(TYPE_GHOST),
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 159 : 179,
@@ -8521,7 +8521,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .baseAttack    = 165,
         .baseDefense   = 75,
         .baseSpeed     = 75,
-        .baseSpAttack  = 93,
+        .baseSpAttack  = 103,
         .baseSpDefense = 83,
         .types = MON_TYPES(TYPE_GHOST),
         .catchRate = 45,
@@ -9945,7 +9945,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .baseAttack    = 75,
         .baseDefense   = 60,
         .baseSpeed     = 50,
-        .baseSpAttack  = 40,
+        .baseSpAttack  = 50,
         .baseSpDefense = 30,
         .types = MON_TYPES(TYPE_DRAGON),
         .catchRate = 45,

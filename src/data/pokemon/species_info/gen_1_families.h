@@ -4861,10 +4861,10 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     {
         .baseHP        = 90,
         .baseAttack    = 30,
-        .baseDefense   = 15,
+        .baseDefense   = 20,
         .baseSpeed     = 15,
         .baseSpAttack  = 40,
-        .baseSpDefense = 20,
+        .baseSpDefense = 25,
         .types = JIGGLYPUFF_FAMILY_TYPES,
         .catchRate = 170,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 42 : 39,
@@ -4997,11 +4997,11 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
     [SPECIES_WIGGLYTUFF] =
     {
         .baseHP        = 140,
-        .baseAttack    = 70,
-        .baseDefense   = 45,
+        .baseAttack    = 75,
+        .baseDefense   = 55,
         .baseSpeed     = 45,
         .baseSpAttack  = P_UPDATED_STATS >= GEN_6 ? 85 : 75,
-        .baseSpDefense = 50,
+        .baseSpDefense = 65,
         .types = JIGGLYPUFF_FAMILY_TYPES,
         .catchRate = 50,
     #if P_UPDATED_EXP_YIELDS >= GEN_8
@@ -5882,7 +5882,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 
     [SPECIES_DIGLETT] =
     {
-        .baseHP        = 10,
+        .baseHP        = 15,
         .baseAttack    = 55,
         .baseDefense   = 25,
         .baseSpeed     = 95,
@@ -6013,7 +6013,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
 #if P_ALOLAN_FORMS
     [SPECIES_DIGLETT_ALOLA] =
     {
-        .baseHP        = 10,
+        .baseHP        = 15,
         .baseAttack    = 55,
         .baseDefense   = 30,
         .baseSpeed     = 90,
