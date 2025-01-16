@@ -706,10 +706,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
     {
         .baseHP        = 45,
         .baseAttack    = 55,
-        .baseDefense   = 39,
+        .baseDefense   = 44,
         .baseSpeed     = 42,
         .baseSpAttack  = 35,
-        .baseSpDefense = 39,
+        .baseSpDefense = 44,
         .types = MON_TYPES(TYPE_NORMAL),
         .catchRate = 255,
         .expYield = 51,
@@ -6608,10 +6608,10 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
     [SPECIES_DUCKLETT] =
     {
         .baseHP        = 62,
-        .baseAttack    = 44,
+        .baseAttack    = 54,
         .baseDefense   = 50,
-        .baseSpeed     = 55,
-        .baseSpAttack  = 44,
+        .baseSpeed     = 65,
+        .baseSpAttack  = 54,
         .baseSpDefense = 50,
         .types = MON_TYPES(TYPE_WATER, TYPE_FLYING),
         .catchRate = 190,
@@ -6665,7 +6665,7 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
         .levelUpLearnset = sDucklettLevelUpLearnset,
         .teachableLearnset = sDucklettTeachableLearnset,
         .eggMoveLearnset = sDucklettEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 35, SPECIES_SWANNA}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 28, SPECIES_SWANNA}),
     },
 
     [SPECIES_SWANNA] =

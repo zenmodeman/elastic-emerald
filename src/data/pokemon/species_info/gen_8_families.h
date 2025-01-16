@@ -3529,12 +3529,12 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
 #if P_FAMILY_SIZZLIPEDE
     [SPECIES_SIZZLIPEDE] =
     {
-        .baseHP        = 50,
+        .baseHP        = 60,
         .baseAttack    = 65,
         .baseDefense   = 45,
         .baseSpeed     = 45,
         .baseSpAttack  = 50,
-        .baseSpDefense = 50,
+        .baseSpDefense = 60,
         .types = MON_TYPES(TYPE_FIRE, TYPE_BUG),
         .catchRate = 190,
         .expYield = 61,
