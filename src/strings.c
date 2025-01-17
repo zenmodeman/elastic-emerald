@@ -1056,6 +1056,7 @@ const u8 gText_XWillBeSentToY[] = _("{STR_VAR_2} will be\nsent to {STR_VAR_1}.")
 const u8 gText_ByeByeVar1[] = _("Bye-bye, {STR_VAR_2}!");
 const u8 gText_XSentOverY[] = _("{STR_VAR_1} sent over {STR_VAR_3}.");
 const u8 gText_TakeGoodCareOfX[] = _("Take good care of {STR_VAR_3}!");
+const u8 gText_FoundItemWhileFishing[] = _("You found {STR_VAR_1} while fishing! {PAUSE_UNTIL_PRESS}");
 
 // Easy chat group names
 const u8 gEasyChatGroupName_Pokemon[] = _("POKéMON");

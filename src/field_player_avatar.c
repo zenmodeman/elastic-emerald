@@ -30,6 +30,8 @@
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/trainer_types.h"
+#include "string_util.h"
+#include "item.h"
 
 #define NUM_FORCED_MOVEMENTS 18
 #define NUM_ACRO_BIKE_COLLISIONS 5
@@ -159,6 +161,9 @@ static bool32 IsMetatileBlocking(s16, s16, u32);
 static bool32 IsMetatileLand(s16, s16, u32);
 
 static u8 TrySpinPlayerForWarp(struct ObjectEvent *, s16 *);
+
+
+
 
 static bool8 (*const sForcedMovementTestFuncs[NUM_FORCED_MOVEMENTS])(u8) =
 {
@@ -2068,6 +2073,19 @@ static bool32 Fishing_StartEncounter(struct Task *task)
     return FALSE;
 }
 
+static void Fishing_GiveRandomItem(void)
+{
+    u16 item;
+    const u16 possibleItems[] = {ITEM_BOTTLE_CAP, ITEM_ABILITY_CAPSULE, ITEM_ABILITY_PATCH}; // Example items
+    u8 numItems = ARRAY_COUNT(possibleItems);
+    item = possibleItems[Random() % numItems];
+    CopyItemName(item, gStringVar1);
+    StringExpandPlaceholders(gStringVar4, gText_FoundItemWhileFishing);
+    
+    AddBagItem(item, 1);
+    AddTextPrinterParameterized2(0, FONT_NORMAL, gStringVar4, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+}
+
 static bool32 Fishing_NotEvenNibble(struct Task *task)
 {
     gChainFishingDexNavStreak = 0;
@@ -2075,6 +2093,17 @@ static bool32 Fishing_NotEvenNibble(struct Task *task)
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingNoCatchDirectionAnimNum(GetPlayerFacingDirection()));
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
     AddTextPrinterParameterized2(0, FONT_NORMAL, gText_NotEvenANibble, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+
+    if (Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold()) // 30% chance
+    {
+        DebugPrintf("The Sticky hold clause is reached.");
+        Fishing_GiveRandomItem();
+    }
+    else
+    {
+        AddTextPrinterParameterized2(0, FONT_NORMAL, gText_NotEvenANibble, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+    }
+
     task->tStep = FISHING_NO_MON;
     return TRUE;
 }
