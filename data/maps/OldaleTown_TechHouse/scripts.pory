@@ -78,7 +78,7 @@ script OldaleTown_TechHouse_Embargo_Maniac{
     msgbox(format("I've got a fellow collector friend who's a big chance freak. You might even bump into him on your journey."))
     msgbox(format("He's obsessed with held items that rely on lucky chances, like Focus Band and Starf Berry."))
     msgbox(format("And he only collects Pokemon with the ability Sticky Hold, to avoid counterplay like Knock Off, Trick, and Corrosive Gas."))
-    msgbox(format("But... I’ve found plenty of ways to mess up his plan, hehe."))
+    msgbox(format("But... I've found plenty of ways to mess up his plan, hehe."))
     msgbox(format("Sure, he had Gastro Acid for obvious stuff like Neutralizing Gas or Mold Breaker."))
     msgbox(format("But he never saw Embargo or Magic Room coming! Sticky Hold can't protect him from those, what a rookie!"))
     release
@@ -101,7 +101,11 @@ script OldaleTown_TechHouse_Walker{
     faceplayer
     msgbox(format("Hey there! If you're into niche strategies, you've come to the right place!"))
     msgbox(format("I'm not as dedicated as the rest of the folks here, but I love listening to their ideas."))
-    msgbox(format("Our leader's known as the Tech Sage. He's spent decades perfecting moves most people wouldn’t even consider."))
+    msgbox(format("Our leader's known as the Tech Sage. He's spent decades perfecting moves most people wouldn't even consider."))
+    if (!flag(FLAG_BADGE04_GET)){
+        msgbox(format("And he continues to expand his repertoire regularly. He might be able to teach even more moves in the future."))
+    }
+    
     msgbox(format("You gotta respect that kind of dedication."))
     release
     end
@@ -110,9 +114,12 @@ script OldaleTown_TechHouse_Walker{
 script TechHouse_Psychic_NicheAbilities{
     lock
     faceplayer
-    msgbox(format("The Tech Sage has his way with moves, but I'm more fascinated by niche abilities."))
-    msgbox(format("Using my Psychic powers, I can peer into the potentials of a Pokemon and their special abilities, and unlock them."))
-    msgbox(format("I can't find what isn't there, though."))
+    if (!flag(FLAG_TEMP_7)){
+        msgbox(format("The Tech Sage has his way with moves, but I'm more fascinated by niche abilities."))
+        msgbox(format("Using my Psychic powers, I can peer into the potentials of a Pokemon and their special abilities, and unlock them."))
+        msgbox(format("I can't find what isn't there, though."))
+        setflag(FLAG_TEMP_7)
+    }
     msgbox(format("Would you like you give it a try with one of your Pokemon?"), MSGBOX_YESNO)
     if (var(VAR_RESULT) == 1){
         call(AbilityTutor_ChooseMon)
@@ -137,6 +144,14 @@ script TechHouse_Psychic_NicheAbilities{
     end
 }
 
+script TechHouse_SuctionCupsFisher{
+    lock
+    faceplayer
+    msgbox(format("When I'm fishing, I love the ability Suction Cups. It's helped me find far more fish."))
+    msgbox(format("Sometimes it helps find rare items too!"))
+    release
+    end
+}
 
 script AbilityTutor_ChooseMon{
 		msgbox(format("Alright, Please choose a Pokemon to check."))
