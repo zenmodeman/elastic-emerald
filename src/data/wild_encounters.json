@@ -932,7 +932,7 @@
               {
                 "min_level": 4,
                 "max_level": 6,
-                "species": "SPECIES_WINGULL"
+                "species": "SPECIES_FRIGIBAX"
               },
               {
                 "min_level": 4,
@@ -1012,7 +1012,7 @@
               {
                 "min_level": 4,
                 "max_level": 6,
-                "species": "SPECIES_FRIGIBAX"
+                "species": "SPECIES_NONE"
               },
               {
                 "min_level": 4,
