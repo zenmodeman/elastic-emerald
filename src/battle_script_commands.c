@@ -11632,7 +11632,13 @@ static void Cmd_tryhealhalfhealth(void)
     if (cmd->battler == BS_ATTACKER)
         gBattlerTarget = gBattlerAttacker;
 
-    gBattleStruct->moveDamage[gBattlerTarget] = GetNonDynamaxMaxHP(gBattlerTarget) / 2;
+    //Add special clause for Truant and Slack Off
+    if (gCurrentMove == MOVE_SLACK_OFF && GetBattlerAbility(gBattlerAttacker) == ABILITY_TRUANT){
+        gBattleStruct->moveDamage[gBattlerTarget] = (GetNonDynamaxMaxHP(gBattlerTarget) *3) / 4;
+    }else{
+        gBattleStruct->moveDamage[gBattlerTarget] = GetNonDynamaxMaxHP(gBattlerTarget) / 2;
+    }
+    
     if (gBattleStruct->moveDamage[gBattlerTarget] == 0)
         gBattleStruct->moveDamage[gBattlerTarget] = 1;
     gBattleStruct->moveDamage[gBattlerTarget] *= -1;
