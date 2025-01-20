@@ -4846,6 +4846,8 @@ static bool32 IsRestrictedModeAbilityPatchForbidden(u16 species){
         case SPECIES_SANDILE:
         case SPECIES_KROKOROK:
         case SPECIES_HONCHKROW:
+        case SPECIES_PINSIR:
+        case SPECIES_HERACROSS:
         //Contrary
         case SPECIES_SNIVY:
         case SPECIES_SERVINE:
@@ -4869,6 +4871,8 @@ static bool32 IsRestrictedModeAbilityPatchForbidden(u16 species){
         case SPECIES_LURANTIS: 
         case SPECIES_MUDBRAY:
         case SPECIES_MUDSDALE:
+        case SPECIES_SNORUNT:
+        case SPECIES_GLALIE:
             if (FlagGet(FLAG_BADGE08_GET)){
                 return FALSE;
             }else{

@@ -2634,7 +2634,7 @@ Music: Female
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Skitty @ Oran Berry  
+Skitty (F) @ Oran Berry  
 Ability: Cute Charm  
 Level: 8  
 Calm Nature  
@@ -9845,8 +9845,12 @@ Double Battle: No
 AI: Smart Trainer
 
 Treecko
+Ability: Overgrow
+Serious Nature
 Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe  
+- Quick Attack  
+- Leer  
 
 === TRAINER_BRENDAN_ROUTE_110_MUDKIP ===
 Name: BRENDAN
@@ -9899,9 +9903,14 @@ Music: Male
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Force Setup First Turn
 
-Torchic
-Level: 5
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Torchic  
+Ability: Blaze  
+Serious Nature
+Level: 5  
+IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe  
+- Scratch  
+- Growl  
+
 
 
 === TRAINER_BRENDAN_ROUTE_110_TREECKO ===
@@ -9956,8 +9965,13 @@ Double Battle: No
 AI: Smart Trainer
 
 Mudkip
+Ability: Torrent
+Serious Nature
 Level: 5
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Tackle
+- Growl
+
 
 === TRAINER_BRENDAN_ROUTE_110_TORCHIC ===
 Name: BRENDAN
@@ -10011,8 +10025,13 @@ Double Battle: No
 AI: Smart Trainer
 
 Treecko
+Ability: Overgrow
+Serious Nature
 Level: 5
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe  
+- Quick Attack  
+- Leer  
+
 
 === TRAINER_MAY_ROUTE_110_MUDKIP ===
 Name: MAY
@@ -10067,11 +10086,11 @@ AI: Smart Trainer
 
 Torchic  
 Ability: Blaze  
+Serious Nature
 Level: 5  
 IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe  
 - Scratch  
 - Growl  
-- Focus Energy
 
 === TRAINER_MAY_ROUTE_110_TREECKO ===
 Name: MAY
@@ -10125,8 +10144,13 @@ Double Battle: No
 AI: Smart Trainer
 
 Mudkip
+Ability: Torrent
+Serious Nature
 Level: 5
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+- Tackle
+- Growl
+
 
 === TRAINER_MAY_ROUTE_110_TORCHIC ===
 Name: MAY
@@ -11248,7 +11272,6 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 Wingull @ Berry Juice  
 Ability: Rain Dish  
 Level: 14  
-Tera Type: Water  
 EVs: 20 HP / 44 Def / 16 SpD  
 Calm Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  

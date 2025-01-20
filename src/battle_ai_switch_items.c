@@ -2100,7 +2100,7 @@ bool32 HasHealItemWithEffect(u8 battleUsageID){
         if (itemEffects == NULL)
             continue;
         if (ItemId_GetBattleUsage(item) == battleUsageID){
-            DebugPrintf("Item match holds true.");
+            // DebugPrintf("Item match holds true.");
             return TRUE;
         }
     }

@@ -2297,7 +2297,7 @@ const struct SpeciesInfo gSpeciesInfoGen2[] =
 #if P_FAMILY_HOPPIP
     [SPECIES_HOPPIP] =
     {
-        .baseHP        = 35,
+        .baseHP        = 45,
         .baseAttack    = 35,
         .baseDefense   = 40,
         .baseSpeed     = 50,
@@ -2365,12 +2365,12 @@ const struct SpeciesInfo gSpeciesInfoGen2[] =
 
     [SPECIES_SKIPLOOM] =
     {
-        .baseHP        = 55,
+        .baseHP        = 65,
         .baseAttack    = 45,
-        .baseDefense   = 50,
+        .baseDefense   = 60,
         .baseSpeed     = 80,
         .baseSpAttack  = 45,
-        .baseSpDefense = 65,
+        .baseSpDefense = 75,
         .types = MON_TYPES(TYPE_GRASS, TYPE_FLYING),
         .catchRate = 120,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 119 : 136,

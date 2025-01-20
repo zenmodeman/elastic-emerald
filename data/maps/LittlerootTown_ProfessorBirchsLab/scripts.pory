@@ -1145,7 +1145,7 @@ script StarterFightingScript{
 			msgbox("Received Timburr!")
 			setflag(FLAG_STARTER_ACQUIRED)
 			call(NicknamePartyMon)
-			setvar(VAR_STARTER_MON, 0) //Set as Treecko so Rival has Blaziken (flying moves)
+			setvar(VAR_STARTER_MON, 2) //Set as Mudkip so Rival has Sceptile (Acrobatics)
 		}
 		setflag(FLAG_SYS_POKEMON_GET)
 		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)
@@ -1401,7 +1401,7 @@ script StarterFairyScript{
 			msgbox("Received Fidough!")
 			setflag(FLAG_STARTER_ACQUIRED)
 			call(NicknamePartyMon)
-			setvar(VAR_STARTER_MON, 0) //Set as Treecko, so rival has Blaziken 
+			setvar(VAR_STARTER_MON, 1) //Set as Torchic, so rival has Mudkip (Iron Tail)
 		}
 		setflag(FLAG_SYS_POKEMON_GET)
 		setvar(VAR_LITTLEROOT_TOWN_STATE, 2)

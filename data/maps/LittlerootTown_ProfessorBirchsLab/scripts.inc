@@ -2381,7 +2381,7 @@ StarterFightingScript_2:
 # 1147 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	call NicknamePartyMon
 # 1148 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setvar VAR_STARTER_MON, 0
+	setvar VAR_STARTER_MON, 2
 	goto StarterFightingScript_1
 
 
@@ -2845,7 +2845,7 @@ StarterFairyScript_2:
 # 1403 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	call NicknamePartyMon
 # 1404 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setvar VAR_STARTER_MON, 0
+	setvar VAR_STARTER_MON, 1
 	goto StarterFairyScript_1
 
 

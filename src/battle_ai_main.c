@@ -1082,8 +1082,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_MINIMIZE:
             if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_EVASION))
                 ADJUST_SCORE(-10);    
-            if (aiData->abilities[battlerDef] == ABILITY_NO_GUARD || aiData->abilities[battlerDef] == ABILITY_KEEN_EYE
-            || gBattleMons[battlerDef].status2 & STATUS2_FORESIGHT){
+            if (aiData->abilities[battlerDef] == ABILITY_NO_GUARD || aiData->abilities[battlerDef] == ABILITY_KEEN_EYE || aiData->abilities[battlerDef] == ABILITY_LONG_REACH
+            || aiData->abilities[battlerDef] == ABILITY_MINDS_EYE || gBattleMons[battlerDef].status2 & STATUS2_FORESIGHT){
                 ADJUST_SCORE(-10);
             }
             if (moveEffect == EFFECT_MINIMIZE && HasMinimizeDoubleMove(battlerDef)){
@@ -4414,7 +4414,7 @@ case EFFECT_DISABLE:
             if (AreBattlersOfOppositeGender(battlerAtk, battlerDef)){
                 ADJUST_SCORE(WEAK_EFFECT);
 
-                if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_RandLessThan(200)){
+                if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_RandLessThan(127)){
                     ADJUST_SCORE(WEAK_EFFECT);
                 }
             }
@@ -4763,11 +4763,12 @@ case EFFECT_DISABLE:
         break;
     case EFFECT_CAMOUFLAGE:
 
-        //Give potential to use Camouflage if AI cannot 2KO, the new type is not weak to the opponent's STABs, and the current type does not resist both STABs
+        //Give potential to use Camouflage if AI cannot 2KO, the new type is not weak to the opponent's STABs
         if (!CanAIFaintTarget(battlerAtk, battlerDef, 2) 
         && GetTypeModifier(gBattleMons[battlerDef].types[0], GetTerrainType()) < UQ_4_12(2.0) 
         && GetTypeModifier(gBattleMons[battlerDef].types[1], GetTerrainType()) < UQ_4_12(2.0) 
 
+        //, and the current type does not resist both STABs
         //uses MOVE_CONSTRICT as a hacky way to only consider types and not specific move logic
         && 
         (CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].types[0], battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0)
