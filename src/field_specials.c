@@ -4425,6 +4425,9 @@ static bool32 IsAbilityTutorViable(u16 ability){
         case ABILITY_ILLUMINATE:
         case ABILITY_STALWART:
         case ABILITY_PROPELLER_TAIL:
+        case ABILITY_KLUTZ:
+        case ABILITY_LIGHT_METAL:
+        case ABILITY_STAKEOUT:
             return TRUE;
         default:
             return FALSE;

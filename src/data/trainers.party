@@ -344,7 +344,7 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Clobbopus @ Mystic Water  
 Ability: Technician  
-Level: 14  
+Level: 15  
 EVs: 28 HP / 32 Def / 28 SpD  
 Impish Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -355,7 +355,7 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Totodile @ Sea Incense  
 Ability: Torrent  
-Level: 15  
+Level: 16  
 EVs: 20 HP / 16 Def / 36 SpD  
 Bashful Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11229,7 +11229,7 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Wingull @ Berry Juice  
 Ability: Rain Dish  
-Level: 14  
+Level: 15
 EVs: 20 HP / 44 Def / 16 SpD  
 Calm Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11240,7 +11240,7 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Poochyena @ Tanga Berry  
 Ability: Rattled  
-Level: 14  
+Level: 15  
 EVs: 32 HP / 32 Def / 32 Spe  
 Jolly Nature  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11251,7 +11251,7 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Combusken @ Scope Lens  
 Ability: Blaze  
-Level: 16  
+Level: 17  
 EVs: 16 HP / 16 Atk / 16 Def / 16 SpD / 32 Spe  
 Quirky Nature  
 IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
@@ -11271,7 +11271,7 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 
 Wingull @ Berry Juice  
 Ability: Rain Dish  
-Level: 14  
+Level: 15
 EVs: 20 HP / 44 Def / 16 SpD  
 Calm Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11282,7 +11282,7 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Poochyena @ Tanga Berry  
 Ability: Rattled  
-Level: 14  
+Level: 15  
 EVs: 32 HP / 32 Def / 32 Spe  
 Jolly Nature  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11293,7 +11293,7 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Grovyle @ Bright Powder  
 Ability: Overgrow  
-Level: 16  
+Level: 17  
 EVs: 20 HP / 36 Def / 28 SpD / 12 Spe  
 Serious Nature  
 IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
@@ -11403,7 +11403,7 @@ AI: Smart Trainer
 
 Slugma @ Grip Claw  
 Ability: Flame Body  
-Level: 14  
+Level: 15 
 EVs: 20 HP / 20 Def / 12 SpA / 20 SpD  
 Bold Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11414,7 +11414,7 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Poochyena @ Tanga Berry  
 Ability: Rattled  
-Level: 14  
+Level: 15
 EVs: 32 HP / 32 Def / 32 Spe  
 Jolly Nature  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11425,7 +11425,7 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Marshtomp @ Iapapa Berry  
 Ability: Torrent  
-Level: 16  
+Level: 17
 EVs: 36 HP / 12 Def / 16 SpA / 36 SpD  
 IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
 Serious Nature
@@ -11445,7 +11445,7 @@ AI: Check Bad Move / Try To Faint / Force Setup First Turn
 
 Wingull @ Berry Juice  
 Ability: Rain Dish  
-Level: 14  
+Level: 15  
 EVs: 20 HP / 44 Def / 16 SpD  
 Calm Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11456,7 +11456,7 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Poochyena @ Tanga Berry  
 Ability: Rattled  
-Level: 14  
+Level: 15  
 EVs: 32 HP / 32 Def / 32 Spe  
 Jolly Nature  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -11467,7 +11467,7 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Grovyle @ Bright Powder  
 Ability: Overgrow  
-Level: 16  
+Level: 17  
 EVs: 20 HP / 36 Def / 28 SpD / 12 Spe  
 Serious Nature  
 IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
@@ -14762,7 +14762,7 @@ AI: Smart Trainer
 
 Wingull @ Berry Juice  
 Ability: Rain Dish  
-Level: 14  
+Level: 15
 EVs: 20 HP / 44 Def / 16 SpD  
 Calm Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -14773,7 +14773,7 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Poochyena @ Tanga Berry  
 Ability: Rattled  
-Level: 14  
+Level: 15  
 EVs: 32 HP / 32 Def / 32 Spe  
 Jolly Nature  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -14784,7 +14784,7 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Combusken @ Scope Lens  
 Ability: Blaze  
-Level: 16  
+Level: 17  
 EVs: 16 HP / 16 Atk / 16 Def / 16 SpD / 32 Spe  
 Quirky Nature  
 IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
@@ -14804,7 +14804,7 @@ AI: Smart Trainer
 
 Slugma @ Grip Claw  
 Ability: Flame Body  
-Level: 14  
+Level: 15
 EVs: 20 HP / 20 Def / 12 SpA / 20 SpD  
 Bold Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -14815,7 +14815,7 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Poochyena @ Tanga Berry  
 Ability: Rattled  
-Level: 14  
+Level: 15  
 EVs: 32 HP / 32 Def / 32 Spe  
 Jolly Nature  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -14826,7 +14826,7 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 
 Marshtomp @ Iapapa Berry  
 Ability: Torrent  
-Level: 16  
+Level: 17  
 EVs: 36 HP / 12 Def / 16 SpA / 36 SpD  
 IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe  
 Serious Nature

@@ -4599,6 +4599,11 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
             switch (evolutions[i].method)
             {
             case EVO_FRIENDSHIP:
+                if (FlagGet(FLAG_RESTRICTED_MODE)){
+                    if (species == SPECIES_WOOBAT && level < 18){
+                        break;
+                    }
+                }
                 if (friendship >= FRIENDSHIP_EVO_THRESHOLD)
                     targetSpecies = evolutions[i].targetSpecies;
                 break;

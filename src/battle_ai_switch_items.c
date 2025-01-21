@@ -1454,7 +1454,7 @@ static u32 GetSwitchinRecurringDamage(void)
         }
         else if (holdEffect == HOLD_EFFECT_STICKY_BARB)
         {
-            passiveDamage = maxHP / 8;
+            passiveDamage = maxHP / 6;
             if(passiveDamage == 0)
                 passiveDamage = 1;
         }

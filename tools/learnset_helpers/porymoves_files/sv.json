@@ -1045,7 +1045,7 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_CAMOUFLAGE"]
   },
   "WEEDLE": {
     "LevelMoves": [],
@@ -3429,7 +3429,7 @@
       "MOVE_TOXIC_SPIKES",
       "MOVE_VENOSHOCK"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_MAGIC_COAT"]
   },
   "VENOMOTH": {
     "LevelMoves": [
@@ -24518,7 +24518,7 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_CAMOUFLAGE"]
   },
   "CASCOON": {
     "LevelMoves": [],
@@ -57233,7 +57233,7 @@
       "MOVE_POISON_POWDER",
       "MOVE_RAGE_POWDER"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_CAMOUFLAGE"]
   },
   "LITLEO": {
     "LevelMoves": [

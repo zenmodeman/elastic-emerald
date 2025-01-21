@@ -681,7 +681,7 @@ F_TRAINER_FEMALE |
 #line 346
             .ability = ABILITY_TECHNICIAN,
 #line 347
-            .lvl = 14,
+            .lvl = 15,
 #line 349
             .nature = NATURE_IMPISH,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -706,7 +706,7 @@ F_TRAINER_FEMALE |
 #line 357
             .ability = ABILITY_TORRENT,
 #line 358
-            .lvl = 15,
+            .lvl = 16,
 #line 360
             .nature = NATURE_BASHFUL,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -27966,7 +27966,7 @@ F_TRAINER_FEMALE |
 #line 11231
             .ability = ABILITY_RAIN_DISH,
 #line 11232
-            .lvl = 14,
+            .lvl = 15,
 #line 11234
             .nature = NATURE_CALM,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -27991,7 +27991,7 @@ F_TRAINER_FEMALE |
 #line 11242
             .ability = ABILITY_RATTLED,
 #line 11243
-            .lvl = 14,
+            .lvl = 15,
 #line 11245
             .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28016,7 +28016,7 @@ F_TRAINER_FEMALE |
 #line 11253
             .ability = ABILITY_BLAZE,
 #line 11254
-            .lvl = 16,
+            .lvl = 17,
 #line 11256
             .nature = NATURE_QUIRKY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28062,7 +28062,7 @@ F_TRAINER_FEMALE |
 #line 11273
             .ability = ABILITY_RAIN_DISH,
 #line 11274
-            .lvl = 14,
+            .lvl = 15,
 #line 11276
             .nature = NATURE_CALM,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28087,7 +28087,7 @@ F_TRAINER_FEMALE |
 #line 11284
             .ability = ABILITY_RATTLED,
 #line 11285
-            .lvl = 14,
+            .lvl = 15,
 #line 11287
             .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28112,7 +28112,7 @@ F_TRAINER_FEMALE |
 #line 11295
             .ability = ABILITY_OVERGROW,
 #line 11296
-            .lvl = 16,
+            .lvl = 17,
 #line 11298
             .nature = NATURE_SERIOUS,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28390,7 +28390,7 @@ F_TRAINER_FEMALE |
 #line 11405
             .ability = ABILITY_FLAME_BODY,
 #line 11406
-            .lvl = 14,
+            .lvl = 15,
 #line 11408
             .nature = NATURE_BOLD,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28415,7 +28415,7 @@ F_TRAINER_FEMALE |
 #line 11416
             .ability = ABILITY_RATTLED,
 #line 11417
-            .lvl = 14,
+            .lvl = 15,
 #line 11419
             .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28440,7 +28440,7 @@ F_TRAINER_FEMALE |
 #line 11427
             .ability = ABILITY_TORRENT,
 #line 11428
-            .lvl = 16,
+            .lvl = 17,
 #line 11431
             .nature = NATURE_SERIOUS,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28488,7 +28488,7 @@ F_TRAINER_FEMALE |
 #line 11447
             .ability = ABILITY_RAIN_DISH,
 #line 11448
-            .lvl = 14,
+            .lvl = 15,
 #line 11450
             .nature = NATURE_CALM,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28513,7 +28513,7 @@ F_TRAINER_FEMALE |
 #line 11458
             .ability = ABILITY_RATTLED,
 #line 11459
-            .lvl = 14,
+            .lvl = 15,
 #line 11461
             .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -28538,7 +28538,7 @@ F_TRAINER_FEMALE |
 #line 11469
             .ability = ABILITY_OVERGROW,
 #line 11470
-            .lvl = 16,
+            .lvl = 17,
 #line 11472
             .nature = NATURE_SERIOUS,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -36733,7 +36733,7 @@ F_TRAINER_FEMALE |
 #line 14764
             .ability = ABILITY_RAIN_DISH,
 #line 14765
-            .lvl = 14,
+            .lvl = 15,
 #line 14767
             .nature = NATURE_CALM,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -36758,7 +36758,7 @@ F_TRAINER_FEMALE |
 #line 14775
             .ability = ABILITY_RATTLED,
 #line 14776
-            .lvl = 14,
+            .lvl = 15,
 #line 14778
             .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -36783,7 +36783,7 @@ F_TRAINER_FEMALE |
 #line 14786
             .ability = ABILITY_BLAZE,
 #line 14787
-            .lvl = 16,
+            .lvl = 17,
 #line 14789
             .nature = NATURE_QUIRKY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -36831,7 +36831,7 @@ F_TRAINER_FEMALE |
 #line 14806
             .ability = ABILITY_FLAME_BODY,
 #line 14807
-            .lvl = 14,
+            .lvl = 15,
 #line 14809
             .nature = NATURE_BOLD,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -36856,7 +36856,7 @@ F_TRAINER_FEMALE |
 #line 14817
             .ability = ABILITY_RATTLED,
 #line 14818
-            .lvl = 14,
+            .lvl = 15,
 #line 14820
             .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
@@ -36881,7 +36881,7 @@ F_TRAINER_FEMALE |
 #line 14828
             .ability = ABILITY_TORRENT,
 #line 14829
-            .lvl = 16,
+            .lvl = 17,
 #line 14832
             .nature = NATURE_SERIOUS,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
