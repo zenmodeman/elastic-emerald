@@ -1150,11 +1150,11 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_PANSAGE
     [SPECIES_PANSAGE] =
     {
-        .baseHP        = 50,
-        .baseAttack    = 53,
+        .baseHP        = 60,
+        .baseAttack    = 63,
         .baseDefense   = 48,
-        .baseSpeed     = 64,
-        .baseSpAttack  = 53,
+        .baseSpeed     = 74,
+        .baseSpAttack  = 63,
         .baseSpDefense = 48,
         .types = MON_TYPES(TYPE_GRASS),
         .catchRate = 190,
@@ -1276,11 +1276,11 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_PANSEAR
     [SPECIES_PANSEAR] =
     {
-        .baseHP        = 50,
-        .baseAttack    = 53,
+        .baseHP        = 60,
+        .baseAttack    = 63,
         .baseDefense   = 48,
-        .baseSpeed     = 64,
-        .baseSpAttack  = 53,
+        .baseSpeed     = 74,
+        .baseSpAttack  = 63,
         .baseSpDefense = 48,
         .types = MON_TYPES(TYPE_FIRE),
         .catchRate = 190,
@@ -1404,11 +1404,11 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_PANPOUR
     [SPECIES_PANPOUR] =
     {
-        .baseHP        = 50,
-        .baseAttack    = 53,
+        .baseHP        = 60,
+        .baseAttack    = 63,
         .baseDefense   = 48,
-        .baseSpeed     = 64,
-        .baseSpAttack  = 53,
+        .baseSpeed     = 74,
+        .baseSpAttack  = 63,
         .baseSpDefense = 48,
         .types = MON_TYPES(TYPE_WATER),
         .catchRate = 190,
@@ -2274,11 +2274,11 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 
     [SPECIES_SWOOBAT] =
     {
-        .baseHP        = 67,
+        .baseHP        = 77,
         .baseAttack    = 57,
         .baseDefense   = 55,
         .baseSpeed     = 114,
-        .baseSpAttack  = 77,
+        .baseSpAttack  = 87,
         .baseSpDefense = 55,
         .types = MON_TYPES(TYPE_PSYCHIC, TYPE_FLYING),
         .catchRate = 45,

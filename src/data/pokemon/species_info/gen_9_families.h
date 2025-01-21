@@ -759,8 +759,8 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 #if P_FAMILY_TAROUNTULA
     [SPECIES_TAROUNTULA] =
     {
-        .baseHP        = 35,
-        .baseAttack    = 41,
+        .baseHP        = 40,
+        .baseAttack    = 46,
         .baseDefense   = 45,
         .baseSpeed     = 20,
         .baseSpAttack  = 29,
@@ -822,8 +822,8 @@ const struct SpeciesInfo gSpeciesInfoGen9[] =
 
     [SPECIES_SPIDOPS] =
     {
-        .baseHP        = 60,
-        .baseAttack    = 79,
+        .baseHP        = 65,
+        .baseAttack    = 84,
         .baseDefense   = 92,
         .baseSpeed     = 35,
         .baseSpAttack  = 52,

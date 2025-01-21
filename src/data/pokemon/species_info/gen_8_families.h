@@ -3231,10 +3231,10 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
     [SPECIES_TOXEL] =
     {
         .baseHP        = 40,
-        .baseAttack    = 38,
+        .baseAttack    = 48,
         .baseDefense   = 35,
         .baseSpeed     = 40,
-        .baseSpAttack  = 54,
+        .baseSpAttack  = 64,
         .baseSpDefense = 35,
         .types = MON_TYPES(TYPE_ELECTRIC, TYPE_POISON),
         .catchRate = 75,
