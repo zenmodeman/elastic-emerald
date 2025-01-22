@@ -918,6 +918,7 @@ static const u16 sDrowzeeEggMoveLearnset[] = {
     MOVE_SKILL_SWAP,
     MOVE_POWER_SPLIT,
     MOVE_PSYCHIC_TERRAIN,
+    MOVE_YAWN,
     MOVE_UNAVAILABLE,
 };
 #endif //P_FAMILY_DROWZEE
