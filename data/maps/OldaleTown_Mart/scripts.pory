@@ -44,24 +44,24 @@ script OldaleTown_Mart_EventScript_Clerk{
     waitmessage
     if (flag(FLAG_ADVENTURE_STARTED)){
         if (flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
-            pokemart(StockedMartItemsResourceEVs)
+            pokemart(Oldale_StockedMartItemsResourceEVs)
         }elif (flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
-            pokemart(StockedMartItemsResourceEVless)
+            pokemart(Oldale_StockedMartItemsResourceEVless)
         }elif (!flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
-            pokemart(StockedMartItemsResourcefulEVs)
+            pokemart(Oldale_StockedMartItemsResourcefulEVs)
         }elif (!flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
-            pokemart(StockedMartItemsResourcefulEVless)
+            pokemart(Oldale_StockedMartItemsResourcefulEVless)
         }
 
     }else{
-        pokemart(BasicMartItems)
+        pokemart(Oldale_BasicMartItems)
     }
     msgbox("Please Come Again")
     release
     end
 }
 
-mart BasicMartItems{
+mart Oldale_BasicMartItems{
     ITEM_POTION
     ITEM_ANTIDOTE
     ITEM_PARALYZE_HEAL
@@ -70,7 +70,7 @@ mart BasicMartItems{
     ITEM_REPEL
 }
 
-mart StockedMartItemsResourceEVless{
+mart Oldale_StockedMartItemsResourceEVless{
     ITEM_POKE_BALL
     ITEM_POTION
     ITEM_ANTIDOTE
@@ -81,7 +81,7 @@ mart StockedMartItemsResourceEVless{
     ITEM_REPEL
 }
 
-mart StockedMartItemsResourceEVs{
+mart Oldale_StockedMartItemsResourceEVs{
     ITEM_POKE_BALL
     ITEM_POTION
     ITEM_ANTIDOTE
@@ -93,7 +93,7 @@ mart StockedMartItemsResourceEVs{
     ITEM_HEALTH_FEATHER
 }
 
-mart StockedMartItemsResourcefulEVless{
+mart Oldale_StockedMartItemsResourcefulEVless{
     ITEM_POKE_BALL
     ITEM_POTION
     ITEM_ANTIDOTE
@@ -105,7 +105,7 @@ mart StockedMartItemsResourcefulEVless{
     ITEM_SERIOUS_MINT
 }
 
-mart StockedMartItemsResourcefulEVs{
+mart Oldale_StockedMartItemsResourcefulEVs{
     ITEM_POKE_BALL
     ITEM_POTION
     ITEM_ANTIDOTE

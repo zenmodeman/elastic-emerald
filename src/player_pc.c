@@ -243,6 +243,7 @@ static const u16 sNewGamePCItems[][2] =
     {ITEM_CHERI_BERRY, 3},
     {ITEM_RAWST_BERRY, 2},
     {ITEM_CHESTO_BERRY, 2},
+    {ITEM_ASPEAR_BERRY, 2},
     {ITEM_REPEL, 10},
     { ITEM_NONE, 0 }
 };

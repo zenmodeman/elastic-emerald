@@ -659,8 +659,8 @@
       "x": 16,
       "y": 64,
       "elevation": 3,
-      "item": "ITEM_FLOAT_STONE",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_FLOAT_STONE"
+      "item": "ITEM_HEART_SCALE",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_104_HEART_SCALE"
     }
   ]
 }

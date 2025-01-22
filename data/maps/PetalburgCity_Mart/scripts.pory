@@ -84,89 +84,77 @@ script PetalburgCity_Mart_EventScript_Clerk{
     message("How May I serve you?")
     waitmessage
     if (flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
-        pokemart(MartItemsResourceEVs)
+        pokemart(Petalburg_MartItemsResourceEVs)
     }elif (flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
-            pokemart(MartItemsResourceEVless)
+            pokemart(Petalburg_MartItemsResourceEVless)
     }elif (!flag(FLAG_RESOURCE_MODE) && flag(FLAG_EV_MODE)){
-            pokemart(MartItemsResourcefulEVs)
+            pokemart(Petalburg_MartItemsResourcefulEVs)
     }elif (!flag(FLAG_RESOURCE_MODE) && !flag(FLAG_EV_MODE)){
-            pokemart(MartItemsResourcefulEVless)
+            pokemart(Petalburg_MartItemsResourcefulEVless)
     }
     msgbox("Please Come Again")
     release
     end
 }
 
-mart MartItemsResourceEVless{
+mart Petalburg_MartItemsResourceEVless{
     ITEM_POKE_BALL
-	ITEM_GREAT_BALL
 	ITEM_POTION
-	ITEM_SUPER_POTION
 	ITEM_EXP_CANDY_XS
 	ITEM_ANTIDOTE
 	ITEM_PARALYZE_HEAL
 	ITEM_AWAKENING
 	ITEM_ESCAPE_ROPE
 	ITEM_REPEL
-	ITEM_X_SPEED
-	ITEM_X_ATTACK
 	ITEM_X_DEFENSE
 	ITEM_ORANGE_MAIL
+	ITEM_KELPSY_BERRY
 }
 
-mart MartItemsResourceEVs{
+mart Petalburg_MartItemsResourceEVs{
     ITEM_POKE_BALL
-	ITEM_GREAT_BALL
 	ITEM_POTION
 	ITEM_EXP_CANDY_XS
-	ITEM_SUPER_POTION
 	ITEM_ANTIDOTE
 	ITEM_PARALYZE_HEAL
 	ITEM_AWAKENING
 	ITEM_ESCAPE_ROPE
 	ITEM_REPEL
-	ITEM_X_SPEED
-	ITEM_X_ATTACK
 	ITEM_X_DEFENSE
 	ITEM_ORANGE_MAIL
     ITEM_RESIST_FEATHER
+	ITEM_KELPSY_BERRY
 }
 
-mart MartItemsResourcefulEVless{
+mart Petalburg_MartItemsResourcefulEVless{
     ITEM_POKE_BALL
-	ITEM_GREAT_BALL
 	ITEM_POTION
-	ITEM_SUPER_POTION
 	ITEM_EXP_CANDY_XS
 	ITEM_ANTIDOTE
 	ITEM_PARALYZE_HEAL
 	ITEM_AWAKENING
 	ITEM_ESCAPE_ROPE
 	ITEM_REPEL
-	ITEM_X_SPEED
-	ITEM_X_ATTACK
 	ITEM_X_DEFENSE
 	ITEM_ORANGE_MAIL
     ITEM_LAX_MINT
+	ITEM_KELPSY_BERRY
 }
 
-mart MartItemsResourcefulEVs{
+mart Petalburg_MartItemsResourcefulEVs{
     ITEM_POKE_BALL
-	ITEM_GREAT_BALL
 	ITEM_POTION
-	ITEM_SUPER_POTION
 	ITEM_EXP_CANDY_XS
 	ITEM_ANTIDOTE
 	ITEM_PARALYZE_HEAL
 	ITEM_AWAKENING
 	ITEM_ESCAPE_ROPE
 	ITEM_REPEL
-	ITEM_X_SPEED
-	ITEM_X_ATTACK
 	ITEM_X_DEFENSE
 	ITEM_ORANGE_MAIL
     ITEM_LAX_MINT
     ITEM_RESIST_FEATHER
+	ITEM_KELPSY_BERRY
 }
 
 

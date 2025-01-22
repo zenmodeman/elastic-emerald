@@ -83,7 +83,7 @@ OldaleTown_Mart_EventScript_Clerk::
 # 45 "data/maps/OldaleTown_Mart/scripts.pory"
 	goto_if_set FLAG_ADVENTURE_STARTED, OldaleTown_Mart_EventScript_Clerk_2
 # 57 "data/maps/OldaleTown_Mart/scripts.pory"
-	pokemart BasicMartItems
+	pokemart Oldale_BasicMartItems
 OldaleTown_Mart_EventScript_Clerk_1:
 # 59 "data/maps/OldaleTown_Mart/scripts.pory"
 	msgbox OldaleTown_Mart_EventScript_Clerk_Text_1
@@ -107,22 +107,22 @@ OldaleTown_Mart_EventScript_Clerk_10:
 
 OldaleTown_Mart_EventScript_Clerk_5:
 # 47 "data/maps/OldaleTown_Mart/scripts.pory"
-	pokemart StockedMartItemsResourceEVs
+	pokemart Oldale_StockedMartItemsResourceEVs
 	goto OldaleTown_Mart_EventScript_Clerk_1
 
 OldaleTown_Mart_EventScript_Clerk_6:
 # 49 "data/maps/OldaleTown_Mart/scripts.pory"
-	pokemart StockedMartItemsResourceEVless
+	pokemart Oldale_StockedMartItemsResourceEVless
 	goto OldaleTown_Mart_EventScript_Clerk_1
 
 OldaleTown_Mart_EventScript_Clerk_7:
 # 51 "data/maps/OldaleTown_Mart/scripts.pory"
-	pokemart StockedMartItemsResourcefulEVs
+	pokemart Oldale_StockedMartItemsResourcefulEVs
 	goto OldaleTown_Mart_EventScript_Clerk_1
 
 OldaleTown_Mart_EventScript_Clerk_8:
 # 53 "data/maps/OldaleTown_Mart/scripts.pory"
-	pokemart StockedMartItemsResourcefulEVless
+	pokemart Oldale_StockedMartItemsResourcefulEVless
 	goto OldaleTown_Mart_EventScript_Clerk_1
 
 OldaleTown_Mart_EventScript_Clerk_9:
@@ -148,7 +148,7 @@ OldaleTown_Mart_EventScript_Clerk_18:
 
 	.align 2
 # 64 "data/maps/OldaleTown_Mart/scripts.pory"
-BasicMartItems:
+Oldale_BasicMartItems:
 # 65 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_POTION
 # 66 "data/maps/OldaleTown_Mart/scripts.pory"
@@ -165,7 +165,7 @@ BasicMartItems:
 
 	.align 2
 # 73 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourceEVless:
+Oldale_StockedMartItemsResourceEVless:
 # 74 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_POKE_BALL
 # 75 "data/maps/OldaleTown_Mart/scripts.pory"
@@ -186,7 +186,7 @@ StockedMartItemsResourceEVless:
 
 	.align 2
 # 84 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourceEVs:
+Oldale_StockedMartItemsResourceEVs:
 # 85 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_POKE_BALL
 # 86 "data/maps/OldaleTown_Mart/scripts.pory"
@@ -209,7 +209,7 @@ StockedMartItemsResourceEVs:
 
 	.align 2
 # 96 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourcefulEVless:
+Oldale_StockedMartItemsResourcefulEVless:
 # 97 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_POKE_BALL
 # 98 "data/maps/OldaleTown_Mart/scripts.pory"
@@ -232,7 +232,7 @@ StockedMartItemsResourcefulEVless:
 
 	.align 2
 # 108 "data/maps/OldaleTown_Mart/scripts.pory"
-StockedMartItemsResourcefulEVs:
+Oldale_StockedMartItemsResourcefulEVs:
 # 109 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_POKE_BALL
 # 110 "data/maps/OldaleTown_Mart/scripts.pory"
