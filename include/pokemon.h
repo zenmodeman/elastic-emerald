@@ -645,7 +645,7 @@ bool8 ShouldIgnoreDeoxysForm(u8 caseId, u8 battlerId);
 u16 GetUnionRoomTrainerPic(void);
 u16 GetUnionRoomTrainerClass(void);
 
-u8 GetTypeFromVar(u8 varValue);
+u8 GetTypeFromVarValue(u8 varValue);
 
 void CreateEnemyEventMon(void);
 void CalculateMonStats(struct Pokemon *mon);

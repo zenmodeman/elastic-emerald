@@ -1061,7 +1061,7 @@ void ZeroBoxMonData(struct BoxPokemon *boxMon)
         raw[i] = 0;
 }
 
-u8 GetTypeFromVar(u8 varValue){
+u8 GetTypeFromVarValue(u8 varValue){
     if (varValue == 0 || varValue >= NUMBER_OF_MON_TYPES){
         return TYPE_NONE;
     }else if (varValue >= 10){
@@ -4642,8 +4642,15 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL:
+                if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))!= TYPE_NONE){
+                    //Since currently Magikarp is the fishing placeholder when monotype encounters are incompatible, prevent it from evolving
+                    if (species == SPECIES_MAGIKARP && GetTypeFromVarValue(VarGet(VAR_MONOTYPE)) != TYPE_FLYING && GetTypeFromVarValue(VarGet(VAR_MONOTYPE)) != TYPE_WATER){
+                        break;
+                    }
+                }
                 if (evolutions[i].param <= level)
                     targetSpecies = evolutions[i].targetSpecies;
+                
                 break;
             case EVO_LEVEL_FEMALE:
                 if (evolutions[i].param <= level && GetMonGender(mon) == MON_FEMALE)
@@ -4669,9 +4676,9 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                         targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_SILCOON:
-                if (GetTypeFromVar(VarGet(VAR_MONOTYPE))== TYPE_POISON){
+                if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))== TYPE_POISON){
                     break;
-                }else if (GetTypeFromVar(VarGet(VAR_MONOTYPE)) == TYPE_FLYING){
+                }else if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE)) == TYPE_FLYING){
                     targetSpecies = evolutions[i].targetSpecies;
                     break;
                 }
@@ -4679,9 +4686,9 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_CASCOON:
-                if (GetTypeFromVar(VarGet(VAR_MONOTYPE))== TYPE_FLYING){
+                if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))== TYPE_FLYING){
                     break;
-                }else if (GetTypeFromVar(VarGet(VAR_MONOTYPE))== TYPE_POISON){
+                }else if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))== TYPE_POISON){
                     targetSpecies = evolutions[i].targetSpecies;
                     break;
                 }

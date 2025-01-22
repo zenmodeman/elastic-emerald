@@ -38,7 +38,9 @@ extern const u8 EventScript_SprayWoreOff[];
 #define NUM_FISHING_SPOTS (NUM_FISHING_SPOTS_1 + NUM_FISHING_SPOTS_2 + NUM_FISHING_SPOTS_3)
 
 #define MAX_REGULAR_LAND_SLOTS 8 
-
+#define NUM_OLD_ROD_SLOTS 2
+#define NUM_GOOD_ROD_SLOTS 3
+#define NUM_SUPER_ROD_SLOTS 5
 
 enum {
     WILD_AREA_LAND,
@@ -59,6 +61,8 @@ static void UpdateChainFishingStreak();
 static bool8 IsWildLevelAllowedByRepel(u8 level);
 static void ApplyFluteEncounterRateMod(u32 *encRate);
 static void ApplyCleanseTagEncounterRateMod(u32 *encRate);
+static bool32 IsMonMonotypeException(u16 species, u8 type);
+static bool8 TryGetRandomWildMonMonotypeIndex(const struct WildPokemon *wildMon, u8 type, u8 numMon, u8 *monIndex);
 static u8 GetMaxLevelOfSpeciesInWildTable(const struct WildPokemon *wildMon, u16 species, u8 area);
 #ifdef BUGFIX
 static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 type, u16 ability, u8 *monIndex, u32 size);
@@ -444,7 +448,7 @@ void CreateWildMon(u16 species, u8 level)
 {
     u8 gender;
     bool32 checkCuteCharm = TRUE;
-    u8 monotype = GetTypeFromVar(VarGet(VAR_MONOTYPE));
+    u8 monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
 
     ZeroEnemyPartyMons();
 
@@ -598,9 +602,39 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
 
 static u16 GenerateFishingWildMon(const struct WildPokemonInfo *wildMonInfo, u8 rod)
 {
+
     u8 wildMonIndex = ChooseWildMonIndex_Fishing(rod);
     u16 wildMonSpecies = wildMonInfo->wildPokemon[wildMonIndex].species;
     u8 level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, WILD_AREA_FISHING);
+    
+    //Add monotype logic, currently hacky and using a magikarp fallback
+    u8 monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
+
+    if (monotype != TYPE_NONE){
+        
+        if (gSpeciesInfo[wildMonSpecies].types[0] != monotype && gSpeciesInfo[wildMonSpecies].types[1] != monotype && !IsMonMonotypeException(wildMonSpecies, monotype)){
+            u8 numMon = 0;
+            switch(rod){
+                case OLD_ROD:
+                    numMon = NUM_OLD_ROD_SLOTS;
+                    break;
+                case GOOD_ROD:
+                    numMon = NUM_GOOD_ROD_SLOTS;
+                    break;
+                case SUPER_ROD:
+                    numMon = NUM_SUPER_ROD_SLOTS;
+                    break;
+                default:
+                    break;
+            }
+
+            if (TryGetRandomWildMonMonotypeIndex(wildMonInfo->wildPokemon, monotype, numMon, &wildMonIndex)){
+                wildMonSpecies = wildMonInfo->wildPokemon[wildMonIndex].species;
+            }else{
+            wildMonSpecies = SPECIES_MAGIKARP;
+            }
+        }
+    }
 
     UpdateChainFishingStreak();
     CreateWildMon(wildMonSpecies, level);
@@ -1261,7 +1295,7 @@ static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildM
 
 static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 *monIndex, u8 numMon)
 {
-    u8 type = GetTypeFromVar(VarGet(VAR_MONOTYPE));
+    u8 type = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
     if (type == TYPE_NONE){
         return FALSE;
     }

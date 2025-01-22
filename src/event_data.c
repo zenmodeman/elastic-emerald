@@ -48,8 +48,13 @@ void ClearTempFieldEventData(void)
 }
 
 void ClearDailyFlags(void)
-{
+{   if (!FlagGet(FLAG_RESOURCE_MODE)){
     memset(&gSaveBlock1Ptr->flags[DAILY_FLAGS_START / 8], 0, DAILY_FLAGS_SIZE);
+    }else{
+        //Clear only select flags in Resource mode; flags deemed to be fine from a resource standpoint
+        FlagClear(FLAG_DAILY_SECRET_BASE);
+    }
+    
 }
 
 void DisableNationalPokedex(void)

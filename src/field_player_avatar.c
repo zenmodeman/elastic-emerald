@@ -148,6 +148,7 @@ static bool32 Fishing_EndNoMon(struct Task *);
 static void AlignFishingAnimationFrames(void);
 static bool32 DoesFishingMinigameAllowCancel(void);
 static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
+static bool32 Fishing_CanPlayerGetSuctionCupsItem(void);
 static bool32 Fishing_RollForBite(u32, bool32);
 static u32 CalculateFishingBiteOdds(u32, bool32);
 static u32 CalculateFishingFollowerBoost(void);
@@ -2073,16 +2074,24 @@ static bool32 Fishing_StartEncounter(struct Task *task)
     return FALSE;
 }
 
-static void Fishing_GiveRandomItem(void)
+static void Fishing_GiveItem(void)
 {
     u16 item;
-    const u16 possibleItems[] = {ITEM_BOTTLE_CAP, ITEM_ABILITY_CAPSULE, ITEM_ABILITY_PATCH}; // Example items
+    const u16 possibleItems[] = {ITEM_PLAIN_BOTTLE_CAP, ITEM_BOTTLE_CAP, ITEM_GOLD_BOTTLE_CAP}; 
     u8 numItems = ARRAY_COUNT(possibleItems);
-    item = possibleItems[Random() % numItems];
+    u16 numberofItemsPickedUp = VarGet(VAR_SUCTION_CUPS);
+
+    if (numberofItemsPickedUp < numItems){
+        item = possibleItems[numberofItemsPickedUp];
+    }else{
+        item = possibleItems[Random() % numItems];
+    }
+
     CopyItemName(item, gStringVar1);
     StringExpandPlaceholders(gStringVar4, gText_FoundItemWhileFishing);
     
     AddBagItem(item, 1);
+    VarSet(VAR_SUCTION_CUPS, numberofItemsPickedUp + 1);
     AddTextPrinterParameterized2(0, FONT_NORMAL, gStringVar4, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
 }
 
@@ -2094,10 +2103,10 @@ static bool32 Fishing_NotEvenNibble(struct Task *task)
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
     AddTextPrinterParameterized2(0, FONT_NORMAL, gText_NotEvenANibble, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
 
-    if (Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold()) // 30% chance
+    if (Fishing_CanPlayerGetSuctionCupsItem()) 
     {
-        DebugPrintf("The Sticky hold clause is reached.");
-        Fishing_GiveRandomItem();
+        // DebugPrintf("The Sticky hold clause is reached.");
+        Fishing_GiveItem();
     }
     else
     {
@@ -2182,6 +2191,38 @@ static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
     ability = GetMonAbility(&gPlayerParty[0]);
 
     return (ability == ABILITY_SUCTION_CUPS || ability == ABILITY_STICKY_HOLD);
+}
+
+static bool32 Fishing_CanPlayerGetSuctionCupsItem(void)
+{
+    u32 ability;
+    if (GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
+        return FALSE;
+    ability = GetMonAbility(&gPlayerParty[0]);
+    
+    if (ability != ABILITY_SUCTION_CUPS){
+        return FALSE;
+    }
+
+    if (VarGet(VAR_SUCTION_CUPS) == 2){
+        //Don't get to the Gold Cap case without at least 2 badges
+        if (!FlagGet(FLAG_BADGE02_GET)){
+            return FALSE;
+        }
+    }
+
+    if (VarGet(VAR_SUCTION_CUPS) > 2){
+        //The infinite case requires non-Resource mode
+        if (FlagGet(FLAG_RESOURCE_MODE)){
+            return FALSE;
+        }
+        //70% chance of not generating the item.
+        if ((Random() % 100) > 30){
+            return FALSE;
+        }       
+    }
+
+    return TRUE;
 }
 
 static bool32 Fishing_RollForBite(u32 rod, bool32 isStickyHold)
