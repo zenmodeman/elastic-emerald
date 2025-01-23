@@ -1272,7 +1272,7 @@ const struct Item gItemsInfo[] =
     [ITEM_HP_UP] =
     {
         .name = _("HP Up"),
-        .price = (I_PRICE >= GEN_7) ? 10000 : 9800,
+        .price = 6000,
         .description = COMPOUND_STRING(
             "Raises the base HP\n"
             "of one Pokémon."),
@@ -1288,7 +1288,7 @@ const struct Item gItemsInfo[] =
     [ITEM_PROTEIN] =
     {
         .name = _("Protein"),
-        .price = 9800,
+        .price = 6000,
         .description = COMPOUND_STRING(
             "Raises the base\n"
             "Attack stat of one\n"
@@ -1305,7 +1305,7 @@ const struct Item gItemsInfo[] =
     [ITEM_IRON] =
     {
         .name = _("Iron"),
-        .price = 2400,
+        .price = 6000,
         .description = COMPOUND_STRING(
             "Raises the base\n"
             "Defense stat of\n"
@@ -1322,7 +1322,7 @@ const struct Item gItemsInfo[] =
     [ITEM_CALCIUM] =
     {
         .name = _("Calcium"),
-        .price = 2400,
+        .price = 6000,
         .description = COMPOUND_STRING(
             "Raises the base\n"
             "Sp. Atk stat of one\n"
@@ -1339,7 +1339,7 @@ const struct Item gItemsInfo[] =
     [ITEM_ZINC] =
     {
         .name = _("Zinc"),
-        .price = 2400,
+        .price = 6000,
         .description = COMPOUND_STRING(
             "Raises the base\n"
             "Sp. Def stat of one\n"
@@ -1357,7 +1357,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Carbos"),
         .pluralName = _("Carbos"),
-        .price = 2400,
+        .price = 6000,
         .description = COMPOUND_STRING(
             "Raises the base\n"
             "Speed stat of one\n"
@@ -13721,7 +13721,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Health Mochi"),
         .pluralName = _("Health Mochi"),
-        .price = 500,
+        .price = 2500,
         .description = sHealthFeatherDesc,
         .pocket = POCKET_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
@@ -13736,7 +13736,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Muscle Mochi"),
         .pluralName = _("Muscle Mochi"),
-        .price = 500,
+        .price = 2500,
         .description = sMuscleFeatherDesc,
         .pocket = POCKET_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
@@ -13751,7 +13751,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Resist Mochi"),
         .pluralName = _("Resist Mochi"),
-        .price = 500,
+        .price = 2500,
         .description = sResistFeatherDesc,
         .pocket = POCKET_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
@@ -13766,7 +13766,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Genius Mochi"),
         .pluralName = _("Genius Mochi"),
-        .price = 500,
+        .price = 2500,
         .description = sGeniusFeatherDesc,
         .pocket = POCKET_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
@@ -13781,7 +13781,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Clever Mochi"),
         .pluralName = _("Clever Mochi"),
-        .price = 500,
+        .price = 2500,
         .description = sCleverFeatherDesc,
         .pocket = POCKET_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
@@ -13796,7 +13796,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Swift Mochi"),
         .pluralName = _("Swift Mochi"),
-        .price = 500,
+        .price = 2500,
         .description = sSwiftFeatherDesc,
         .pocket = POCKET_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
@@ -13811,7 +13811,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Fresh Start Mochi"),
         .pluralName = _("Fresh Start Mochi"),
-        .price = 300,
+        .price = 500,
         .description = COMPOUND_STRING(
             "An item that resets\n"
             "all base points of\n"

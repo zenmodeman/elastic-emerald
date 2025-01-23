@@ -4643,8 +4643,13 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                 break;
             case EVO_LEVEL:
                 if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))!= TYPE_NONE){
+                    u8 monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
                     //Since currently Magikarp is the fishing placeholder when monotype encounters are incompatible, prevent it from evolving
-                    if (species == SPECIES_MAGIKARP && GetTypeFromVarValue(VarGet(VAR_MONOTYPE)) != TYPE_FLYING && GetTypeFromVarValue(VarGet(VAR_MONOTYPE)) != TYPE_WATER){
+                    if (species == SPECIES_MAGIKARP && monotype != TYPE_FLYING && monotype != TYPE_WATER){
+                        break;
+                    }
+                    //Mono normal Fletchling cannot evolve
+                    if (species == SPECIES_FLETCHLING && monotype == TYPE_NORMAL){
                         break;
                     }
                 }

@@ -627,5 +627,5 @@ Route101_EventScript_BugCatcher_Text_1:
 # 310 "data/maps/Route101/scripts.pory"
 	.string "Many Bug and Bird Pokemon are only\n"
 	.string "found in trees. If you're interested in\l"
-	.string "bugs too, try shaking a tree to stir\l"
-	.string "them up!$"
+	.string "bugs too, try shaking the braches of a\l"
+	.string "tree to stir them up!$"

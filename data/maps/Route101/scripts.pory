@@ -307,7 +307,7 @@ script Route101_EventScript_BugCatcher{
     lockall
     faceplayer
     msgbox(format("I'm looking for a Scatterbug."))
-    msgbox(format("Many Bug and Bird Pokemon are only found in trees. If you're interested in bugs too, try shaking a tree to stir them up!"))
+    msgbox(format("Many Bug and Bird Pokemon are only found in trees. If you're interested in bugs too, try shaking the braches of a tree to stir them up!"))
     releaseall
     end
 }

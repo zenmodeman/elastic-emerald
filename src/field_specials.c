@@ -4419,6 +4419,7 @@ static bool32 IsAbilityTutorViable(u16 ability){
         case ABILITY_KLUTZ:
         case ABILITY_LIGHT_METAL:
         case ABILITY_STAKEOUT:
+        case ABILITY_RIVALRY:
             return TRUE;
         default:
             return FALSE;
