@@ -1074,6 +1074,9 @@ script Littleroot_GetStarterOption{
 		call(StarterFairyScript)
 	}
 	waitmessage
+	msgbox(format("Now that you have a Pokemon, every trainer these days needs a Box Link as well. Here you go!"))
+	giveItem(ITEM_POKEMON_BOX_LINK)
+	msgbox(format("With the Box link, you'll be able to access your Pokemon PC wherever you go. It's great when you need to work in the field a lot!"))
 	goto(LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival)
 }
 

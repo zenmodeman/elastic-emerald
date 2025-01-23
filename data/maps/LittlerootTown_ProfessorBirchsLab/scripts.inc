@@ -2141,6 +2141,12 @@ Littleroot_GetStarterOption_4:
 # 1076 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	waitmessage
 # 1077 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox Littleroot_GetStarterOption_Text_0
+# 1078 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	giveItem ITEM_POKEMON_BOX_LINK
+# 1079 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox Littleroot_GetStarterOption_Text_1
+# 1080 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	goto LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival
 	return
 
@@ -2241,628 +2247,628 @@ Littleroot_GetStarterOption_22:
 
 
 StarterGeneralScript::
-# 1082 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1085 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterGeneralScript_Text_0
-# 1083 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1086 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	dynmultichoice 20, 100, TRUE, 5, 0, DYN_MULTICHOICE_CB_NONE, StarterGeneralScript_Text_1, StarterGeneralScript_Text_2, StarterGeneralScript_Text_3
-# 1084 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1087 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, 0
 	goto_if_eq StarterGeneralScript_2
-# 1095 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1098 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, 1
 	goto_if_eq StarterGeneralScript_3
-# 1106 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1109 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, 2
 	goto_if_eq StarterGeneralScript_4
 StarterGeneralScript_1:
-# 1118 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1121 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_STARTER_ACQUIRED
-# 1119 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1122 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1120 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1123 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterGeneralScript_2:
-# 1085 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1088 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterGeneralScript_Text_4
-# 1087 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1090 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_TREECKO, 5, ITEM_ENIGMA_BERRY
-# 1089 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1092 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterGeneralScript_8
 	goto StarterGeneralScript_1
 
 StarterGeneralScript_3:
-# 1096 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1099 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterGeneralScript_Text_6
-# 1098 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1101 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_TORCHIC, 5, ITEM_ENIGMA_BERRY
-# 1100 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1103 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterGeneralScript_10
 	goto StarterGeneralScript_1
 
 StarterGeneralScript_4:
-# 1107 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1110 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterGeneralScript_Text_8
-# 1109 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1112 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_MUDKIP, 5, ITEM_ENIGMA_BERRY
-# 1111 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1114 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterGeneralScript_12
 	goto StarterGeneralScript_1
 
 StarterGeneralScript_8:
-# 1090 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1091 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGeneralScript_Text_5
-# 1092 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
 # 1093 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1094 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGeneralScript_Text_5
+# 1095 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1096 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 0
 	goto StarterGeneralScript_1
 
 StarterGeneralScript_10:
-# 1101 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1102 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGeneralScript_Text_7
-# 1103 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
 # 1104 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1105 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGeneralScript_Text_7
+# 1106 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1107 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 1
 	goto StarterGeneralScript_1
 
 StarterGeneralScript_12:
-# 1112 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1113 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGeneralScript_Text_9
-# 1114 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
 # 1115 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 1116 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGeneralScript_Text_9
+# 1117 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1118 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 2
 	goto StarterGeneralScript_1
 
 
 StarterNormalScript::
-# 1123 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1126 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterNormalScript_Text_0
-# 1125 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1128 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_LILLIPUP, 5, ITEM_ENIGMA_BERRY
-# 1127 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1130 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterNormalScript_2
 StarterNormalScript_1:
-# 1134 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1137 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1135 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1138 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterNormalScript_2:
-# 1128 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1129 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterNormalScript_Text_1
-# 1130 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1131 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1132 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterNormalScript_Text_1
+# 1133 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1134 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1135 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 0
 	goto StarterNormalScript_1
 
 
 StarterFightingScript::
-# 1139 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1142 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterFightingScript_Text_0
-# 1141 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1144 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_TIMBURR, 5, ITEM_ENIGMA_BERRY
-# 1143 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1146 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterFightingScript_2
 StarterFightingScript_1:
-# 1150 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1153 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1151 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1154 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterFightingScript_2:
-# 1144 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1145 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterFightingScript_Text_1
-# 1146 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1147 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1148 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterFightingScript_Text_1
+# 1149 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1150 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1151 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 2
 	goto StarterFightingScript_1
 
 
 StarterFlyingScript::
-# 1155 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1158 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterFlyingScript_Text_0
-# 1157 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1160 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_FLETCHLING, 5, ITEM_ENIGMA_BERRY
-# 1159 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1162 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterFlyingScript_2
 StarterFlyingScript_1:
-# 1166 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1169 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1167 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1170 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterFlyingScript_2:
-# 1160 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1161 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterFlyingScript_Text_1
-# 1162 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1163 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1164 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterFlyingScript_Text_1
+# 1165 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1166 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1167 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 1
 	goto StarterFlyingScript_1
 
 
 StarterPoisonScript::
-# 1171 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1174 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterPoisonScript_Text_0
-# 1173 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1176 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_EKANS, 5, ITEM_ENIGMA_BERRY
-# 1175 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1178 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterPoisonScript_2
 StarterPoisonScript_1:
-# 1182 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1185 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1183 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1186 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterPoisonScript_2:
-# 1176 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1177 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterPoisonScript_Text_1
-# 1178 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1179 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1180 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterPoisonScript_Text_1
+# 1181 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1182 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1183 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 1
 	goto StarterPoisonScript_1
 
 
 StarterGroundScript::
-# 1187 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1190 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterGroundScript_Text_0
-# 1189 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1192 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_SANDSHREW, 5, ITEM_ENIGMA_BERRY
-# 1191 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1194 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterGroundScript_2
 StarterGroundScript_1:
-# 1198 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1201 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1199 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1202 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterGroundScript_2:
-# 1192 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1193 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGroundScript_Text_1
-# 1194 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1195 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1196 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGroundScript_Text_1
+# 1197 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1198 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1199 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 2
 	goto StarterGroundScript_1
 
 
 StarterRockScript::
-# 1203 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1206 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterRockScript_Text_0
-# 1205 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1208 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_NACLI, 5, ITEM_ENIGMA_BERRY
-# 1207 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1210 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterRockScript_2
 StarterRockScript_1:
-# 1214 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1217 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1215 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1218 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterRockScript_2:
-# 1208 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1209 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterRockScript_Text_1
-# 1210 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1211 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1212 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterRockScript_Text_1
+# 1213 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1214 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1215 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 1
 	goto StarterRockScript_1
 
 
 StarterBugScript::
-# 1219 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1222 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterBugScript_Text_0
-# 1221 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1224 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_SEWADDLE, 5, ITEM_ENIGMA_BERRY
-# 1223 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1226 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterBugScript_2
 StarterBugScript_1:
-# 1230 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1233 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1231 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1234 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterBugScript_2:
-# 1224 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1225 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterBugScript_Text_1
-# 1226 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1227 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1228 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterBugScript_Text_1
+# 1229 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1230 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1231 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 0
 	goto StarterBugScript_1
 
 
 StarterGhostScript::
-# 1235 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1238 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterGhostScript_Text_0
-# 1237 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1240 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_GASTLY, 5, ITEM_ENIGMA_BERRY
-# 1239 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1242 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterGhostScript_2
 StarterGhostScript_1:
-# 1246 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1249 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1247 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1250 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterGhostScript_2:
-# 1240 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1241 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGhostScript_Text_1
-# 1242 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1243 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1244 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGhostScript_Text_1
+# 1245 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1246 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1247 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 1
 	goto StarterGhostScript_1
 
 
 StarterSteelScript::
-# 1251 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1254 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterSteelScript_Text_0
-# 1253 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1256 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_SANDSHREW_ALOLA, 5, ITEM_ENIGMA_BERRY
-# 1255 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1258 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterSteelScript_2
 StarterSteelScript_1:
-# 1262 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1265 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1263 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1266 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterSteelScript_2:
-# 1256 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1257 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterSteelScript_Text_1
-# 1258 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1259 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1260 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterSteelScript_Text_1
+# 1261 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1262 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1263 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 0
 	goto StarterSteelScript_1
 
 
 StarterFireScript::
-# 1267 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1270 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterFireScript_Text_0
-# 1269 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1272 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_TORCHIC, 5, ITEM_ENIGMA_BERRY
-# 1271 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1274 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterFireScript_2
 StarterFireScript_1:
-# 1278 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1281 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1279 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1282 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterFireScript_2:
-# 1272 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1273 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGeneralScript_Text_7
-# 1274 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1275 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1276 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGeneralScript_Text_7
+# 1277 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1278 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1279 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 1
 	goto StarterFireScript_1
 
 
 StarterWaterScript::
-# 1283 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1286 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterWaterScript_Text_0
-# 1285 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1288 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_MUDKIP, 5, ITEM_ENIGMA_BERRY
-# 1287 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1290 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterWaterScript_2
 StarterWaterScript_1:
-# 1294 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1297 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1295 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1298 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterWaterScript_2:
-# 1288 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1289 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGeneralScript_Text_9
-# 1290 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1291 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1292 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGeneralScript_Text_9
+# 1293 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1294 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1295 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 2
 	goto StarterWaterScript_1
 
 
 StarterGrassScript::
-# 1299 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1302 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterGrassScript_Text_0
-# 1301 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1304 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_TREECKO, 5, ITEM_ENIGMA_BERRY
-# 1303 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1306 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterGrassScript_2
 StarterGrassScript_1:
-# 1310 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1313 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1311 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1314 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterGrassScript_2:
-# 1304 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1305 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterGeneralScript_Text_5
-# 1306 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1307 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1308 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterGeneralScript_Text_5
+# 1309 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1310 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1311 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 0
 	goto StarterGrassScript_1
 
 
 StarterElectricScript::
-# 1315 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1318 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterElectricScript_Text_0
-# 1317 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1320 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_PAWMI, 5, ITEM_ENIGMA_BERRY
-# 1319 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1322 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterElectricScript_2
 StarterElectricScript_1:
-# 1326 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1329 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1327 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1330 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterElectricScript_2:
-# 1320 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1321 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterElectricScript_Text_1
-# 1322 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1323 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1324 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterElectricScript_Text_1
+# 1325 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1326 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1327 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 2
 	goto StarterElectricScript_1
 
 
 StarterPsychicScript::
-# 1331 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1334 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterPsychicScript_Text_0
-# 1333 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1336 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_DROWZEE, 5, ITEM_ENIGMA_BERRY
-# 1335 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1338 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterPsychicScript_2
 StarterPsychicScript_1:
-# 1342 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1345 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1343 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1346 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterPsychicScript_2:
-# 1336 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1337 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterPsychicScript_Text_1
-# 1338 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1339 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1340 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterPsychicScript_Text_1
+# 1341 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1342 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1343 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 2
 	goto StarterPsychicScript_1
 
 
 StarterIceScript::
-# 1347 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1350 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterIceScript_Text_0
-# 1349 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1352 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_SANDSHREW_ALOLA, 5, ITEM_ENIGMA_BERRY
-# 1351 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1354 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterIceScript_2
 StarterIceScript_1:
-# 1358 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1361 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1359 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1362 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterIceScript_2:
-# 1352 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1353 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterSteelScript_Text_1
-# 1354 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1355 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1356 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterSteelScript_Text_1
+# 1357 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1358 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1359 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 0
 	goto StarterIceScript_1
 
 
 StarterDragonScript::
-# 1363 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1366 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterDragonScript_Text_0
-# 1365 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1368 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_GIBLE, 5, ITEM_ENIGMA_BERRY
-# 1367 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1370 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterDragonScript_2
 StarterDragonScript_1:
-# 1374 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1377 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1375 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1378 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterDragonScript_2:
-# 1368 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1369 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterDragonScript_Text_1
-# 1370 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1371 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1372 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterDragonScript_Text_1
+# 1373 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1374 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1375 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 2
 	goto StarterDragonScript_1
 
 
 StarterDarkScript::
-# 1379 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1382 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterDarkScript_Text_0
-# 1381 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1384 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_HOUNDOUR, 5, ITEM_ENIGMA_BERRY
-# 1383 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1386 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterDarkScript_2
 StarterDarkScript_1:
-# 1390 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1393 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1391 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1394 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterDarkScript_2:
-# 1384 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1385 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterDarkScript_Text_1
-# 1386 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1387 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1388 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterDarkScript_Text_1
+# 1389 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1390 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1391 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 0
 	goto StarterDarkScript_1
 
 
 StarterFairyScript::
-# 1395 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1398 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox StarterFairyScript_Text_0
-# 1397 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1400 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	givemon SPECIES_FIDOUGH, 5, ITEM_ENIGMA_BERRY
-# 1399 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1402 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq StarterFairyScript_2
 StarterFairyScript_1:
-# 1406 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1409 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setflag FLAG_SYS_POKEMON_GET
-# 1407 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1410 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_LITTLEROOT_TOWN_STATE, 2
 	return
 
 StarterFairyScript_2:
-# 1400 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 1401 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	msgbox StarterFairyScript_Text_1
-# 1402 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	setflag FLAG_STARTER_ACQUIRED
 # 1403 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
-	call NicknamePartyMon
+	playfanfare MUS_OBTAIN_ITEM
 # 1404 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	msgbox StarterFairyScript_Text_1
+# 1405 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	setflag FLAG_STARTER_ACQUIRED
+# 1406 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	call NicknamePartyMon
+# 1407 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	setvar VAR_STARTER_MON, 1
 	goto StarterFairyScript_1
 
 
 NicknamePartyMon::
-# 1411 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1414 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	msgbox NicknamePartyMon_Text_0, MSGBOX_YESNO
-# 1412 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1415 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	hidemonpic
-# 1413 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1416 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	compare VAR_RESULT, YES
 	goto_if_eq NicknamePartyMon_1
 	return
 
 NicknamePartyMon_1:
-# 1414 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1417 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	call Common_EventScript_GetGiftMonPartySlot
-# 1415 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1418 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	call Common_EventScript_NameReceivedPartyMon
 	return
 
@@ -2881,196 +2887,209 @@ LittlerootTown_ProfessorBirchsLab_EventScript_TryRatePokedexOrRegister_Text_2:
 	.string "Now, I'm sure you're raring to start your\n"
 	.string "journey!$"
 
+Littleroot_GetStarterOption_Text_0:
+# 1077 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "Now that you have a Pokemon, every\n"
+	.string "trainer these days needs a Box Link as\l"
+	.string "well. Here you go!$"
+
+Littleroot_GetStarterOption_Text_1:
+# 1079 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+	.string "With the Box link, you'll be able to\n"
+	.string "access your Pokemon PC wherever you\l"
+	.string "go. It's great when you need to work in\l"
+	.string "the field a lot!$"
+
 StarterGeneralScript_Text_0:
-# 1082 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1085 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Now for your starter, which type do you\n"
 	.string "prefer?$"
 
 StarterGeneralScript_Text_1:
-# 1083 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1086 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Grass$"
 
 StarterGeneralScript_Text_2:
-# 1083 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1086 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Fire$"
 
 StarterGeneralScript_Text_3:
-# 1083 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1086 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Water$"
 
 StarterGeneralScript_Text_4:
-# 1085 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1088 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I see, if you like Grass types, then\n"
 	.string "Treecko will be a perfect fit!$"
 
 StarterGeneralScript_Text_5:
-# 1091 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1094 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Treecko!$"
 
 StarterGeneralScript_Text_6:
-# 1096 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1099 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I see, if you like Fire types, then\n"
 	.string "Torchic will be a perfect fit!$"
 
 StarterGeneralScript_Text_7:
-# 1102 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1105 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Torchic!$"
 
 StarterGeneralScript_Text_8:
-# 1107 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1110 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I see, if you like Water types, then\n"
 	.string "Mudkip will be a perfect fit!$"
 
 StarterGeneralScript_Text_9:
-# 1113 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1116 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Mudkip!$"
 
 StarterNormalScript_Text_0:
-# 1123 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1126 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Normal Types, So\n"
 	.string "Lillipup will be a perfect fit!$"
 
 StarterNormalScript_Text_1:
-# 1129 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1132 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Lillipup!$"
 
 StarterFightingScript_Text_0:
-# 1139 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1142 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Fighting Types,\n"
 	.string "So Timburr will be a perfect fit!$"
 
 StarterFightingScript_Text_1:
-# 1145 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1148 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Timburr!$"
 
 StarterFlyingScript_Text_0:
-# 1155 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1158 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Flying Types, So\n"
 	.string "Fletchling will be a perfect fit!$"
 
 StarterFlyingScript_Text_1:
-# 1161 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1164 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Fletchling!$"
 
 StarterPoisonScript_Text_0:
-# 1171 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1174 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Poison Types, So\n"
 	.string "Ekans will be a perfect fit!$"
 
 StarterPoisonScript_Text_1:
-# 1177 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1180 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Ekans!$"
 
 StarterGroundScript_Text_0:
-# 1187 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1190 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Ground Types, So\n"
 	.string "Sandshrew will be a perfect fit!$"
 
 StarterGroundScript_Text_1:
-# 1193 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1196 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Sandshrew!$"
 
 StarterRockScript_Text_0:
-# 1203 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1206 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Rock Types, So\n"
 	.string "Nacli will be a perfect fit!$"
 
 StarterRockScript_Text_1:
-# 1209 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1212 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Nacli!$"
 
 StarterBugScript_Text_0:
-# 1219 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1222 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Bug Types, So\n"
 	.string "Sewaddle will be a perfect fit!$"
 
 StarterBugScript_Text_1:
-# 1225 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1228 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Sewaddle!$"
 
 StarterGhostScript_Text_0:
-# 1235 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1238 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Ghost Types, So\n"
 	.string "Gastly will be a perfect fit!$"
 
 StarterGhostScript_Text_1:
-# 1241 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1244 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Gastly!$"
 
 StarterSteelScript_Text_0:
-# 1251 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1254 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Steel Types, So\n"
 	.string "Sandshrew-Alola will be a perfect fit!$"
 
 StarterSteelScript_Text_1:
-# 1257 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1260 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Sandshrew-Alola!$"
 
 StarterFireScript_Text_0:
-# 1267 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1270 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Fire Types, So\n"
 	.string "Torchic will be a perfect fit!$"
 
 StarterWaterScript_Text_0:
-# 1283 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1286 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Water Types, So\n"
 	.string "Mudkip will be a perfect fit!$"
 
 StarterGrassScript_Text_0:
-# 1299 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1302 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Grass Types, So\n"
 	.string "Treecko will be a perfect fit!$"
 
 StarterElectricScript_Text_0:
-# 1315 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1318 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Electric Types,\n"
 	.string "So Pawmi will be a perfect fit!$"
 
 StarterElectricScript_Text_1:
-# 1321 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1324 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Pawmi!$"
 
 StarterPsychicScript_Text_0:
-# 1331 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1334 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Psychic Types, So\n"
 	.string "Drowzee will be a perfect fit!$"
 
 StarterPsychicScript_Text_1:
-# 1337 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1340 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Drowzee!$"
 
 StarterIceScript_Text_0:
-# 1347 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1350 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Ice Types, So\n"
 	.string "Sandshrew-Alola will be a perfect fit!$"
 
 StarterDragonScript_Text_0:
-# 1363 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1366 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Dragon Types, So\n"
 	.string "Gible will be a perfect fit!$"
 
 StarterDragonScript_Text_1:
-# 1369 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1372 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Gible!$"
 
 StarterDarkScript_Text_0:
-# 1379 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1382 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Dark Types, So\n"
 	.string "Houndour will be a perfect fit!$"
 
 StarterDarkScript_Text_1:
-# 1385 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1388 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Houndour!$"
 
 StarterFairyScript_Text_0:
-# 1395 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1398 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "I hear you're a fan of Fairy Types, So\n"
 	.string "Fidough will be a perfect fit!$"
 
 StarterFairyScript_Text_1:
-# 1401 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1404 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Received Fidough!$"
 
 NicknamePartyMon_Text_0:
-# 1411 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
+# 1414 "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.pory"
 	.string "Give it a nickname?$"

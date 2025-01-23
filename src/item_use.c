@@ -45,6 +45,7 @@
 #include "constants/items.h"
 #include "constants/songs.h"
 #include "constants/map_types.h"
+#include "constants/layouts.h"
 
 static void SetUpItemUseCallback(u8);
 static void FieldCB_UseItemOnField(void);
@@ -94,6 +95,8 @@ static const u8 sText_UsedVar2WildRepelled[] = _("{PLAYER} used the\n{STR_VAR_2}
 static const u8 sText_PlayedPokeFluteCatchy[] = _("Played the POKé FLUTE.\pNow, that's a catchy tune!{PAUSE_UNTIL_PRESS}");
 static const u8 sText_PlayedPokeFlute[] = _("Played the POKé FLUTE.");
 static const u8 sText_PokeFluteAwakenedMon[] = _("The POKé FLUTE awakened sleeping\nPOKéMON.{PAUSE_UNTIL_PRESS}");
+
+static const u8 sText_NotPermittedAtTheLeague[] = _("Box Link is prohibited at the league.{PAUSE_UNTIL_PRESS}");
 
 // EWRAM variables
 EWRAM_DATA static void(*sItemUseOnFieldCB)(u8 taskId) = NULL;
@@ -705,8 +708,18 @@ static void Task_OpenRegisteredPokeblockCase(u8 taskId)
 
 void ItemUseOutOfBattle_PokemonBoxLink(u8 taskId)
 {
-    sItemUseOnFieldCB = Task_AccessPokemonBoxLink;
-    SetUpItemUseOnFieldCallback(taskId);
+    if ((FlagGet(FLAG_RESTRICTED_MODE) && 
+            (gMapHeader.mapLayoutId >= LAYOUT_EVER_GRANDE_CITY_SIDNEYS_ROOM
+            && gMapHeader.mapLayoutId <= LAYOUT_EVER_GRANDE_CITY_SHORT_HALL)
+        ))
+        {
+            DisplayCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem, sText_NotPermittedAtTheLeague);
+        }
+    else{
+        sItemUseOnFieldCB = Task_AccessPokemonBoxLink;
+        SetUpItemUseOnFieldCallback(taskId);
+    }
+
 }
 
 static void Task_AccessPokemonBoxLink(u8 taskId)

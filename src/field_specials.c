@@ -71,8 +71,6 @@
 #include "palette.h"
 #include "battle_util.h"
 
-#include "event_data.h"
-
 #include "constants/abilities.h"
 
 #define TAG_ITEM_ICON 5500
@@ -1088,8 +1086,6 @@ static void PCTurnOnEffect_SetMetatile(s16 isScreenOn, s8 dx, s8 dy)
     u16 metatileId = 0;
     if (isScreenOn)
     {
-        if(gSysPcFromPokenav)
-            return;
         // Screen is on, set it off
         if (gSpecialVar_0x8004 == PC_LOCATION_OTHER)
             metatileId = METATILE_Building_PC_Off;
@@ -1125,11 +1121,6 @@ static void PCTurnOffEffect(void)
 
     // Get where the PC should be, depending on where the player is looking.
     u8 playerDirection = GetPlayerFacingDirection();
-
-    if(gSysPcFromPokenav){
-        gSysPcFromPokenav = FALSE;
-        return;
-    }
 
     if (IsPlayerInFrontOfPC() == FALSE)
         return;
