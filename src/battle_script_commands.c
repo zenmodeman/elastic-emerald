@@ -15665,11 +15665,12 @@ u8 GetCatchingBattler(void)
 }
 
 static u32 GetMonotypeCatchRate(u16 species){
+    u32 minMonotypeCatchRate = 75;
     switch (species){
         case SPECIES_DREEPY:
             return 75;
         default: 
-            return gSpeciesInfo[species].catchRate;
+            return (gSpeciesInfo[species].catchRate < minMonotypeCatchRate) ? minMonotypeCatchRate : gSpeciesInfo[species].catchRate;
     }
 }
 
