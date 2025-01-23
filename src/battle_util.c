@@ -2310,6 +2310,9 @@ u8 DoBattlerEndTurnEffects(void)
              && IsBattlerAlive(battler))
             {
                 gBattleStruct->moveDamage[battler] = GetDrainedBigRootHp(battler, GetNonDynamaxMaxHP(battler) / 16);
+                if(GetBattlerAbility(battler) == ABILITY_WATER_VEIL){
+                    gBattleStruct->moveDamage[battler] *= 2;
+                }
                 BattleScriptExecute(BattleScript_AquaRingHeal);
                 effect++;
             }
