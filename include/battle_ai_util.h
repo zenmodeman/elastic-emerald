@@ -96,6 +96,7 @@ bool32 IsAbilityOfRating(u32 ability, s8 rating);
 bool32 AI_IsAbilityOnSide(u32 battlerId, u32 ability);
 bool32 AI_MoveMakesContact(u32 ability, u32 holdEffect, u32 move);
 bool32 ShouldUseZMove(u32 battlerAtk, u32 battlerDef, u32 chosenMove);
+u32 AI_GetBattlerAbility(u32 battler);
 
 // stat stage checks
 bool32 AnyStatIsRaised(u32 battlerId);
@@ -145,7 +146,7 @@ bool32 HasMoveWithMoveEffectExcept(u32 battlerId, u32 moveEffect, u32 exception)
 bool32 HasMoveThatLowersOwnStats(u32 battlerId);
 bool32 HasMoveWithLowAccuracy(u32 battlerAtk, u32 battlerDef, u32 accCheck, bool32 ignoreStatus, u32 atkAbility, u32 defAbility, u32 atkHoldEffect, u32 defHoldEffect);
 bool32 HasAnyKnownMove(u32 battlerId);
-bool32 IsAromaVeilProtectedMove(u32 move);
+bool32 IsAromaVeilProtectedEffect(u32 moveEffect);
 bool32 IsNonVolatileStatusMoveEffect(u32 moveEffect);
 bool32 IsMoveRedirectionPrevented(u32 move, u32 atkAbility);
 bool32 IsMoveEncouragedToHit(u32 battlerAtk, u32 battlerDef, u32 move);
@@ -168,6 +169,7 @@ bool32 IsStatRaisingEffect(u32 effect);
 bool32 IsStatLoweringEffect(u32 effect);
 bool32 IsSelfStatLoweringEffect(u32 effect);
 bool32 IsSwitchOutEffect(u32 effect);
+bool32 IsChaseEffect(u32 effect);
 bool32 IsAttackBoostMoveEffect(u32 effect);
 bool32 IsUngroundingEffect(u32 effect);
 bool32 IsSemiInvulnerable(u32 battlerDef, u32 move);
@@ -204,6 +206,7 @@ bool32 PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u3
 bool32 PartnerMoveEffectIsStatusSameTarget(u32 battlerAtkPartner, u32 battlerDef, u32 partnerMove);
 bool32 IsMoveEffectWeather(u32 move);
 bool32 PartnerMoveEffectIsTerrain(u32 battlerAtkPartner, u32 partnerMove);
+bool32 PartnerMoveEffectIs(u32 battlerAtkPartner, u32 partnerMove, u32 effectCheck);
 bool32 PartnerMoveIs(u32 battlerAtkPartner, u32 partnerMove, u32 moveCheck);
 bool32 PartnerMoveIsSameAsAttacker(u32 battlerAtkPartner, u32 battlerDef, u32 move, u32 partnerMove);
 bool32 PartnerMoveIsSameNoTarget(u32 battlerAtkPartner, u32 move, u32 partnerMove);
@@ -236,5 +239,6 @@ bool32 AI_ShouldSetUpHazards(u32 battlerAtk, u32 battlerDef, struct AiLogicData 
 void IncreaseTidyUpScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 bool32 AI_ShouldSpicyExtract(u32 battlerAtk, u32 battlerAtkPartner, u32 move, struct AiLogicData *aiData);
 void IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
+bool32 IsBattlerPredictedToSwitch(u32 battler);
 
 #endif //GUARD_BATTLE_AI_UTIL_H

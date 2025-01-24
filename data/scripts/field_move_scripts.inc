@@ -777,6 +777,18 @@ EventScript_UseDig::
 # 389 "data/scripts/field_move_scripts.pory"
 
 # 390 "data/scripts/field_move_scripts.pory"
+
+EventScript_CutGrassCommon:
+	isfollowerfieldmoveuser VAR_0x8004
+	setfieldeffectargument 3, VAR_0x8004 @ skip pose if true
+	dofieldeffect FLDEFF_USE_CUT_ON_GRASS
+	waitstate
+
+@ Use Cut grass from party menu
+EventScript_UseCutGrass::
+	lockall
+	goto EventScript_CutGrassCommon
+
 Text_CantDive:
 # 391 "data/scripts/field_move_scripts.pory"
 	.string "The sea is deep here. A POKéMON\n"

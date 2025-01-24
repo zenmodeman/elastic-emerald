@@ -42,16 +42,28 @@ A pull request meets the scope criteria if:
 4. **Non-SS Items**: Adds Items that have NOT appeared in a Showdown-supported title
 5. **Non-SS Gimmicks**: Adds Gimmicks that have NOT appeared in a Showdown-supported title (Showdown's Other Metagames, etc.)
 6. **Non-SS Battle Types**: Adds Special Battle Types that have NOT appeared in a Showdown-supported title  
-7. **Non-SS or SS Overworld Maps**: Adds overworld maps from either Showdown-supported titles or non-Showdown-supported titles
-7. **Duplicate Feature UI**: Adds functionality that duplicates the core functionality of an existing vanilla feature
-8. **Vanilla Link Compatibility**: The ability for Base Expansion Version and Vanilla Emerald Version to connect, trade, and battle one another
+7. **Overworld Maps**: Adds overworld maps from either Showdown-supported titles or non-Showdown-supported titles
+8. **Duplicate UIs**: Adds additional user interface that covers the same functionality of an existing feature (HGSS Pokédex, BW Summary Screen, etc.)
+9. **Vanilla Link Compatibility**: The ability for Base Expansion Version and Vanilla Emerald Version to connect, trade, and battle one another
 
 ## Discussion Required Categories
 
-Pull Requests that fall into this category should be brought up to maintainers, who will discuss and vote as to whether or not the feature is considered in scope. Considerations for acceptance may include invasiveness of implementation, popularity, ease of maintenance, etc.
+Pull Requests that fall into this category are not in scope by default and should be brought up to maintainers, who will discuss and vote as to whether or not the feature is considered in scope. Considerations for acceptance may include invasiveness of implementation, popularity, ease of maintenance, etc.
 
 1. **Developer Ease of Use**: Lowers barrier of entry for developers to use existing behavior  
 2. **Fangame Features**: Adds a popular feature from other fangames  
 3. **Popular Non-SS Features**: Exceptions can be made for uniquely popular or requested features (Drowsy, PLA Legend Plate, etc.)
 4. **External Program**: External programs like poryscript, porymoves, etc.
 
+## Workflow for Proposed Feature Scope Discussion
+For the contributor:
+- Make a thread for the feature on Discord
+- Describe how the feature fits into this scope document, and why you feel it should be considered
+- Optionally include either a draft PR or describe in some detail the proposed implementation. Non-mandatory, but implementation invasiveness, maintenance cost, etc. are major considerations, so use your judgement. The senate may ask for this information during discussion.
+
+For the senate:
+- Make a senate thread for the discussion
+- Make and pin a two-week voting poll
+- Discuss, conclude, and cast votes before the two-week deadline
+- Inform contributor as to the results and reasons in their thread
+- Amend this scope document if necessary

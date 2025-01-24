@@ -259,6 +259,13 @@ static void StorePokemonInDaycare(struct Pokemon *mon, struct DaycareMon *daycar
         TakeMailFromMon(mon);
     }
 
+    u32 newSpecies = GetFormChangeTargetSpecies(mon, FORM_CHANGE_DEPOSIT, 0);
+    if (newSpecies != GetMonData(mon, MON_DATA_SPECIES))
+    {
+        SetMonData(mon, MON_DATA_SPECIES, &newSpecies);
+        CalculateMonStats(mon);
+    }
+
     daycareMon->mon = mon->box;
     daycareMon->steps = 0;
     ZeroMonData(mon);
@@ -330,8 +337,8 @@ static void ApplyDaycareExperience(struct Pokemon *mon)
 
 static u16 TakeSelectedPokemonFromDaycare(struct DaycareMon *daycareMon)
 {
-    u16 species;
-    u16 newSpecies;
+    u32 species;
+    u32 newSpecies;
     u32 experience;
     struct Pokemon pokemon;
 
@@ -340,7 +347,7 @@ static u16 TakeSelectedPokemonFromDaycare(struct DaycareMon *daycareMon)
     BoxMonToMon(&daycareMon->mon, &pokemon);
 
     newSpecies = GetFormChangeTargetSpecies(&pokemon, FORM_CHANGE_WITHDRAW, 0);
-    if (newSpecies != SPECIES_NONE)
+    if (newSpecies != species)
     {
         SetMonData(&pokemon, MON_DATA_SPECIES, &newSpecies);
         CalculateMonStats(&pokemon);

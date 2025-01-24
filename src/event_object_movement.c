@@ -25,6 +25,7 @@
 #include "metatile_behavior.h"
 #include "overworld.h"
 #include "palette.h"
+#include "party_menu.h"
 #include "pokemon.h"
 #include "pokeball.h"
 #include "random.h"
@@ -2056,15 +2057,19 @@ static u8 LoadDynamicFollowerPalette(u16 species, u8 form, bool32 shiny)
                 spritePalette.data = gSpeciesInfo[species].overworldPalette;
         }
 
-
         // Check if pal data must be decompressed
         if (IsLZ77Data(spritePalette.data, PLTT_SIZE_4BPP, PLTT_SIZE_4BPP))
         {
-            // IsLZ77Data guarantees word-alignment, so casting this is safe
-            LZ77UnCompWram((u32*)spritePalette.data, gDecompressionBuffer);
-            spritePalette.data = (void*)gDecompressionBuffer;
+            struct CompressedSpritePalette compSpritePalette;
+
+            compSpritePalette.data = (const void *) spritePalette.data;
+            compSpritePalette.tag = spritePalette.tag;
+            paletteNum = LoadCompressedSpritePalette(&compSpritePalette);
         }
-        paletteNum = LoadSpritePalette(&spritePalette);
+        else
+        {
+            paletteNum = LoadSpritePalette(&spritePalette);
+        }
     }
     else
 #endif //OW_POKEMON_OBJECT_EVENTS == TRUE && OW_PKMN_OBJECTS_SHARE_PALETTES == FALSE
@@ -2155,21 +2160,24 @@ static void RefreshFollowerGraphics(struct ObjectEvent *objEvent)
     }
 }
 
-static u16 GetOverworldCastformSpecies(void)
+u16 GetOverworldWeatherSpecies(u16 species)
 {
-    switch (GetCurrentWeather())
+    u32 i;
+    u32 weather = GetCurrentWeather();
+    const struct FormChange *formChanges = GetSpeciesFormChanges(species);
+
+    for (i = 0; formChanges != NULL && formChanges[i].method != FORM_CHANGE_TERMINATOR; i++)
     {
-    case WEATHER_SUNNY_CLOUDS:
-    case WEATHER_DROUGHT:
-        return SPECIES_CASTFORM_SUNNY;
-    case WEATHER_RAIN:
-    case WEATHER_RAIN_THUNDERSTORM:
-    case WEATHER_DOWNPOUR:
-        return SPECIES_CASTFORM_RAINY;
-    case WEATHER_SNOW:
-        return SPECIES_CASTFORM_SNOWY;
+        // Unlike other form change checks, we don't do the "species != formChanges[i].targetSpecies" check
+        if (formChanges[i].method == FORM_CHANGE_OVERWORLD_WEATHER)
+        {
+            if (formChanges[i].param1 == weather)
+                return formChanges[i].targetSpecies;
+            else if (formChanges[i].param1 == WEATHER_NONE) // Set the default form for weather not defined in form change table
+                species = formChanges[i].targetSpecies;
+        }
     }
-    return SPECIES_CASTFORM_NORMAL;
+    return species;
 }
 
 static bool8 GetMonInfo(struct Pokemon *mon, u16 *species, u8 *form, u8 *shiny)
@@ -2190,8 +2198,8 @@ static bool8 GetMonInfo(struct Pokemon *mon, u16 *species, u8 *form, u8 *shiny)
     case SPECIES_UNOWN:
         *form = GET_UNOWN_LETTER(mon->box.personality);
         break;
-    case SPECIES_CASTFORM: // form is based on overworld weather
-        *species = GetOverworldCastformSpecies();
+    default:
+        *species = GetOverworldWeatherSpecies(*species);
         break;
     }
     return TRUE;
@@ -5338,14 +5346,20 @@ static bool32 EndFollowerTransformEffect(struct ObjectEvent *objectEvent, struct
 static bool32 TryStartFollowerTransformEffect(struct ObjectEvent *objectEvent, struct Sprite *sprite)
 {
     u32 multi;
-    if (GET_BASE_SPECIES_ID(OW_SPECIES(objectEvent)) == SPECIES_CASTFORM
-        && OW_SPECIES(objectEvent) != (multi = GetOverworldCastformSpecies()))
+    struct Pokemon *mon;
+    u32 ability;
+    if (DoesSpeciesHaveFormChangeMethod(OW_SPECIES(objectEvent), FORM_CHANGE_OVERWORLD_WEATHER)
+        && OW_SPECIES(objectEvent) != (multi = GetOverworldWeatherSpecies(OW_SPECIES(objectEvent))))
     {
         sprite->data[7] = TRANSFORM_TYPE_WEATHER << 8;
+        PlaySE(SE_M_MINIMIZE);
         return TRUE;
     }
-    else if ((Random() & 0xFFFF) < 18 && GetLocalWildMon(FALSE)
-            && (OW_SPECIES(objectEvent) == SPECIES_MEW || OW_SPECIES(objectEvent) == SPECIES_DITTO))
+
+    if (OW_FOLLOWERS_COPY_WILD_PKMN
+        && (MonKnowsMove(mon = GetFirstLiveMon(), MOVE_TRANSFORM)
+         || (ability = GetMonAbility(mon)) == ABILITY_IMPOSTER || ability == ABILITY_ILLUSION)
+        && (Random() & 0xFFFF) < 18 && GetLocalWildMon(FALSE))
     {
         sprite->data[7] = TRANSFORM_TYPE_RANDOM_WILD << 8;
         PlaySE(SE_M_MINIMIZE);
@@ -5379,7 +5393,7 @@ static bool8 UpdateFollowerTransformEffect(struct ObjectEvent *objectEvent, stru
             break;
         case TRANSFORM_TYPE_WEATHER:
             multi = objectEvent->graphicsId;
-            objectEvent->graphicsId = GetOverworldCastformSpecies();
+            objectEvent->graphicsId = GetOverworldWeatherSpecies(OW_SPECIES(objectEvent));
             if (!objectEvent->graphicsId)
             {
                 objectEvent->graphicsId = multi;
@@ -6013,9 +6027,15 @@ u8 GetDirectionToFace(s16 x, s16 y, s16 targetX, s16 targetY)
 // Uses the above, but script accessible, and uses localIds
 void GetDirectionToFaceScript(struct ScriptContext *ctx)
 {
-    u16 *var = GetVarPointer(ScriptReadHalfword(ctx));
+    u32 varId = ScriptReadHalfword(ctx);
     u8 sourceId = GetObjectEventIdByLocalId(ScriptReadByte(ctx));
     u8 targetId = GetObjectEventIdByLocalId(ScriptReadByte(ctx));
+
+    Script_RequestEffects(SCREFF_V1);
+    Script_RequestWriteVar(varId);
+
+    u16 *var = GetVarPointer(varId);
+
     if (var == NULL)
         return;
     if (sourceId >= OBJECT_EVENTS_COUNT || targetId >= OBJECT_EVENTS_COUNT)
@@ -6031,7 +6051,12 @@ void GetDirectionToFaceScript(struct ScriptContext *ctx)
 // Intended to be called before the field effect itself
 void IsFollowerFieldMoveUser(struct ScriptContext *ctx)
 {
-    u16 *var = GetVarPointer(ScriptReadHalfword(ctx));
+    u32 varId = ScriptReadHalfword(ctx);
+
+    Script_RequestEffects(SCREFF_V1);
+    Script_RequestWriteVar(varId);
+
+    u16 *var = GetVarPointer(varId);
     u16 userIndex = gFieldEffectArguments[0]; // field move user index
     struct Pokemon *follower = GetFirstLiveMon();
     struct ObjectEvent *obj = GetFollowerObject();
@@ -10996,6 +11021,13 @@ void GetDaycareGraphics(struct ScriptContext *ctx)
     u8 form;
     u8 shiny;
     s32 i;
+
+    Script_RequestEffects(SCREFF_V1);
+    Script_RequestWriteVar(varGfx[0]);
+    Script_RequestWriteVar(varGfx[1]);
+    Script_RequestWriteVar(varForm[0]);
+    Script_RequestWriteVar(varForm[1]);
+
     for (i = 0; i < 2; i++)
     {
         GetMonInfo((struct Pokemon *) &gSaveBlock1Ptr->daycare.mons[i].mon, &specGfx, &form, &shiny);
