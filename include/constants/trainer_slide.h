@@ -39,4 +39,5 @@ enum TrainerSlideTargets
     TRAINER_SLIDE_TARGET_TRAINER_B,
 };
 
+
 #endif // GUARD_CONSTANTS_TRAINER_SLIDE_H

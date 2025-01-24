@@ -428,6 +428,7 @@ static u32 Ai_SetMoveAccuracy(struct AiLogicData *aiData, u32 battlerAtk, u32 ba
 
 static void CalcBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u32 battlerDef, u32 weather)
 {
+    u16 *moves;
     u32 moveIndex, move;
     u32 rollType = GetDmgRollType(battlerAtk);
     SaveBattlerData(battlerAtk);

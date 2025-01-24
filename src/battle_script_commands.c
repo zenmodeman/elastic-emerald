@@ -6878,7 +6878,7 @@ static void Cmd_moveend(void)
             break;
         case MOVEEND_DRAIN_DOUSE:
         {
-            //Use gSpecialStatuses[gBattlerTarget].shellBellDmg per target as an idea.
+            //Use gBattleScripting.savedDmg per target as an idea.
             s32 drainHealAmount = 0;
             // DebugPrintf("The case for Drain Douse is being reached.");
             if (gStatuses4[gBattlerAttacker] & STATUS4_DRAIN_DOUSE){
@@ -6887,22 +6887,22 @@ static void Cmd_moveend(void)
                     s32 currentDrainAmount = 0;
                     if (i == gBattlerAttacker)
                         continue;
-                    //The supposition is that shellBellDmg will give the amount after the most recent attack and nothing else.
-                    if (gSpecialStatuses[i].shellBellDmg > 0){
-                        currentDrainAmount = GetDrainedBigRootHp(gBattlerAttacker, gSpecialStatuses[i].shellBellDmg/2);
+                    //The supposition is that savedDmg will give the amount after the most recent attack and nothing else.
+                    if (gBattleScripting.savedDmg > 0){
+                        currentDrainAmount = GetDrainedBigRootHp(gBattlerAttacker, gBattleScripting.savedDmg/2);
                     }
                     if (currentDrainAmount != 0 && GetBattlerAbility(i) == ABILITY_LIQUID_OOZE){
                         currentDrainAmount *= -1;
                     }
                     drainHealAmount += currentDrainAmount;
-                    // DebugPrintf("i: %d, currentDrainAmount: %d, shellBellDmg: %d, drainHealAmount: %d", i, currentDrainAmount, gSpecialStatuses[i].shellBellDmg, drainHealAmount);
+                    // DebugPrintf("i: %d, currentDrainAmount: %d, savedDmg: %d, drainHealAmount: %d", i, currentDrainAmount, gBattleScripting.savedDmg, drainHealAmount);
                 }
 
                 // DebugPrintf("Checking whether the variables for states are applicable --");
                 // DebugPrintf("damagedMons: %d, drainHealAmount: %d, gBattlerAttacker: %d, gBattlerTarget: %d", 
                 // gSpecialStatuses[gBattlerAttacker].damagedMons, drainHealAmount, gBattlerAttacker, gBattlerTarget);
 
-                if (gSpecialStatuses[gBattlerAttacker].damagedMons  // Need to have done damage
+                if (gBattleScripting.savedDmg > 0  // Need to have done damage
                 && drainHealAmount != 0
                 && gBattlerAttacker != gBattlerTarget
                 && (gBattleMons[gBattlerAttacker].hp != gBattleMons[gBattlerAttacker].maxHP || drainHealAmount > 0)
