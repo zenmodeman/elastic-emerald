@@ -896,7 +896,7 @@ static bool32 ShouldSwitchIfAttackingStatsLowered(u32 battler)
         return FALSE;
 
     // Physical attacker (This check needs improvement)
-    if (gBattleMons[battler].attack > gBattleMons[battler].spAttack)
+    if ((UQ_4_12_TO_INT(gBattleMons[battler].attack * GetAtkSpAtkGapThreshold(battler)) > gBattleMons[battler].spAttack) && HasMoveWithCategory(battler, DAMAGE_CATEGORY_PHYSICAL))
     {
         //Being a little more aggressive for now; in the future, stage checks will be less frequent
         //Because I'll incorporate damage checks
@@ -916,7 +916,7 @@ static bool32 ShouldSwitchIfAttackingStatsLowered(u32 battler)
     }
 
     // Special attacker (This check needs improvement)
-    else
+    else if ((UQ_4_12_TO_INT(gBattleMons[battler].spAttack * GetAtkSpAtkGapThreshold(battler)) > gBattleMons[battler].attack) && HasMoveWithCategory(battler, DAMAGE_CATEGORY_SPECIAL))
     {
         // Don't switch if attack isn't below -3
         if (spAttackingStage > DEFAULT_STAT_STAGE - 4)

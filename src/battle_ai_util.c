@@ -25,7 +25,7 @@
 
 static u32 AI_GetEffectiveness(uq4_12_t multiplier);
 
-static u16 GetAtkSpAtkGapThreshold(u32 battlerDef);
+
 static void AddSTABToMovesList(u16 *moves, u32 battler);
 
 // Functions
@@ -1869,20 +1869,19 @@ u32 CountNegativeStatStages(u32 battlerId)
     return count;
 }
 
-//Static zenmodeman function
-//Give more leeway in earlier levels
-static u16 GetAtkSpAtkGapThreshold(u32 battlerDef){
+
+uq4_12_t GetAtkSpAtkGapThreshold(u32 battlerDef){
     u32 level = gBattleMons[battlerDef].level;
     if (level <= 20){
-        return 1.5;
+        return UQ_4_12(1.5);
     }
     else if (level <= 30){
-        return 1.35;
+        return UQ_4_12(1.35);
     }
     else if (level <= 40){
-        return 1.2;
+        return UQ_4_12(1.2);
     }
-    return 1.15;
+    return UQ_4_12(1.15);
 }
 
 
@@ -1897,7 +1896,7 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     if ((gBattleMons[battlerDef].statStages[STAT_ATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
       //Estimate based on raw stats when lacking move knowledge
-      || (HasNoKnownNonProtectingMoves(battlerDef) && (gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack)) 
+      || (HasNoKnownNonProtectingMoves(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack))) 
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_WHITE_SMOKE
@@ -1984,7 +1983,7 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     //Still valid to go below -2 if can't make enough progress
     if ((gBattleMons[battlerDef].statStages[STAT_SPATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
-      || (HasNoKnownNonProtectingMoves(battlerDef) && (gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack))
+      || (HasNoKnownNonProtectingMoves(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack)))
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY

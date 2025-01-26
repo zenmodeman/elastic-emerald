@@ -34,6 +34,10 @@
 
 #define MIN_SWITCHES_FOR_PREDICTION 2
 
+#define ONLY_ONE_TARGET 100
+#define NO_KO_TARGET 255
+
+
 static u32 ChooseMoveOrAction_Singles(u32 battlerAi);
 static u32 ChooseMoveOrAction_Doubles(u32 battlerAi);
 static inline void BattleAI_DoAIProcessing(struct AI_ThinkingStruct *aiThink, u32 battlerAi, u32 battlerDef);
@@ -62,9 +66,15 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 static s32 AI_PowerfulStatus(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 static s32 AI_DynamicFunc(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 
+//My custom static functions
 static bool32 ShouldPermitImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move);
 static bool32 ShouldPenalizeNonImmuneMove(u32 battlerAtk, u32 battlerDef, u32 move);
+static bool32 DoesBattlerPreferDamagingOtherTarget(u32 battlerAtk, u32 battlerDef);
+static u8 GetTargetToKOInDoubles(u8 battler);
+static u8 FindSpeedTargetPreference(u8 battler);
+
 static s32 AI_PredictSwitch(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
+
 
 static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
 {
@@ -395,6 +405,188 @@ void Ai_UpdateFaintData(u32 battler)
     aiMon->isFainted = TRUE;
 }
 
+
+//This function should be called in cases where both of the player battlers are alive
+static u8 FindSpeedTargetPreference(u8 battler){
+    u8 playerOpposite = BATTLE_OPPOSITE(battler);
+    u8 playerPartner = BATTLE_PARTNER(playerOpposite);
+
+    //Prioritize one over the other if there's exactly one that the battler outspeeds
+    if ((AI_DATA->speedStats[battler] > AI_DATA->speedStats[playerOpposite]) && (AI_DATA->speedStats[battler] <= AI_DATA->speedStats[playerPartner])){
+        return playerOpposite;
+    }
+    if((AI_DATA->speedStats[battler] > AI_DATA->speedStats[playerPartner]) && (AI_DATA->speedStats[battler] <= AI_DATA->speedStats[playerOpposite])){
+        return playerPartner;
+    }
+
+    //If neither of the above is true, i.e. either both opponents are faster or slower than the target, choose the opponent that's faster
+    if (AI_DATA->speedStats[playerOpposite] >= AI_DATA->speedStats[playerPartner]){
+        return playerOpposite;
+    }else{
+        return playerPartner;
+            }
+
+}
+
+static u8 GetTargetToKOInDoubles(u8 battler){
+    u8 playerOpposite, playerPartner, battlerPartner;
+    u32 numHitsToKOPlayerOpposite, numHitsToKOPlayerPartner;
+    //     numHitsAgainstBattlerDef = NoOfHitsForTargetToFaintAI(battlerAtk, battlerDef);
+    // numHitsAgainstOpposingPartner = NoOfHitsForTargetToFaintAI(battlerAtk, opposingPartner);
+
+
+    if (!IsDoubleBattle()){
+        return NO_KO_TARGET;
+    }
+    // DebugPrintf("For battler %d, below IsDoubleBattle check", battler);
+
+    if (GetBattlerSide(battler) == B_SIDE_PLAYER){
+        return NO_KO_TARGET;
+    }
+
+    // DebugPrintf("For battler %d, below BatterSide check", battler);
+
+    playerOpposite = BATTLE_OPPOSITE(battler);
+    playerPartner = BATTLE_PARTNER(playerOpposite);
+    battlerPartner = BATTLE_PARTNER(battler);
+
+    //Skip other calculations if there's only one target
+    if (!IsBattlerAlive(playerOpposite) || !IsBattlerAlive(playerPartner)){
+        return ONLY_ONE_TARGET;
+    }
+
+    //Contrary to the name of the function, using it to compute num hits of AI against target
+    numHitsToKOPlayerOpposite = NoOfHitsForTargetToFaintAI(battler, playerOpposite);
+    numHitsToKOPlayerPartner = NoOfHitsForTargetToFaintAI(battler, playerPartner);
+
+    DebugPrintf("For battler %d, numHitsToKOPlayerOpposite: %d, numHitsToKOPlayerPartner: %d", battler, numHitsToKOPlayerOpposite, numHitsToKOPlayerPartner);
+
+    //No point if can't KO either opponent
+    if ((numHitsToKOPlayerOpposite != 1) && (numHitsToKOPlayerPartner != 1)){
+        return NO_KO_TARGET;
+    }
+
+     DebugPrintf("For battler %d, below can't KO either opponent check", battler);
+
+    if (IsBattlerAlive(battlerPartner)){
+        u32 numHitsofPartnerToKOPlayerOpposite = NoOfHitsForTargetToFaintAI(battlerPartner, playerOpposite);
+        u32 numHitsofPartnerToKOPlayerPartner = NoOfHitsForTargetToFaintAI(battlerPartner, playerPartner);
+
+        DebugPrintf("For battler %d, reached partner code", battler);
+
+        DebugPrintf("For battler %d, numHitsofPartnerToKOPlayerOpposite: %d, numHitsofPartnerToKOPlayerPartner: %d", battler, 
+        numHitsofPartnerToKOPlayerOpposite, numHitsofPartnerToKOPlayerPartner);
+
+        //Determine target for case where battler can KO both while battler partner can KO none
+        if ((numHitsToKOPlayerOpposite == 1) && (numHitsToKOPlayerPartner == 1) && (numHitsofPartnerToKOPlayerOpposite != 1) && (numHitsofPartnerToKOPlayerPartner != 1)){
+            //If partner takes more hits to KO opposite than it takes to KO playerPartner, then KO opposite
+            if (numHitsofPartnerToKOPlayerOpposite > numHitsofPartnerToKOPlayerPartner){
+                return playerOpposite;
+            }
+            //If partner takes more hits to KO playerPartner than it takes to KO opposite, then KO playerPartner
+            if (numHitsofPartnerToKOPlayerPartner > numHitsofPartnerToKOPlayerOpposite){
+                return playerPartner;
+            }
+            //If takes the same number of hits, aim for speed prioritization
+            return FindSpeedTargetPreference(battler);
+        }
+
+        //In cases where both battlers can KO both battlers, aim for speed priorization
+        //Use current battler as the speed prioritizer if faster or tied speed and lower id value
+        if ((numHitsToKOPlayerOpposite == 1) && (numHitsToKOPlayerPartner == 1) && (numHitsofPartnerToKOPlayerOpposite == 1) && (numHitsofPartnerToKOPlayerPartner == 1)){
+            if ((AI_DATA->speedStats[battler] > AI_DATA->speedStats[battlerPartner]) || 
+            ((AI_DATA->speedStats[battler] == AI_DATA->speedStats[battlerPartner]) && (battler < battlerPartner))
+            ){
+                return FindSpeedTargetPreference(battler);
+            }
+            else{
+            //Otherwise, choose the opposite of the partner's computation
+            return BATTLE_PARTNER(FindSpeedTargetPreference(battlerPartner));
+            }
+        }
+
+        //Case where both can only KO playerOpposite
+        if ((numHitsToKOPlayerOpposite == 1) && (numHitsToKOPlayerPartner != 1) && (numHitsofPartnerToKOPlayerOpposite == 1) && (numHitsofPartnerToKOPlayerPartner != 1)){
+
+            DebugPrintf("For battler %d, reached case where both can only KO same mon", battler);
+
+            //Battler takes KO if it would take more hits to KO playerPartner
+            if (numHitsToKOPlayerPartner > numHitsofPartnerToKOPlayerPartner){
+                DebugPrintf("For battler %d, reached case to return %d", battler, playerOpposite);
+                return playerOpposite;
+            }
+            //Battler does not take KO if battler Partner would take more hits to KO player partner
+            if (numHitsofPartnerToKOPlayerPartner > numHitsToKOPlayerPartner){
+                DebugPrintf("For battler %d, reached case to return no KO", battler);
+                return NO_KO_TARGET;
+            }
+            //In the case of equal number of hits to KO playerPartner, prioritize speed first and lower slot number second
+            if ((AI_DATA->speedStats[battler] > AI_DATA->speedStats[battlerPartner]) || 
+            ((AI_DATA->speedStats[battler] == AI_DATA->speedStats[battlerPartner]) && (battler < battlerPartner))
+            ){
+                return playerOpposite;
+            }else{
+                return NO_KO_TARGET;
+            }
+        }
+
+
+        //Case where both can only KO playerPartner
+        if ((numHitsToKOPlayerOpposite != 1) && (numHitsToKOPlayerPartner == 1) && (numHitsofPartnerToKOPlayerOpposite != 1) && (numHitsofPartnerToKOPlayerPartner == 1)){
+            DebugPrintf("For battler %d, reached case where both can only KO same mon", battler);
+            //Battler takes KO if it would take more hits to KO playerOpposite
+            if (numHitsToKOPlayerOpposite > numHitsofPartnerToKOPlayerOpposite){
+                DebugPrintf("For battler %d, reached case to return %d", battler, playerPartner);
+                return playerPartner;
+            }
+            //Battler does not take KO if battler Partner would take more hits to KO player opposite
+            if (numHitsofPartnerToKOPlayerOpposite > numHitsToKOPlayerOpposite){
+                DebugPrintf("For battler %d, reached case to return no KO", battler);
+                return NO_KO_TARGET;
+            }
+            //In the case of equal number of hits to KO playerPartner, prioritize speed first and lower slot number second
+            if ((AI_DATA->speedStats[battler] > AI_DATA->speedStats[battlerPartner]) || 
+            ((AI_DATA->speedStats[battler] == AI_DATA->speedStats[battlerPartner]) && (battler < battlerPartner))
+            ){
+                return playerPartner;
+            }else{
+                return NO_KO_TARGET;
+            }
+        }
+
+        //Since the double cases have already been handled, if only the battler can KO one of the targets, then just choose it
+        if ((numHitsToKOPlayerOpposite == 1) &&  (numHitsofPartnerToKOPlayerOpposite != 1)){
+            return playerOpposite;
+        }
+        if ((numHitsToKOPlayerPartner == 1) && (numHitsofPartnerToKOPlayerPartner != 1)){
+            return playerPartner;
+        }
+
+        //If reaching this point, the partner can KO the same mons the player can KO, but I'm being more explicit than I need to be for easier reasoning
+
+        //If partner can KO both and battler can only KO opposite, choose opposite
+        if ((numHitsToKOPlayerOpposite == 1) && (numHitsToKOPlayerPartner != 1) && (numHitsofPartnerToKOPlayerOpposite == 1) && (numHitsofPartnerToKOPlayerPartner == 1)){
+            return playerOpposite;
+        }
+        //If partner can KO both and battler can only KO playerPartner, choose playerPartner
+        if ((numHitsToKOPlayerOpposite != 1) && (numHitsToKOPlayerPartner == 1) && (numHitsofPartnerToKOPlayerOpposite == 1) && (numHitsofPartnerToKOPlayerPartner == 1)){
+            return playerPartner;
+        }
+    }else if (!IsBattlerAlive(battlerPartner)){
+        if ((numHitsToKOPlayerOpposite == 1) && (numHitsToKOPlayerPartner == 1)){
+            return FindSpeedTargetPreference(battler);
+        }
+        //In this case, battler would be able to kill exactly one of the two
+        if (numHitsToKOPlayerOpposite == 1){
+            return playerOpposite;
+        }
+        if (numHitsToKOPlayerPartner == 1){
+            return playerPartner;
+        }
+    }
+    return NO_KO_TARGET;
+}
+
 void SetBattlerAiData(u32 battler, struct AiLogicData *aiData)
 {
     u32 ability, holdEffect;
@@ -477,6 +669,7 @@ static void SetBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u3
         RestoreBattlerData(battlerDef);
     }
     RestoreBattlerData(battlerAtk);
+    
 }
 
 void SetAiLogicDataForTurn(struct AiLogicData *aiData)
@@ -512,6 +705,12 @@ void SetAiLogicDataForTurn(struct AiLogicData *aiData)
 
         SetBattlerAiMovesData(aiData, battlerAtk, battlersCount, weather);
     }
+
+    for (battlerAtk = 0; battlerAtk < battlersCount; battlerAtk++){
+        //Doing a secondary pass because need to wait for all the data to be set first
+        aiData->doublesKoTargets[battlerAtk] = GetTargetToKOInDoubles(battlerAtk);
+    }
+
     AI_DATA->aiCalcInProgress = FALSE;
 }
 
@@ -1565,6 +1764,9 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             if (gSideStatuses[GetBattlerSide(battlerAtk)] & SIDE_STATUS_MIST
               || PartnerHasSameMoveEffectWithoutTarget(BATTLE_PARTNER(battlerAtk), move, aiData->partnerMove))
                 ADJUST_SCORE(-10);
+            //Makes little sense to use it during a dying situation.
+            if (CanTargetFaintAi(battlerDef, battlerAtk) && CountUsablePartyMons(battlerAtk) == 0)
+                ADJUST_SCORE(-3);
             break;
         case EFFECT_FOCUS_ENERGY:
             if (gBattleMons[battlerAtk].status2 & STATUS2_FOCUS_ENERGY_ANY)
@@ -2804,11 +3006,16 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     if (IsBattleMoveStatus(move))
         return score; // status moves aren't accounted here
 
-    //In Double Battles, if the faster attacker has kill on target, the slower attacker shouldn't be incentivised to go for kill
-
-    if (isDoubleBattle && GetWhichBattlerFaster(battlerAtk, battlerAtkPartner, TRUE) != AI_IS_FASTER && CanAIFaintTarget(battlerAtkPartner, battlerDef, 1)){
+    //In Double Battles, if the partner is deemd to prioritize killing the target, avoid kill AI
+    // DebugPrintf("battlerAtk: %d, battlerDef: %d, partnerKOTarget: %d", battlerAtk, battlerDef, AI_DATA->doublesKoTargets[battlerAtkPartner]);
+    if (isDoubleBattle && IsBattlerAlive(battlerAtkPartner) && AI_DATA->doublesKoTargets[battlerAtkPartner] == battlerDef){
         return score;
     }
+
+    //Old logic    
+    // if (isDoubleBattle && GetWhichBattlerFaster(battlerAtk, battlerAtkPartner, TRUE) != AI_IS_FASTER && CanAIFaintTarget(battlerAtkPartner, battlerDef, 1)){
+    //     return score;
+    // }
 
     if (CanIndexMoveFaintTarget(battlerAtk, battlerDef, movesetIndex, 0) && GetMoveEffect(move) != EFFECT_EXPLOSION)
     {
@@ -2856,6 +3063,11 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 
     SetTypeBeforeUsingMove(move, battlerAtk);
     moveType = GetBattleMoveType(move);
+
+    //If the parner is reasoned to kill target, blanket lower the score to disincentivize targeting this target
+    if (IsBattlerAlive(battlerAtkPartner) && (aiData->doublesKoTargets[battlerAtkPartner] == battlerDef)){
+        ADJUST_SCORE(-3);
+    }
 
     // check what effect partner is using
     if (aiData->partnerMove != 0)
@@ -3280,6 +3492,52 @@ static inline bool32 ShouldUseSpreadDamageMove(u32 battlerAtk, u32 move, u32 mov
          && noOfHitsToFaintPartner < 7);
 }
 
+static bool32 DoesBattlerPreferDamagingOtherTarget(u32 battlerAtk, u32 battlerDef){
+    u32 battlerPartner = BATTLE_PARTNER(battlerAtk);
+    u32 opposingPartner = BATTLE_PARTNER(battlerDef);
+    u32 numHitsAgainstBattlerDef, numHitsAgainstOpposingPartner;
+
+    //Not applicable for same side
+    if (GetBattlerSide(battlerAtk) == GetBattlerSide(battlerDef)){
+        return FALSE;
+    }
+
+    if (!IsDoubleBattle()){
+        return FALSE;
+    }
+
+    //Both opponents need to be alive for this to be applicable
+    if (!IsBattlerAlive(battlerDef) || !IsBattlerAlive(opposingPartner)){
+        return FALSE;
+    }
+
+    if (IsBattlerAlive(battlerPartner)){
+        //Prefers damaging other target if current target is flagged to be killed by partner
+        if (AI_DATA->doublesKoTargets[battlerPartner] == battlerDef){
+            return TRUE;
+        }
+        //Does not prefer damaging other target if other target is flagged to be killed by partner
+        if (AI_DATA->doublesKoTargets[battlerPartner] == opposingPartner){
+            return FALSE;
+        }
+    }
+
+    //Although the function says Target to Faint AI, using it to compute number of hits for AI to faint target.
+    numHitsAgainstBattlerDef = NoOfHitsForTargetToFaintAI(battlerAtk, battlerDef);
+    numHitsAgainstOpposingPartner = NoOfHitsForTargetToFaintAI(battlerAtk, opposingPartner);
+
+    // DebugPrintf("battlerAtk: %d, battlerDef: %d, numHitsAgainstBattlerDef: %d, numHitsAgainstOpposingPartner: %d", battlerAtk, battlerDef, numHitsAgainstBattlerDef, numHitsAgainstOpposingPartner);
+    //If partner takes fewer hits to KO by 2 or more, ignore the current target when it comes to best damage.
+    if (numHitsAgainstOpposingPartner + 2 <= numHitsAgainstBattlerDef){
+        return TRUE;
+    }
+
+    //TODO: May need to consider invulnerability cases such as Dig or Fly at some point.
+
+    //Just return False if it doesn't meet explicit conditions.
+    return FALSE;
+
+}
 static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
 {
     u32 i;
@@ -3301,6 +3559,11 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
             //Idea is that if the effect score is disincentivized, don't factor it in best number of hits
             if (tentativeScores[i] < 100){
                 continue;
+            }
+
+            //Currently skip incentives if the target is just superior
+            if (DoesBattlerPreferDamagingOtherTarget(battlerAtk, battlerDef)){
+                return score;
             }
 
             noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i);
