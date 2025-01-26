@@ -9901,7 +9901,7 @@ Pic: Brendan
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Force Setup First Turn
+AI: Smart Trainer
 
 Torchic  
 Ability: Blaze  
@@ -11771,7 +11771,7 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Quick Attack  
 - Mist  
 
-Venonat (M) @ Zoom Lens  
+Venonat (M) @ Wide Lens  
 Ability: Tinted Lens  
 Level: 6  
 Quiet Nature  
