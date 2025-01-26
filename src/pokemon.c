@@ -5640,10 +5640,7 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
 
 static const u16 sUniversalMoves[] =
 {
-    MOVE_BIDE,
     MOVE_FRUSTRATION,
-    MOVE_HIDDEN_POWER,
-    MOVE_MIMIC,
     MOVE_NATURAL_GIFT,
     MOVE_RAGE,
     MOVE_RETURN,
@@ -5829,6 +5826,9 @@ static u8 AddTutorMoves(u16 species, u16 *applicable_moves, const u16 *tutorMove
     int i;
 
     for (i=0; i < numTutorMoves; i++){
+        if (species == SPECIES_SHINX && tutorMoves[i] == MOVE_MUD_SLAP){
+            DebugPrintf("Mud Slap Shinx case reached. The bool result is %d", CanLearnTeachableMove(species, tutorMoves[i]));
+        }
         if (CanLearnTeachableMove(species, tutorMoves[i])){
             applicable_moves[currentNumMoves + addedMoves++] = tutorMoves[i];
         }
@@ -5862,7 +5862,8 @@ static u8 GetTechTutorMoveList(u16 species, u16 *applicable_moves){
     u8 numMoves = 0;
 
     //pre-badge one, always applies
-
+    DebugPrintf("GetTechTutorMoveList is called");
+    
     numMoves += AddTutorMoves(species, applicable_moves, gTechTutorAlways, ARRAY_COUNT(gTechTutorAlways), numMoves);
 
     //If acquired one badge 

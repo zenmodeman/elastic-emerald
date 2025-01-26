@@ -52,10 +52,12 @@ ChooseTechMoveTutorMon::
 # 29 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	msgbox ChooseTechMoveTutorMon_Text_0
 # 30 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	special ChooseMonForCenterMoveTutor
+	setvar VAR_TEMP_9, MOVE_TUTOR_TECH
 # 31 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	waitstate
+	special ChooseMonForCenterMoveTutor
 # 32 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	waitstate
+# 33 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
 	goto_if_ne ChooseTechMoveTutorMon_3
 ChooseTechMoveTutorMon_2:
@@ -64,16 +66,14 @@ ChooseTechMoveTutorMon_2:
 	return
 
 ChooseTechMoveTutorMon_1:
-# 33 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	msgbox ChooseTechMoveTutorMon_Text_1
 # 34 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	setvar VAR_TEMP_9, MOVE_TUTOR_TECH
+	msgbox ChooseTechMoveTutorMon_Text_1
 # 35 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	special TeachNPCMoveTutorMove
 	return
 
 ChooseTechMoveTutorMon_3:
-# 32 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 33 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	compare VAR_0x8005, 0
 	goto_if_ne ChooseTechMoveTutorMon_1
 	goto ChooseTechMoveTutorMon_2
@@ -357,7 +357,7 @@ ChooseTechMoveTutorMon_Text_0:
 	.string "Select pokemon to teach.$"
 
 ChooseTechMoveTutorMon_Text_1:
-# 33 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 34 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	.string "Teach Which Move?$"
 
 TechTutorRejected_Text_0:

@@ -107,10 +107,12 @@ ChooseMoveTutorMon::
 # 38 "data/scripts/pkmn_center_tutor.pory"
 	msgbox ChooseMoveTutorMon_Text_0
 # 39 "data/scripts/pkmn_center_tutor.pory"
-	special ChooseMonForCenterMoveTutor
+	setvar VAR_TEMP_9, MOVE_TUTOR_CENTER
 # 40 "data/scripts/pkmn_center_tutor.pory"
-	waitstate
+	special ChooseMonForCenterMoveTutor
 # 41 "data/scripts/pkmn_center_tutor.pory"
+	waitstate
+# 42 "data/scripts/pkmn_center_tutor.pory"
 	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
 	goto_if_ne ChooseMoveTutorMon_3
 ChooseMoveTutorMon_2:
@@ -119,16 +121,14 @@ ChooseMoveTutorMon_2:
 	return
 
 ChooseMoveTutorMon_1:
-# 42 "data/scripts/pkmn_center_tutor.pory"
-	msgbox ChooseMoveTutorMon_Text_1
 # 43 "data/scripts/pkmn_center_tutor.pory"
-	setvar VAR_TEMP_9, MOVE_TUTOR_CENTER
+	msgbox ChooseMoveTutorMon_Text_1
 # 44 "data/scripts/pkmn_center_tutor.pory"
 	special TeachNPCMoveTutorMove
 	return
 
 ChooseMoveTutorMon_3:
-# 41 "data/scripts/pkmn_center_tutor.pory"
+# 42 "data/scripts/pkmn_center_tutor.pory"
 	compare VAR_0x8005, 0
 	goto_if_ne ChooseMoveTutorMon_1
 	goto ChooseMoveTutorMon_2
@@ -207,7 +207,7 @@ ChooseMoveTutorMon_Text_0:
 	.string "Select pokemon to teach$"
 
 ChooseMoveTutorMon_Text_1:
-# 42 "data/scripts/pkmn_center_tutor.pory"
+# 43 "data/scripts/pkmn_center_tutor.pory"
 	.string "Teach Which Move?$"
 
 TakeCenterNap_Text_0:

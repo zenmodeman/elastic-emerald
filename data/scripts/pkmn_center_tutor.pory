@@ -36,11 +36,11 @@ script CenterMoveTutor{
 }
 script ChooseMoveTutorMon{
     msgbox(format("Select pokemon to teach"))
+    setvar(VAR_TEMP_9, MOVE_TUTOR_CENTER)
     special(ChooseMonForCenterMoveTutor)
     waitstate
     if (var(VAR_0x8004) != PARTY_NOTHING_CHOSEN && var(VAR_0x8005) != 0){
         msgbox(format("Teach Which Move?"))
-        setvar(VAR_TEMP_9, MOVE_TUTOR_CENTER)
         special(TeachNPCMoveTutorMove)
     }else{
         goto(CenterRejected)
