@@ -113,7 +113,6 @@ script InsideOfTruck_EventScript_SetIntroFlags{
         elif (var(VAR_RESULT) ==2){
             msgbox(format("This mode prevents you from exceeding certain levels based on progression."))
             msgbox(format("Most of the time, the level cap for experience gain is 1 higher than the cap for rare candies or exp. candies"))
-            msgbox(format("If not playing in EV-mode, the player cannot increase effort values, and trainers will not have them."))
         }
     }while (var(VAR_RESULT) ==2)
 
