@@ -8,6 +8,8 @@ ASSUMPTIONS
     ASSUME(B_ILLUMINATE_EFFECT >= GEN_9);
 }
 
+//With the change to Illuminate, Staryu will not pass
+
 SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stage reduction from moves")
 {
     u16 ability;

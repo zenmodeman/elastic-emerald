@@ -1205,7 +1205,9 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     RETURN_SCORE_MINUS(10);
                 break;
             case ABILITY_ILLUMINATE:
-                if (B_ILLUMINATE_EFFECT < GEN_9)
+
+                //Only letting Illuminate keep half of Keen Eye
+                // if (B_ILLUMINATE_EFFECT < GEN_9)
                     break;
                 // fallthrough
             case ABILITY_KEEN_EYE:
@@ -1412,7 +1414,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_EVASION))
                 ADJUST_SCORE(-10);    
             if (aiData->abilities[battlerDef] == ABILITY_NO_GUARD || aiData->abilities[battlerDef] == ABILITY_KEEN_EYE || aiData->abilities[battlerDef] == ABILITY_LONG_REACH
-            || aiData->abilities[battlerDef] == ABILITY_MINDS_EYE || gBattleMons[battlerDef].status2 & STATUS2_FORESIGHT){
+            || aiData->abilities[battlerDef] == ABILITY_MINDS_EYE  || aiData->abilities[battlerDef] == ABILITY_ILLUMINATE
+              ||  gBattleMons[battlerDef].status2 & STATUS2_FORESIGHT){
                 ADJUST_SCORE(-10);
             }
             if (moveEffect == EFFECT_MINIMIZE && HasMinimizeDoubleMove(battlerDef)){
@@ -1638,7 +1641,8 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             if (!ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_ACC))
                 ADJUST_SCORE(-10);
             else if (aiData->abilities[battlerDef] == ABILITY_KEEN_EYE || aiData->abilities[battlerDef] == ABILITY_MINDS_EYE
-                        || (B_ILLUMINATE_EFFECT >= GEN_9 && aiData->abilities[battlerDef] == ABILITY_ILLUMINATE))
+                        // || (B_ILLUMINATE_EFFECT >= GEN_9 && aiData->abilities[battlerDef] == ABILITY_ILLUMINATE)
+                        )
                 ADJUST_SCORE(-8);
             break;
         // case EFFECT_EVASION_DOWN:
