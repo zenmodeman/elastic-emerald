@@ -598,7 +598,6 @@ static void Cmd_unused(void);
 static void Cmd_tryworryseed(void);
 static void Cmd_callnative(void);
 
-static bool32 MoveIsItemInteracting(u32 move);
 
 void (* const gBattleScriptingCommandsTable[])(void) =
 {
@@ -1421,8 +1420,7 @@ static bool32 AccuracyCalcHelper(u32 move, u32 battler)
         effect = TRUE;
         ability = ABILITY_NO_GUARD;
     }
-    else if (GetBattlerAbility(gBattlerAttacker) == ABILITY_FRISK
-    && (MoveIsItemInteracting(move))){
+    else if (GetBattlerAbility(gBattlerAttacker) == ABILITY_FRISK && IsItemInteractingMove(move)){
         effect = TRUE;
         ability = ABILITY_FRISK;
     }
@@ -12122,28 +12120,6 @@ static u16 ReverseStatChangeMoveEffect(u16 moveEffect)
 }
 
 
-static bool32 CurrentMoveIsEnticing(){
-
-    // DebugPrintf("From CurrentMoveIsEnticing, currentMove is %d", gCurrentMove);
-
-    //The sensible choice would be to add this as a move category, but for now just doing a raw chain of or clauses statements.
-    if (gCurrentMove == MOVE_CHARM || gCurrentMove == MOVE_CAPTIVATE || gCurrentMove == MOVE_BABY_DOLL_EYES || gCurrentMove == MOVE_TEARFUL_LOOK || gCurrentMove == MOVE_PLAY_NICE
-    || gCurrentMove == MOVE_CONFIDE || gCurrentMove == MOVE_FAKE_TEARS){
-        return TRUE;
-    }
-    return FALSE;
-}
-
-static bool32 MoveIsItemInteracting(u32 move){
-
-
-    //The sensible choice would be to add this as a move category, but for now just doing a raw chain of or clauses statements.
-    if (move == MOVE_KNOCK_OFF || move == MOVE_THIEF || move == MOVE_COVET || move == MOVE_POLTERGEIST 
-    || move == MOVE_EMBARGO || move == MOVE_TRICK || move == MOVE_SWITCHEROO || move == MOVE_BUG_BITE || move == MOVE_INCINERATE){
-        return TRUE;
-    }
-    return FALSE;
-}
 
 static u32 ChangeStatBuffs(s8 statValue, u32 statId, u32 flags, const u8 *BS_ptr)
 {
@@ -12189,7 +12165,7 @@ static u32 ChangeStatBuffs(s8 statValue, u32 statId, u32 flags, const u8 *BS_ptr
         statValue = (SET_STAT_BUFF_VALUE(GET_STAT_BUFF_VALUE(statValue) * 2)) | ((statValue <= -1) ? STAT_BUFF_NEGATIVE : 0);
     }
     else if (GetBattlerAbility(gBattlerAttacker) == ABILITY_CUTE_CHARM && AreBattlersOfOppositeGender(gBattlerAttacker, battler) 
-    && GetBattlerAbility(battler) != ABILITY_OBLIVIOUS && CurrentMoveIsEnticing()){
+    && GetBattlerAbility(battler) != ABILITY_OBLIVIOUS && IsEnticingMove(gCurrentMove)){
         // DebugPrintf("The Cute Charm stat debuff area has been reached. ");
         statValue = (SET_STAT_BUFF_VALUE(GET_STAT_BUFF_VALUE(statValue) +1)) | ((statValue <= -1) ? STAT_BUFF_NEGATIVE : 0);
     }

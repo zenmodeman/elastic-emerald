@@ -7,6 +7,7 @@ const u16 gPreGym1Tutor[] = {
     MOVE_INFESTATION,
     MOVE_SAND_TOMB,
     MOVE_METRONOME,
+    MOVE_CONFIDE,
 };
 
 const u16 gPreGym1TutorSetup[] = {

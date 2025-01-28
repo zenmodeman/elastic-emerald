@@ -106,9 +106,11 @@ struct MoveInfo
     bool32 sketchBanned:1;
 
     //custom flags, each taking 1 from padding
-    bool32 illuminating:1;
+    bool32 illuminatingMove:1;
+    bool32 enticingMove:1;
+    bool32 itemInteractingMove:1;
 
-    u32 padding:18;
+    u32 padding:16;
     // end of word
 
     union {
@@ -237,7 +239,15 @@ static inline bool32 MoveAlwaysCrits(u32 moveId)
 
 static inline bool32 IsIlluminatingMove(u32 moveId)
 {
-    return gMovesInfo[SanitizeMoveId(moveId)].illuminating;
+    return gMovesInfo[SanitizeMoveId(moveId)].illuminatingMove;
+}
+
+static inline bool32 IsEnticingMove(u32 moveId){
+    return gMovesInfo[SanitizeMoveId(moveId)].enticingMove;
+}
+
+static inline bool32 IsItemInteractingMove(u32 moveId){
+    return gMovesInfo[SanitizeMoveId(moveId)].itemInteractingMove;
 }
 
 static inline u32 GetMoveAdditionalEffectCount(u32 moveId)
