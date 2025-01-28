@@ -896,7 +896,8 @@ const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
     [STRINGID_SUPEREFFECTIVETWOFOES]                = COMPOUND_STRING("It's super effective on {B_DEF_NAME_WITH_PREFIX2} and {B_DEF_PARTNER_NAME}!"),
     [STRINGID_NOTVERYEFFECTIVETWOFOES]              = COMPOUND_STRING("It's not very effective on {B_DEF_NAME_WITH_PREFIX2} and {B_DEF_PARTNER_NAME}!"),
     [STRINGID_ITDOESNTAFFECTTWOFOES]                = COMPOUND_STRING("It doesn't affect {B_DEF_NAME_WITH_PREFIX2} and {B_DEF_PARTNER_NAME}…"),
-    [STRINGID_PLAYERWHITEOUT3]                      = COMPOUND_STRING("Challenger has lost the battle!{PAUSE_UNTIL_PRESS}")
+    [STRINGID_PLAYERWHITEOUT3]                      = COMPOUND_STRING("Challenger has lost the battle!{PAUSE_UNTIL_PRESS}"),
+    [STRINGID_ILLUMINATING]                         = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} became the center of attention!")
 };
 
 const u16 gTrainerUsedItemStringIds[] =

@@ -6727,6 +6727,17 @@ static void Cmd_moveend(void)
             }
             gBattleScripting.moveendState++;
             break;
+        case MOVEEND_ILLUMINATING:
+            if (GetBattlerAbility(gBattlerAttacker) == ABILITY_ILLUMINATE && IsIlluminatingMove(gCurrentMove) 
+            && gSideTimers[GetBattlerSide(gBattlerAttacker)].followmeTimer == 0 && IsDoubleBattle()){
+                gSideTimers[GetBattlerSide(gBattlerAttacker)].followmeTimer = 1;
+                gSideTimers[GetBattlerSide(gBattlerAttacker)].followmeTarget = gBattlerAttacker;
+                gBattleScripting.battler = gBattlerAbility = gBattlerAttacker;
+
+                BattleScriptPushCursor();
+                gBattlescriptCurrInstr = BattleScript_IlluminateActivates;
+                effect = TRUE;
+            }
         case MOVEEND_EJECT_ITEMS:
             {
                 // Because sorting the battlers by speed takes lots of cycles, it's better to just check if any of the battlers has the Eject items.

@@ -104,7 +104,11 @@ struct MoveInfo
     bool32 parentalBondBanned:1;
     bool32 skyBattleBanned:1;
     bool32 sketchBanned:1;
-    u32 padding:19;
+
+    //custom flags, each taking 1 from padding
+    bool32 illuminating:1;
+
+    u32 padding:18;
     // end of word
 
     union {
@@ -229,6 +233,11 @@ static inline u32 GetMoveCriticalHitStage(u32 moveId)
 static inline bool32 MoveAlwaysCrits(u32 moveId)
 {
     return gMovesInfo[SanitizeMoveId(moveId)].alwaysCriticalHit;
+}
+
+static inline bool32 IsIlluminatingMove(u32 moveId)
+{
+    return gMovesInfo[SanitizeMoveId(moveId)].illuminating;
 }
 
 static inline u32 GetMoveAdditionalEffectCount(u32 moveId)

@@ -9745,6 +9745,12 @@ BattleScript_MagicianActivates::
 	call BattleScript_ItemSteal
 	return
 
+BattleScript_IlluminateActivates::
+	call BattleScript_AbilityPopUp
+	printstring STRINGID_ILLUMINATING
+	waitmessage B_WAIT_TIME_LONG
+	return
+
 BattleScript_SymbiosisActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_SYMBIOSISITEMPASS
