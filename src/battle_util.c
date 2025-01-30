@@ -5188,6 +5188,18 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 effect++;
             }
             break;
+        case ABILITY_DAMP:
+            if (!gSpecialStatuses[battler].switchInAbilityDone
+            && ((HasWeatherEffect() && gBattleWeather & B_WEATHER_RAIN)
+            || (gFieldStatuses & STATUS_FIELD_WATERSPORT))
+            ){
+                gBattlerAttacker = battler;
+                gBattleStruct->moveDamage[battler] = (GetNonDynamaxMaxHP(battler) / 3) * -1;
+                gSpecialStatuses[battler].switchInAbilityDone = TRUE;
+                BattleScriptPushCursorAndCallback(BattleScript_DampHealingActivates);
+                effect++;
+            }
+            break;
         case ABILITY_EMBODY_ASPECT_TEAL_MASK:
         case ABILITY_EMBODY_ASPECT_HEARTHFLAME_MASK:
         case ABILITY_EMBODY_ASPECT_WELLSPRING_MASK:

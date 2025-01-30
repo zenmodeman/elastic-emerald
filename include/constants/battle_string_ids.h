@@ -737,8 +737,9 @@
 #define STRINGID_DRAINDOUSESETSDRAINING              EXPANSION_BATTLE_STRING_LATEST + 3
 #define STRINGID_DRAINEDWITHLIQUID                   EXPANSION_BATTLE_STRING_LATEST + 4
 #define STRINGID_PLAYERWHITEOUT3                     EXPANSION_BATTLE_STRING_LATEST + 5
-#define STRINGID_ILLUMINATING                        EXPANSION_BATTLE_STRING_LATEST + 6   
-#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRING_LATEST + 7
+#define STRINGID_ILLUMINATING                        EXPANSION_BATTLE_STRING_LATEST + 6
+#define STRINGID_DAMP_HEALING                        EXPANSION_BATTLE_STRING_LATEST + 7   
+#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRING_LATEST + 8
 
 // This is the string id that gBattleStringsTable starts with.
 // String ids before this (e.g. STRINGID_INTROMSG) are not in the table,
