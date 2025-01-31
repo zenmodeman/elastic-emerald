@@ -224,14 +224,70 @@ u8 ChooseWildMonIndex_Land(void)
         wildMonIndex = 9;
     else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_9 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_10)
         wildMonIndex = 10;
-    else
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_10 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_11)
         wildMonIndex = 11;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_11 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_12)
+        wildMonIndex = 12;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_12 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_13)
+        wildMonIndex = 13;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_13 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_14)
+        wildMonIndex = 14;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_14 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_15)
+        wildMonIndex = 15;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_15 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_16)
+        wildMonIndex = 16;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_16 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_17)
+        wildMonIndex = 17;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_17 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_18)
+        wildMonIndex = 18;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_18 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_19)
+        wildMonIndex = 19;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_19 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_20)
+        wildMonIndex = 20;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_20 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_21)
+        wildMonIndex = 21;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_21 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_22)
+        wildMonIndex = 22;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_22 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_23)
+        wildMonIndex = 23;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_23 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_24)
+        wildMonIndex = 24;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_24 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_25)
+        wildMonIndex = 25;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_25 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_26)
+        wildMonIndex = 26;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_26 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_27)
+        wildMonIndex = 27;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_27 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_28)
+        wildMonIndex = 28;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_28 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_29)
+        wildMonIndex = 29;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_29 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_30)
+        wildMonIndex = 30;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_30 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_31)
+        wildMonIndex = 31;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_31 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_32)
+        wildMonIndex = 32;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_32 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_33)
+        wildMonIndex = 33;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_33 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_34)
+        wildMonIndex = 34;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_34 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_35)
+        wildMonIndex = 35;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_35 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_36)
+        wildMonIndex = 36;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_36 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_37)
+        wildMonIndex = 37;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_37 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_38)
+        wildMonIndex = 38;
+    else
+        wildMonIndex = 39;        
 
     if (LURE_STEP_COUNT != 0 && (Random() % 10 < 2))
         swap = TRUE;
 
     if (swap)
-        wildMonIndex = 11 - wildMonIndex;
+        wildMonIndex = 39 - wildMonIndex;
 
     return wildMonIndex;
 }
@@ -587,6 +643,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
 
     //Use modulus to cut down to the permitted size; the total wild size is a multiple of the maximum land slots (32 v.s. 8)
     if (area == WILD_AREA_LAND && wildMonIndex >= MAX_REGULAR_LAND_SLOTS && !isMonotypeInfluenced){
+        DebugPrintf("The wildMonIndex before modding is %d", wildMonIndex);
         wildMonIndex = wildMonIndex % (MAX_REGULAR_LAND_SLOTS); 
     }
 
