@@ -5190,10 +5190,13 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
             break;
         case ABILITY_DAMP:
             if (!gSpecialStatuses[battler].switchInAbilityDone
-            && ((HasWeatherEffect() && gBattleWeather & B_WEATHER_RAIN)
-            || (gFieldStatuses & STATUS_FIELD_WATERSPORT))
-            ){
+            && gBattleMons[battler].hp < gBattleMons[battler].maxHP
+            && (gFieldStatuses & STATUS_FIELD_WATERSPORT)
+            && !(HasWeatherEffect() && gBattleWeather & B_WEATHER_RAIN) //Because Rain should already be accounted for
+            )
+            {
                 gBattlerAttacker = battler;
+                gEffectBattler = battler;
                 gBattleStruct->moveDamage[battler] = (GetNonDynamaxMaxHP(battler) / 3) * -1;
                 gSpecialStatuses[battler].switchInAbilityDone = TRUE;
                 BattleScriptPushCursorAndCallback(BattleScript_DampHealingActivates);
@@ -6564,6 +6567,24 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 effect++;
             }
             break;
+        case ABILITY_DAMP:
+        {
+            if (!gDisableStructs[battler].weatherAbilityDone
+             && (gBattleWeather & B_WEATHER_RAIN)
+            && HasWeatherEffect()
+            && gBattleMons[battler].hp < gBattleMons[battler].maxHP
+             )
+            {
+                gDisableStructs[battler].weatherAbilityDone = TRUE;
+                gEffectBattler = battler;
+                gBattlerAbility = battler;
+                gBattleStruct->moveDamage[battler] = (GetNonDynamaxMaxHP(battler) / 3) * -1;
+                gBattleScripting.battler = battler;
+                BattleScriptPushCursorAndCallback(BattleScript_DampHealingActivates);
+                effect++;
+            }
+            break;
+        }
         case ABILITY_ICE_FACE:
         {
             u32 battlerWeatherAffected = IsBattlerWeatherAffected(battler, B_WEATHER_HAIL | B_WEATHER_SNOW);

@@ -4493,11 +4493,34 @@ BattleScript_EffectRainDance::
 	ppreduce
 	call BattleScript_CheckPrimalWeather
 	setfieldweather BATTLE_WEATHER_RAIN
+
+	
 BattleScript_MoveWeatherChange::
 	attackanimation
 	waitanimation
 	call BattleScript_MoveWeatherChangeRet
 	goto BattleScript_MoveEnd
+
+
+BattleScript_TryDampHealingLoop:
+	savetarget
+	setbyte gBattlerTarget, 0
+
+BattleScript_TryDampLoop_Iter:
+	trydamphealing BS_TARGET, BattleScript_TryDampHealingLoop_Increment
+	jumpifability BS_TARGET, ABILITY_DAMP, BattleScript_TryDampHealingLoop_Execute
+BattleScript_TryDampHealingLoop_Increment:
+	addbyte gBattlerTarget, 0x1
+	jumpifbytenotequal gBattlerTarget, gBattlersCount, BattleScript_TryDampLoop_Iter
+	restoretarget
+	return
+
+BattleScript_TryDampHealingLoop_Execute:
+	call BattleScript_DampHealingEffect
+	goto BattleScript_TryDampHealingLoop_Increment
+
+
+
 
 BattleScript_MoveWeatherChangeRet::
 	printfromtable gMoveWeatherChangeStringIds
@@ -5308,8 +5331,8 @@ BattleScript_EffectRecoilHP25::
 	incrementgamestat GAME_STAT_USED_STRUGGLE
 	goto BattleScript_EffectHit
 
-BattleScript_EffectMudSport::
-BattleScript_EffectWaterSport::
+
+BattleScript_EffectSportCommon::
 	attackcanceler
 	attackstring
 	ppreduce
@@ -5318,6 +5341,15 @@ BattleScript_EffectWaterSport::
 	waitanimation
 	printfromtable gSportsUsedStringIds
 	waitmessage B_WAIT_TIME_LONG
+	return
+
+BattleScript_EffectMudSport::
+	call BattleScript_EffectSportCommon
+	goto BattleScript_MoveEnd
+
+BattleScript_EffectWaterSport::
+	call BattleScript_EffectSportCommon
+	call BattleScript_TryDampHealingLoop
 	goto BattleScript_MoveEnd
 
 BattleScript_EffectTickle::
@@ -8066,14 +8098,18 @@ BattleScript_HospitalityActivates::
 	datahpupdate BS_TARGET
 	end3
 
-BattleScript_DampHealingActivates::
+BattleScript_DampHealingEffect::
 	pause B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_DAMP_HEALING
 	waitmessage B_WAIT_TIME_LONG
 	orword gHitMarker, HITMARKER_IGNORE_SUBSTITUTE
-	healthbarupdate BS_ATTACKER
-	datahpupdate BS_ATTACKER
+	healthbarupdate BS_EFFECT_BATTLER
+	datahpupdate BS_EFFECT_BATTLER
+	return 
+
+BattleScript_DampHealingActivates::
+	call BattleScript_DampHealingEffect
 	end3
 
 BattleScript_AttackWeakenedByStrongWinds::

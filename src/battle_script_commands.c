@@ -17519,6 +17519,26 @@ void BS_SetDrainDouse()
     }
 }
 
+void BS_TryDampHealing(){
+    NATIVE_ARGS(u8 battler, const u8 *failInstr);
+
+    u32 battler = GetBattlerForBattleScript(cmd->battler);
+    u16 ability = GetBattlerAbility(battler);
+    if (ability == ABILITY_DAMP
+    && gBattleMons[battler].hp < gBattleMons[battler].maxHP)
+    {
+        gLastUsedAbility = ability;
+        RecordAbilityBattle(battler, gLastUsedAbility);
+        gBattlerAbility = gBattleScripting.battler = battler;
+        gEffectBattler = battler;
+        gBattleStruct->moveDamage[battler] = (GetNonDynamaxMaxHP(battler) / 3) * -1;
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+    else
+    {
+        gBattlescriptCurrInstr = cmd->failInstr;
+    }
+}
 
 void BS_TryDefog(void)
 {
