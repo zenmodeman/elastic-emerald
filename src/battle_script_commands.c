@@ -14483,12 +14483,15 @@ static bool32 CheckIfCanFireTwoTurnMoveNow(u8 battler, bool8 checkChargeTurnEffe
     // Semi-invulnerable moves cannot skip their charge turn (except with Power Herb)
     if (gBattleMoveEffects[GetMoveEffect(gCurrentMove)].semiInvulnerableEffect == TRUE)
         return FALSE;
-
+    
     // If this move has charge turn effects, it must charge, activate them, then try to fire
     if (checkChargeTurnEffects && MoveHasChargeTurnAdditionalEffect(gCurrentMove))
         return FALSE;
-
-    // Insert custom conditions here
+    
+    //It appears that battler applies to target, so gBAttlerAttacker has to be used.
+    if ((GetMoveTwoTurnAttackStatus(gCurrentMove) == SIDE_STATUS_TAILWIND) && (gSideStatuses[GetBattlerSide(gBattlerAttacker)] & SIDE_STATUS_TAILWIND)){
+        return TRUE;
+    }
 
     // Certain two-turn moves may fire on the first turn in the right weather (Solar Beam, Electro Shot)
     // By default, all two-turn moves have the option of adding weather to their argument

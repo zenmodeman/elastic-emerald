@@ -643,7 +643,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
 
     //Use modulus to cut down to the permitted size; the total wild size is a multiple of the maximum land slots (32 v.s. 8)
     if (area == WILD_AREA_LAND && wildMonIndex >= MAX_REGULAR_LAND_SLOTS && !isMonotypeInfluenced){
-        DebugPrintf("The wildMonIndex before modding is %d", wildMonIndex);
+        // DebugPrintf("The wildMonIndex before modding is %d", wildMonIndex);
         wildMonIndex = wildMonIndex % (MAX_REGULAR_LAND_SLOTS); 
     }
 
