@@ -485,7 +485,7 @@ PetalburgWoods_Text_TrainerTipsPP:
 `
 
 script PetalburgWoods_EventScript_Aurelio{
-    lockall
+    lock
     faceplayer
 	if (flag(TRAINER_FLAGS_START + TRAINER_AURELIO)){
 		msgbox(format("You put up a good fight! Keep it up, and make sure to use those berries skillfully."))
@@ -499,7 +499,10 @@ script PetalburgWoods_EventScript_Aurelio{
 		msgbox("If you win, I'll give you some berries. \n")
 		msgbox("How about it? \n", MSGBOX_YESNO)
         if (var(VAR_RESULT) == 1){
-            msgbox("Then let's get started! \n")
+			msgbox(format("Let me heal your Pokemon for you."))
+    		playse(SE_USE_ITEM)
+    		special(HealPlayerParty)
+            msgbox("Alright let's get started! \n")
             trainerbattle_no_intro(TRAINER_AURELIO, Aurelio_Defeat)
 			msgbox("Here you go, as promised!")
 			if (flag(FLAG_RESOURCE_MODE)){
@@ -509,11 +512,14 @@ script PetalburgWoods_EventScript_Aurelio{
 			}
 			msgbox(format("I hope you can use those berries well. When you take damage while holding them, so does your opponent!"))
 		}
+		else{
+			msgbox(format("Oh, too bad."))
+		}
 	}
 	else{
 		msgbox(format("I've gotten quite accustomed with the regulars here. If you fight all the trainers here, I'd be willing to see how you battle."))
 	}
-    releaseall
+    release
 }
 
 script ResourceModeAurelioBerries{

@@ -11352,8 +11352,13 @@ bool32 CanBattlerGetOrLoseItem(u32 battler, u16 itemId)
 {
     u16 species = gBattleMons[battler].species;
     u16 holdEffect = ItemId_GetHoldEffect(itemId);
+    u8 itemType = ItemId_GetType(itemId);
+    // Mail cannot be stolen specifically by Trick/Switcheroo
+    if (itemType == ITEM_USE_MAIL && GetMoveEffect(gCurrentMove) == EFFECT_TRICK){
+        return FALSE;
+    }
 
-    // Mail can be stolen now
+
     if (itemId == ITEM_ENIGMA_BERRY_E_READER)
         return FALSE;
     else if (DoesSpeciesUseHoldItemToChangeForm(species, itemId))

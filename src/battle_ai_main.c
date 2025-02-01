@@ -2095,7 +2095,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_CORROSIVE_GAS:
             if (aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
                 ADJUST_SCORE(-10);
-            else if (aiData->items[battlerDef] == ITEM_NONE){
+            else if (aiData->items[battlerDef] == ITEM_NONE || ItemId_GetType(aiData->items[battlerDef]) == ITEM_USE_MAIL){
                 ADJUST_SCORE(-10);
             }
             break;
@@ -4615,6 +4615,7 @@ case EFFECT_DISABLE:
         if (FindMoveUsedXTurnsAgo(battlerAtk, 1) == move && AI_RandLessThan(127)){
             break;
         }
+
         switch (aiData->holdEffects[battlerAtk])
         {
         case HOLD_EFFECT_CHOICE_SCARF:
