@@ -85,6 +85,9 @@ static void FreeDestroyTask(u32 taskId)
 
 static void TrySweetScentEncounter(u8 taskId)
 {
+    //Try to give 50% chance of getting a double battle for the rest of the map. Leveraging the fact that VAR_TEMP_F is only used in specific buildings.
+    VarSet(VAR_TEMP_F, 50);
+
     if (!gPaletteFade.active)
     {
         ClearMirageTowerPulseBlendEffect();

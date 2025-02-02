@@ -1375,12 +1375,19 @@ static void ApplyCleanseTagEncounterRateMod(u32 *encRate)
 
 bool8 TryDoDoubleWildBattle(void)
 {
+    u16 randResult;
+    u16 sweetScentVarOdds;
     if (GetSafariZoneFlag()
       || (B_DOUBLE_WILD_REQUIRE_2_MONS == TRUE && GetMonsStateToDoubles() != PLAYER_HAS_TWO_USABLE_MONS))
         return FALSE;
     else if (B_FLAG_FORCE_DOUBLE_WILD != 0 && FlagGet(B_FLAG_FORCE_DOUBLE_WILD))
         return TRUE;
-    else if (B_DOUBLE_WILD_CHANCE != 0 && ((Random() % 100) + 1 <= B_DOUBLE_WILD_CHANCE))
+    randResult = Random() % 100 + 1;
+    sweetScentVarOdds = VarGet(VAR_TEMP_F);
+
+    if ((B_DOUBLE_WILD_CHANCE != 0 && (randResult <= B_DOUBLE_WILD_CHANCE))
+    || (sweetScentVarOdds != 0 && (randResult <= sweetScentVarOdds))
+    )
         return TRUE;
     return FALSE;
 }
