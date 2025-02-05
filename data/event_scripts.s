@@ -1165,3 +1165,5 @@ EventScript_VsSeekerChargingDone::
 
 	.include "data/maps/OldaleTown_TechHouse/scripts.inc"
 	.include "data/scripts/dexnav.inc"
+
+	.include "data/maps/DewfordGarden/scripts.inc"

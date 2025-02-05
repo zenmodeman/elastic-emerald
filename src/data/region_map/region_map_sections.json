@@ -1748,7 +1748,15 @@
     "y": 0,
     "width": 1,
     "height": 1
+  },
+  {"map_section": "MAPSEC_DEWFORD_GARDEN",
+  "name": "Dewford Garden",
+  "x": 2,
+  "y": 15,
+  "width": 1,
+  "height": 1
   }
+
 
   ]
 }

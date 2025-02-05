@@ -1226,22 +1226,25 @@ Marill
 Level: 32
 IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 
-=== TRAINER_LOLA_5 ===
-Name: LOLA
-Class: Tuber F
-Pic: Tuber F
+=== TRAINER_PLENNY ===
+Name: PLENNY
+Class: Aroma Lady
+Pic: Aroma Lady
 Gender: Female
 Music: Girl
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Azumarill
-Level: 35
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
-
-Azumarill
-Level: 35
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Grotle @ Soft Sand  
+Ability: Overgrow  
+Level: 18  
+EVs: 28 Atk / 36 SpA / 20 SpD  
+Quiet Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Mud Shot  
+- Razor Leaf  
+- Leech Seed  
+- Curse
 
 === TRAINER_RICKY_1 ===
 Name: RICKY
