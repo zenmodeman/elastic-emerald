@@ -29,13 +29,13 @@ script CenterMoveTutor{
         if (var(VAR_RESULT) == 1){
             call(ChooseMoveTutorMon)
             waitstate
-            msgbox(format("Have a nice"))
+            msgbox(format("Have a nice day."))
         }
     }
     release
 }
 script ChooseMoveTutorMon{
-    msgbox(format("Select pokemon to teach"))
+    msgbox(format("Select pokemon to teach."))
     setvar(VAR_TEMP_9, MOVE_TUTOR_CENTER)
     special(ChooseMonForCenterMoveTutor)
     waitstate

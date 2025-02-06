@@ -484,7 +484,7 @@ script TrainerSchool_Breeder{
 	lock
 	faceplayer
 	if (flag(FLAG_RECEIVED_TRAINER_SCHOOL_EGG)){
-		msgbox(format("Please take good care of the egg."))
+		msgbox(format("Please take good care of the egg!"))
 	}else{
 		if (var(VAR_MONOTYPE) == TYPE_NONE || var(VAR_MONOTYPE) == TYPE_NORMAL || var(VAR_MONOTYPE) == TYPE_FAIRY - 1 || var(VAR_MONOTYPE) == TYPE_ELECTRIC - 1
 		|| var(VAR_MONOTYPE) == TYPE_POISON || var(VAR_MONOTYPE) == TYPE_ICE - 1 || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1){
@@ -498,6 +498,8 @@ script TrainerSchool_Breeder{
 				msgbox(format("Oh, I think I've vaguely heard of that somewhere before. It might be right!"))
 				msgbox(format("As thanks, here, have one of my eggs."))
 				call(TrainerSchool_GiveEgg)
+				msgbox(format("Please take good care of the egg!"))
+
 			}else{
 				msgbox(format("Oh, too bad you weren't able to help..."))
 			}

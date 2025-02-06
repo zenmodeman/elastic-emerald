@@ -99,7 +99,7 @@ CenterMoveTutor_13:
 # 31 "data/scripts/pkmn_center_tutor.pory"
 	waitstate
 # 32 "data/scripts/pkmn_center_tutor.pory"
-	msgbox CenterMoveTutor_Text_4
+	msgbox CenterMoveTutor_Text_2
 	goto CenterMoveTutor_1
 
 
@@ -198,13 +198,9 @@ CenterMoveTutor_Text_3:
 # 28 "data/scripts/pkmn_center_tutor.pory"
 	.string "Are you interested in teaching a move?$"
 
-CenterMoveTutor_Text_4:
-# 32 "data/scripts/pkmn_center_tutor.pory"
-	.string "Have a nice$"
-
 ChooseMoveTutorMon_Text_0:
 # 38 "data/scripts/pkmn_center_tutor.pory"
-	.string "Select pokemon to teach$"
+	.string "Select pokemon to teach.$"
 
 ChooseMoveTutorMon_Text_1:
 # 43 "data/scripts/pkmn_center_tutor.pory"
