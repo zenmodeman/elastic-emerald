@@ -526,7 +526,7 @@ static void DoMoveTutorMain(void)
 
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
                     gSpecialVar_0x8004 = TRUE;
-                if (remainingTutor > 0){
+                if (remainingTutor > 0 && VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
                     VarSet(VAR_REMAINING_TUTOR, remainingTutor -1);
                 }                     
                     sMoveTutorStruct->state = MENU_STATE_PRINT_TEXT_THEN_FANFARE;
@@ -728,7 +728,7 @@ static void DoMoveTutorMain(void)
                 sMoveTutorStruct->state = MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE;
 
                 
-                if (remainingTutor > 0){
+                if (remainingTutor > 0 && VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
                     VarSet(VAR_REMAINING_TUTOR, remainingTutor -1);
                 }
                 gSpecialVar_0x8004 = TRUE;
