@@ -223,7 +223,7 @@ bool32 PartyHasMoveCategory(u32 battlerId, u32 category);
 bool32 SideHasMoveCategory(u32 battlerId, u32 category);
 
 // score increases
-u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statId);
+u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statChangeId);
 u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, u32 statId);
 void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);

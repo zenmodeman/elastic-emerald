@@ -6326,6 +6326,17 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Bullet Punch  
 - Leer
 
+Panpour @ Iapapa Berry  
+Ability: Gluttony  
+Level: 11  
+EVs: 36 HP / 16 Def / 16 SpD  
+Serious Nature  
+IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+- Water Sport  
+- Cut  
+- Water Gun  
+- Grass Knot
+
 === TRAINER_BEN ===
 Name: BEN
 Class: Youngster

@@ -2137,9 +2137,14 @@ u16 *GetMovesArray(u32 battler)
 static void AddSTABToMovesList(u16 *moves, u32 battler){
     u32 i;
     u32 currentMove;
+    u32 types[3];
+    GetBattlerTypes(battler, FALSE, types);
+    DebugPrintf("Type 1: %d, Type 2: %d", types[0], types[1]);
     for (i = 0; i < MAX_MON_MOVES; i++){
         currentMove = gBattleMons[battler].moves[i];
-        if (currentMove != moves[i] && gMovesInfo[currentMove].power > 0 && IS_BATTLER_OF_TYPE(battler, gMovesInfo[currentMove].type)){
+        DebugPrintf("Move type: %d; currentMove: %d, moves[i]: %d, movePower: %d", gMovesInfo[currentMove].type, currentMove, moves[i], gMovesInfo[currentMove].power);
+        if (currentMove != moves[i] && gMovesInfo[currentMove].power > 0 && ((types[0] == gMovesInfo[currentMove].type) 
+        || types[1] == gMovesInfo[currentMove].type || types[2] == gMovesInfo[currentMove].type)){
             moves[i] = currentMove;
         }
     }
@@ -4071,10 +4076,38 @@ bool32 IsRecycleEncouragedItem(u32 item)
     return FALSE;
 }
 
-static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statId, bool32 considerContrary)
-{
+//Custom Static function
+static u32 GetStatIdBasedOnStatChangeId(u32 statChangeId){
+    switch (statChangeId){
+        case STAT_CHANGE_ATK:
+        case STAT_CHANGE_ATK_2:
+            return STAT_ATK;
+        case STAT_CHANGE_DEF:
+        case STAT_CHANGE_DEF_2:
+            return STAT_DEF;
+        case STAT_CHANGE_SPEED:
+        case STAT_CHANGE_SPEED_2:
+            return STAT_SPEED;
+        case STAT_CHANGE_SPATK:
+        case STAT_CHANGE_SPATK_2:
+            return STAT_SPATK;
+        case STAT_CHANGE_SPDEF:
+        case STAT_CHANGE_SPDEF_2:
+            return STAT_SPDEF;
+        case STAT_CHANGE_ACC:
+            return STAT_ACC;
+        case STAT_CHANGE_EVASION:
+            return STAT_EVASION;
+    }
+    return statChangeId;
+}
+
+static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statChangeId, bool32 considerContrary)
+{   
+    u32 statId = GetStatIdBasedOnStatChangeId(statChangeId);
     u32 tempScore = NO_INCREASE;
     u32 noOfHitsToFaint = NoOfHitsForTargetToFaintAI(battlerDef, battlerAtk);
+    DebugPrintf("Number of hits to KO is %d", noOfHitsToFaint);
     u32 aiIsFaster = AI_IsFaster(battlerAtk, battlerDef, TRUE);
     u32 shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
 
@@ -4115,7 +4148,7 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statI
     if (IsBattlerPredictedToSwitch(battlerDef))
         tempScore += WEAK_EFFECT;
 
-    switch (statId)
+    switch (statChangeId)
     {
     case STAT_CHANGE_ATK:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
@@ -4196,9 +4229,9 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statI
     return tempScore;
 }
 
-u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statId)
+u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statChangeId)
 {   
-    return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statId, TRUE);
+    return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChangeId, TRUE);
 }
 
 u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, u32 statId)
