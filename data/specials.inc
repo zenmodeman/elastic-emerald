@@ -568,6 +568,8 @@ gSpecials::
 	def_special TrainMaxIV
 	def_special TrainMaxIVs
 	def_special UseBlankMessageToCancelPokemonPic
+	def_special EnterCode
+	def_special GetCodeFeedback
 	def_special NpcAdvanceTime
 	def_special GetTutorAbility
 	def_special SetTutorAbility

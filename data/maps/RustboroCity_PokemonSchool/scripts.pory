@@ -442,9 +442,9 @@ script TrainerSchool_RivalReadyForRoxanneBattle{
 	special(SavePlayerParty)
 	checkplayergender
 	if (var(VAR_RESULT) == MALE){
-		ai_vs_ai_battle(TRAINER_MAY_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("The battle has concluded!"))
+		ai_vs_ai_battle(TRAINER_MAY_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("I have been bested!"), format("How's that for a demonstration!"))
 	}else{
-		ai_vs_ai_battle(TRAINER_BRENDAN_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("The battle has concluded!"))
+		ai_vs_ai_battle(TRAINER_BRENDAN_TRAINER_SCHOOL, TRAINER_ROXANNE_4, format("I have been bested!"), format("How's that for a demonstration!"))
 	}
 	clearflag(FLAG_AI_AI_BATTLE)
 	special(LoadPlayerParty)

@@ -128,7 +128,6 @@ struct MoveInfo
         u16 type;
         u16 fixedDamage;
         u16 absorbPercentage;
-        u16 maxEffect;
     } argument;
 
     // primary/secondary effects
@@ -506,11 +505,6 @@ static inline u32 GetMoveAbsorbPercentage(u32 moveId)
     if (gMovesInfo[moveId].argument.absorbPercentage == 0)
         return 50;
     return gMovesInfo[moveId].argument.absorbPercentage;
-}
-
-static inline u32 GetMoveMaxEffect(u32 moveId)
-{
-    return gMovesInfo[SanitizeMoveId(moveId)].argument.maxEffect;
 }
 
 static inline const struct AdditionalEffect *GetMoveAdditionalEffectById(u32 moveId, u32 effect)

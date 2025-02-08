@@ -1557,3 +1557,11 @@ void AppendToList(u8 *list, u8 *pos, u8 newEntry)
 //     CreateTask(Task_OpenDexNavFromStartMenu, 0);
 //     return TRUE;
 // }
+
+void Script_ForceSaveGame(struct ScriptContext *ctx)
+{
+    SaveGame();
+    ShowSaveInfoWindow();
+    gMenuCallback = SaveCallback;
+    sSaveDialogCallback = SaveSavingMessageCallback;
+}

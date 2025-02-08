@@ -72,6 +72,7 @@
 #include "battle_util.h"
 
 #include "constants/abilities.h"
+#include "naming_screen.h"
 
 #define TAG_ITEM_ICON 5500
 
@@ -4353,6 +4354,23 @@ void UseBlankMessageToCancelPokemonPic(void)
     ScriptMenu_HidePokemonPic();
 }
 
+void EnterCode(void)
+{
+    DoNamingScreen(NAMING_SCREEN_CODE, gStringVar2, 0, 0, 0, CB2_ReturnToFieldContinueScript);
+}
+
+void GetCodeFeedback(void)
+{
+    static const u8 sText_SampleCode[] = _("SampleCode");
+    if (!StringCompare(gStringVar2, sText_SampleCode))
+        gSpecialVar_Result = 1;
+    else
+        gSpecialVar_Result = 0;
+}
+
+
+
+
 u8 TrainPlainIV(void)
 {
     u8 targetIv = 15;
@@ -4371,6 +4389,7 @@ u8 TrainPlainIV(void)
     return TRUE;
 }
 
+
 u8 TrainMaxIV(void){
     u8 targetIv = MAX_PER_STAT_IVS;
     u8 targetStat;
@@ -4386,28 +4405,7 @@ u8 TrainMaxIV(void){
     return TRUE;
 }
 
-u8 TrainMaxIVs(void){
-    u8 targetIv = MAX_PER_STAT_IVS;
-    u8 numAlreadyMaxed = 0;
-    u8 targetStat;
-    u8 i;
-    u8 currentIv;
 
-    for (i=0; i< NUM_STATS; i++){
-        targetStat = MON_DATA_HP_IV + i;
-        currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
-        if(currentIv >= targetIv){
-            numAlreadyMaxed += 1;
-            continue;
-        }
-        SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
-    }
-    if (numAlreadyMaxed >= NUM_STATS){
-        return FALSE;
-    }
-    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
-    return TRUE;
-}
 static bool32 IsAbilityTutorViable(u16 ability){
     switch (ability){
         case ABILITY_KEEN_EYE:
@@ -4480,3 +4478,30 @@ void SetTutorAbility(){
     SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &gSpecialVar_0x8009);   
     gSpecialVar_0x8009 = 0; 
 }
+
+
+
+u8 TrainMaxIVs(void){
+    u8 targetIv = MAX_PER_STAT_IVS;
+    u8 numAlreadyMaxed = 0;
+    u8 targetStat;
+    u8 i;
+    u8 currentIv;
+
+    for (i=0; i< NUM_STATS; i++){
+        targetStat = MON_DATA_HP_IV + i;
+        currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
+        if(currentIv >= targetIv){
+            numAlreadyMaxed += 1;
+            continue;
+        }
+        SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
+    }
+    if (numAlreadyMaxed >= NUM_STATS){
+        return FALSE;
+    }
+    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+    return TRUE;
+}
+
+

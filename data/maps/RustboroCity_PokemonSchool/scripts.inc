@@ -864,29 +864,29 @@ TrainerSchool_RivalReadyForRoxanneBattle::
 	compare VAR_RESULT, MALE
 	goto_if_eq TrainerSchool_RivalReadyForRoxanneBattle_2
 # 447 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	ai_vs_ai_battle TRAINER_BRENDAN_TRAINER_SCHOOL, TRAINER_ROXANNE_4, TrainerSchool_RivalReadyForRoxanneBattle_Text_2
+	ai_vs_ai_battle TRAINER_BRENDAN_TRAINER_SCHOOL, TRAINER_ROXANNE_4, TrainerSchool_RivalReadyForRoxanneBattle_Text_2, TrainerSchool_RivalReadyForRoxanneBattle_Text_3
 TrainerSchool_RivalReadyForRoxanneBattle_1:
 # 449 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	clearflag FLAG_AI_AI_BATTLE
 # 450 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	special LoadPlayerParty
 # 451 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox TrainerSchool_RivalReadyForRoxanneBattle_Text_3
-# 452 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_RivalReadyForRoxanneBattle_Text_4
+# 452 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox TrainerSchool_RivalReadyForRoxanneBattle_Text_5
 # 453 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	applymovement LOCALID_ROXANNE, Common_Movement_FaceDown
 # 454 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox TrainerSchool_RivalReadyForRoxanneBattle_Text_5
-# 455 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_RivalReadyForRoxanneBattle_Text_6
-# 456 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 455 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_RivalReadyForRoxanneBattle_Text_7
+# 456 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox TrainerSchool_RivalReadyForRoxanneBattle_Text_8
 	return
 
 TrainerSchool_RivalReadyForRoxanneBattle_2:
 # 445 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	ai_vs_ai_battle TRAINER_MAY_TRAINER_SCHOOL, TRAINER_ROXANNE_4, TrainerSchool_RivalReadyForRoxanneBattle_Text_2
+	ai_vs_ai_battle TRAINER_MAY_TRAINER_SCHOOL, TRAINER_ROXANNE_4, TrainerSchool_RivalReadyForRoxanneBattle_Text_2, TrainerSchool_RivalReadyForRoxanneBattle_Text_3
 	goto TrainerSchool_RivalReadyForRoxanneBattle_1
 
 
@@ -1594,30 +1594,34 @@ TrainerSchool_RivalReadyForRoxanneBattle_Text_1:
 
 TrainerSchool_RivalReadyForRoxanneBattle_Text_2:
 # 445 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	.string "The battle has concluded!$"
+	.string "I have been bested!$"
 
 TrainerSchool_RivalReadyForRoxanneBattle_Text_3:
+# 445 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	.string "How's that for a demonstration!$"
+
+TrainerSchool_RivalReadyForRoxanneBattle_Text_4:
 # 451 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "{RIVAL}: Wow, I had the type\n"
 	.string "advantage but I completely lost!$"
 
-TrainerSchool_RivalReadyForRoxanneBattle_Text_4:
+TrainerSchool_RivalReadyForRoxanneBattle_Text_5:
 # 452 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "Roxanne: My Yamask shines brilliantly\n"
 	.string "when she becomes Rock-type!$"
 
-TrainerSchool_RivalReadyForRoxanneBattle_Text_5:
+TrainerSchool_RivalReadyForRoxanneBattle_Text_6:
 # 454 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "Roxanne: Did you see class? When\n"
 	.string "Yamask becomes Rock-type, her move\l"
 	.string "Curse takes a whole new form.$"
 
-TrainerSchool_RivalReadyForRoxanneBattle_Text_6:
+TrainerSchool_RivalReadyForRoxanneBattle_Text_7:
 # 455 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "With it, she sharpens both her defense\n"
 	.string "and offense like a Rock-type would!$"
 
-TrainerSchool_RivalReadyForRoxanneBattle_Text_7:
+TrainerSchool_RivalReadyForRoxanneBattle_Text_8:
 # 456 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "{RIVAL}: Fascinating indeed, I can\n"
 	.string "see how Yamask becomes more flexible\l"
