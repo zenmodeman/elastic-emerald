@@ -116,6 +116,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         aiMove = gBattleMons[battler].moves[i];
+        // DebugPrintf("AI move: %d", aiMove);
         aiMoveEffect = GetMoveEffect(aiMove);
         if (aiMove != MOVE_NONE)
         {

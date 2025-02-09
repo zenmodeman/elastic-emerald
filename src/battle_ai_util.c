@@ -1168,9 +1168,12 @@ bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
+        //Adding this boolean check because still take into account an unknown move if there's simulated damage for it.
+        bool32 hasAMove = (moves[i] != MOVE_NONE) || (AI_DATA->simulatedDmg[battlerDef][battlerAtk][i].expected > 0);
+
         // DebugPrintf("For move %d, simulated damage is %d", moves[i], AI_DATA->simulatedDmg[battlerDef][battlerAtk][i].expected);
 
-        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && !(unusable & (1u << i))
+        if (hasAMove && moves[i] != MOVE_UNAVAILABLE && !(unusable & (1u << i))
             && AI_DATA->simulatedDmg[battlerDef][battlerAtk][i].expected >= gBattleMons[battlerAtk].hp
             && !CanEndureHit(battlerDef, battlerAtk, moves[i]))
         {
@@ -2091,6 +2094,7 @@ bool32 CanIndexMoveFaintTarget(u32 battlerAtk, u32 battlerDef, u32 index, u32 nu
 
 u16 *GetMovesArray(u32 battler)
 {
+    // DebugPrintf("Getting result from GetMovesArray function for the first move of battler %d:  %d", battler, gBattleMons[battler].moves[0]);
     if (IsAiBattlerAware(battler) || IsAiBattlerAware(BATTLE_PARTNER(battler)))
         return gBattleMons[battler].moves;
     else
@@ -2102,11 +2106,12 @@ static void AddSTABToMovesList(u16 *moves, u32 battler){
     u32 i;
     u32 currentMove;
     u32 types[3];
+    DebugPrintf("In AddSTABToMOvesList, From battler %d, the first move is %d", battler, gBattleMons[battler].moves[0]);
     GetBattlerTypes(battler, FALSE, types);
-    DebugPrintf("Type 1: %d, Type 2: %d", types[0], types[1]);
+    // DebugPrintf("Type 1: %d, Type 2: %d", types[0], types[1]);
     for (i = 0; i < MAX_MON_MOVES; i++){
         currentMove = gBattleMons[battler].moves[i];
-        DebugPrintf("Move type: %d; currentMove: %d, moves[i]: %d, movePower: %d", gMovesInfo[currentMove].type, currentMove, moves[i], gMovesInfo[currentMove].power);
+        // DebugPrintf("Move type: %d; currentMove: %d, moves[i]: %d, movePower: %d", gMovesInfo[currentMove].type, currentMove, moves[i], gMovesInfo[currentMove].power);
         if (currentMove != moves[i] && gMovesInfo[currentMove].power > 0 && ((types[0] == gMovesInfo[currentMove].type) 
         || types[1] == gMovesInfo[currentMove].type || types[2] == gMovesInfo[currentMove].type)){
             moves[i] = currentMove;
@@ -2114,18 +2119,49 @@ static void AddSTABToMovesList(u16 *moves, u32 battler){
     }
 }
 
+bool32 DoesBattlerTypeMatchMove(u32 battler, u32 move){
+    u32 i;
+    u32 types[3];
+    u32 moveType = gMovesInfo[move].type;
+
+    GetBattlerTypes(battler, FALSE, types);
+
+    if (types[0] == moveType || types[1] == moveType || types[2] == moveType){
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+
 /*
 When computing moves of non-AI battlers, also read unrevealed STAB damaging moves.
 This is important for better damage threshold estimates, and will eventually be used in the switch logic.
 But ordinary GetMovesArray should be used for move-specific logic, such as whether the player has revealed Brick Break. 
 */
-u16 *GetMovesArrayWithHiddenSTAB(u32 battler){
-    u16 *moves = GetMovesArray(battler);
+u16 *GetMovesArrayWithHiddenSTAB(u32 battler, u16 *moves){
+    int i;
+    struct BattlePokemon *bufferPoke = (struct BattlePokemon *) &gBattleResources->bufferB[battler][4];
+    bool32 isMoveAware =  IsAiBattlerAware(battler) || IsAiBattlerAware(BATTLE_PARTNER(battler));
 
-    //Don't do additional work if all moves are already known because battler is AI
-    if (!IsAiBattlerAware(battler)){
-        AddSTABToMovesList(moves, battler);
-    }    
+    for (i = 0; i < MAX_MON_MOVES; i++){
+        if (isMoveAware){
+            //use gBattleMons in this case because the other approach ended up having problems
+            moves[i] = gBattleMons[battler].moves[i];
+        }
+        else{
+            moves[i] = gBattleResources->battleHistory->usedMoves[battler][i];
+            if (moves[i] == 0 && DoesBattlerTypeMatchMove(battler, bufferPoke->moves[i])){
+                moves[i] = gBattleMons[battler].moves[i];
+                //Use bufferPoke in the case that gBattleMons hasn't yet been filled.
+                if (moves[i] == 0){
+                    moves[i] = bufferPoke->moves[i];
+                }
+                
+            }
+        }
+        
+    }
     return moves;
 }
 

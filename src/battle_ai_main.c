@@ -618,14 +618,18 @@ static u32 Ai_SetMoveAccuracy(struct AiLogicData *aiData, u32 battlerAtk, u32 ba
 
 static void CalcBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u32 battlerDef, u32 weather)
 {
-    u16 *moves;
-    u32 moveIndex, move;
+    u32 moveIndex;
+    u16 move;
     u32 rollType = GetDmgRollType(battlerAtk);
+
+    // u16 *moves;
+    u16 moves[MAX_MON_MOVES];
     SaveBattlerData(battlerAtk);
 
-    moves = GetMovesArrayWithHiddenSTAB(battlerAtk);
 
-    
+    GetMovesArrayWithHiddenSTAB(battlerAtk, moves);
+
+    // moves = GetMovesArray(battlerAtk);
 
     for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
@@ -633,9 +637,9 @@ static void CalcBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u
         uq4_12_t effectiveness = Q_4_12(0.0);
         move = moves[moveIndex];
 
-            if (battlerAtk == 0){
-                DebugPrintf("The move check after adding STAB for move # %d is %d", moveIndex, moves[moveIndex]);
-            }
+            // if (battlerAtk == 0){
+            //     DebugPrintf("The move check after adding STAB for move # %d is %d", moveIndex, moves[moveIndex]);
+            // }
         if (move != MOVE_NONE
             && move != MOVE_UNAVAILABLE
             //&& !IsBattleMoveStatus(move)  /* we want to get effectiveness and accuracy of status moves */
