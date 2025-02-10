@@ -2120,7 +2120,6 @@ static void AddSTABToMovesList(u16 *moves, u32 battler){
 }
 
 bool32 DoesBattlerTypeMatchMove(u32 battler, u32 move){
-    u32 i;
     u32 types[3];
     u32 moveType = gMovesInfo[move].type;
 
@@ -3645,6 +3644,18 @@ bool32 IsValidDoubleBattle(u32 battlerAtk)
     return FALSE;
 }
 
+bool32 OnlyOnePlayerDoublesMon(){
+    u32 playerBattler1 = 0;
+    u32 playerBattler2;
+
+    if (!IsDoubleBattle()){
+        return FALSE;
+    }
+    playerBattler2 = BATTLE_PARTNER(playerBattler1);
+
+    return !IsBattlerAlive(playerBattler1) || !IsBattlerAlive(playerBattler2); 
+}
+
 u32 GetAllyChosenMove(u32 battlerId)
 {
     u32 partnerBattler = BATTLE_PARTNER(battlerId);
@@ -4279,23 +4290,58 @@ void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
 
 void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
 {
-    if (((AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0))
+    u32 atkSpeed = AI_DATA->speedStats[battlerAtk];
+    u32 defSpeed = AI_DATA->speedStats[battlerDef];
+
+    //Give big score and return in the case of being a Prankster mon with a status paralysis move, if the opposing mon just outspeeds and KOs
+    if (CanTargetFaintAi(battlerDef, battlerAtk) && defSpeed > atkSpeed && IsBattleMoveStatus(move)
+    && AI_DATA->abilities[battlerAtk] == ABILITY_PRANKSTER){  
+        if (!IsDoubleBattle() || OnlyOnePlayerDoublesMon()){
+            ADJUST_SCORE(GOOD_EFFECT);
+            return;
+        }else if (AI_RandLessThan(127)){ //Making this a chance if two player mons in
+            ADJUST_SCORE(DECENT_EFFECT);
+            return;
+        }
+    }
+
+    if (((AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && 
+        CanAIFaintTarget(battlerAtk, battlerDef, 0) )
             || AI_DATA->holdEffects[battlerDef] == HOLD_EFFECT_CURE_PAR || AI_DATA->holdEffects[battlerDef] == HOLD_EFFECT_CURE_STATUS)
-        return;
+        return;  //Skip in cases where using the move makes little sense
 
     if (AI_CanParalyze(battlerAtk, battlerDef, AI_DATA->abilities[battlerDef], move, AI_DATA->partnerMove))
     {
-        u32 atkSpeed = AI_DATA->speedStats[battlerAtk];
-        u32 defSpeed = AI_DATA->speedStats[battlerDef];
 
-        if ((defSpeed >= atkSpeed && defSpeed / 2 < atkSpeed) // You'll go first after paralyzing foe
-          || IsPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_PARALYSIS)
-          || (HasMoveWithMoveEffectExcept(battlerAtk, MOVE_EFFECT_FLINCH, EFFECT_FIRST_TURN_ONLY)) // filter out Fake Out
-          || gBattleMons[battlerDef].status2 & STATUS2_INFATUATION
-          || gBattleMons[battlerDef].status2 & STATUS2_CONFUSION)
-            ADJUST_SCORE_PTR(GOOD_EFFECT);
-        else
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+        bool32 paralyzingBenefitsOutspeeding = (AI_DATA->abilities[battlerDef] != ABILITY_QUICK_FEET)
+        && (defSpeed >= atkSpeed && defSpeed / 2 < atkSpeed);
+        bool32 hasParalysisBenefittingMove = IsPowerBasedOnStatus(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_PARALYSIS);
+        bool32 helpsWithFlinching = (paralyzingBenefitsOutspeeding || (atkSpeed > defSpeed)) && (HasMoveWithMoveEffectExcept(battlerAtk, MOVE_EFFECT_FLINCH, EFFECT_FIRST_TURN_ONLY));
+        bool32 targetIsInfatuated = gBattleMons[battlerDef].status2 & STATUS2_INFATUATION;
+        u32 conditionSum = paralyzingBenefitsOutspeeding + hasParalysisBenefittingMove + helpsWithFlinching + targetIsInfatuated;
+
+        if (conditionSum >=4){
+            ADJUST_SCORE_PTR(GOOD_EFFECT); //In the unlikely case of all conditions, it's high-score and guarenteed
+        }else if (conditionSum >= 2){
+            u32 randVal = conditionSum >=3 ? 220 : 190; //220 is ~85% chance and 190 is ~75% chance
+            if (AI_RandLessThan(randVal)){
+                ADJUST_SCORE_PTR(GOOD_EFFECT);
+            }else{
+                ADJUST_SCORE_PTR(WEAK_EFFECT);
+            }
+        }else if (conditionSum == 1 && paralyzingBenefitsOutspeeding){//paralysisBenefittingOutspeed gets more value than other solo conditions
+            if (AI_RandLessThan(127)){ //~50% chance
+                ADJUST_SCORE_PTR(DECENT_EFFECT);
+            }else{
+                ADJUST_SCORE_PTR(WEAK_EFFECT);
+            }
+        }else if (conditionSum == 1){ //Only one condition that isn't the outspeed condition
+            ADJUST_SCORE_PTR(WEAK_EFFECT);
+        }else{
+            if (AI_RandLessThan(127)){ //If no conditions, only 50% chance to +1, meaning generally only 25% chance to be used
+                ADJUST_SCORE_PTR(WEAK_EFFECT);
+            }
+        }
     }
 }
 

@@ -36,6 +36,7 @@ bool32 IsMoveIneffective(u32 move, u32 battlerAtk, u32 battlerDef);
 bool32 AreAllMovesOfSplitIneffective(u32 battlerAtk, u32 battlerDef, u32 category);
 uq4_12_t GetAtkSpAtkGapThreshold(u32 battlerDef);
 bool32 DoesBattlerTypeMatchMove(u32 battler, u32 move);
+bool32 OnlyOnePlayerDoublesMon();
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);

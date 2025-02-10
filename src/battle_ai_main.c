@@ -3556,7 +3556,7 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                 continue;
             }
 
-            //Currently skip incentives if the target is just superior
+            //Currently skip incentives if the other target is just superior
             if (DoesBattlerPreferDamagingOtherTarget(battlerAtk, battlerDef)){
                 return score;
             }
@@ -4154,9 +4154,15 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
           || aiData->abilities[battlerDef] == ABILITY_LIQUID_OOZE
           || aiData->abilities[battlerDef] == ABILITY_MAGIC_GUARD)
             break;
-        ADJUST_SCORE(GOOD_EFFECT);
-        if (!HasDamagingMove(battlerDef) || IsBattlerTrapped(battlerDef, FALSE))
-            ADJUST_SCORE(DECENT_EFFECT);
+        //Regular incentive
+        ADJUST_SCORE(WEAK_EFFECT);
+        if (!CanAIFaintTarget(battlerAtk, battlerDef, 2) && AI_RandLessThan(127)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+        if (IsBattlerTrapped(battlerDef, FALSE)){
+            ADJUST_SCORE(WEAK_EFFECT);
+        }
+
         break;
     case EFFECT_HAPPY_HOUR:
             if (!gBattleStruct->moneyMultiplierMove){
