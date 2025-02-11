@@ -109,8 +109,9 @@ struct MoveInfo
     bool32 illuminatingMove:1;
     bool32 enticingMove:1;
     bool32 itemInteractingMove:1;
+    bool32 giftingMove:1;
 
-    u32 padding:16;
+    u32 padding:15;
     // end of word
 
     union {
@@ -243,6 +244,10 @@ static inline bool32 IsIlluminatingMove(u32 moveId)
 
 static inline bool32 IsEnticingMove(u32 moveId){
     return gMovesInfo[SanitizeMoveId(moveId)].enticingMove;
+}
+
+static inline bool32 IsGiftingMove(u32 moveId){
+    return gMovesInfo[SanitizeMoveId(moveId)].giftingMove;
 }
 
 static inline bool32 IsItemInteractingMove(u32 moveId){

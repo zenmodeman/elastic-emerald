@@ -2421,5 +2421,9 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .description = COMPOUND_STRING("Doubles Sp.Atk in Sun."),
         .aiRating = 5,
         .breakable = TRUE,   
+    },
+    [ABILITY_MERRY] = {
+        .name = _("Merry"),
+        .description = COMPOUND_STRING("Pumps up by giving."),
     }
 };

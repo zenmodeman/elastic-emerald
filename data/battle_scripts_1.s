@@ -9803,6 +9803,13 @@ BattleScript_IlluminateActivates::
 	waitmessage B_WAIT_TIME_LONG
 	return
 
+BattleScript_MerryActivates::
+	call BattleScript_AbilityPopUp
+	printstring STRINGID_MERRY
+	waitmessage B_WAIT_TIME_LONG
+	return
+
+
 BattleScript_SymbiosisActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_SYMBIOSISITEMPASS

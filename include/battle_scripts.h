@@ -524,6 +524,8 @@ extern const u8 BattleScript_SleepClausePreventsEnd[];
 
 extern const u8 BattleScript_IlluminateActivates[];
 
+extern const u8 BattleScript_MerryActivates[];
+
 // zmoves
 extern const u8 BattleScript_ZMoveActivateDamaging[];
 extern const u8 BattleScript_ZMoveActivateStatus[];

@@ -1610,6 +1610,9 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
     if (gFieldStatuses & STATUS_FIELD_GRAVITY)
         calc = (calc * 5) / 3; // 1.66 Gravity acc boost
 
+    if (gStatuses4[battlerAtk] & STATUS4_MERRY){
+        calc = (calc * 150)/100; //1.5x Merry accuracy boost
+    }
     if (B_AFFECTION_MECHANICS == TRUE && GetBattlerAffectionHearts(battlerDef) == AFFECTION_FIVE_HEARTS)
         calc = (calc * 90) / 100;
 
@@ -7104,6 +7107,14 @@ static void Cmd_moveend(void)
                 gBattlescriptCurrInstr = BattleScript_IlluminateActivates;
                 effect = TRUE;
             }
+        case MOVEEND_MERRY:
+            if(GetBattlerAbility(gBattlerAttacker) == ABILITY_MERRY && IsGiftingMove(gCurrentMove) && !(gStatuses4[gBattlerAttacker] & STATUS4_MERRY)){
+                gStatuses4[gBattlerAttacker] |= STATUS4_MERRY;
+                gBattleScripting.battler = gBattlerAbility = gBattlerAttacker; 
+                BattleScriptPushCursor();
+                gBattlescriptCurrInstr = BattleScript_MerryActivates;
+                effect = TRUE;
+            }   
         case MOVEEND_EJECT_ITEMS:
             {
                 // Because sorting the battlers by speed takes lots of cycles, it's better to just check if any of the battlers has the Eject items.
