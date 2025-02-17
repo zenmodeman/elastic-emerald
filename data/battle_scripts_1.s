@@ -5026,6 +5026,7 @@ BattleScript_MementoTargetProtectEnd:
 BattleScript_EffectFocusPunch::
 	attackcanceler
 	jumpifnodamage BattleScript_HitFromAccCheck
+	jumpifability BS_ATTACKER, ABILITY_INNER_FOCUS, BattleScript_HitFromAccCheck
 	ppreduce
 	printstring STRINGID_PKMNLOSTFOCUS
 	waitmessage B_WAIT_TIME_LONG
