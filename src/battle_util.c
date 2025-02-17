@@ -9,6 +9,7 @@
 #include "battle_setup.h"
 #include "battle_z_move.h"
 #include "battle_gimmick.h"
+#include "generational_changes.h"
 #include "party_menu.h"
 #include "pokemon.h"
 #include "international_string_util.h"
@@ -345,7 +346,7 @@ void HandleAction_UseMove(void)
         for (battler = 0; battler < gBattlersCount; battler++)
         {
             ability = GetBattlerAbility(battler);
-            if ((B_REDIRECT_ABILITY_ALLIES >= GEN_4 || !IsAlly(gBattlerAttacker, battler))
+            if ((B_REDIRECT_ABILITY_ALLIES >= GEN_4 || !IsBattlerAlly(gBattlerAttacker, battler))
                 && battler != gBattlerAttacker
                 && gBattleStruct->moveTarget[gBattlerAttacker] != battler
                 && ((ability == ABILITY_LIGHTNING_ROD && moveType == TYPE_ELECTRIC)
@@ -382,7 +383,7 @@ void HandleAction_UseMove(void)
 
             if (!IsBattlerAlive(gBattlerTarget) && GetBattlerSide(gBattlerAttacker) != GetBattlerSide(gBattlerTarget))
             {
-                gBattlerTarget = GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(gBattlerTarget)));
+                gBattlerTarget = GetPartnerBattler(gBattlerTarget);
             }
         }
         else
@@ -405,7 +406,7 @@ void HandleAction_UseMove(void)
         if (gAbsentBattlerFlags & (1u << gBattlerTarget)
             && GetBattlerSide(gBattlerAttacker) != GetBattlerSide(gBattlerTarget))
         {
-            gBattlerTarget = GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(gBattlerTarget)));
+            gBattlerTarget = GetPartnerBattler(gBattlerTarget);
         }
     }
     else if (moveTarget == MOVE_TARGET_ALLY)
@@ -432,7 +433,7 @@ void HandleAction_UseMove(void)
          && moveTarget != MOVE_TARGET_OPPONENTS_FIELD
          && (GetBattlerSide(gBattlerAttacker) != GetBattlerSide(gBattlerTarget)))
         {
-            gBattlerTarget = GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(gBattlerTarget)));
+            gBattlerTarget = GetPartnerBattler(gBattlerTarget);
         }
     }
 
@@ -457,7 +458,7 @@ void HandleAction_UseMove(void)
         }
     }
 
-    if ((GetBattlerSide(gBattlerAttacker) == GetBattlerSide(gBattlerTarget))
+    if ((IsBattlerAlly(gBattlerAttacker, gBattlerTarget))
      && (!IsBattlerAlive(gBattlerTarget) || gProtectStructs[BATTLE_PARTNER(gBattlerAttacker)].usedAllySwitch))
     {
         gBattlescriptCurrInstr = BattleScript_FailedFromAtkCanceler;
@@ -2184,7 +2185,6 @@ enum
     ENDTURN_ITEMS2,
     ENDTURN_ORBS,
     ENDTURN_ROOST,
-    ENDTURN_ELECTRIFY,
     ENDTURN_POWDER,
     ENDTURN_THROAT_CHOP,
     ENDTURN_SLOW_START,
@@ -2787,10 +2787,6 @@ u8 DoBattlerEndTurnEffects(void)
         case ENDTURN_ROOST: // Return flying type.
             if (gDisableStructs[battler].roostActive)
                 gDisableStructs[battler].roostActive = FALSE;
-            gBattleStruct->turnEffectsTracker++;
-            break;
-        case ENDTURN_ELECTRIFY:
-            gStatuses4[battler] &= ~STATUS4_ELECTRIFIED;
             gBattleStruct->turnEffectsTracker++;
             break;
         case ENDTURN_POWDER:
@@ -3454,7 +3450,7 @@ static void CancellerConfused(u32 *effect)
         if (gBattleMons[gBattlerAttacker].status2 & STATUS2_CONFUSION)
         {
              // confusion dmg
-            if (RandomPercentage(RNG_CONFUSION, (B_CONFUSION_SELF_DMG_CHANCE >= GEN_7 ? 33 : 50)))
+            if (RandomPercentage(RNG_CONFUSION, (GetGenConfig(GEN_CONFIG_CONFUSION_SELF_DMG_CHANCE) >= GEN_7 ? 33 : 50)))
             {
                 gBattleCommunication[MULTISTRING_CHOOSER] = TRUE;
                 gBattlerTarget = gBattlerAttacker;
@@ -4243,7 +4239,7 @@ bool32 CanAbilityBlockMove(u32 battlerAtk, u32 battlerDef, u32 move, u32 ability
     u32 atkPriority = AI_DATA->aiCalcInProgress ? GetBattleMovePriority(battlerAtk, move) : GetChosenMovePriority(battlerAtk);
     u32 moveTarget = GetBattlerMoveTargetType(battlerAtk, move);
     u32 battlerAbility = battlerDef;
-    
+
     switch (abilityDef)
     {
     case ABILITY_SOUNDPROOF:
@@ -4265,7 +4261,7 @@ bool32 CanAbilityBlockMove(u32 battlerAtk, u32 battlerDef, u32 move, u32 ability
     case ABILITY_DAZZLING:
     case ABILITY_QUEENLY_MAJESTY:
     case ABILITY_ARMOR_TAIL:
-        if (atkPriority > 0 && !IsAlly(battlerAtk, battlerDef))
+        if (atkPriority > 0 && !IsBattlerAlly(battlerAtk, battlerDef))
         {
             if (gBattleMons[battlerAtk].status2 & STATUS2_MULTIPLETURNS)
                 gHitMarker |= HITMARKER_NO_PPDEDUCT;
@@ -4290,7 +4286,7 @@ bool32 CanAbilityBlockMove(u32 battlerAtk, u32 battlerDef, u32 move, u32 ability
         case ABILITY_DAZZLING:
         case ABILITY_QUEENLY_MAJESTY:
         case ABILITY_ARMOR_TAIL:
-            if (atkPriority > 0 && !IsAlly(battlerAtk, BATTLE_PARTNER(battlerDef)))
+            if (atkPriority > 0 && !IsBattlerAlly(battlerAtk, BATTLE_PARTNER(battlerDef)))
             {
                 if (gBattleMons[battlerAtk].status2 & STATUS2_MULTIPLETURNS)
                     gHitMarker |= HITMARKER_NO_PPDEDUCT;
@@ -4300,10 +4296,10 @@ bool32 CanAbilityBlockMove(u32 battlerAtk, u32 battlerDef, u32 move, u32 ability
             break;
         }
     }
-    
+
     if (battleScriptBlocksMove == NULL)
         return FALSE;
-    
+
     if (option == ABILITY_RUN_SCRIPT)
     {
         gBattleScripting.battler = gBattlerAbility = battlerAbility;
@@ -4385,10 +4381,10 @@ bool32 CanAbilityAbsorbMove(u32 battlerAtk, u32 battlerDef, u32 abilityDef, u32 
             effect = MOVE_ABSORBED_BY_BOOST_FLASH_FIRE;
         break;
     }
-    
+
     if (effect == MOVE_ABSORBED_BY_NO_ABILITY || option == ABILITY_CHECK_TRIGGER)
         return effect;
-    
+
     switch (effect)
     {
     default:
@@ -4836,7 +4832,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
         case ABILITY_UNNERVE:
             if (!gSpecialStatuses[battler].switchInAbilityDone)
             {
-                gBattlerTarget = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerAtPosition(battler)));
+                gBattlerTarget = GetOppositeBattler(battler);
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SWITCHIN_UNNERVE;
                 gSpecialStatuses[battler].switchInAbilityDone = TRUE;
                 BattleScriptPushCursorAndCallback(BattleScript_SwitchInAbilityMsg);
@@ -4847,7 +4843,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
         case ABILITY_AS_ONE_SHADOW_RIDER:
             if (!gSpecialStatuses[battler].switchInAbilityDone)
             {
-                gBattlerTarget = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerAtPosition(battler)));
+                gBattlerTarget = GetOppositeBattler(battler);
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SWITCHIN_ASONE;
                 gSpecialStatuses[battler].switchInAbilityDone = TRUE;
                 BattleScriptPushCursorAndCallback(BattleScript_ActivateAsOne);
@@ -5627,7 +5623,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
         return effect;
     case ABILITYEFFECT_MOVES_BLOCK:
         effect = CanAbilityBlockMove(gBattlerAttacker, battler, move, gLastUsedAbility, ABILITY_RUN_SCRIPT);
-        
+
         // prankster check
         if (effect == 0
           && GetChosenMovePriority(gBattlerAttacker) > 0
@@ -6345,7 +6341,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 SetTypeBeforeUsingMove(gCalledMove, battler);
 
                 // Make sure that the target isn't an ally - if it is, target the original user
-                if (GetBattlerSide(gBattlerTarget) == GetBattlerSide(gBattlerAttacker))
+                if (IsBattlerAlly(gBattlerTarget, gBattlerAttacker))
                     gBattlerTarget = (gBattleScripting.savedBattler & 0xF0) >> 4;
                 gHitMarker &= ~HITMARKER_ATTACKSTRING_PRINTED;
                 BattleScriptExecute(BattleScript_DancerActivates);
@@ -8263,8 +8259,8 @@ u32 ItemBattleEffects(enum ItemCaseId caseID, u32 battler, bool32 moveTurn)
                 && gBattlerAttacker != gBattlerTarget
                 && !IsBattlerAtMaxHp(gBattlerAttacker)
                 && IsBattlerAlive(gBattlerAttacker)
-                && gMovesInfo[gCurrentMove].effect != EFFECT_FUTURE_SIGHT
-                && gMovesInfo[gCurrentMove].effect != EFFECT_PAIN_SPLIT
+                && GetMoveEffect(gCurrentMove) != EFFECT_FUTURE_SIGHT
+                && GetMoveEffect(gCurrentMove) != EFFECT_PAIN_SPLIT
                 && (B_HEAL_BLOCKING < GEN_5 || !(gStatuses3[battler] & STATUS3_HEAL_BLOCK)))
             {
                 gLastUsedItem = atkItem;
@@ -8645,12 +8641,12 @@ u32 GetBattleMoveTarget(u16 move, u8 setTarget)
     case MOVE_TARGET_DEPENDS:
     case MOVE_TARGET_BOTH:
     case MOVE_TARGET_FOES_AND_ALLY:
-        targetBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerSide(gBattlerAttacker)));
+        targetBattler = GetOpposingSideBattler(gBattlerAttacker);
         if (!IsBattlerAlive(targetBattler))
             targetBattler ^= BIT_FLANK;
         break;
     case MOVE_TARGET_OPPONENTS_FIELD:
-        targetBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerSide(gBattlerAttacker)));
+        targetBattler = GetOpposingSideBattler(gBattlerAttacker);
         break;
     case MOVE_TARGET_RANDOM:
         side = BATTLE_OPPOSITE(GetBattlerSide(gBattlerAttacker));
@@ -8659,7 +8655,7 @@ u32 GetBattleMoveTarget(u16 move, u8 setTarget)
         else if (IsDoubleBattle() && moveTarget & MOVE_TARGET_RANDOM)
             targetBattler = SetRandomTarget(gBattlerAttacker);
         else
-            targetBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerSide(gBattlerAttacker)));
+            targetBattler = GetOpposingSideBattler(gBattlerAttacker);
         break;
     case MOVE_TARGET_USER_OR_SELECTED:
     case MOVE_TARGET_USER:
@@ -8928,18 +8924,6 @@ static bool32 IsBattlerGroundedInverseCheck(u32 battler, bool32 considerInverse)
 bool32 IsBattlerGrounded(u32 battler)
 {
     return IsBattlerGroundedInverseCheck(battler, FALSE);
-}
-
-bool32 IsBattlerAlive(u32 battler)
-{
-    if (gBattleMons[battler].hp == 0)
-        return FALSE;
-    else if (battler >= gBattlersCount)
-        return FALSE;
-    else if (gAbsentBattlerFlags & (1u << battler))
-        return FALSE;
-    else
-        return TRUE;
 }
 
 u32 GetMoveSlot(u16 *moves, u32 move)
@@ -10302,7 +10286,7 @@ static inline uq4_12_t GetBurnOrFrostBiteModifier(struct DamageCalculationData *
 static inline uq4_12_t GetCriticalModifier(bool32 isCrit)
 {
     if (isCrit)
-        return B_CRIT_MULTIPLIER >= GEN_6 ? UQ_4_12(1.5) : UQ_4_12(2.0);
+        return GetGenConfig(GEN_CONFIG_CRIT_MULTIPLIER) >= GEN_6 ? UQ_4_12(1.5) : UQ_4_12(2.0);
     return UQ_4_12(1.0);
 }
 
@@ -11811,7 +11795,7 @@ bool32 BlocksPrankster(u16 move, u32 battlerPrankster, u32 battlerDef, bool32 ch
         return FALSE;
     if (!gProtectStructs[battlerPrankster].pranksterElevated)
         return FALSE;
-    if (GetBattlerSide(battlerPrankster) == GetBattlerSide(battlerDef))
+    if (IsBattlerAlly(battlerPrankster, battlerDef))
         return FALSE;
     if (checkTarget && (GetBattlerMoveTargetType(battlerPrankster, move) & (MOVE_TARGET_OPPONENTS_FIELD | MOVE_TARGET_DEPENDS)))
         return FALSE;
@@ -11878,12 +11862,13 @@ u32 GetBattlerMoveTargetType(u32 battler, u32 move)
 bool32 CanTargetBattler(u32 battlerAtk, u32 battlerDef, u16 move)
 {
     if (GetMoveEffect(move) == EFFECT_HIT_ENEMY_HEAL_ALLY
-      && GetBattlerSide(battlerAtk) == GetBattlerSide(battlerDef)
-      && gStatuses3[battlerAtk] & STATUS3_HEAL_BLOCK)
+    &&  IsBattlerAlly(battlerAtk, battlerDef)
+    &&  gStatuses3[battlerAtk] & STATUS3_HEAL_BLOCK)
         return FALSE;   // Pokémon affected by Heal Block cannot target allies with Pollen Puff
-    if ((GetActiveGimmick(battlerAtk) == GIMMICK_DYNAMAX || IsGimmickSelected(battlerAtk, GIMMICK_DYNAMAX))
-      && GetBattlerSide(battlerAtk) == GetBattlerSide(battlerDef))
+    if (IsBattlerAlly(battlerAtk, battlerDef) && (GetActiveGimmick(battlerAtk) == GIMMICK_DYNAMAX
+                                               || IsGimmickSelected(battlerAtk, GIMMICK_DYNAMAX)))
         return FALSE;
+
     return TRUE;
 }
 
@@ -11893,7 +11878,7 @@ static void SetRandomMultiHitCounter()
 {
     if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LOADED_DICE)
         gMultiHitCounter = RandomUniform(RNG_LOADED_DICE, 4, 5);
-    else if (B_MULTI_HIT_CHANCE >= GEN_5)
+    else if (GetGenConfig(GEN_CONFIG_MULTI_HIT_CHANCE) >= GEN_5)
         gMultiHitCounter = RandomWeighted(RNG_HITS, 0, 0, 7, 7, 3, 3); // 35%: 2 hits, 35%: 3 hits, 15% 4 hits, 15% 5 hits.
     else
         gMultiHitCounter = RandomWeighted(RNG_HITS, 0, 0, 3, 3, 1, 1); // 37.5%: 2 hits, 37.5%: 3 hits, 12.5% 4 hits, 12.5% 5 hits.
@@ -12004,11 +11989,6 @@ u32 CalcSecondaryEffectChance(u32 battler, u32 battlerAbility, const struct Addi
 bool32 MoveEffectIsGuaranteed(u32 battler, u32 battlerAbility, const struct AdditionalEffect *additionalEffect)
 {
     return additionalEffect->chance == 0 || CalcSecondaryEffectChance(battler, battlerAbility, additionalEffect) >= 100;
-}
-
-bool32 IsAlly(u32 battlerAtk, u32 battlerDef)
-{
-    return (GetBattlerSide(battlerAtk) == GetBattlerSide(battlerDef));
 }
 
 bool32 IsGen6ExpShareEnabled(void)

@@ -104,6 +104,7 @@ struct MoveInfo
     bool32 parentalBondBanned:1;
     bool32 skyBattleBanned:1;
     bool32 sketchBanned:1;
+    bool32 validApprenticeMove:1;
 
     //custom flags, each taking 1 from padding
     bool32 illuminatingMove:1;
@@ -111,7 +112,7 @@ struct MoveInfo
     bool32 itemInteractingMove:1;
     bool32 giftingMove:1;
 
-    u32 padding:15;
+    u32 padding:14;
     // end of word
 
     union {

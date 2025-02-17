@@ -438,10 +438,10 @@ bool32 IsDamageMoveUnusable(u32 battlerAtk, u32 battlerDef, u32 move, u32 moveTy
     if (gBattleStruct->battlerState[battlerDef].commandingDondozo)
         return TRUE;
 
-    if (CanAbilityBlockMove(battlerAtk, battlerDef, move, aiData->abilities[battlerDef], FALSE))
+    if (CanAbilityBlockMove(battlerAtk, battlerDef, move, aiData->abilities[battlerDef], ABILITY_CHECK_TRIGGER))
         return TRUE;
 
-    if (CanAbilityAbsorbMove(battlerAtk, battlerDef, aiData->abilities[battlerDef], move, moveType, FALSE))
+    if (CanAbilityAbsorbMove(battlerAtk, battlerDef, aiData->abilities[battlerDef], move, moveType, ABILITY_CHECK_TRIGGER))
         return TRUE;
 
     switch (GetMoveEffect(move))
@@ -679,7 +679,8 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
         damageCalcData.updateFlags = FALSE;
 
 
-        critChanceIndex = CalcCritChanceStageArgs(battlerAtk, battlerDef, move, FALSE, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], aiData->holdEffects[battlerAtk]);
+
+        critChanceIndex = CalcCritChanceStage(battlerAtk, battlerDef, move, FALSE, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], aiData->holdEffects[battlerAtk]);
         if (critChanceIndex > 1) // Consider crit damage only if a move has at least +2 crit chance
         {
             damageCalcData.isCrit = FALSE;
@@ -3464,9 +3465,11 @@ bool32 AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof)
     if (IsDoubleBattle())
     {
         battlerOnField1 = gBattlerPartyIndexes[battlerId];
-        battlerOnField2 = gBattlerPartyIndexes[GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(battlerId)))];
+        battlerOnField2 = gBattlerPartyIndexes[GetPartnerBattler(battlerId)];
         // Check partner's status
-        if ((B_HEAL_BELL_SOUNDPROOF == GEN_5 || AI_DATA->abilities[BATTLE_PARTNER(battlerId)] != ABILITY_SOUNDPROOF || !checkSoundproof)
+        if ((GetGenConfig(GEN_CONFIG_HEAL_BELL_SOUNDPROOF) == GEN_5
+            || AI_DATA->abilities[BATTLE_PARTNER(battlerId)] != ABILITY_SOUNDPROOF
+            || !checkSoundproof)
          && GetMonData(&party[battlerOnField2], MON_DATA_STATUS) != STATUS1_NONE)
             return TRUE;
     }
@@ -3477,7 +3480,8 @@ bool32 AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof)
     }
 
     // Check attacker's status
-    if ((B_HEAL_BELL_SOUNDPROOF == GEN_5 || B_HEAL_BELL_SOUNDPROOF >= GEN_8
+    if ((GetGenConfig(GEN_CONFIG_HEAL_BELL_SOUNDPROOF) == GEN_5
+      || GetGenConfig(GEN_CONFIG_HEAL_BELL_SOUNDPROOF) >= GEN_8
       || AI_DATA->abilities[battlerId] != ABILITY_SOUNDPROOF || !checkSoundproof)
      && GetMonData(&party[battlerOnField1], MON_DATA_STATUS) != STATUS1_NONE)
         return TRUE;
@@ -3487,7 +3491,9 @@ bool32 AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof)
     {
         if (i == battlerOnField1 || i == battlerOnField2)
             continue;
-        if (B_HEAL_BELL_SOUNDPROOF < GEN_5 && checkSoundproof && GetMonAbility(&party[i]) == ABILITY_SOUNDPROOF)
+        if (GetGenConfig(GEN_CONFIG_HEAL_BELL_SOUNDPROOF) < GEN_5
+         && checkSoundproof
+         && GetMonAbility(&party[i]) == ABILITY_SOUNDPROOF)
             continue;
         if (GetMonData(&party[i], MON_DATA_STATUS) != STATUS1_NONE)
             return TRUE;
@@ -3908,7 +3914,7 @@ s32 CountUsablePartyMons(u32 battlerId)
     if (IsDoubleBattle())
     {
         battlerOnField1 = gBattlerPartyIndexes[battlerId];
-        battlerOnField2 = gBattlerPartyIndexes[GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(battlerId)))];
+        battlerOnField2 = gBattlerPartyIndexes[GetPartnerBattler(battlerId)];
     }
     else // In singles there's only one battlerId by side.
     {
@@ -4330,7 +4336,7 @@ void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
 
 void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
 {
-    if (((AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0) && gMovesInfo[GetBestDmgMoveFromBattler(battlerAtk, battlerDef)].effect != EFFECT_FOCUS_PUNCH)
+    if (((AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_TRY_TO_FAINT) && CanAIFaintTarget(battlerAtk, battlerDef, 0) && GetMoveEffect(GetBestDmgMoveFromBattler(battlerAtk, battlerDef)) != EFFECT_FOCUS_PUNCH)
             || AI_DATA->holdEffects[battlerDef] == HOLD_EFFECT_CURE_SLP || AI_DATA->holdEffects[battlerDef] == HOLD_EFFECT_CURE_STATUS)
         return;
 

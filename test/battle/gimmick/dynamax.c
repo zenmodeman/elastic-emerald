@@ -1376,9 +1376,14 @@ DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Finale heals allies by 1/6 of their health")
 
 DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Sweetness cures allies' status conditions")
 {
+    u32 j;
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_G_MAX_SWEETNESS, MOVE_EFFECT_AROMATHERAPY));
         PLAYER(SPECIES_APPLETUN) { Status1(STATUS1_POISON); GigantamaxFactor(TRUE); }
+        PLAYER(SPECIES_APPLIN)  { Status1(STATUS1_POISON); }
+        PLAYER(SPECIES_APPLIN)  { Status1(STATUS1_POISON); }
+        PLAYER(SPECIES_APPLIN)  { Status1(STATUS1_POISON); }
+        PLAYER(SPECIES_APPLIN)  { Status1(STATUS1_POISON); }
         PLAYER(SPECIES_APPLIN)  { Status1(STATUS1_POISON); }
         OPPONENT(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
@@ -1387,9 +1392,10 @@ DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Sweetness cures allies' status conditions")
     } SCENE {
         MESSAGE("Appletun used G-Max Sweetness!");
         STATUS_ICON(playerLeft, none: TRUE);
-        MESSAGE("Appletun's status returned to normal!");
         STATUS_ICON(playerRight, none: TRUE);
-        MESSAGE("Applin's status returned to normal!");
+    } THEN {
+        for (j = 0; j < PARTY_SIZE; j++)
+            EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_STATUS), STATUS1_NONE);
     }
 }
 
@@ -1421,7 +1427,7 @@ DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Centiferno traps both opponents in Fire Spin
     }
 }
 
-DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Chi Strike boosts allies' crit chance")
+DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Chi Strike boosts allies' crit chance by 1 stage")
 {
     u32 j;
     GIVEN {
@@ -1459,10 +1465,11 @@ DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Depletion takes away 2 PP from the target's 
     GIVEN {
         ASSUME(GetMoveCategory(MOVE_DRAGON_CLAW) == DAMAGE_CATEGORY_PHYSICAL); // Otherwise Sableye faints.
         ASSUME(MoveHasAdditionalEffect(MOVE_G_MAX_DEPLETION, MOVE_EFFECT_SPITE));
+        ASSUME(GetMovePP(MOVE_CELEBRATE) >= 3);
         PLAYER(SPECIES_DURALUDON) { GigantamaxFactor(TRUE); }
         PLAYER(SPECIES_WYNAUT);
         // Dynamax behaves weird with test turn order because stats are recalculated.
-        OPPONENT(SPECIES_SABLEYE) { Ability(ABILITY_PRANKSTER); }
+        OPPONENT(SPECIES_SABLEYE) { Ability(ABILITY_PRANKSTER); Moves(MOVE_CELEBRATE); }
         OPPONENT(SPECIES_WYNAUT);
     } WHEN {
         TURN { MOVE(playerLeft, MOVE_DRAGON_CLAW, target: opponentLeft, gimmick: GIMMICK_DYNAMAX); }
@@ -1470,6 +1477,8 @@ DOUBLE_BATTLE_TEST("(DYNAMAX) G-Max Depletion takes away 2 PP from the target's 
         MESSAGE("The opposing Sableye used Celebrate!");
         MESSAGE("Duraludon used G-Max Depletion!");
         MESSAGE("The opposing Sableye's PP was reduced!");
+    } THEN {
+        EXPECT_EQ(opponentLeft->pp[0], GetMovePP(MOVE_CELEBRATE) - 3); // 1 from regular use + 2 from G-Max Depletion
     }
 }
 
