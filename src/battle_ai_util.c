@@ -24,7 +24,6 @@
 #include "constants/items.h"
 
 
-static void AddSTABToMovesList(u16 *moves, u32 battler);
 
 // Functions
 u32 GetDmgRollType(u32 battlerAtk)
@@ -1865,7 +1864,7 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     if ((gBattleMons[battlerDef].statStages[STAT_ATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
       //Estimate based on raw stats when lacking move knowledge
-      || (HasNoKnownNonProtectingMoves(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack))) 
+      || (!HasDamagingMove(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack))) 
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_WHITE_SMOKE
@@ -1952,7 +1951,7 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     //Still valid to go below -2 if can't make enough progress
     if ((gBattleMons[battlerDef].statStages[STAT_SPATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
-      || (HasNoKnownNonProtectingMoves(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack)))
+      || (!HasDamagingMove(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack)))
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
@@ -2101,23 +2100,7 @@ u16 *GetMovesArray(u32 battler)
         return gBattleResources->battleHistory->usedMoves[battler];
 }
 
-//static zenmodeman function
-static void AddSTABToMovesList(u16 *moves, u32 battler){
-    u32 i;
-    u32 currentMove;
-    u32 types[3];
-    DebugPrintf("In AddSTABToMOvesList, From battler %d, the first move is %d", battler, gBattleMons[battler].moves[0]);
-    GetBattlerTypes(battler, FALSE, types);
-    // DebugPrintf("Type 1: %d, Type 2: %d", types[0], types[1]);
-    for (i = 0; i < MAX_MON_MOVES; i++){
-        currentMove = gBattleMons[battler].moves[i];
-        // DebugPrintf("Move type: %d; currentMove: %d, moves[i]: %d, movePower: %d", gMovesInfo[currentMove].type, currentMove, moves[i], gMovesInfo[currentMove].power);
-        if (currentMove != moves[i] && gMovesInfo[currentMove].power > 0 && ((types[0] == gMovesInfo[currentMove].type) 
-        || types[1] == gMovesInfo[currentMove].type || types[2] == gMovesInfo[currentMove].type)){
-            moves[i] = currentMove;
-        }
-    }
-}
+
 
 bool32 DoesBattlerTypeMatchMove(u32 battler, u32 move){
     u32 types[3];
