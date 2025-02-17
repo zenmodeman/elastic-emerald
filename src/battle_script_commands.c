@@ -3127,7 +3127,9 @@ static inline bool32 TrySetReflect(u32 battler)
     if (!(gSideStatuses[side] & SIDE_STATUS_REFLECT))
     {
         gSideStatuses[side] |= SIDE_STATUS_REFLECT;
-        if (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+        if ( (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+        || GetBattlerAbility(battler) == ABILITY_DEDICATED
+        )
             gSideTimers[side].reflectTimer = gBattleTurnCounter + 8;
         else
             gSideTimers[side].reflectTimer = gBattleTurnCounter + 5;
@@ -3149,7 +3151,8 @@ static inline bool32 TrySetLightScreen(u32 battler)
     if (!(gSideStatuses[side] & SIDE_STATUS_LIGHTSCREEN))
     {
         gSideStatuses[side] |= SIDE_STATUS_LIGHTSCREEN;
-        if (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+        if ((GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+        || GetBattlerAbility(battler) == ABILITY_DEDICATED)
             gSideTimers[side].lightscreenTimer = gBattleTurnCounter + 8;
         else
             gSideTimers[side].lightscreenTimer = gBattleTurnCounter + 5;
@@ -4495,7 +4498,8 @@ void SetMoveEffect(bool32 primary, bool32 certain)
                 {
                     gFieldStatuses &= ~STATUS_FIELD_TERRAIN_ANY;
                     gFieldStatuses |= statusFlag;
-                    if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_TERRAIN_EXTENDER)
+                    if ((GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_TERRAIN_EXTENDER)
+                        || GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED)
                         gFieldTimers.terrainTimer = gBattleTurnCounter + 8;
                     else
                         gFieldTimers.terrainTimer = gBattleTurnCounter + 5;
@@ -4544,7 +4548,8 @@ void SetMoveEffect(bool32 primary, bool32 certain)
                 if (!(gSideStatuses[GetBattlerSide(gBattlerAttacker)] & SIDE_STATUS_AURORA_VEIL))
                 {
                     gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_AURORA_VEIL;
-                    if (GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+                    if ((GetBattlerHoldEffect(gBattlerAttacker, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+                    || GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED)
                         gSideTimers[GetBattlerSide(gBattlerAttacker)].auroraVeilTimer = gBattleTurnCounter + 8;
                     else
                         gSideTimers[GetBattlerSide(gBattlerAttacker)].auroraVeilTimer = gBattleTurnCounter + 5;
@@ -4558,7 +4563,7 @@ void SetMoveEffect(bool32 primary, bool32 certain)
                 if (!(gFieldStatuses & STATUS_FIELD_GRAVITY))
                 {
                     gFieldStatuses |= STATUS_FIELD_GRAVITY;
-                    gFieldTimers.gravityTimer = gBattleTurnCounter + 5;
+                    gFieldTimers.gravityTimer = gBattleTurnCounter + 5 + (GetBattlerAbility(gBattlerAbility) == ABILITY_DEDICATED ? 3 : 0);
                     BattleScriptPush(gBattlescriptCurrInstr + 1);
                     gBattlescriptCurrInstr = BattleScript_EffectGravitySuccess;
                 }
@@ -10786,7 +10791,7 @@ static void Cmd_various(void)
         {
             gSideStatuses[GetBattlerSide(battler)] |= SIDE_STATUS_LUCKY_CHANT;
             gSideTimers[GetBattlerSide(battler)].luckyChantBattlerId = battler;
-            gSideTimers[GetBattlerSide(battler)].luckyChantTimer = gBattleTurnCounter + 5;
+            gSideTimers[GetBattlerSide(battler)].luckyChantTimer = gBattleTurnCounter + 5 + (GetBattlerAbility(battler) == ABILITY_DEDICATED ? 3 : 0);
             gBattlescriptCurrInstr = cmd->nextInstr;
         }
         else
@@ -11244,7 +11249,8 @@ static void Cmd_various(void)
         else
         {
             gSideStatuses[GetBattlerSide(battler)] |= SIDE_STATUS_AURORA_VEIL;
-            if (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+            if ((GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_LIGHT_CLAY)
+                || GetBattlerAbility(battler) == ABILITY_DEDICATED)
                 gSideTimers[GetBattlerSide(battler)].auroraVeilTimer = gBattleTurnCounter + 8;
             else
                 gSideTimers[GetBattlerSide(battler)].auroraVeilTimer = gBattleTurnCounter + 5;
@@ -13371,7 +13377,8 @@ static void Cmd_setmist(void)
     {
         u32 atkHoldEffect = GetBattlerHoldEffect(gBattlerAttacker, TRUE);
 
-        gSideTimers[GetBattlerSide(gBattlerAttacker)].mistTimer = (atkHoldEffect == HOLD_EFFECT_ICY_ROCK) ? gBattleTurnCounter + 8 : gBattleTurnCounter + 5;
+        gSideTimers[GetBattlerSide(gBattlerAttacker)].mistTimer = (atkHoldEffect == HOLD_EFFECT_ICY_ROCK || GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED) 
+        ? gBattleTurnCounter + 8 : gBattleTurnCounter + 5;
         gSideTimers[GetBattlerSide(gBattlerAttacker)].mistBattlerId = gBattlerAttacker;
         gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_MIST;
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SET_MIST;
@@ -14025,7 +14032,8 @@ static void Cmd_settailwind(void)
     {
         gSideStatuses[side] |= SIDE_STATUS_TAILWIND;
         gSideTimers[side].tailwindBattlerId = gBattlerAttacker;
-        gSideTimers[side].tailwindTimer = gBattleTurnCounter +  (B_TAILWIND_TURNS >= GEN_5 ? 4 : 3);
+        gSideTimers[side].tailwindTimer = gBattleTurnCounter +  (B_TAILWIND_TURNS >= GEN_5 ? 4 : 3) 
+        + ((GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED) ? 3 : 0);
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
     else
@@ -14439,7 +14447,8 @@ static void Cmd_setsafeguard(void)
     else
     {
         gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_SAFEGUARD;
-        gSideTimers[GetBattlerSide(gBattlerAttacker)].safeguardTimer = gBattleTurnCounter + 5;
+        gSideTimers[GetBattlerSide(gBattlerAttacker)].safeguardTimer = gBattleTurnCounter + 5
+        + ((GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED) ? 3 : 0);
         gSideTimers[GetBattlerSide(gBattlerAttacker)].safeguardBattlerId = gBattlerAttacker;
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SET_SAFEGUARD;
     }
@@ -15333,7 +15342,7 @@ static void HandleRoomMove(u32 statusFlag, u16 *timer, u8 stringId)
     else
     {
         gFieldStatuses |= statusFlag;
-        *timer = gBattleTurnCounter + 5;
+        *timer = gBattleTurnCounter + 5 + ((GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED) ? 3 : 0);
         gBattleCommunication[MULTISTRING_CHOOSER] = stringId;
     }
 }
@@ -15733,7 +15742,8 @@ static void Cmd_settypebasedhalvers(void)
             {
                 u32 atkHoldEffect = GetBattlerHoldEffect(gBattlerAttacker, TRUE);        
                 gFieldStatuses |= STATUS_FIELD_MUDSPORT;
-                gFieldTimers.mudSportTimer =  (atkHoldEffect == HOLD_EFFECT_SMOOTH_ROCK) ? gBattleTurnCounter + 8 : gBattleTurnCounter + 5;
+                gFieldTimers.mudSportTimer =  (atkHoldEffect == HOLD_EFFECT_SMOOTH_ROCK || GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED)
+                ? gBattleTurnCounter + 8 : gBattleTurnCounter + 5;
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_ELECTRIC;
                 worked = TRUE;
             }
@@ -15756,7 +15766,8 @@ static void Cmd_settypebasedhalvers(void)
             {
                 u32 atkHoldEffect = GetBattlerHoldEffect(gBattlerAttacker, TRUE);      
                 gFieldStatuses |= STATUS_FIELD_WATERSPORT;
-                gFieldTimers.waterSportTimer = (atkHoldEffect == HOLD_EFFECT_DAMP_ROCK) ? gBattleTurnCounter + 8 : gBattleTurnCounter + 5;
+                gFieldTimers.waterSportTimer = (atkHoldEffect == HOLD_EFFECT_DAMP_ROCK || GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED)
+                 ? gBattleTurnCounter + 8 : gBattleTurnCounter + 5;
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_FIRE;
                 worked = TRUE;
             }
@@ -17508,7 +17519,8 @@ void BS_SetRemoveTerrain(void)
 
         gFieldStatuses &= ~STATUS_FIELD_TERRAIN_ANY;
         gFieldStatuses |= statusFlag;
-        gFieldTimers.terrainTimer = gBattleTurnCounter + (atkHoldEffect == HOLD_EFFECT_TERRAIN_EXTENDER) ? 8 : 5;
+        gFieldTimers.terrainTimer = gBattleTurnCounter 
+        + ((atkHoldEffect == HOLD_EFFECT_TERRAIN_EXTENDER) || (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED)) ? 8 : 5;
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
 }
@@ -17727,13 +17739,16 @@ void BS_SetPledgeStatus(void)
         switch (cmd->sideStatus)
         {
         case SIDE_STATUS_RAINBOW:
-            gSideTimers[side].rainbowTimer = gBattleTurnCounter + 4;
+            gSideTimers[side].rainbowTimer = gBattleTurnCounter + 4
+            + ((GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED) ? 3 : 0);
             break;
         case SIDE_STATUS_SEA_OF_FIRE:
-            gSideTimers[side].seaOfFireTimer = gBattleTurnCounter + 4;
+            gSideTimers[side].seaOfFireTimer = gBattleTurnCounter + 4
+            + ((GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED) ? 3 : 0);
             break;
         case SIDE_STATUS_SWAMP:
-            gSideTimers[side].swampTimer = gBattleTurnCounter + 4;
+            gSideTimers[side].swampTimer = gBattleTurnCounter + 4
+            + ((GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED) ? 3 : 0);
         }
 
         gBattlescriptCurrInstr = cmd->nextInstr;

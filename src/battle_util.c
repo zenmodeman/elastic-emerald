@@ -4052,6 +4052,8 @@ bool32 TryChangeBattleWeather(u32 battler, u32 battleWeatherId, bool32 viaAbilit
             gWishFutureKnock.weatherDuration = 0;
         else if (rock != 0 && GetBattlerHoldEffect(battler, TRUE) == rock)
             gWishFutureKnock.weatherDuration = 8;
+        else if (GetBattlerAbility(battler) == ABILITY_DEDICATED)
+        gWishFutureKnock.weatherDuration = 8;
         else
             gWishFutureKnock.weatherDuration = 5;
         return TRUE;
@@ -4068,7 +4070,9 @@ static bool32 TryChangeBattleTerrain(u32 battler, u32 statusFlag, u16 *timer)
         gFieldStatuses |= statusFlag;
         gDisableStructs[battler].terrainAbilityDone = FALSE;
 
-        if (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_TERRAIN_EXTENDER)
+        if (
+            (GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_TERRAIN_EXTENDER)
+            || (GetBattlerAbility(battler) == ABILITY_DEDICATED))
             *timer = gBattleTurnCounter + 8;
         else
             *timer = gBattleTurnCounter + 5;

@@ -2424,6 +2424,12 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
     },
     [ABILITY_MERRY] = {
         .name = _("Merry"),
+        .aiRating = 5,
         .description = COMPOUND_STRING("Pumps up by giving."),
+    },
+    [ABILITY_DEDICATED] = {
+        .name = _("Dedicated"),
+        .aiRating = 5,
+        .description = COMPOUND_STRING("Extends field effects."),
     }
 };
