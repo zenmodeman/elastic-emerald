@@ -1865,7 +1865,8 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     if ((gBattleMons[battlerDef].statStages[STAT_ATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
       //Estimate based on raw stats when lacking move knowledge
-      || (!HasDamagingMove(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack))) 
+      || (!HasAllKnownMoves(battlerDef) && !HasDamagingMove(battlerDef) 
+      && (UQ_4_12_TO_INT(gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack))) 
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_WHITE_SMOKE
@@ -1952,7 +1953,7 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
     //Still valid to go below -2 if can't make enough progress
     if ((gBattleMons[battlerDef].statStages[STAT_SPATK] > 4 || !CanAIFaintTarget(battlerAtk, battlerDef, 4))
       && (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
-      || (!HasDamagingMove(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack)))
+      || (!HasAllKnownMoves(battlerDef) && !HasDamagingMove(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack)))
       && defAbility != ABILITY_CONTRARY
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
@@ -3596,8 +3597,21 @@ bool32 ShouldSetScreen(u32 battlerAtk, u32 battlerDef, u32 moveEffect)
 
     // Don't waste a turn if screens will be broken
     if (HasMoveEffect(battlerDef, EFFECT_BRICK_BREAK)
-     || HasMoveEffect(battlerDef, EFFECT_RAGING_BULL))
-        return FALSE;
+     || HasMoveEffect(battlerDef, EFFECT_RAGING_BULL)){
+        u32 effect1TurnAgo = GetMoveEffect(FindMoveUsedXTurnsAgo(battlerDef, 1));
+        u32 effect2TurnsAgo = GetMoveEffect(FindMoveUsedXTurnsAgo(battlerDef, 2));
+        
+        //If a screen breaking effect has been used the previous two turns in a row, then 
+        if ((effect1TurnAgo == EFFECT_BRICK_BREAK || effect1TurnAgo == EFFECT_RAGING_BULL || effect1TurnAgo == EFFECT_DEFOG)
+            && (effect2TurnsAgo == EFFECT_BRICK_BREAK || effect2TurnsAgo == EFFECT_RAGING_BULL || effect1TurnAgo == EFFECT_DEFOG)
+            ){
+                return FALSE;
+            }
+        else if (AI_RandLessThan(127)){//Otherwise just a 50% chance to not incentivize
+            return FALSE;
+        }
+     }
+        
 
     switch (moveEffect)
     {
@@ -3608,15 +3622,25 @@ bool32 ShouldSetScreen(u32 battlerAtk, u32 battlerDef, u32 moveEffect)
             return TRUE;
         break;
     case EFFECT_REFLECT:
-        // Use only if the player has a physical move and AI doesn't already have Reflect itself active.
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
-            && !(gSideStatuses[atkSide] & SIDE_STATUS_REFLECT))
+        if (gSideStatuses[atkSide] & SIDE_STATUS_REFLECT){
+            return FALSE;
+        }
+        // Gauge use on either whether the opponent has revealed a move of the split, or best fit on the player mon's stats
+        if ((HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+        //Estimate based on raw stats when lacking move knowledge
+        || (!HasAllKnownMoves(battlerDef) && !HasDamagingMove(battlerDef) && (UQ_4_12_TO_INT(gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack)
+            && !(gSideStatuses[atkSide] & SIDE_STATUS_REFLECT)))
             return TRUE;
         break;
     case EFFECT_LIGHT_SCREEN:
-        // Use only if the player has a special move and AI doesn't already have Light Screen itself active.
+        if (gSideStatuses[atkSide] & SIDE_STATUS_LIGHTSCREEN){
+            return FALSE;
+        }
+
+        // Gauge use on either whether the opponent has revealed a move of the split, or best fit on the player mon's stats
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
-            && !(gSideStatuses[atkSide] & SIDE_STATUS_LIGHTSCREEN))
+        || (!HasAllKnownMoves(battlerDef) && !HasDamagingMove(battlerDef) 
+        && (UQ_4_12_TO_INT(gBattleMons[battlerDef].spAttack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].attack)))
             return TRUE;
         break;
     }
