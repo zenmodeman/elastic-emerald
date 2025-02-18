@@ -4119,16 +4119,46 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         {
             break;
         }
+        //Keep in mind ShouldRecover also has some guards such as consecutive move use and not using when the Pokemon would faint even after healing
         else if (ShouldRecover(battlerAtk, battlerDef, move, 100))
         {
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_CURE_SLP
               || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_CURE_STATUS
               || HasMoveEffect(EFFECT_SLEEP_TALK, battlerAtk)
               || HasMoveEffect(EFFECT_SNORE, battlerAtk)
-              || aiData->abilities[battlerAtk] == ABILITY_SHED_SKIN
-              || aiData->abilities[battlerAtk] == ABILITY_EARLY_BIRD
               || (AI_GetWeather() & B_WEATHER_RAIN && gWishFutureKnock.weatherDuration != 1 && aiData->abilities[battlerAtk] == ABILITY_HYDRATION && aiData->holdEffects[battlerAtk] != HOLD_EFFECT_UTILITY_UMBRELLA))
-                ADJUST_SCORE(GOOD_EFFECT);
+                ADJUST_SCORE(DECENT_EFFECT);
+            
+            //If mon at full health can't get 3KOd, Rest is worth using
+            //May want to make tweaks for things like Leftovers
+            else if (!CanTargetFaintAiWithMod(battlerDef, battlerAtk, 1000, 3)){
+                ADJUST_SCORE(DECENT_EFFECT);
+                if (aiData->abilities[battlerAtk] == ABILITY_EARLY_BIRD || aiData->abilities[battlerAtk] == ABILITY_SHED_SKIN){
+                    ADJUST_SCORE(WEAK_EFFECT);
+                }
+            }
+            //Early Bird can get away with not getting 2KO'd by virtue of being asleep for only one turn
+            else if (aiData->abilities[battlerAtk] == ABILITY_EARLY_BIRD){
+                if (!CanTargetFaintAiWithMod(battlerDef, battlerAtk, 1000, 2)){
+                    ADJUST_SCORE(DECENT_EFFECT);
+                }
+            }
+            //Add RNG for Shed Skin since it's probabalistic
+            else if (aiData->abilities[battlerAtk] == ABILITY_SHED_SKIN){
+                if (!CanTargetFaintAiWithMod(battlerDef, battlerAtk, 1000, 2)){
+                    if (AI_RandLessThan(170)){ //~67% chance
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    }else{
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                }else{
+                    if (AI_RandLessThan(85)){ //~33% chance
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    }else{
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                }
+            }
         }
         break;
     case EFFECT_OHKO:

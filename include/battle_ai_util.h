@@ -37,6 +37,7 @@ bool32 AreAllMovesOfSplitIneffective(u32 battlerAtk, u32 battlerDef, u32 categor
 uq4_12_t GetAtkSpAtkGapThreshold(u32 battlerDef);
 bool32 DoesBattlerTypeMatchMove(u32 battler, u32 move);
 bool32 OnlyOnePlayerDoublesMon();
+u32 GetConsecutiveMoveEffectUse(u32 battler, u32 moveEffect);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);
@@ -138,7 +139,6 @@ bool32 HasMoveWithCategory(u32 battler, u32 category);
 
 
 bool32 HasAllKnownMoves(u32 battler);
-u32 GetBestDmgMoveofType(u32 battlerAtk, u32 battlerDef, u32 type);
 bool32 HasMoveWithType(u32 battler, u32 type);
 bool32 HasMoveEffect(u32 battlerId, u32 moveEffect);
 bool32 IsPowerBasedOnStatus(u32 battlerId, u32 effect, u32 argument);

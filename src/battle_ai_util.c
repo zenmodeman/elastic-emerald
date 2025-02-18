@@ -3564,21 +3564,64 @@ bool32 ShouldAbsorb(u32 battlerAtk, u32 battlerDef, u32 move, s32 damage)
     return FALSE;
 }
 
+//Get the number of times in a row a given moveEffect has been used.
+u32 GetConsecutiveMoveEffectUse(u32 battler, u32 moveEffect){
+    u32 numUses = 0;
+    u32 prevTurnNum;
+    for (prevTurnNum = 1; prevTurnNum <= AI_MOVE_HISTORY_COUNT; prevTurnNum++){
+        if (moveEffect == GetMoveEffect(FindMoveUsedXTurnsAgo(battler, prevTurnNum))){
+            numUses++;
+        }
+        //Stop after the first miss
+        else{
+            break;
+        }
+    }
+    return numUses;
+}
+
 bool32 ShouldRecover(u32 battlerAtk, u32 battlerDef, u32 move, u32 healPercent)
 {
+    s32 healAmount = (healPercent * gBattleMons[battlerAtk].maxHP) / 100;
+    u32 consecutiveMoveEffectUse = 0; 
+    
+    if (gStatuses3[battlerAtk] & STATUS3_HEAL_BLOCK){
+        return FALSE;
+    }
+
+    if (move != 0 && move != 0xFFFF){
+        consecutiveMoveEffectUse = GetConsecutiveMoveEffectUse(battlerAtk, GetMoveEffect(move));
+    }
+    
+
+    //Ignore recovering if mon gets outdamaged
+    //this may need to be tweaked for stall strats such as Toxic or Leech Seed
+    if (GetBestDmgFromBattler(battlerDef, battlerAtk) > healAmount){
+        return FALSE;
+    }
+
+    //Sliding disincentive for multiple consecutive uses; 33% chance to not use if used the previous turn; 100% chance to not use if used 3 turns in a row.
+    //This may also need to be tweaked for stall strats
+    if (AI_RandLessThan(85 * consecutiveMoveEffectUse)){
+        return FALSE;
+    }
+
     if (move == 0xFFFF || AI_IsFaster(battlerAtk, battlerDef, move))
     {
         // using item or user going first
-        s32 damage = AI_DATA->simulatedDmg[battlerAtk][battlerDef][AI_THINKING_STRUCT->movesetIndex].expected;
-        s32 healAmount = (healPercent * damage) / 100;
-        if (gStatuses3[battlerAtk] & STATUS3_HEAL_BLOCK)
-            healAmount = 0;
+
+        //Removing damage for now; originally `s32 healAmount = (healPercent * damage) / 100;` was being used,
+        //But I don't understand why this is being done.
+        // s32 damage = AI_DATA->simulatedDmg[battlerAtk][battlerDef][AI_THINKING_STRUCT->movesetIndex].expected;
 
         if (CanTargetFaintAi(battlerDef, battlerAtk)
           && !CanTargetFaintAiWithMod(battlerDef, battlerAtk, healAmount, 0))
             return TRUE;    // target can faint attacker unless they heal
-        else if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_DATA->hpPercents[battlerAtk] < 60 && (Random() % 3))
-            return TRUE;    // target can't faint attacker at all, attacker health is about half, 2/3rds rate of encouraging healing
+        else if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_DATA->hpPercents[battlerAtk] < 60 && (AI_RandLessThan(85))){
+            // DebugPrintf("Faster RNG check is reached");
+            return TRUE;    // target can't faint attacker at all, attacker health is about half, 1/3rds rate of encouraging healing
+        }
+            
     }
     //Logic for slower AI
     if (AI_DATA->hpPercents[battlerAtk] < 50){
