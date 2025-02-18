@@ -5102,6 +5102,7 @@ case EFFECT_DISABLE:
         break;
     case EFFECT_POWDER:
         //give ~50% chance
+        
         if (predictedMove != MOVE_NONE && !IsBattleMoveStatus(predictedMove) && predictedType == TYPE_FIRE && AI_RandLessThan(128))
             ADJUST_SCORE(DECENT_EFFECT);
         //Chance if the opposing mon is a Fire type. Should potentially add logic for whether there's the possibility of the Fire type having a Fire move.

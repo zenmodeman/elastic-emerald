@@ -3637,20 +3637,18 @@ bool32 ShouldRecover(u32 battlerAtk, u32 battlerDef, u32 move, u32 healPercent)
 bool32 ShouldSetScreen(u32 battlerAtk, u32 battlerDef, u32 moveEffect)
 {
     u32 atkSide = GetBattlerSide(battlerAtk);
-
     // Don't waste a turn if screens will be broken
     if (HasMoveEffect(battlerDef, EFFECT_BRICK_BREAK)
-     || HasMoveEffect(battlerDef, EFFECT_RAGING_BULL)){
-        u32 effect1TurnAgo = GetMoveEffect(FindMoveUsedXTurnsAgo(battlerDef, 1));
-        u32 effect2TurnsAgo = GetMoveEffect(FindMoveUsedXTurnsAgo(battlerDef, 2));
-        
-        //If a screen breaking effect has been used the previous two turns in a row, then 
-        if ((effect1TurnAgo == EFFECT_BRICK_BREAK || effect1TurnAgo == EFFECT_RAGING_BULL || effect1TurnAgo == EFFECT_DEFOG)
-            && (effect2TurnsAgo == EFFECT_BRICK_BREAK || effect2TurnsAgo == EFFECT_RAGING_BULL || effect1TurnAgo == EFFECT_DEFOG)
-            ){
-                return FALSE;
-            }
+     || HasMoveEffect(battlerDef, EFFECT_RAGING_BULL
+    || HasMoveEffect(battlerDef, EFFECT_DEFOG))){
+        if (GetConsecutiveMoveEffectUse(battlerDef, EFFECT_BRICK_BREAK) >= 2 
+        || GetConsecutiveMoveEffectUse(battlerDef, EFFECT_RAGING_BULL) >= 2
+        || GetConsecutiveMoveEffectUse(battlerDef, EFFECT_DEFOG) >= 2){
+            // DebugPrintf("Double use check is reached");
+            return FALSE; 
+        }
         else if (AI_RandLessThan(127)){//Otherwise just a 50% chance to not incentivize
+            // DebugPrintf("50 percent RNG check is reached");
             return FALSE;
         }
      }
@@ -4165,7 +4163,7 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
     u32 statId = GetStatIdBasedOnStatChangeId(statChangeId);
     u32 tempScore = NO_INCREASE;
     u32 noOfHitsToFaint = NoOfHitsForTargetToFaintAI(battlerDef, battlerAtk);
-    DebugPrintf("Number of hits to KO is %d", noOfHitsToFaint);
+    // DebugPrintf("Stat up internal score: Number of hits to KO is %d", noOfHitsToFaint);
     u32 aiIsFaster = AI_IsFaster(battlerAtk, battlerDef, TRUE);
     u32 shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
 
