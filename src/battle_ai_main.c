@@ -645,6 +645,7 @@ static void CalcBattlerAiMovesData(struct AiLogicData *aiData, u32 battlerAtk, u
             //&& !IsBattleMoveStatus(move)  /* we want to get effectiveness and accuracy of status moves */
             && !(aiData->moveLimitations[battlerAtk] & (1u << moveIndex)))
         {
+            
             dmg = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, TRUE, weather, rollType);
             aiData->moveAccuracy[battlerAtk][battlerDef][moveIndex] = Ai_SetMoveAccuracy(aiData, battlerAtk, battlerDef, move);
         }
@@ -4540,8 +4541,16 @@ case EFFECT_DISABLE:
         }
         break;
     case EFFECT_DEFENSE_CURL:
-        if (HasMoveEffect(battlerAtk, EFFECT_ROLLOUT) && !(gBattleMons[battlerAtk].status2 & STATUS2_DEFENSE_CURL))
-            ADJUST_SCORE(DECENT_EFFECT);
+        
+        if (HasMoveEffect(battlerAtk, EFFECT_ROLLOUT)){
+            DebugPrintf("Can get 2KOd is %d", CanTargetFaintAiWithMod(battlerDef, battlerAtk, 0, 2));
+        }
+        if (HasMoveEffect(battlerAtk, EFFECT_ROLLOUT) && !(gBattleMons[battlerAtk].status2 & STATUS2_DEFENSE_CURL) && !(CanTargetFaintAiWithMod(battlerDef, battlerAtk, 0, 2)))
+            {
+                DebugPrintf("Def Curl Rollout Adjustment reached.");
+                ADJUST_SCORE(WEAK_EFFECT);
+            }    
+        
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF));
         break;
     case EFFECT_FIRST_TURN_ONLY:

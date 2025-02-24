@@ -1296,7 +1296,7 @@ bool32 CanTargetFaintAiWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod, s32 dm
     u32 i;
     u32 unusable = AI_DATA->moveLimitations[battlerDef];
     s32 dmg;
-    u16 *moves = gBattleResources->battleHistory->usedMoves[battlerDef];
+    u16 *moves = GetMovesArray(battlerDef);
     u32 hpCheck = gBattleMons[battlerAtk].hp + hpMod;
 
     if (hpCheck > gBattleMons[battlerAtk].maxHP)
@@ -1304,11 +1304,13 @@ bool32 CanTargetFaintAiWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod, s32 dm
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        dmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected;
+        dmg = AI_DATA->simulatedDmg[battlerDef][battlerAtk][i].expected;
+        
         if (dmgMod)
             dmg *= dmgMod;
-
-        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && !(unusable & (1u << i)) && dmg >= hpCheck)
+            // DebugPrintf("For move with index %d, move %d, and dmgMod %d, the modified damage is %d", i, moves[i], dmgMod, dmg);
+        if (moves[i] != MOVE_UNAVAILABLE && !(unusable & (1u << i)) && dmg >= hpCheck) //Allow MOVE_NONE because of predicting unrevealed STAB moves
+        // if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && !(unusable & (1u << i)) && dmg >= hpCheck)
         {
             return TRUE;
         }
