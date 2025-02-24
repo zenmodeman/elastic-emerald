@@ -1087,7 +1087,9 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     if (IsTwoTurnNotSemiInvulnerableMove(battlerAtk, move) && CanTargetFaintAi(battlerDef, battlerAtk)){
         //If the two-turn move is the only attacking move, it shouldn't be punished as much.
         if (GetStatusMoveCount(battlerAtk) >= 3){
-            RETURN_SCORE_MINUS(1);
+            if (AI_RandLessThan(127)){
+                RETURN_SCORE_MINUS(1);
+            }
         }else{
             RETURN_SCORE_MINUS(10);
         }
@@ -3588,7 +3590,7 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
     }
 
     // Priority list:
-    // 1. Less no of hits to ko
+    // 1. Less no of hits to ko (and damage difference within gap threshold)
     // 2. Not charging
     // 3. More accuracy
     // 4. Better effect
@@ -3600,8 +3602,22 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
         {
             if (i == currId)
                 continue;
+
             if (noOfHits[currId] == noOfHits[i])
             {
+                u32 dmgGapThreshold = 120; //Percentage amount above which one move is prioritized over others, even for the same number of hits
+
+                //Keep going if current move is stronger than the other move by at least the threshold
+                if (AI_DATA->simulatedDmg[battlerAtk][battlerDef][currId].expected >= (AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected * dmgGapThreshold)/10){
+                    viableMoveScores[i] -= 1;
+                    continue;
+                }
+
+                //Give up on getting best damaging move score if the other move hits harder by at least the threshold
+                else if ((AI_DATA->simulatedDmg[battlerAtk][battlerDef][currId].expected * dmgGapThreshold)/100 <= AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected){
+                    return score;
+                }
+
                 multipleBestMoves = TRUE;
                 // We need to make sure it's the current move which is objectively better.
                 if (isTwoTurnNotSemiInvulnerableMove[i] && !isTwoTurnNotSemiInvulnerableMove[currId])

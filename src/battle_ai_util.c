@@ -4517,6 +4517,7 @@ bool32 AI_ShouldTerastal(u32 battler){
     u32 battlerToFocus = BATTLE_OPPOSITE(battler);
     u32 teraType = GetBattlerTeraType(battler);
 
+
     //No type cost to tera, so always tera
     if (teraType == TYPE_STELLAR){
         return TRUE;
@@ -4533,6 +4534,13 @@ bool32 AI_ShouldTerastal(u32 battler){
     || CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, opponentTypes[1], battlerToFocus, battler, AI_DATA->abilities[battlerToFocus], FALSE) > UQ_4_12(1.0)
     ){
         return TRUE;
+    }
+
+    //Don't tera if it would go from a STAB immunity to not having a STAB immunity. 
+    else if (CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, opponentTypes[0], battlerToFocus, battler, AI_DATA->abilities[battlerToFocus], FALSE) == UQ_4_12(0)
+    && CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, opponentTypes[1], battlerToFocus, battler, AI_DATA->abilities[battlerToFocus], FALSE) == UQ_4_12(0)
+    && (GetTypeModifier(opponentTypes[0], teraType) > UQ_4_12(0) || GetTypeModifier(opponentTypes[1], teraType) > UQ_4_12(0))){
+        return FALSE;
     }
     //If STABs are not SE against current type but are SE against Tera type, do not tera
     else if (GetTypeModifier(opponentTypes[0], teraType) > UQ_4_12(1.0) || GetTypeModifier(opponentTypes[1], teraType) > UQ_4_12(1.0)){
