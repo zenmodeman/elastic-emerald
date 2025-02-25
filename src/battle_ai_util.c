@@ -632,25 +632,37 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
     struct AiLogicData *aiData = AI_DATA;
     AI_DATA->aiCalcInProgress = TRUE;
 
+    const u32 BATTLER_NONE = 255; 
+
+    //Need to test this aiBattler approach which aims to allow the simulated tera to apply for either the attacker or defender, 
+    //depending on who's the AI mon
+    u32 aiBattler = BATTLER_NONE;
+    
+    if (GetBattlerSide(battlerAtk) == B_SIDE_OPPONENT){
+        aiBattler = battlerAtk;
+    }else if (GetBattlerSide(battlerDef) == B_SIDE_OPPONENT){
+        aiBattler = battlerDef;
+    }
+
     if (moveEffect == EFFECT_NATURE_POWER)
         move = GetNaturePowerMove(battlerAtk);
 
-    //To Do: After adding a ShouldTera logic check, should use that for determining whether the AI should compute tera calculations
-    //May want to also see if this can be added defensively as well.
+    //TODO: The AI Tera simulation currently only applies when 
+    
 
     // Temporarily enable gimmicks for damage calcs if planned
-    if (gBattleStruct->gimmick.usableGimmick[battlerAtk] 
-    && (GetBattlerSide(battlerAtk) != B_SIDE_PLAYER) //Don't compute player gimmicks that haven't been executed yet
-    && GetActiveGimmick(battlerAtk) == GIMMICK_NONE
-    && !(gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_TERA && !AI_ShouldTerastal(battlerAtk))
-    && !(gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_Z_MOVE && !considerZPower))
+    if (aiBattler != BATTLER_NONE
+        && gBattleStruct->gimmick.usableGimmick[aiBattler] 
+    && GetActiveGimmick(aiBattler) == GIMMICK_NONE
+    && !(gBattleStruct->gimmick.usableGimmick[aiBattler] == GIMMICK_TERA && !AI_ShouldTerastal(aiBattler))
+    && !(gBattleStruct->gimmick.usableGimmick[aiBattler] == GIMMICK_Z_MOVE && !considerZPower))
     {
         // Set Z-Move variables if needed
-        if (gBattleStruct->gimmick.usableGimmick[battlerAtk] == GIMMICK_Z_MOVE && IsViableZMove(battlerAtk, move))
-            gBattleStruct->zmove.baseMoves[battlerAtk] = move;
+        if (gBattleStruct->gimmick.usableGimmick[aiBattler] == GIMMICK_Z_MOVE && IsViableZMove(aiBattler, move))
+            gBattleStruct->zmove.baseMoves[aiBattler] = move;
 
         toggledGimmick = TRUE;
-        SetActiveGimmick(battlerAtk, gBattleStruct->gimmick.usableGimmick[battlerAtk]);
+        SetActiveGimmick(aiBattler, gBattleStruct->gimmick.usableGimmick[aiBattler]);
     }
 
     SetMoveDamageCategory(battlerAtk, battlerDef, move);
@@ -761,9 +773,11 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
     // Undo temporary settings
     gBattleStruct->dynamicMoveType = 0;
     gBattleStruct->swapDamageCategory = FALSE;
-    gBattleStruct->zmove.baseMoves[battlerAtk] = MOVE_NONE;
-    if (toggledGimmick)
-        SetActiveGimmick(battlerAtk, GIMMICK_NONE);
+    if (aiBattler != BATTLER_NONE){
+        gBattleStruct->zmove.baseMoves[aiBattler] = MOVE_NONE;
+        if (toggledGimmick)
+        SetActiveGimmick(aiBattler, GIMMICK_NONE);
+    }
     AI_DATA->aiCalcInProgress = FALSE;
     return simDamage;
 }
