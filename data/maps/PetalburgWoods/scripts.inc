@@ -1034,7 +1034,7 @@ PetalburgWoods_EventScript_Aurelio_13:
 
 PetalburgWoods_EventScript_Aurelio_14:
 # 509 "data/maps/PetalburgWoods/scripts.pory"
-	call ResourcefulModeAurelioBerries
+	call ResourceModeAurelioBerries
 	goto PetalburgWoods_EventScript_Aurelio_13
 
 

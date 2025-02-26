@@ -297,6 +297,7 @@ RustboroCity_Gym_Text_RoxanneRematchNeedTwoMons:
 
 script RustboroCity_Gym_EventScript_Roxanne {
     lock
+	faceplayer
     if (!flag(FLAG_RECEIVED_TM_ROCK_TOMB)){
         if (flag(FLAG_RESTRICTED_MODE)) {
             specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
@@ -312,7 +313,6 @@ script RustboroCity_Gym_EventScript_Roxanne {
 }
 
 script RoxanneFirstGymBattleScript {
-	faceplayer
     if (flag(FLAG_RESTRICTED_MODE)) {
         specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
         if (var(VAR_RESULT) == FALSE) {

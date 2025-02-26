@@ -506,7 +506,7 @@ script PetalburgWoods_EventScript_Aurelio{
             trainerbattle_no_intro(TRAINER_AURELIO, Aurelio_Defeat)
 			msgbox("Here you go, as promised!")
 			if (flag(FLAG_RESOURCE_MODE)){
-				call(ResourcefulModeAurelioBerries)
+				call(ResourceModeAurelioBerries)
 			}else{
 				call(ResourcefulModeAurelioBerries)
 			}

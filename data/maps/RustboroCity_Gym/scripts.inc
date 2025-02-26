@@ -593,39 +593,39 @@ RustboroCity_Gym_EventScript_Roxanne::
 # 299 "data/maps/RustboroCity_Gym/scripts.pory"
 	lock
 # 300 "data/maps/RustboroCity_Gym/scripts.pory"
+	faceplayer
+# 301 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_unset FLAG_RECEIVED_TM_ROCK_TOMB, RustboroCity_Gym_EventScript_Roxanne_2
 RustboroCity_Gym_EventScript_Roxanne_1:
-# 309 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox RustboroCity_Gym_Text_RoxannePostBattle
 # 310 "data/maps/RustboroCity_Gym/scripts.pory"
+	msgbox RustboroCity_Gym_Text_RoxannePostBattle
+# 311 "data/maps/RustboroCity_Gym/scripts.pory"
 	release
 	end
 
 RustboroCity_Gym_EventScript_Roxanne_2:
-# 301 "data/maps/RustboroCity_Gym/scripts.pory"
+# 302 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_set FLAG_RESTRICTED_MODE, RustboroCity_Gym_EventScript_Roxanne_5
 RustboroCity_Gym_EventScript_Roxanne_4:
-# 307 "data/maps/RustboroCity_Gym/scripts.pory"
+# 308 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto RoxanneFirstGymBattleScript
 	goto RustboroCity_Gym_EventScript_Roxanne_1
 
 RustboroCity_Gym_EventScript_Roxanne_5:
-# 302 "data/maps/RustboroCity_Gym/scripts.pory"
-	specialvar VAR_RESULT, DoesPlayerFollowItemClause
 # 303 "data/maps/RustboroCity_Gym/scripts.pory"
+	specialvar VAR_RESULT, DoesPlayerFollowItemClause
+# 304 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq RustboroCity_Gym_EventScript_Roxanne_7
 	goto RustboroCity_Gym_EventScript_Roxanne_4
 
 RustboroCity_Gym_EventScript_Roxanne_7:
-# 304 "data/maps/RustboroCity_Gym/scripts.pory"
+# 305 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto Roxanne_Restrict_Item_Clause
 	goto RustboroCity_Gym_EventScript_Roxanne_4
 
 
 RoxanneFirstGymBattleScript::
-# 315 "data/maps/RustboroCity_Gym/scripts.pory"
-	faceplayer
 # 316 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_set FLAG_RESTRICTED_MODE, RoxanneFirstGymBattleScript_2
 RoxanneFirstGymBattleScript_1:
