@@ -13,7 +13,7 @@ EventScript_CutTree::
 # 7 "data/scripts/field_move_scripts.pory"
 	checkpartymove MOVE_CUT
 # 8 "data/scripts/field_move_scripts.pory"
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CheckTreeCantCut
+	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_AskScytherToCut
 # 9 "data/scripts/field_move_scripts.pory"
 	setfieldeffectargument 0, VAR_RESULT
 # 10 "data/scripts/field_move_scripts.pory"
