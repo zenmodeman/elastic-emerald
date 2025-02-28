@@ -808,10 +808,10 @@ OldaleTown_EventScript_Fisherman::
 	faceplayer
 # 421 "data/maps/OldaleTown/scripts.pory"
 	goto_if_unset FLAG_RECEIVED_OLD_ROD, OldaleTown_EventScript_Fisherman_2
-# 436 "data/maps/OldaleTown/scripts.pory"
+# 438 "data/maps/OldaleTown/scripts.pory"
 	msgbox OldaleTown_EventScript_Fisherman_Text_3
 OldaleTown_EventScript_Fisherman_1:
-# 438 "data/maps/OldaleTown/scripts.pory"
+# 440 "data/maps/OldaleTown/scripts.pory"
 	release
 	end
 
@@ -821,7 +821,7 @@ OldaleTown_EventScript_Fisherman_2:
 # 423 "data/maps/OldaleTown/scripts.pory"
 	compare VAR_RESULT, TRUE
 	goto_if_eq OldaleTown_EventScript_Fisherman_5
-# 433 "data/maps/OldaleTown/scripts.pory"
+# 435 "data/maps/OldaleTown/scripts.pory"
 	msgbox OldaleTown_EventScript_Fisherman_Text_2
 	goto OldaleTown_EventScript_Fisherman_1
 
@@ -833,51 +833,52 @@ OldaleTown_EventScript_Fisherman_5:
 # 426 "data/maps/OldaleTown/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq OldaleTown_EventScript_Fisherman_9
-OldaleTown_EventScript_Fisherman_8:
-# 429 "data/maps/OldaleTown/scripts.pory"
+# 431 "data/maps/OldaleTown/scripts.pory"
 	setflag FLAG_RECEIVED_OLD_ROD
-# 430 "data/maps/OldaleTown/scripts.pory"
+# 432 "data/maps/OldaleTown/scripts.pory"
 	msgbox OldaleTown_Text_ThrowInFishingAdvice
 	goto OldaleTown_EventScript_Fisherman_1
 
 OldaleTown_EventScript_Fisherman_9:
 # 427 "data/maps/OldaleTown/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
-	goto OldaleTown_EventScript_Fisherman_8
+# 428 "data/maps/OldaleTown/scripts.pory"
+	release
+	end
 
 
 OldaleTown_EventScript_Taxi::
-# 443 "data/maps/OldaleTown/scripts.pory"
-	lock
-# 444 "data/maps/OldaleTown/scripts.pory"
-	faceplayer
 # 445 "data/maps/OldaleTown/scripts.pory"
+	lock
+# 446 "data/maps/OldaleTown/scripts.pory"
+	faceplayer
+# 447 "data/maps/OldaleTown/scripts.pory"
 	goto_if_unset FLAG_SYS_FLY_GET, OldaleTown_EventScript_Taxi_2
-# 453 "data/maps/OldaleTown/scripts.pory"
+# 455 "data/maps/OldaleTown/scripts.pory"
 	msgbox OldaleTown_EventScript_Taxi_Text_3
 OldaleTown_EventScript_Taxi_1:
-# 455 "data/maps/OldaleTown/scripts.pory"
+# 457 "data/maps/OldaleTown/scripts.pory"
 	release
 	end
 
 OldaleTown_EventScript_Taxi_2:
-# 446 "data/maps/OldaleTown/scripts.pory"
-	msgbox OldaleTown_EventScript_Taxi_Text_0
-# 447 "data/maps/OldaleTown/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
 # 448 "data/maps/OldaleTown/scripts.pory"
-	msgbox OldaleTown_EventScript_Taxi_Text_1
+	msgbox OldaleTown_EventScript_Taxi_Text_0
 # 449 "data/maps/OldaleTown/scripts.pory"
-	waitfanfare
+	playfanfare MUS_OBTAIN_ITEM
 # 450 "data/maps/OldaleTown/scripts.pory"
-	setflag FLAG_SYS_FLY_GET
+	msgbox OldaleTown_EventScript_Taxi_Text_1
 # 451 "data/maps/OldaleTown/scripts.pory"
+	waitfanfare
+# 452 "data/maps/OldaleTown/scripts.pory"
+	setflag FLAG_SYS_FLY_GET
+# 453 "data/maps/OldaleTown/scripts.pory"
 	msgbox OldaleTown_EventScript_Taxi_Text_2
 	goto OldaleTown_EventScript_Taxi_1
 
 
 OldaleTown_EventScript_RuinsSign::
-# 460 "data/maps/OldaleTown/scripts.pory"
+# 462 "data/maps/OldaleTown/scripts.pory"
 	msgbox OldaleTown_EventScript_RuinsSign_Text_0, MSGBOX_SIGN
 	return
 
@@ -895,36 +896,36 @@ OldaleTown_EventScript_Fisherman_Text_1:
 	.string "rods.$"
 
 OldaleTown_EventScript_Fisherman_Text_2:
-# 433 "data/maps/OldaleTown/scripts.pory"
+# 435 "data/maps/OldaleTown/scripts.pory"
 	.string "Oh, is that so?\n That's too bad, then.$"
 
 OldaleTown_EventScript_Fisherman_Text_3:
-# 436 "data/maps/OldaleTown/scripts.pory"
+# 438 "data/maps/OldaleTown/scripts.pory"
 	.string "Hope you're having a good time fishing!$"
 
 OldaleTown_EventScript_Taxi_Text_0:
-# 446 "data/maps/OldaleTown/scripts.pory"
+# 448 "data/maps/OldaleTown/scripts.pory"
 	.string "Hello, I manage the Corviknight ride\n"
 	.string "system. I see you're missing out, so I'll\l"
 	.string "give you a ride caller free of charge.$"
 
 OldaleTown_EventScript_Taxi_Text_1:
-# 448 "data/maps/OldaleTown/scripts.pory"
+# 450 "data/maps/OldaleTown/scripts.pory"
 	.string "{PLAYER} received the Corviknight\n"
 	.string "Ride Caller!$"
 
 OldaleTown_EventScript_Taxi_Text_2:
-# 451 "data/maps/OldaleTown/scripts.pory"
+# 453 "data/maps/OldaleTown/scripts.pory"
 	.string "You should be able to Fly from your menu\n"
 	.string "when you're outdoors. Hope you enjoy!$"
 
 OldaleTown_EventScript_Taxi_Text_3:
-# 453 "data/maps/OldaleTown/scripts.pory"
+# 455 "data/maps/OldaleTown/scripts.pory"
 	.string "Being able to fly is great isn't it? I'm\n"
 	.string "glad to offer my services in Hoenn.$"
 
 OldaleTown_EventScript_RuinsSign_Text_0:
-# 460 "data/maps/OldaleTown/scripts.pory"
+# 462 "data/maps/OldaleTown/scripts.pory"
 	.string "Oldale Ruins\n"
 	.string "An Enigmatic Link to the Past.$"
 

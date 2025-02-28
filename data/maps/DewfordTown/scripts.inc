@@ -1625,6 +1625,42 @@ DewfordTown_EventScript_Plenny_PostBattle::
 	end
 
 
+DewfordTown_EventScript_GoodRod_Fisherman::
+# 822 "data/maps/DewfordTown/scripts.pory"
+	lock
+# 823 "data/maps/DewfordTown/scripts.pory"
+	faceplayer
+# 824 "data/maps/DewfordTown/scripts.pory"
+	goto_if_unset FLAG_RECEIVED_GOOD_ROD, DewfordTown_EventScript_GoodRod_Fisherman_2
+# 835 "data/maps/DewfordTown/scripts.pory"
+	msgbox Route118_Text_TryCatchingMonWithGoodRod
+DewfordTown_EventScript_GoodRod_Fisherman_1:
+# 837 "data/maps/DewfordTown/scripts.pory"
+	release
+	end
+
+DewfordTown_EventScript_GoodRod_Fisherman_2:
+# 825 "data/maps/DewfordTown/scripts.pory"
+	msgbox DewfordTown_EventScript_GoodRod_Fisherman_Text_0
+# 826 "data/maps/DewfordTown/scripts.pory"
+	giveitem ITEM_OLD_ROD
+# 827 "data/maps/DewfordTown/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq DewfordTown_EventScript_GoodRod_Fisherman_6
+# 832 "data/maps/DewfordTown/scripts.pory"
+	setflag FLAG_RECEIVED_GOOD_ROD
+# 833 "data/maps/DewfordTown/scripts.pory"
+	msgbox Route118_Text_TryYourLuckFishing
+	goto DewfordTown_EventScript_GoodRod_Fisherman_1
+
+DewfordTown_EventScript_GoodRod_Fisherman_6:
+# 828 "data/maps/DewfordTown/scripts.pory"
+	call Common_EventScript_ShowBagIsFull
+# 829 "data/maps/DewfordTown/scripts.pory"
+	release
+	end
+
+
 DewfordTown_EventScript_Plenny_Text_0:
 # 810 "data/maps/DewfordTown/scripts.pory"
 	.string "My pokemon have grown in Dewford's\n"
@@ -1638,3 +1674,9 @@ DewfordTown_EventScript_Plenny_Text_2:
 # 811 "data/maps/DewfordTown/scripts.pory"
 	.string "Making a garden around sand is tough,\n"
 	.string "but it's rewarding!$"
+
+DewfordTown_EventScript_GoodRod_Fisherman_Text_0:
+# 825 "data/maps/DewfordTown/scripts.pory"
+	.string "The fish around here are quite varied.\n"
+	.string "Here, take this Good Rod to see for\l"
+	.string "yourself!$"

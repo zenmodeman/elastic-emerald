@@ -425,6 +425,8 @@ script OldaleTown_EventScript_Fisherman {
             giveitem(ITEM_OLD_ROD)
             if (var(VAR_RESULT) == FALSE){
                 call(Common_EventScript_ShowBagIsFull)
+				release
+				end
             }
             setflag(FLAG_RECEIVED_OLD_ROD)
             msgbox(OldaleTown_Text_ThrowInFishingAdvice)

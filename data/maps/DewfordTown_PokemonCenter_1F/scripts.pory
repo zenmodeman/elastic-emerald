@@ -1,0 +1,55 @@
+raw `
+
+.set LOCALID_NURSE, 1
+
+DewfordTown_PokemonCenter_1F_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, DewfordTown_PokemonCenter_1F_OnTransition
+	map_script MAP_SCRIPT_ON_RESUME, CableClub_OnResume
+	.byte 0
+
+DewfordTown_PokemonCenter_1F_OnTransition:
+	setrespawn HEAL_LOCATION_DEWFORD_TOWN
+	call Common_EventScript_UpdateBrineyLocation
+	end
+
+DewfordTown_PokemonCenter_1F_EventScript_Nurse::
+	setvar VAR_0x800B, LOCALID_NURSE
+	call Common_EventScript_PkmnCenterNurse
+	waitmessage
+	waitbuttonpress
+	release
+	end
+
+DewfordTown_PokemonCenter_1F_EventScript_PokefanF::
+	msgbox DewfordTown_PokemonCenter_1F_Text_StoneCavern, MSGBOX_NPC
+	end
+
+DewfordTown_PokemonCenter_1F_EventScript_Man::
+	msgbox DewfordTown_PokemonCenter_1F_Text_FaintedMonCanUseHM, MSGBOX_NPC
+	end
+
+DewfordTown_PokemonCenter_1F_Text_StoneCavern:
+	.string "There's a stone cavern at the edge\n"
+	.string "of town.\p"
+	.string "I've heard you can find rare stones\n"
+	.string "there.$"
+
+DewfordTown_PokemonCenter_1F_Text_FaintedMonCanUseHM:
+	.string "Even if a POKéMON faints and can't\n"
+	.string "battle, it can still use a move learned\l"
+	.string "from a HIDDEN MACHINE (HM).$"
+
+
+`
+
+script DewfordTown_PokemonCenter_1F_EventScript_Maniac{
+    lock
+    msgbox(format("Steel-types are finely tuned machines, and my mechanical skills help them stay in top form."))
+    msgbox(format("But they have a rough time against Brawly's Fighting-types..."))
+    msgbox(format("The first time I faced him, my meticulously optimized Steel squad got utterly dismantled. A total systems failure!"))
+    msgbox(format("Brawly's all about leveraging mass against his foes with Low Kick, and, well… "))
+    msgbox(format("my Pokemon are polished, sturdy, and unfortunately weighty."))
+    msgbox(format("But this was no problem I couldn't optimize. When I unearthed a Float Stone in Granite Cave, I made Low Kick irrelevant!"))
+    release
+}
+

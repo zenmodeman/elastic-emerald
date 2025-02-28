@@ -817,3 +817,23 @@ script DewfordTown_EventScript_Plenny_PostBattle{
 	setberrytree(BERRY_TREE_DEWFORD_GARDEN_WIKI, ITEM_TO_BERRY(ITEM_WIKI_BERRY), BERRY_STAGE_BERRIES)
     end
 }
+
+script DewfordTown_EventScript_GoodRod_Fisherman {
+	lock
+	faceplayer
+    if (!flag(FLAG_RECEIVED_GOOD_ROD)){
+        msgbox(format("The fish around here are quite varied. Here, take this Good Rod to see for yourself!"))
+        giveitem(ITEM_OLD_ROD)
+        if (var(VAR_RESULT) == FALSE){
+            call(Common_EventScript_ShowBagIsFull)
+			release
+			end
+        }
+        setflag(FLAG_RECEIVED_GOOD_ROD)
+        msgbox(Route118_Text_TryYourLuckFishing)
+    }else {
+        msgbox(Route118_Text_TryCatchingMonWithGoodRod)
+    }
+    release
+    end
+}
