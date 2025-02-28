@@ -5601,11 +5601,12 @@ const struct SpeciesInfo gSpeciesInfoGen6[] =
 #if P_FAMILY_NOIBAT
     [SPECIES_NOIBAT] =
     {
-        .baseHP        = 40,
+        //StatBuffed
+        .baseHP        = 45, //40
         .baseAttack    = 30,
-        .baseDefense   = 35,
-        .baseSpeed     = 55,
-        .baseSpAttack  = 45,
+        .baseDefense   = 40, //35
+        .baseSpeed     = 65, //55
+        .baseSpAttack  = 55, //45
         .baseSpDefense = 40,
         .types = MON_TYPES(TYPE_FLYING, TYPE_DRAGON),
         .catchRate = 190,
