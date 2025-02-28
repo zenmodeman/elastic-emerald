@@ -544,6 +544,7 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
             }
         }
     }
+
     hpIv              = PARSE_FLAG(11, hpIv);
     atkIv             = PARSE_FLAG(12, atkIv);
     defIv             = PARSE_FLAG(13, defIv);
@@ -563,15 +564,7 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
     u8 ivs[NUM_STATS]        = {hpIv, atkIv, defIv, speedIv, spAtkIv, spDefIv};
     u16 moves[MAX_MON_MOVES] = {move1, move2, move3, move4};
 
-    if (NUMBER_OF_GIVE_MON_PERFECT_IVS > 0){
-        for (i=0; i < NUMBER_OF_GIVE_MON_PERFECT_IVS && i < NUM_STATS; i++){
-            ivs[i] = MAX_PER_STAT_IVS;
-        }
-        Shuffle8(ivs, NUM_STATS);
-    }
-
-
-    if (NUMBER_OF_GIVE_MON_PERFECT_IVS > 0){
+    if (NUMBER_OF_GIVE_MON_PERFECT_IVS > 0 && !(flags & (1 << 11))){ //Attempt to only do this generation if IVs are not pre-generated
         for (i=0; i < NUMBER_OF_GIVE_MON_PERFECT_IVS && i < NUM_STATS; i++){
             ivs[i] = MAX_PER_STAT_IVS;
         }

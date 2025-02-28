@@ -1,0 +1,110 @@
+raw `
+DewfordTown_House2_MapScripts::
+	.byte 0
+
+DewfordTown_House2_EventScript_Man::
+	lock
+	faceplayer
+	goto_if_set FLAG_RECEIVED_SILK_SCARF, DewfordTown_House2_EventScript_ExplainSilkScarf
+	msgbox DewfordTown_House2_Text_WantYouToHaveSilkScarf, MSGBOX_DEFAULT
+	giveitem ITEM_SILK_SCARF
+	goto_if_eq VAR_RESULT, FALSE, DewfordTown_House2_EventScript_NoRoomForScarf
+	setflag FLAG_RECEIVED_SILK_SCARF
+	release
+	end
+
+DewfordTown_House2_EventScript_NoRoomForScarf::
+	msgbox DewfordTown_House2_Text_NoRoom, MSGBOX_DEFAULT
+	release
+	end
+
+DewfordTown_House2_EventScript_ExplainSilkScarf::
+	msgbox DewfordTown_House2_Text_ExplainSilkScarf, MSGBOX_DEFAULT
+	release
+	end
+
+DewfordTown_House2_EventScript_Boy::
+	msgbox DewfordTown_House2_Text_BrawlySoCool, MSGBOX_NPC
+	end
+
+DewfordTown_House2_Text_WantYouToHaveSilkScarf:
+	.string "Gorge your eyes on this!\p"
+	.string "It's a SILK SCARF. It's right at the\n"
+	.string "cutting edge of fashion, yeah!\p"
+	.string "Oh, I can see your eyes twinkling!\n"
+	.string "You appreciate my dazzling style!\p"
+	.string "Oh, you're a delight!\n"
+	.string "Here you go. I want you to have it!$"
+
+DewfordTown_House2_Text_NoRoom:
+	.string "Oh, you don't have room?\p"
+	.string "Now, listen tight, this SCARF is a must-\n"
+	.string "have! Why, I would sell all my items\l"
+	.string "in order to get it!$"
+
+DewfordTown_House2_Text_ExplainSilkScarf:
+	.string "The SILK SCARF raises the power of\n"
+	.string "NORMAL-type moves.\p"
+	.string "It's a marvelous SCARF that will go\n"
+	.string "with almost all POKéMON!$"
+
+DewfordTown_House2_Text_BrawlySoCool:
+	.string "Wow, you bothered to cross the sea\n"
+	.string "to visit DEWFORD?\p"
+	.string "Did you maybe come here because you\n"
+	.string "heard about BRAWLY?\p"
+	.string "He's so cool…\n"
+	.string "Everyone idolizes him.$"
+
+`
+
+script DewfordTown_OldManGifter{
+    lock
+    faceplayer
+    if (flag(FLAG_DEWFORD_GIFT_MAN)){
+        msgbox(format("Good luck on your journey!"))
+        release
+        end
+    }
+    msgbox(format("I travelled the world when I was young, and received a lot of help."))
+    msgbox(format("Make sure you savor your journey and the gifts you get along the way."))
+
+    if (var(VAR_MONOTYPE) == TYPE_NONE || var(VAR_MONOTYPE) == TYPE_FLYING || var(VAR_MONOTYPE) == TYPE_ICE - 1){
+        msgbox(format("A Delibird helped me across snowy mountains and we've been good fiends. But maybe ..."))
+        msgbox(format("Delibird would be better off travelling some more."))
+        msgbox(format("If you're going to travel across Hoenn, maybe Delibird would do well with you."))
+        msgbox(format("Would you be interested in journeying with Delibird"), MSGBOX_YESNO)
+        if (var(VAR_RESULT) == YES){
+            givemon(SPECIES_DELIBIRD, 15, ITEM_CHERISH_BALL, ITEM_CHERISH_BALL, NATURE_HASTY, 0, 1,
+            0, 0, 0, 0, 0, 0, 20, 22, 30, 26, 24, 20, MOVE_PRESENT, MOVE_ICE_SHARD, MOVE_REVERSAL, MOVE_AIR_CUTTER)
+			playfanfare(MUS_OBTAIN_ITEM)
+			if (var(VAR_RESULT) == MON_GIVEN_TO_PC){
+				msgbox(format("Delibird was sent to the PC!"))
+			}elif (var(VAR_RESULT) == MON_GIVEN_TO_PARTY){
+				msgbox("Received Delibird!")
+			}else{
+				msgbox(format("It seems like that can't take Delibird right now. That's a shame."))
+				release 
+				end
+			}
+            setflag(FLAG_DEWFORD_GIFT_MAN)
+            msgbox(format("Good luck out there!"))
+        }
+        else{
+            msgbox(format("That's a shame. I bet Delibird would love to travel with you."))
+        }
+    }else{
+        msgbox(format("Here, have a token of the wonderful memories I made."))
+        giveitem(ITEM_CHERISH_BALL)
+		if (var(VAR_RESULT) == FALSE){
+    		call(Common_EventScript_ShowBagIsFull)
+    	}else{
+			setflag(FLAG_DEWFORD_GIFT_MAN)
+		}
+        
+        msgbox("Good luck on your journey!")
+    }
+    release
+    end
+}
+
