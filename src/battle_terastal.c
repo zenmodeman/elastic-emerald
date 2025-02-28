@@ -58,6 +58,29 @@ void ApplyBattlerVisualsForTeraAnim(u32 battler)
     BlendPalette(OBJ_PLTT_ID(battler), 16, 16, RGB_WHITEALPHA);
 }
 
+bool32 IsRestrictedModeTeraBanned(u32 battler){
+    u16 species = gBattleMons[battler].species;
+
+    switch(species){
+        case SPECIES_DRAGONITE:
+        case SPECIES_TYRANITAR:
+        case SPECIES_SALAMENCE: //Metagross excused for now
+        case SPECIES_GARCHOMP:
+        case SPECIES_HYDREIGON:
+        //For now, excusing both Goodras, and Kommo-o
+        //Note: Goodra-Hisui will probably be Rock, and Goodra-Unova Water
+        // case SPECIES_GOODRA_HISUI: 
+        // case SPECIES_KOMMO_O:
+        case SPECIES_DRAGAPULT:
+        case SPECIES_BAXCALIBUR:
+        case SPECIES_URSHIFU_SINGLE_STRIKE: case SPECIES_URSHIFU_RAPID_STRIKE:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
+
+
 // Returns whether a battler can Terastallize.
 bool32 CanTerastallize(u32 battler)
 {
@@ -76,6 +99,9 @@ bool32 CanTerastallize(u32 battler)
         // Skip all other checks in this block, go to HasTrainerUsedGimmick
     }
 
+    else if (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeTeraBanned(battler)){
+        return FALSE;
+    }
 
     else if (!CheckBagHasItem(ITEM_TERA_ORB, 1))
     {
