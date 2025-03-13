@@ -2423,12 +2423,83 @@ static u32 getCuratedOrRandomTeraType(u16 species, u32 personality){
         return randomTeraType;
     }
 
+/*
+List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground Flying Psychic Bug Rock Ghost Dragon Dark Steel Fairy Stellar
+*/
+
+/*
+
+| 
+| {{MSP|0501|Oshawott}}{{MSP|0502|Dewott}}{{MSP|0503|Samurott}}{{MSP|0535|Tympole}}{{MSP|0550|Basculin}}{{MSP|0594|Alomomola}}
+| {{MSP|0728|Popplio}}{{MSP|0729|Brionne}}{{MSP|0771|Pyukumuku}}
+| {{MSP|0833|Chewtle}}{{MSP|0846|Arrokuda}}{{MSP|0847|Barraskewda}}
+| {{MSP|0912|Quaxly}}{{MSP|0913|Quaxwell}}{{MSP|0960|Wiglett}}{{MSP|0961|Wugtrio}}{{MSP|0963|Finizen}}{{MSP|0964|Palafin}}{{MSP|0977|Dondozo}}
+*/
+
+
     switch(species){
-        case SPECIES_APPLIN:
-        case SPECIES_FLAPPLE:
-        case SPECIES_APPLETUN:
-        case SPECIES_DIPPLIN:
-        case SPECIES_HYDRAPPLE:
+        //Pure Water Tera Types
+        /*
+            Tera Types to still cover:  Water  Dragon 
+        */  
+        case SPECIES_SQUIRTLE: case SPECIES_WARTORTLE: case SPECIES_BLASTOISE:
+            return TYPE_STEEL;
+        case SPECIES_PSYDUCK:
+            return TYPE_PSYCHIC;
+        case SPECIES_GOLDUCK:
+            return TYPE_ROCK;
+        case SPECIES_POLIWAG: case SPECIES_POLIWHIRL:
+            return TYPE_NORMAL;
+        case SPECIES_POLITOED: 
+            return TYPE_FAIRY;
+        case SPECIES_KRABBY: case SPECIES_KINGLER:
+            return TYPE_STEEL;
+        case SPECIES_GOLDEEN: case SPECIES_SEAKING:
+            return TYPE_FLYING;
+        case SPECIES_MAGIKARP:
+            return TYPE_DRAGON;
+        case SPECIES_VAPOREON:
+            return TYPE_POISON;
+        case SPECIES_TOTODILE: case SPECIES_CROCONAW: case SPECIES_FERALIGATR:
+            return TYPE_DARK;
+        case SPECIES_REMORAID: case SPECIES_OCTILLERY:
+            return TYPE_NORMAL;
+        case SPECIES_SUICUNE:
+            return TYPE_BUG;
+        case SPECIES_WAILMER: case SPECIES_WAILORD:
+            return TYPE_GRASS;
+        case SPECIES_FEEBAS: case SPECIES_MILOTIC:
+            return TYPE_ELECTRIC;
+        case SPECIES_LUVDISC:
+            return TYPE_FAIRY;
+        case SPECIES_HUNTAIL:
+            return TYPE_FIRE;
+        case SPECIES_PIPLUP: case SPECIES_PRINPLUP:
+            return TYPE_ICE;
+        case SPECIES_BUIZEL: case SPECIES_FLOATZEL:
+            return TYPE_GHOST;
+        case SPECIES_SHELLOS:
+            return TYPE_BUG;
+        case SPECIES_FINNEON: case SPECIES_LUMINEON:
+            return TYPE_STELLAR;
+        case SPECIES_PHIONE:
+            return TYPE_WATER;
+        case SPECIES_MANAPHY:
+            return TYPE_BUG;
+        case SPECIES_PANPOUR: case SPECIES_SIMIPOUR:
+            return TYPE_GRASS; //Each elemental monkey will get the tera type of the monkey SE to it
+        case SPECIES_FROAKIE: case SPECIES_FROGADIER: case SPECIES_GRENINJA:
+            return TYPE_ICE;
+        case SPECIES_CLAWITZER:
+            return TYPE_FIGHTING;
+        case SPECIES_WISHIWASHI: 
+            return TYPE_GROUND;
+        case SPECIES_SOBBLE: case SPECIES_DRIZZILE: case SPECIES_INTELEON:
+            return TYPE_DRAGON;
+        case SPECIES_WIGLETT: case SPECIES_WUGTRIO: //Maybe do Tera Water Dugtrio-Alola as a complement
+            return TYPE_STEEL;
+        //Grass
+        case SPECIES_APPLIN: case SPECIES_FLAPPLE: case SPECIES_APPLETUN: case SPECIES_DIPPLIN: case SPECIES_HYDRAPPLE:
             return TYPE_BUG;
         case SPECIES_TREECKO:
             return TYPE_GRASS;
