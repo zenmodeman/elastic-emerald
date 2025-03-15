@@ -10,7 +10,7 @@
 #define WEATHER_FOG_HORIZONTAL          6
 #define WEATHER_VOLCANIC_ASH            7
 #define WEATHER_SANDSTORM               8
-#define WEATHER_FOG_DIAGONAL            9   // Unused
+#define WEATHER_FOG_DIAGONAL            9   // Was formerly unused, but set to Flannery's gym
 #define WEATHER_UNDERWATER              10  // Unused
 #define WEATHER_SHADE                   11  // Original name was closer to WEATHER_CLOUDY/OVERCAST
 #define WEATHER_DROUGHT                 12
