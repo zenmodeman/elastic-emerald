@@ -1,0 +1,148 @@
+raw `
+.set LOCALID_RYUJI, 3
+.set LOCALID_DAICHI, 4
+.set LOCALID_KENJI, 5
+
+GraniteCave_1F_MapScripts::
+	.byte 0
+
+GraniteCave_1F_EventScript_Hiker::
+	lock
+	faceplayer
+	goto_if_set FLAG_RECEIVED_HM_FLASH, GraniteCave_1F_EventScript_ReceivedFlash
+	msgbox GraniteCave_1F_Text_GetsDarkAheadHereYouGo, MSGBOX_DEFAULT
+	giveitem ITEM_HM_FLASH
+	setflag FLAG_RECEIVED_HM_FLASH
+	msgbox GraniteCave_1F_Text_ExplainFlash, MSGBOX_DEFAULT
+	release
+	end
+
+GraniteCave_1F_EventScript_ReceivedFlash::
+	msgbox GraniteCave_1F_Text_ExplainFlash, MSGBOX_DEFAULT
+	release
+	end
+
+GraniteCave_1F_Text_GetsDarkAheadHereYouGo:
+	.string "Hey, you.\n"
+	.string "It gets awfully dark ahead.\l"
+	.string "It'll be tough trying to explore.\p"
+	.string "That guy who came by earlier…\n"
+	.string "STEVEN, I think it was.\p"
+	.string "He knew how to use FLASH, so he ought\n"
+	.string "to be all right, but…\p"
+	.string "Well, for us HIKERS, helping out those\n"
+	.string "that we meet is our motto.\p"
+	.string "Here you go, I'll pass this on to you.$"
+
+GraniteCave_1F_Text_ExplainFlash:
+	.string "Teach that hidden move FLASH to\n"
+	.string "a POKéMON and use it.\p"
+	.string "It lights up even the inky darkness\n"
+	.string "of caves.\p"
+	.string "But, to use it, you need the GYM BADGE\n"
+	.string "from DEWFORD's POKéMON GYM.$"
+`
+
+script GraniteCave_1F_ProtectivePad_Kenji{
+	lock
+	faceplayer
+	if (flag(TRAINER_FLAGS_START + TRAINER_KENJI)){
+        goto(Kenji_Beaten)
+	}
+	msgbox(format("With my Protective Pads, hitting these rocks don't phase me, for me or my Pokemon!"))
+	msgbox(format("I'll show you my pads first hand. How about it?"), MSGBOX_YESNO)
+	if(var(VAR_RESULT) ==1){
+		msgbox(format("Prepare yourself!"))
+		trainerbattle_no_intro(TRAINER_KENJI, format("We got crushed!"))
+		msgbox(format("My Protective Pads weren't enough. I'll have to improve on my other techniques."))
+		msgbox(format("But I'm impressed with your skill. Here, have some Protective Pads yourself."))
+		giveitem(ITEM_PROTECTIVE_PADS)
+		msgbox("I'll go back to improving my skills.")
+		applymovement(LOCALID_KENJI, Common_Movement_FaceOriginalDirection)
+	}else{
+		msgbox("Back to training, then.")
+		applymovement(LOCALID_KENJI, Common_Movement_FaceOriginalDirection)
+	}
+	release
+	end
+}
+script Kenji_Beaten{
+	msgbox(format("I still have more techniques to hone."))
+	applymovement(LOCALID_KENJI, Common_Movement_FaceOriginalDirection)
+	release
+	end
+}
+
+script GraniteCave_1F_MuscleBand_Daichi{
+	lock
+	faceplayer
+	if (flag(TRAINER_FLAGS_START + TRAINER_DAICHI)){
+        goto(Daichi_Beaten)
+	}
+	msgbox(format("My Pokemon and I wear a Muscle Band to show our might. These rocks are nothing!"))
+	msgbox(format("We'll win Pokemon battles too. Wanna see how strong we are?"), MSGBOX_YESNO)
+
+	if(var(VAR_RESULT) ==1){
+		msgbox(format("Let's go!"))
+		trainerbattle_no_intro(TRAINER_DAICHI, format("We need more power!"))
+		msgbox(format("We weren't enough. I'll have to keep getting stronger!"))
+		msgbox(format("But I can see your power. Your Pokemon should wear a Muscle Band too!"))
+		giveitem(ITEM_MUSCLE_BAND)
+		msgbox("I'll go back to getting stronger.")
+		applymovement(LOCALID_DAICHI, Common_Movement_FaceOriginalDirection)
+	}else{
+		msgbox("Okay, I'll get stronger!")
+		applymovement(LOCALID_DAICHI, Common_Movement_FaceOriginalDirection)
+	}
+	release
+	end
+}
+
+script Daichi_Beaten{
+	msgbox(format("I'm going to toughen up!"))
+	applymovement(LOCALID_DAICHI, Common_Movement_FaceOriginalDirection)
+	release
+	end
+}
+
+script GraniteCave_1F_BlackBelt_Leader_Ryuji{
+	lock
+	faceplayer
+	if (!flag(FLAG_BADGE02_GET)){
+		msgbox(format("These rocks are wonderful training. No wonder Brawly became skilled enough to train with Bruno. I strive to beat Brawly one day."))
+		msgbox(format("Now if you'll excuse me, I need to get back to training."))
+		applymovement(LOCALID_RYUJI, Common_Movement_FaceOriginalDirection)
+	}else{
+		if (flag(TRAINER_FLAGS_START + TRAINER_DAICHI) && flag(TRAINER_FLAGS_START + TRAINER_KENJI)){
+			msgbox(format("Wow, you've beaten my students and Brawly too?"))
+			msgbox(format("I'd love to train my duo Pokemon with you. What do you say?"), MSGBOX_YESNO)
+			if(var(VAR_RESULT) ==1){
+				msgbox(format("I'll show you my experience!"))
+				trainerbattle_no_intro(TRAINER_RYUJI, format("As expected of a Knuckle Badge holder!"))
+				msgbox(format("Truly wonderful fighting! You're worthy of a Black Belt"))
+				giveitem(ITEM_BLACK_BELT)
+				msgbox(format("Wear that and stay proud of your strength!"))
+				msgbox(format("My students and I have been training here long enough. We should head somewhere else."))
+				msgbox(format("One day I hope you meet my master. He's a true expert!"))
+				msgbox(format("Farewell!"))
+				fadescreen(FADE_TO_BLACK)
+				setflag(FLAG_HIDE_GRANITE_BLACK_BELTS)
+				removeobject(LOCALID_RYUJI)
+				removeobject(LOCALID_KENJI)
+				removeobject(LOCALID_DAICHI)
+				fadescreen(FADE_FROM_BLACK)
+			}else{
+				msgbox("Too bad, then I'll keep training!")
+				applymovement(LOCALID_RYUJI, Common_Movement_FaceOriginalDirection)
+			}			
+		}
+		else{
+			msgbox(format("Oh, you beat Brawly? You're mighty tough."))
+			msgbox(format("I'm still not done my training, but you might want to fight my students."))
+			applymovement(LOCALID_RYUJI, Common_Movement_FaceOriginalDirection)
+		}
+
+	}
+	release
+	end
+}

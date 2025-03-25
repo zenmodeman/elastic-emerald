@@ -87,8 +87,8 @@
 #define FLAG_UNUSED_0x049    0x49 // Unused Flag
 #define FLAG_UNUSED_0x04A    0x4A // Unused Flag
 #define FLAG_UNUSED_0x04B    0x4B // Unused Flag
-#define FLAG_UNUSED_0x04C    0x4C // Unused Flag
-#define FLAG_DEWFORD_GIFT_MAN              0x4D //Whether the player received a gift from the Dewford Old man
+#define FLAG_HIDE_GRANITE_BLACK_BELTS    0x4C //When the Black Belts are dealt with; formerly un used flag
+#define FLAG_DEWFORD_GIFT_MAN              0x4D //Whether the player received a gift from the Dewford Old man; formerly un used flag
 #define FLAG_RECEIVED_TRAINER_SCHOOL_EGG   0x4E //Whether player has received trainer school egg, formerly un used flag
 #define FLAG_HIDE_AFTER_LECTURE     0x4F // Flag to determine whether the trainer school lecture has happened, formerly un used flag.
 

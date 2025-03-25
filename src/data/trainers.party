@@ -349,7 +349,7 @@ EVs: 28 HP / 32 Def / 28 SpD
 Impish Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
 - Aqua Jet  
-- Circle Throw  
+- Rock Smash
 - Leer  
 - Feint  
 
@@ -6465,64 +6465,105 @@ Mightyena
 Level: 27
 IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
 
-=== TRAINER_CALVIN_3 ===
-Name: CALVIN
-Class: Youngster
-Pic: Youngster
+=== TRAINER_DAICHI ===
+Name: DAICHI
+Class: Black Belt
+Pic: Black Belt
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Swellow
-Level: 28
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
+Crabrawler @ Muscle Band  
+Ability: Hyper Cutter  
+Level: 15  
+Tera Type: Fighting  
+EVs: 20 HP / 31 Atk / 20 Def / 20 SpD  /*Excess Atk EVs for flavor; 4 is the meaningful amount */
+Impish Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Vise Grip  
+- Rock Smash  
+- Leer  
+- Payback  
 
-Mightyena
-Level: 30
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
+Mudbray @ Muscle Band  
+Ability: Inner Focus  
+Level: 15  
+Tera Type: Ground  
+EVs: 20 HP / 47 Atk / 20 Def / 8 SpD   /*Excess Atk EVs for flavor; 20 is the meaningful amount*/
+Careful Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Rock Smash  
+- Stomp  
+- Smack Down  
+- Iron Defense  
 
-=== TRAINER_CALVIN_4 ===
-Name: CALVIN
-Class: Youngster
-Pic: Youngster
+=== TRAINER_KENJI ===
+Name: KENJI
+Class: Black Belt
+Pic: Black Belt
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Swellow
-Level: 31
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Pancham @ Protective Pads  
+Ability: Iron Fist  
+Level: 15  
+Tera Type: Fighting  
+EVs: 43 Atk / 32 Def / 24 Spe  
+Careful Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Arm Thrust  
+- Comet Punch  
+- Power Trip  
+- Work Up  
 
-Linoone
-Level: 29
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Pikipek @ Protective Pads  
+Ability: Skill Link  
+Level: 15  
+Tera Type: Normal  
+EVs: 8 HP / 35 Atk / 20 Def / 20 SpD / 8 Spe  
+Jolly Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Fury Attack  
+- Rock Smash  
+- Pluck  
+- Supersonic  
 
-Mightyena
-Level: 33
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
-
-=== TRAINER_CALVIN_5 ===
-Name: CALVIN
-Class: Youngster
-Pic: Youngster
+=== TRAINER_RYUJI ===
+Name: RYUJI
+Class: Black Belt
+Pic: Black Belt
 Gender: Male
 Music: Male
-Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+Double Battle: Yes
+AI: Smart Trainer
 
-Swellow
-Level: 34
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
 
-Linoone
-Level: 32
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Sawk @ Black Belt  
+Ability: Sturdy  
+Level: 17  
+Tera Type: Fighting  
+EVs: 12 HP / 34 Atk / 12 Def / 12 SpD / 28 Spe  /*Excess Atk EVs for flavor; Meaningful amount is 12 */
+Jolly Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Rock Smash  
+- Low Sweep  
+- Quick Guard  
+- Coaching  
 
-Mightyena
-Level: 36
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Throh @ Black Belt  
+Ability: Guts  
+Level: 17  
+Tera Type: Fighting  
+EVs: 4 HP / 40 Atk / 28 Def / 28 SpD   /*Excess Atk EVs for flavor; Meaningful amount is 20 */
+Impish Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Bulk Up  
+- Seismic Toss  
+- Vital Throw  
+- Rock Smash  
 
 === TRAINER_EDDIE ===
 Name: EDDIE
@@ -6741,9 +6782,28 @@ Music: Hiker
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Tentacool
-Level: 11
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Tentacool @ Honey  
+Ability: Clear Body  
+Level: 14  
+Tera Type: Water  
+EVs: 20 HP / 32 Def / 12 Spe  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Supersonic  
+- Aurora Beam  
+- Acupressure  
+- Bubble Beam  
+
+Inkay @ Grip Claw  
+Ability: Contrary  
+Level: 14  
+Tera Type: Dark  
+EVs: 32 HP / 4 Def / 32 SpD  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Flatter  
+- Topsy-Turvy  
+- Wrap  
+- Liquidation  
+
 
 === TRAINER_DALE ===
 Name: DALE
