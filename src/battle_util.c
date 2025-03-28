@@ -8956,12 +8956,11 @@ u32 GetBattlerWeight(u32 battler)
     }
     else if (ability == ABILITY_LIGHT_METAL){
         weight /= 2;
-        //Ensure 40kg is the maximum for light metal
-        if (weight > 400){
-            weight = 400;
+        //Ensure 50kg is the maximum for light metal
+        if (weight > 500){
+            weight = 500;
         }
     }
-
     if (holdEffect == HOLD_EFFECT_FLOAT_STONE)
         weight /= 2;
 

@@ -21062,7 +21062,33 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .contestCategory = CONTEST_CATEGORY_BEAUTY,
         .contestComboStarterId = 0,
         .battleAnimScript = gBattleAnimMove_GastroAcid,
-        },
+    },
+
+    [MOVE_METAL_RUSH] = {
+        .name = COMPOUND_STRING("Metal Rush"),
+        .description = COMPOUND_STRING(
+            "Slams the foe with its metal\n"
+            "body. Raises speed if light,\n"
+            "lowers foe's speed if heavy"),
+        .effect = EFFECT_HIT, 
+        .power = 75,
+        .type = TYPE_STEEL,
+        .accuracy = 100,
+        .pp = 15,
+        .target = MOVE_TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_PHYSICAL,
+        .makesContact = TRUE,
+        .contestEffect = CONTEST_EFFECT_BADLY_STARTLE_FRONT_MON,
+        .contestCategory = CONTEST_CATEGORY_TOUGH,
+        .contestComboStarterId = 0,
+        .contestComboMoves = {0},
+        .battleAnimScript = gBattleAnimMove_IronHead,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_METAL_RUSH,
+            .chance = 100,
+        }),
+    },
     // Z-Moves
     [MOVE_BREAKNECK_BLITZ] =
     {

@@ -915,9 +915,10 @@
 
 //Add custom moves
 #define MOVE_DRAIN_DOUSE (MOVES_COUNT_OFFICIAL + 0)
+#define MOVE_METAL_RUSH (MOVES_COUNT_OFFICIAL + 1)
 
 //Increment by 1 whenever adding a new custom move
-#define MOVE_COUNT_CUSTOM (MOVES_COUNT_OFFICIAL + 1)
+#define MOVE_COUNT_CUSTOM (MOVES_COUNT_OFFICIAL + 2)
 
 #define MOVES_COUNT         MOVE_COUNT_CUSTOM
 
