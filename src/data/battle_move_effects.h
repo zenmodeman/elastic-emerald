@@ -2240,6 +2240,11 @@ const struct BattleMoveEffect gBattleMoveEffects[NUM_BATTLE_MOVE_EFFECTS] =
         .battleTvScore = 0,
     },
 
+    [EFFECT_METAL_RUSH] = 
+    {
+        .battleScript = BattleScript_EffectHit,
+        .battleTvScore = 0, // TODO: Assign points        
+    },
     [EFFECT_RAPID_SPIN] =
     {
         .battleScript = BattleScript_EffectHit,

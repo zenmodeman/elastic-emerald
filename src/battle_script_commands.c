@@ -3186,14 +3186,14 @@ void SetMoveEffect(bool32 primary, bool32 certain)
     u32 battlerAbility;
     bool8 activateAfterFaint = FALSE;
 
-    //A hacky approach because for some reason, gBattleScripting.moveEffect isn't processing the Metal Rush moveEffect    
-    if (gCurrentMove == MOVE_METAL_RUSH){
+    //A hacky approach because for some reason, gBattleScripting.moveEffect wasn't processing the Metal Rush moveEffect    
+    if (GetMoveEffect(gCurrentMove) == EFFECT_METAL_RUSH){
         if (GetBattlerWeight(gBattlerAttacker) <= 500){
             gBattleScripting.moveEffect = MOVE_EFFECT_SPD_PLUS_1 | MOVE_EFFECT_AFFECTS_USER;
         }else if (GetBattlerWeight(gBattlerAttacker) >= 2000){
-            gBattleScripting.moveEffect = MOVE_EFFECT_SPD_MINUS_1;
+            gBattleScripting.moveEffect = MOVE_EFFECT_DEF_MINUS_1;
         }
-        DebugPrintf("The Metal Rush substitution is reached.");
+        // DebugPrintf("The Metal Rush substitution is reached.");
     }
 
     // NULL move effect
@@ -4094,14 +4094,6 @@ void SetMoveEffect(bool32 primary, bool32 certain)
                     gBattlescriptCurrInstr = BattleScript_SyrupBombActivates;
                 }
                 break;
-            case MOVE_EFFECT_METAL_RUSH:
-                if (GetBattlerWeight(gBattlerAttacker) <= 500){
-                    gBattleScripting.moveEffect = MOVE_EFFECT_SPD_PLUS_1;
-                }else if (GetBattlerWeight(gBattlerAttacker) >= 2000){
-                    gBattleScripting.moveEffect = MOVE_EFFECT_SPD_MINUS_1;
-                }
-                break;
-            
             case MOVE_EFFECT_SECRET_POWER:
                 if (gFieldStatuses & STATUS_FIELD_TERRAIN_ANY)
                 {

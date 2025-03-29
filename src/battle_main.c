@@ -4848,6 +4848,9 @@ s8 GetBattleMovePriority(u32 battler, u16 move)
     {
         priority++;
     }
+    else if (GetMoveEffect(move) == EFFECT_METAL_RUSH && GetBattlerWeight(battler) >= 2000){
+        priority--;
+    }
     else if (ability == ABILITY_TRIAGE && IsHealingMove(move))
         priority += 3;
 

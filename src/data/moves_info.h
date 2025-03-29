@@ -21067,10 +21067,9 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
     [MOVE_METAL_RUSH] = {
         .name = COMPOUND_STRING("Metal Rush"),
         .description = COMPOUND_STRING(
-            "Slams the foe with its metal\n"
-            "body. Raises speed if light,\n"
-            "lowers foe's speed if heavy"),
-        .effect = EFFECT_HIT, 
+            "Slams foe metal body.\n"
+            "Effect based on weight.\n"),
+        .effect = EFFECT_METAL_RUSH, 
         .power = 75,
         .type = TYPE_STEEL,
         .accuracy = 100,
@@ -21085,7 +21084,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .contestComboMoves = {0},
         .battleAnimScript = gBattleAnimMove_IronHead,
         .additionalEffects = ADDITIONAL_EFFECTS({
-            .moveEffect = MOVE_EFFECT_METAL_RUSH,
+            .moveEffect = MOVE_EFFECT_METAL_RUSH, //Currently only being used as a placeholder
             .chance = 100,
         }),
     },
