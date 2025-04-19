@@ -41,12 +41,14 @@ struct AdditionalEffect
 struct MoveInfo
 {
     const u8 *name;
+    //First Word
     const u8 *description;
-    u16 effect;
+    //Second Word
+    u16 effect; 
     u16 type:5;     // Up to 32
     u16 category:2;
     u16 power:9;    // up to 511
-    // end of word
+    // Third word
     u16 accuracy:7;
     u16 target:9;
     u8 pp;
@@ -54,7 +56,7 @@ struct MoveInfo
         u8 effect;
         u8 powerOverride;
     } zMove;
-    // end of word
+    // Fourth Word
     s32 priority:4;
     u32 recoil:7;
     u32 strikeCount:4; // Max 15 hits. Defaults to 1 if not set. May apply its effect on each hit.
@@ -74,7 +76,7 @@ struct MoveInfo
     bool32 ballisticMove:1;
     bool32 powderMove:1;
     bool32 danceMove:1;
-    // end of word
+    // Fifth Word
     bool32 windMove:1;
     bool32 slicingMove:1;
     bool32 healingMove:1;
@@ -110,10 +112,12 @@ struct MoveInfo
     bool32 illuminatingMove:1;
     bool32 enticingMove:1;
     bool32 itemInteractingMove:1;
+    //Sixth Word
+
     bool32 giftingMove:1;
 
-    u32 padding:14;
-    // end of word
+    u32 padding:31;
+    // Seventh Word
 
     union {
         struct {
@@ -131,6 +135,7 @@ struct MoveInfo
         u16 fixedDamage;
         u16 absorbPercentage;
     } argument;
+    //Eight Word
 
     // primary/secondary effects
     const struct AdditionalEffect *additionalEffects;
@@ -140,7 +145,9 @@ struct MoveInfo
     u8 contestCategory:3;
     u8 contestComboStarterId;
     u8 contestComboMoves[MAX_COMBO_MOVES];
+
     const u8 *battleAnimScript;
+
 };
 
 extern const struct MoveInfo gMovesInfo[];

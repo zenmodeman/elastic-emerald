@@ -105,7 +105,7 @@ static const u8 sFeintDescription[] = _(
     "An attack that hits foes\n"
     "using moves like Protect.");
 
-const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
+const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 {
     [MOVE_NONE] =
     {
@@ -9912,7 +9912,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .type = TYPE_NORMAL,
         .accuracy = 0,
         .pp = 20,
-        .target = MOVE_TARGET_SELECTED,
+        .target = MOVE_TARGET_OPPONENT,
         .priority = 0,
         .category = DAMAGE_CATEGORY_STATUS,
         .zMove = { .effect = Z_EFFECT_SPD_UP_2 },

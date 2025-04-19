@@ -1269,7 +1269,7 @@
 	.byte 0xed
 	.endm
 
-	.macro removelightscreenreflect
+	.macro removescreens
 	.byte 0xee
 	.endm
 
@@ -1625,6 +1625,11 @@
 	.4byte \ptr
 	.endm
 
+	.macro undodynamax battler:req
+	callnative BS_UndoDynamax
+	.byte \battler
+	.endm
+
 	.macro trytrainerslidezmovemsg
 	callnative BS_TryTrainerSlideZMoveMsg
 	.endm
@@ -1652,8 +1657,8 @@
 	callnative BS_TryTriggerStatusForm
 	.endm
 
-	.macro setphotongeysercategory
-	callnative BS_SetPhotonGeyserCategory
+	.macro setdynamicmovecategory
+	callnative BS_SetDynamicMoveCategory
 	.endm
 
 	.macro tryupperhand failInstr:req
@@ -2386,6 +2391,10 @@
 	.macro swapstats stat:req
 	callnative BS_SwapStats
 	.byte \stat
+	.endm
+
+	.macro restoresavedmove
+	callnative BS_RestoreSavedMove
 	.endm
 
 @ helpful macros

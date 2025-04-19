@@ -9,6 +9,7 @@
 #define SHOULD_SWITCH_WONDER_GUARD_PERCENTAGE                   100
 #define SHOULD_SWITCH_TRUANT_PERCENTAGE                         100
 #define SHOULD_SWITCH_ALL_MOVES_BAD_PERCENTAGE                  100
+#define STAY_IN_STATS_RAISED                                    2  // Number of stat stages that must be raised across any stats before the AI won't switch mon out in certain cases
 
 // AI smart switching chances; if you want more complex behaviour, modify GetSwitchChance
 #define SHOULD_SWITCH_ABSORBS_MOVE_PERCENTAGE                       100
@@ -44,7 +45,7 @@
 #define SHOULD_SWITCH_REGENERATOR_STATS_RAISED_PERCENTAGE           20
 
 // AI held item-based move scoring
-#define BLUNDER_POLICY_ACCURACY_THRESHOLD                     75 // Moves with accuracy equal below this value are prioritized when holding Blunder Policy  
+#define LOW_ACCURACY_THRESHOLD                                  75 // Moves with accuracy equal OR below this value are considered low accuracy 
 
 // AI prediction chances
 #define PREDICT_SWITCH_CHANCE                                   50

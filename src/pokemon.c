@@ -37,7 +37,6 @@
 #include "recorded_battle.h"
 #include "rtc.h"
 #include "sound.h"
-#include "sprite.h"
 #include "string_util.h"
 #include "strings.h"
 #include "task.h"
@@ -709,6 +708,7 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
 #include "data/pokemon/form_species_tables.h"
 #include "data/pokemon/form_change_tables.h"
 #include "data/pokemon/form_change_table_pointers.h"
+#include "data/object_events/object_event_pic_tables_followers.h"
 
 #include "data/pokemon/species_info.h"
 
@@ -1175,7 +1175,7 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
                 totalRerolls += 1;
             if (I_FISHING_CHAIN && gIsFishingEncounter)
                 totalRerolls += CalculateChainFishingShinyRolls();
-            if (gDexNavBattle)
+            if (gDexNavSpecies)
                 totalRerolls += CalculateDexNavShinyRolls();
 
             while (GET_SHINY_VALUE(value, personality) >= SHINY_ODDS && totalRerolls > 0)
@@ -2010,6 +2010,19 @@ u16 MonTryLearningNewMove(struct Pokemon *mon, bool8 firstMove)
         {
             sLearningMoveTableID++;
             if (learnset[sLearningMoveTableID].move == LEVEL_UP_MOVE_END)
+                return MOVE_NONE;
+        }
+    }
+
+    //  Handler for if Zacian or Zamazenta should learn Iron Head
+    //  since it transforms in the Behemoth Blade/Bash move in
+    //  battle in the Crowned forms.
+    if (learnset[sLearningMoveTableID].move == MOVE_IRON_HEAD && (species == SPECIES_ZAMAZENTA_CROWNED || species == SPECIES_ZACIAN_CROWNED))
+    {
+        for (u32 accessor = MON_DATA_MOVE1; accessor <= MON_DATA_MOVE4; accessor++)
+        {
+            u32 move = GetMonData(mon, accessor);
+            if (move == MOVE_BEHEMOTH_BLADE || move == MOVE_BEHEMOTH_BASH)
                 return MOVE_NONE;
         }
     }
@@ -6376,15 +6389,8 @@ const u8 *GetTrainerPartnerName(void)
 {
     if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)
     {
-        if (gPartnerTrainerId == TRAINER_PARTNER(PARTNER_STEVEN))
-        {
-            return GetTrainerNameFromId(PARTNER_STEVEN);
-        }
-        else
-        {
-            GetFrontierTrainerName(gStringVar1, gPartnerTrainerId);
-            return gStringVar1;
-        }
+        GetFrontierTrainerName(gStringVar1, gPartnerTrainerId);
+        return gStringVar1;
     }
     else
     {

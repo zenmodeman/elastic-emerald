@@ -2372,7 +2372,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 
             if (isDoubleBattle)
             {
-                if (IsHazardMoveEffect(GetMoveEffect(aiData->partnerMove)) // partner is going to set up hazards
+                if (IsHazardMove(aiData->partnerMove) // partner is going to set up hazards
                   && AI_IsFaster(BATTLE_PARTNER(battlerAtk), battlerAtk, aiData->partnerMove)) // partner is going to set up before the potential Defog
                 {
                     ADJUST_SCORE(-10);
@@ -2610,9 +2610,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             break;
         case EFFECT_NATURAL_GIFT:
-            if (aiData->abilities[battlerAtk] == ABILITY_KLUTZ
-              || gFieldStatuses & STATUS_FIELD_MAGIC_ROOM
-              || GetPocketByItemId(gBattleMons[battlerAtk].item) != POCKET_BERRIES)
+            if (!IsBattlerItemEnabled(battlerAtk) || GetPocketByItemId(gBattleMons[battlerAtk].item) != POCKET_BERRIES)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_GRASSY_TERRAIN:
@@ -2719,8 +2717,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             break;
         case EFFECT_EMBARGO:
-            if (aiData->abilities[battlerDef] == ABILITY_KLUTZ
-              || gFieldStatuses & STATUS_FIELD_MAGIC_ROOM
+            if (!IsBattlerItemEnabled(battlerAtk)
               || gDisableStructs[battlerDef].embargoTimer != 0
               || PartnerMoveIsSameAsAttacker(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
                 ADJUST_SCORE(-10);
@@ -2969,7 +2966,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     } // move effect checks
 
     // Choice items
-    if (HOLD_EFFECT_CHOICE(aiData->holdEffects[battlerAtk]) && gBattleMons[battlerAtk].ability != ABILITY_KLUTZ)
+    if (HOLD_EFFECT_CHOICE(aiData->holdEffects[battlerAtk]) && IsBattlerItemEnabled(battlerAtk))
     {
         // Don't use user-target moves ie. Swords Dance, with exceptions
         if ((moveTarget & MOVE_TARGET_USER)
@@ -3678,7 +3675,7 @@ static u32 AI_CalcHoldEffectMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
     {
         u32 moveAcc = aiData->moveAccuracy[battlerAtk][battlerDef][AI_THINKING_STRUCT->movesetIndex];
 
-        if (moveAcc <= BLUNDER_POLICY_ACCURACY_THRESHOLD)
+        if (moveAcc <= LOW_ACCURACY_THRESHOLD)
         {
             ADJUST_SCORE(GOOD_EFFECT);
         }
@@ -3768,6 +3765,12 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     case EFFECT_ABSORB:
         if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT && effectiveness >= UQ_4_12(1.0))
+            ADJUST_SCORE(DECENT_EFFECT);
+        break;
+    case EFFECT_DREAM_EATER:
+    case EFFECT_STRENGTH_SAP:
+    case EFFECT_AQUA_RING:
+        if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_EXPLOSION:
@@ -4114,8 +4117,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_MOONLIGHT:
         if (ShouldRecover(battlerAtk, battlerDef, move, 50))
             ADJUST_SCORE(GOOD_EFFECT);
-        if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT)
-            ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_TOXIC:
     case EFFECT_POISON:
@@ -4214,7 +4215,8 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     case EFFECT_SUBSTITUTE:
     case EFFECT_SHED_TAIL:
-        IncreaseSubstituteMoveScore(battlerAtk, battlerDef, move, &score);
+        ADJUST_SCORE(IncreaseSubstituteMoveScore(battlerAtk, battlerDef, move));
+        break;
     case EFFECT_MIMIC:
         if (AI_IsFaster(battlerAtk, battlerDef, move))
         {
@@ -4231,12 +4233,19 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             break;
         //Regular incentive
         ADJUST_SCORE(WEAK_EFFECT);
-        if (!CanAIFaintTarget(battlerAtk, battlerDef, 2) && AI_RandLessThan(127)){
-            ADJUST_SCORE(WEAK_EFFECT);
+
+        if (!CanAIFaintTarget(battlerAtk, battlerDef, 2)){
+            if (IsBattlerTrapped(battlerDef, FALSE) && aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT && AI_RandLessThan(250)){
+                ADJUST_SCORE(DECENT_EFFECT);
+            }else if ((IsBattlerTrapped(battlerDef, FALSE) || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT) && AI_RandLessThan(200)){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+            
         }
         if (IsBattlerTrapped(battlerDef, FALSE)){
             ADJUST_SCORE(WEAK_EFFECT);
         }
+        if ()
 
         break;
     case EFFECT_HAPPY_HOUR:
@@ -4641,7 +4650,7 @@ case EFFECT_DISABLE:
         {
             if (isDoubleBattle)
             {
-                if (IsHazardMoveEffect(GetMoveEffect(aiData->partnerMove)) // Partner is going to set up hazards
+                if (IsHazardMove(aiData->partnerMove) // Partner is going to set up hazards
                     && AI_IsSlower(battlerAtk, BATTLE_PARTNER(battlerAtk), move)) // Partner going first
                     break; // Don't use Defog if partner is going to set up hazards
             }
@@ -6070,7 +6079,7 @@ static s32 AI_Risky(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     return score;
 }
 
-// Adds score bonus to best powered move
+// Adds score bonus to OHKOs and 2HKOs
 static s32 AI_TryTo2HKO(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
