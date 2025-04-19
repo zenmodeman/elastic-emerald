@@ -4823,6 +4823,8 @@ u32 IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
         scoreIncrease += WEAK_EFFECT;
         if ( AI_DATA->holdEffects[battlerAtk] == HOLD_EFFECT_EVASION_UP && AI_RandLessThan(127)){
             scoreIncrease += WEAK_EFFECT;
+        }
+    }
     return scoreIncrease;
 }
 
@@ -4848,6 +4850,4 @@ bool32 IsBattlerItemEnabled(u32 battler)
     if (gBattleMons[battler].ability == ABILITY_KLUTZ && !(gStatuses3[battler] & STATUS3_GASTRO_ACID))
         return FALSE;
     return TRUE;
-        }
-    }
 }

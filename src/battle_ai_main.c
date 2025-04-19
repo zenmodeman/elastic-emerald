@@ -4245,7 +4245,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         if (IsBattlerTrapped(battlerDef, FALSE)){
             ADJUST_SCORE(WEAK_EFFECT);
         }
-        if ()
 
         break;
     case EFFECT_HAPPY_HOUR:
