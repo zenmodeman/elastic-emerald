@@ -1101,7 +1101,7 @@
 #define FLAG_ITEM_RUSTURF_TUNNEL_REPEAT_BALL                        0x418
 #define FLAG_ITEM_RUSTURF_TUNNEL_MAX_ETHER                          0x419
 #define FLAG_ITEM_GRANITE_CAVE_1F_ESCAPE_ROPE                       0x41A
-#define FLAG_ITEM_GRANITE_CAVE_B1F_POKE_BALL                        0x41B
+#define FLAG_ITEM_GRANITE_CAVE_B1F_FLOAT_STONE                      0x41B
 #define FLAG_ITEM_MT_PYRE_5F_LAX_INCENSE                            0x41C
 #define FLAG_ITEM_GRANITE_CAVE_B2F_REPEL                            0x41D
 #define FLAG_ITEM_GRANITE_CAVE_B2F_RARE_CANDY                       0x41E
@@ -1225,7 +1225,7 @@
 #define FLAG_ITEM_OLDALE_RUINS_1F_ABILITY_CAPSULE                   0x493 // Formerly un used flag
 #define FLAG_ITEM_PETALBURG_GROVE_BALM_MUSHROOM                     0x494 // Formerly un used flag
 #define FLAG_ITEM_SANDFRONT_ICY_ROCK                                0x495 // Formerly un used flag
-#define FLAG_UNUSED_0x496                                           0x496 // Unused Flag
+#define FLAG_ITEM_GRANITE_ROCK_GEMS                                 0x496 // Unused Flag
 #define FLAG_UNUSED_0x497                                           0x497 // Unused Flag
 #define FLAG_UNUSED_0x498                                           0x498 // Unused Flag
 #define FLAG_UNUSED_0x499                                           0x499 // Unused Flag

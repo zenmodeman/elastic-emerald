@@ -1238,7 +1238,6 @@ AI: Smart Trainer
 Noibat @ Leftovers  
 Ability: Frisk  
 Level: 17  
-Tera Type: Flying  
 EVs: 12 HP / 16 Atk / 28 Def / 12 SpD  
 Quirky Nature  
 IVs: 12 HP / 12 Def / 12 SpA / 12 SpD / 12 Spe  
@@ -3346,9 +3345,16 @@ Music: Intense
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Machop
-Level: 13
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+Machop @ Iapapa Berry  
+Ability: Guts  
+Level: 15  
+EVs: 48 HP / 48 Def / 8 SpD  
+Impish Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Bide  
+- Karate Chop  
+- Heavy Slam  
+- Encore 
 
 === TRAINER_HITOSHI ===
 Name: HITOSHI
@@ -6477,7 +6483,6 @@ AI: Smart Trainer
 Crabrawler @ Muscle Band  
 Ability: Hyper Cutter  
 Level: 15  
-Tera Type: Fighting  
 EVs: 20 HP / 31 Atk / 20 Def / 20 SpD  /*Excess Atk EVs for flavor; 4 is the meaningful amount */
 Impish Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -6489,7 +6494,6 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 Mudbray @ Muscle Band  
 Ability: Inner Focus  
 Level: 15  
-Tera Type: Ground  
 EVs: 20 HP / 47 Atk / 20 Def / 8 SpD   /*Excess Atk EVs for flavor; 20 is the meaningful amount*/
 Careful Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -6510,7 +6514,6 @@ AI: Smart Trainer
 Pancham @ Protective Pads  
 Ability: Iron Fist  
 Level: 15  
-Tera Type: Fighting  
 EVs: 43 Atk / 32 Def / 24 Spe  
 Careful Nature  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -6522,7 +6525,6 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 Pikipek @ Protective Pads  
 Ability: Skill Link  
 Level: 15  
-Tera Type: Normal  
 EVs: 8 HP / 35 Atk / 20 Def / 20 SpD / 8 Spe  
 Jolly Nature  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
@@ -6544,7 +6546,6 @@ AI: Smart Trainer
 Sawk @ Black Belt  
 Ability: Sturdy  
 Level: 17  
-Tera Type: Fighting  
 EVs: 12 HP / 34 Atk / 12 Def / 12 SpD / 28 Spe  /*Excess Atk EVs for flavor; Meaningful amount is 12 */
 Jolly Nature  
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
@@ -6556,7 +6557,6 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 Throh @ Black Belt  
 Ability: Guts  
 Level: 17  
-Tera Type: Fighting  
 EVs: 4 HP / 40 Atk / 28 Def / 28 SpD   /*Excess Atk EVs for flavor; Meaningful amount is 20 */
 Impish Nature  
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
@@ -6785,7 +6785,6 @@ AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mo
 Tentacool @ Honey  
 Ability: Clear Body  
 Level: 14  
-Tera Type: Water  
 EVs: 20 HP / 32 Def / 12 Spe  
 IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
 - Supersonic  
@@ -6796,7 +6795,6 @@ IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 Inkay @ Grip Claw  
 Ability: Contrary  
 Level: 14  
-Tera Type: Dark  
 EVs: 32 HP / 4 Def / 32 SpD  
 IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
 - Flatter  
@@ -8249,9 +8247,29 @@ Music: Intense
 Double Battle: No
 AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
 
-Meditite
-Level: 13
-IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
+Crabrawler @ Shell Bell  
+Ability: Hyper Cutter  
+Level: 16  
+EVs: 16 HP / 34 Atk / 32 Def  /*Excess Attack EVs*/
+Impish Nature  
+IVs: 15 HP / 18 Atk / 16 Def / 15 SpA / 15 SpD / 15 Spe  
+- Upper Hand  
+- Liquidation  
+- Reversal  
+- Dizzy Punch
+
+Timburr @ Silk Scarf  
+Ability: Guts  
+Level: 16  
+EVs: 16 HP / 38 Atk / 24 Def  /*Excess Attack EVs*/
+Adamant Nature  
+IVs: 15 HP / 18 Atk / 16 Def / 15 SpA / 15 SpD / 15 Spe  
+- Force Palm  
+- Smelling Salts  
+- Payback  
+- Helping Hand
+
+
 
 === TRAINER_LAURA ===
 Name: LAURA
@@ -8260,11 +8278,18 @@ Pic: Battle Girl
 Gender: Female
 Music: Intense
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Meditite
-Level: 13
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+Farfetch’d-Galar @ Stick  
+Ability: Scrappy  
+Level: 15  
+EVs: 32 HP / 36 Atk / 32 Def  
+Impish Nature  
+IVs: 15 HP / 16 Def / 15 SpA / 15 SpD / 15 Spe  
+- Counter  
+- Feint  
+- Peck  
+- Leer
 
 === TRAINER_CYNDY_1 ===
 Name: CYNDY
@@ -11037,11 +11062,18 @@ Pic: Sailor
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Machop
-Level: 13
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+Croagunk @ Oran Berry  
+Ability: Anticipation  
+Level: 15  
+EVs: 40 Atk / 20 Def / 20 SpD  
+Hardy Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Mud-Slap  
+- Poison Sting  
+- Astonish  
+- Taunt
 
 === TRAINER_LILITH ===
 Name: LILITH
@@ -11050,11 +11082,18 @@ Pic: Battle Girl
 Gender: Female
 Music: Intense
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Meditite
-Level: 13
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+Riolu @ Micle Berry  
+Ability: Prankster  
+Level: 15  
+EVs: 20 HP / 20 Atk / 36 SpA / 20 Spe  
+Serious Nature  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Me First  
+- Mind Reader  
+- Focus Blast  
+- Iron Tail
 
 === TRAINER_CRISTIAN ===
 Name: CRISTIAN
@@ -11063,11 +11102,29 @@ Pic: Black Belt
 Gender: Male
 Music: Intense
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Makuhita
-Level: 13
-IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+Sneasel-Hisui @ Payapa Berry  
+Ability: Pickpocket  
+Level: 16  
+EVs: 28 HP / 34 Atk / 36 Spe  /*Excess Atk EVs by 6 points*/
+Careful Nature  
+IVs: 15 HP / 16 Atk / 15 Def / 15 SpA / 15 SpD / 18 Spe  
+- Fake Out  
+- Coaching  
+- Trailblaze  
+- Rock Smash
+
+Mankey @ Loaded Dice  
+Ability: Vital Spirit  
+Level: 16  
+EVs: 20 HP / 36 Atk / 44 Spe  /*Excess Atk EVs by 12 points*/
+Jolly Nature  
+IVs: 15 HP / 16 Atk / 15 Def / 15 SpA / 15 SpD / 18 Spe  
+- Foresight  
+- Power-Up Punch  
+- Fury Swipes  
+- Swagger
 
 === TRAINER_SYLVIA ===
 Name: SYLVIA

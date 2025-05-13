@@ -2701,7 +2701,7 @@ const struct Item gItemsInfo[] =
     [ITEM_COMET_SHARD] =
     {
         .name = _("Comet Shard"),
-        .price = (I_PRICE <= GEN_5) ? 0 : ((I_PRICE == GEN_6) ? 30000 : ((I_PRICE == GEN_7) ? 60000 : 25000 * TREASURE_FACTOR)),
+        .price = 60000,
         .description = COMPOUND_STRING(
             "A comet's shard.\n"
             "It would sell for a\n"
