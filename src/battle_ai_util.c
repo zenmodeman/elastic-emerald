@@ -1216,6 +1216,72 @@ bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
     return FALSE;
 }
 
+
+static s8 GetStatStageDifference(s8 statDelta, s8 monStatStage){
+    s8 resultantStat = monStatStage + statDelta;
+    if (resultantStat > MAX_STAT_STAGE){
+        statDelta -= (resultantStat - MAX_STAT_STAGE);
+    }else if (resultantStat < MIN_STAT_STAGE){
+        statDelta += (MIN_STAT_STAGE - resultantStat);
+    }
+    return statDelta;
+}
+
+//Applies simulated that changes that SHOULD be later reversed by ReverseSimulatedStatChanges
+struct StatsDelta ApplySimulatedStatChanges(u32 battlerAtk, u32 battlerDef, struct StatsDelta requestedStatChanges){
+    struct StatsDelta workingStatChanges = requestedStatChanges;
+    u32 targetAbility = GetBattlerAbility(battlerDef);
+    u32 mulValue = 1;
+
+    if (targetAbility == ABILITY_SIMPLE && !DoesBattlerIgnoreAbilityChecks(battlerAtk, GetBattlerAbility(battlerAtk), MOVE_IRRELEVANT)){
+        mulValue = 2;
+    }
+
+    //Modifying Working Stat Changes so that it can be passed for reversal sake
+
+    workingStatChanges.atk      = GetStatStageDifference(workingStatChanges.atk * mulValue, gBattleMons[battlerDef].statStages[STAT_ATK]);
+    gBattleMons[battlerDef].statStages[STAT_ATK] += workingStatChanges.atk;
+
+    workingStatChanges.def      = GetStatStageDifference(workingStatChanges.def * mulValue, gBattleMons[battlerDef].statStages[STAT_DEF]);
+    gBattleMons[battlerDef].statStages[STAT_DEF] += workingStatChanges.def;
+
+    workingStatChanges.speed      = GetStatStageDifference(workingStatChanges.speed * mulValue, gBattleMons[battlerDef].statStages[STAT_SPEED]);
+    gBattleMons[battlerDef].statStages[STAT_SPEED] += workingStatChanges.speed;    
+
+    workingStatChanges.spAtk      = GetStatStageDifference(workingStatChanges.spAtk * mulValue, gBattleMons[battlerDef].statStages[STAT_SPATK]);
+    gBattleMons[battlerDef].statStages[STAT_SPATK] += workingStatChanges.spAtk;   
+
+    workingStatChanges.spDef      = GetStatStageDifference(workingStatChanges.spDef * mulValue, gBattleMons[battlerDef].statStages[STAT_SPDEF]);
+    gBattleMons[battlerDef].statStages[STAT_SPDEF] += workingStatChanges.spDef;
+
+    workingStatChanges.accuracy      = GetStatStageDifference(workingStatChanges.accuracy * mulValue, gBattleMons[battlerDef].statStages[STAT_ACC]);
+    gBattleMons[battlerDef].statStages[STAT_ACC] += workingStatChanges.accuracy; 
+
+    workingStatChanges.evasion      = GetStatStageDifference(workingStatChanges.evasion * mulValue, gBattleMons[battlerDef].statStages[STAT_EVASION]);
+    gBattleMons[battlerDef].statStages[STAT_EVASION] += workingStatChanges.evasion;    
+
+    return workingStatChanges;
+} 
+
+//This function does not do any checks, since the simulation function has already checked that the stat changes are valid.
+//This just aims to restore the stats to what they were beforehand
+void ReverseSimulatedStatChanges(u32 battler, struct StatsDelta statChangesMade){
+    gBattleMons[battler].statStages[STAT_ATK] -= statChangesMade.atk;
+
+    gBattleMons[battler].statStages[STAT_DEF] -= statChangesMade.def;
+
+    gBattleMons[battler].statStages[STAT_SPATK] -= statChangesMade.spAtk;   
+
+    gBattleMons[battler].statStages[STAT_SPDEF] -= statChangesMade.spDef;
+
+    gBattleMons[battler].statStages[STAT_SPEED] -= statChangesMade.speed;    
+
+    gBattleMons[battler].statStages[STAT_ACC] -= statChangesMade.accuracy; 
+
+    gBattleMons[battler].statStages[STAT_EVASION] -= statChangesMade.evasion;    
+
+}
+
 u32 NoOfHitsForTargetToFaintAI(u32 battlerDef, u32 battlerAtk)
 {
     u32 i;

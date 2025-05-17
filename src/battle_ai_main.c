@@ -32,6 +32,7 @@
 #define AI_ACTION_WATCH         (1 << 2)
 #define AI_ACTION_DO_NOT_ATTACK (1 << 3)
 
+
 #define MIN_SWITCHES_FOR_PREDICTION 2
 
 #define ONLY_ONE_TARGET 100
@@ -71,6 +72,7 @@ static bool32 ShouldPenalizeNonImmuneMove(u32 battlerAtk, u32 battlerDef, u32 mo
 static bool32 DoesBattlerPreferDamagingOtherTarget(u32 battlerAtk, u32 battlerDef);
 static u8 GetTargetToKOInDoubles(u8 battler);
 static u8 FindSpeedTargetPreference(u8 battler);
+static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef);
 
 static s32 AI_PredictSwitch(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 
@@ -2085,10 +2087,9 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_COACHING:
-            if (!isDoubleBattle
-              || !IsBattlerAlive(BATTLE_PARTNER(battlerAtk))){
+            if (GetBattlerSide(battlerAtk) != GetBattlerSide(battlerDef)){
                 ADJUST_SCORE(-10);
-              }
+            }
             break;
         case EFFECT_TRICK:
         //Don't disincentivize Knock Off if it still does more damage
@@ -2993,6 +2994,19 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     return score;
 }
 
+static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef){
+
+    //The IsBattlerAlive check is mainly to simplify double battle inputs
+    if (IsBattlerAlive(battlerAtk) && CanTargetFaintAi(battlerAtk, battlerDef) 
+        && AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT))
+        {
+            return TRUE;
+
+        }
+    return FALSE;
+}
+
+
 static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
     u32 movesetIndex = AI_THINKING_STRUCT->movesetIndex;
@@ -3305,6 +3319,56 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 }
                 break;
             case EFFECT_COACHING:
+                {
+                    u32 battlerPartner = BATTLE_PARTNER(battlerAtk);
+                    if (GetBattlerAbility(battlerPartner) == ABILITY_CONTRARY && 
+                    !DoesBattlerIgnoreAbilityChecks(battlerAtk, GetBattlerAbility(battlerAtk), MOVE_IRRELEVANT)){
+                        ADJUST_SCORE(-10);
+                        break;
+                    }
+                    u32 playerOpposite = BATTLE_OPPOSITE(battlerAtk);
+                    u32 playerPartner = BATTLE_PARTNER(playerOpposite);
+                    // bool32 statShifted = FALSE;
+
+                    struct StatsDelta coachingStatChanges = {.atk = 1,.def = 1};
+                    // DebugPrintf("Coaching Atk, Def, Speed: %d, %d, %d", coachingStatChanges.atk, coachingStatChanges.def, coachingStatChanges.speed);
+                    struct  StatsDelta changesToReverse = {};
+
+                    //If an opposing Pokemon can land a KO on the partner before the coaching mon can move,
+                    //No need to calculate Coaching boosts
+                    if ((BattlerHasFastKill(playerOpposite, battlerPartner)) && !AI_IsFaster(battlerAtk, playerOpposite, move)){
+                       ADJUST_SCORE(-10);
+                       break; 
+                    }
+                    if ((BattlerHasFastKill(playerPartner, battlerPartner)) && !AI_IsFaster(battlerAtk, playerPartner, move)){
+                       ADJUST_SCORE(-10);
+                       break; 
+                    }
+                    //Temporarily apply Coaching buff
+                    changesToReverse = ApplySimulatedStatChanges(battlerAtk, battlerPartner, coachingStatChanges);
+                    // DebugPrintf("Temporary Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
+                    //     gBattleMons[battlerDef].statStages[STAT_SPEED]);
+        
+                    // if (gBattleMons[battlerPartner].statStages[STAT_DEF] <= MAX_STAT_STAGE){
+                    //     gBattleMons[battlerPartner].statStages[STAT_DEF] += 1; 
+                    //     statShifted = TRUE;
+                    // }
+                    if(BattlerHasFastKill(playerOpposite, battlerPartner)){
+                    ADJUST_SCORE(-5);
+                    }if(BattlerHasFastKill(playerPartner, battlerPartner)){
+                    ADJUST_SCORE(-5);
+                    }
+
+                    //Reverse temporary Coaching buff
+
+                    ReverseSimulatedStatChanges(battlerDef, changesToReverse);
+                    // DebugPrintf("Reversed Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
+                        gBattleMons[battlerDef].statStages[STAT_SPEED]);
+                    // if (statShifted){
+                    //     gBattleMons[battlerPartner].statStages[STAT_DEF] -=1;
+                    // }
+                }
+                
                 //May want to add future logic involving the player having physical attackers
                 if (aiData->hpPercents[battlerAtkPartner] >= 50){
                     ADJUST_SCORE(WEAK_EFFECT);
@@ -3582,7 +3646,7 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                 return score;
             }
             if (moves[i] == 664 && gBattleMons[battlerDef].species == SPECIES_BEAUTIFLY){
-            DebugPrintf("Code below DoesBattlerPreferDamagingOtherTarget has been reached for %d, %d", battlerAtk, battlerDef);
+            // DebugPrintf("Code below DoesBattlerPreferDamagingOtherTarget has been reached for %d, %d", battlerAtk, battlerDef);
             }
 
             noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i);

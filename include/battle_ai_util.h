@@ -8,6 +8,9 @@
 #define MIN_ROLL_PERCENTAGE DMG_ROLL_PERCENT_LO
 #define DMG_ROLL_PERCENTAGE ((MAX_ROLL_PERCENTAGE + MIN_ROLL_PERCENTAGE + 1) / 2) // Controls the damage roll the AI sees for the default roll. By default the 9th roll is seen
 
+
+#define MOVE_IRRELEVANT MOVE_CONSTRICT
+
 enum DamageRollType
 {
     DMG_ROLL_LOWEST,
@@ -22,7 +25,17 @@ enum AIPivot
     SHOULD_PIVOT,
 };
 
-//Some of the non-static helper functions I added
+struct StatsDelta{
+    s8 atk;
+    s8 def;
+    s8 speed;
+    s8 spAtk;
+    s8 spDef;
+    s8 accuracy;
+    s8 evasion;
+};
+
+//Some of the custom non-static helper functions I added
 bool32 HasMinimizeDoubleMove(u32 battlerId);
 u32 GetStatusMoveCount(u32 battler);
 bool32 HasNoMovesKnown(u32 battler);
@@ -38,6 +51,8 @@ uq4_12_t GetAtkSpAtkGapThreshold(u32 battlerDef);
 bool32 DoesBattlerTypeMatchMove(u32 battler, u32 move);
 bool32 OnlyOnePlayerDoublesMon();
 u32 GetConsecutiveMoveEffectUse(u32 battler, u32 moveEffect);
+struct StatsDelta ApplySimulatedStatChanges(u32 battlerAtk, u32 battlerDef, struct StatsDelta requestedStatChanges);
+void ReverseSimulatedStatChanges(u32 battler, struct StatsDelta statChangesMade);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);
