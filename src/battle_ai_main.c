@@ -2084,6 +2084,12 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
               || gBattleStruct->monToSwitchIntoId[BATTLE_PARTNER(battlerAtk)] != PARTY_SIZE) //Partner is switching out.
                 ADJUST_SCORE(-10);
             break;
+        case EFFECT_COACHING:
+            if (!isDoubleBattle
+              || !IsBattlerAlive(BATTLE_PARTNER(battlerAtk))){
+                ADJUST_SCORE(-10);
+              }
+            break;
         case EFFECT_TRICK:
         //Don't disincentivize Knock Off if it still does more damage
         // case EFFECT_KNOCK_OFF:
@@ -3298,6 +3304,19 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     RETURN_SCORE_PLUS(WEAK_EFFECT);
                 }
                 break;
+            case EFFECT_COACHING:
+                //May want to add future logic involving the player having physical attackers
+                if (aiData->hpPercents[battlerAtkPartner] >= 50){
+                    ADJUST_SCORE(WEAK_EFFECT);
+                    if (HasMoveWithCategory(battlerAtkPartner, DAMAGE_CATEGORY_PHYSICAL) && AI_RandLessThan(127)){
+                        if (gBattleMons[battlerAtkPartner].statStages[STAT_ATK] <= DEFAULT_STAT_STAGE){
+                            ADJUST_SCORE(DECENT_EFFECT); //Give a higher score if the partner isn't already boosted
+                        }else{
+                            ADJUST_SCORE(WEAK_EFFECT);
+                        }
+                    }
+                }
+                return score;
             case EFFECT_PURIFY:
                 if (gBattleMons[battlerAtkPartner].status1 & STATUS1_ANY)
                 {
@@ -3550,15 +3569,20 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
         if (moves[i] != MOVE_NONE && GetMovePower(moves[i]) != 0)
         {
             // DebugPrintf("For move %d, the tentative score is %d", moves[i], tentativeScores[i]);
-            //POTENTIALLY SCRAP below
+            
             //Idea is that if the effect score is disincentivized, don't factor it in best number of hits
-            if (tentativeScores[i] < 100){
+            if (tentativeScores[i] < AI_SCORE_DEFAULT){
+                //Just set viableMoveScore to its score, since it will natively be below the default scoring.
+                viableMoveScores[i] = tentativeScores[i];
                 continue;
             }
 
             //Currently skip incentives if the other target is just superior
             if (DoesBattlerPreferDamagingOtherTarget(battlerAtk, battlerDef)){
                 return score;
+            }
+            if (moves[i] == 664 && gBattleMons[battlerDef].species == SPECIES_BEAUTIFLY){
+            DebugPrintf("Code below DoesBattlerPreferDamagingOtherTarget has been reached for %d, %d", battlerAtk, battlerDef);
             }
 
             noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i);
@@ -3642,6 +3666,7 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                 }
             }
         }
+
         // Turns out the current move deals the most dmg compared to the other 3.
         if (!multipleBestMoves)
             ADJUST_SCORE(BEST_DAMAGE_MOVE);
