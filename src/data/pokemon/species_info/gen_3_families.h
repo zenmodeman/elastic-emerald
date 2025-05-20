@@ -7012,7 +7012,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sSpoinkLevelUpLearnset,
         .teachableLearnset = sSpoinkTeachableLearnset,
         .eggMoveLearnset = sSpoinkEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_GRUMPIG}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 26, SPECIES_GRUMPIG}),
     },
 
     [SPECIES_GRUMPIG] =
@@ -7471,7 +7471,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sCacneaLevelUpLearnset,
         .teachableLearnset = sCacneaTeachableLearnset,
         .eggMoveLearnset = sCacneaEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_CACTURNE}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 26, SPECIES_CACTURNE}),
     },
 
     [SPECIES_CACTURNE] =
@@ -9397,7 +9397,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .baseDefense   = 35,
         .baseSpeed     = 45,
         .baseSpAttack  = 63,
-        .baseSpDefense = 33,
+        .baseSpDefense = 43, //+10
         .types = MON_TYPES(TYPE_GHOST),
         .catchRate = 225,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 59 : 97,
@@ -9475,7 +9475,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .baseDefense   = 65,
         .baseSpeed     = 65,
         .baseSpAttack  = 83,
-        .baseSpDefense = 73,
+        .baseSpDefense = 73, //+10
         .types = MON_TYPES(TYPE_GHOST),
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 159 : 179,
@@ -10320,8 +10320,8 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sSnoruntLevelUpLearnset,
         .teachableLearnset = sSnoruntTeachableLearnset,
         .eggMoveLearnset = sSnoruntEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 42, SPECIES_GLALIE},
-                                {EVO_ITEM_FEMALE, ITEM_DAWN_STONE, SPECIES_FROSLASS}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_GLALIE}, //-10 levels
+                                 {EVO_ITEM_FEMALE, ITEM_DAWN_STONE, SPECIES_FROSLASS}),
     },
 
     [SPECIES_GLALIE] =
