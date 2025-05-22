@@ -1600,6 +1600,7 @@ extern const u8 gText_DoWhatWithMail[];
 extern const u8 gText_AlreadyHoldingOne[];
 extern const u8 gText_WhichAppliance[];
 extern const u8 gText_NoUse[];
+extern const u8 gText_NotReady[];
 extern const u8 gText_Able[];
 extern const u8 gText_First_PM[];
 extern const u8 gText_Second_PM[];

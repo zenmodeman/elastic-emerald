@@ -2218,7 +2218,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Traps the foe in a ring of\n"
             "fire for "BINDING_TURNS" turns."),
         .effect = EFFECT_HIT,
-        .power = 35
+        .power = 35,
         .type = TYPE_FIRE,
         .accuracy = 95,
         .pp = 15,
@@ -7653,7 +7653,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Straight-arm punches that\n"
             "strike the foe 2 to 5 times."),
         .effect = EFFECT_MULTI_HIT,
-        .power = 20,
+        .power = 25,
         .type = TYPE_FIGHTING,
         .accuracy = 100,
         .pp = 20,
@@ -16515,7 +16515,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "An intense kick from the\n"
             "tropics. Lowers Attack."),
         .effect = EFFECT_HIT,
-        .power = 70,
+        .power = 80,
         .type = TYPE_GRASS,
         .accuracy = 100,
         .pp = 15,

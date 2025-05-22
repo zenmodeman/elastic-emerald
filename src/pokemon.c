@@ -3904,6 +3904,30 @@ s32 GetEVStatCap(void){
     }
 }
 
+//Returns True if the evolution is prevented by Restricted Mode conditions, False otherwise.
+//This is mainly used for cases where an alternate message should be sent. 
+//For things like friendship evos, those can be handled in the direct evolution logic.
+bool32 DoesNotMeetRestrictedEvoConditions(struct Pokemon *mon, u16 item){    
+    u8 level =  GetMonData(mon, MON_DATA_LEVEL, 0);
+    u32 species = GetMonData(mon, MON_DATA_SPECIES);
+
+    // DebugPrintf("DoesNotMeetRestrictedEvoConditions is called for species %d with level %d", species, level);
+    
+    if (!FlagGet(FLAG_RESTRICTED_MODE)){
+        return FALSE; //Checks don't matter if not in Restricted Mode
+    }
+
+    switch (species){
+        case SPECIES_SLOWPOKE: case SPECIES_SLOWBRO_GALAR:
+            if (level < 30) return TRUE;
+            break;
+        case SPECIES_NIDORINO : case SPECIES_NIDORINA:
+            if (level < 25) return TRUE;
+        default:
+            return FALSE;
+    }
+    return FALSE;
+}
 
 // Returns TRUE if the item has no effect on the Pokémon, FALSE otherwise
 bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex, bool8 usedByAI)
@@ -4208,7 +4232,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         {
                             u16 targetSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_ITEM_USE, item, NULL);
 
-                            if (targetSpecies != SPECIES_NONE)
+                            if (targetSpecies != SPECIES_NONE && !DoesNotMeetRestrictedEvoConditions(mon, item))
                             {
                                 BeginEvolutionScene(mon, targetSpecies, FALSE, partyIndex);
                                 return FALSE;
@@ -4669,7 +4693,8 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
             {
             case EVO_FRIENDSHIP:
                 if (FlagGet(FLAG_RESTRICTED_MODE)){
-                    if (species == SPECIES_WOOBAT && level < 18){
+                    if ((species == SPECIES_WOOBAT || species == SPECIES_SNOM) 
+                        && level < 18){
                         break;
                     }
                 }
@@ -4929,11 +4954,10 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
             case EVO_OVERWORLD_STEPS:
                 if (mon == GetFirstLiveMon() && gFollowerSteps >= evolutions[i].param){
                     level = GetMonData(mon, MON_DATA_LEVEL, 0);
-                    //Level guards for the Let's Go mons
-                    if (
-                        (species == SPECIES_RELLOR && level < 20)
-                        || (species == SPECIES_PAWMO && level < 30)
-                        || (species == SPECIES_BRAMBLIN && level < 25)
+                    //Level guards for the these mons
+                    if (FlagGet(FLAG_RESTRICTED_MODE) && 
+                        ((species == SPECIES_RELLOR && level < 20)
+                        || ((species == SPECIES_PAWMO || species == SPECIES_BRAMBLIN) && level < 25))
                     ){
                         break;
                     }

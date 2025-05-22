@@ -1147,6 +1147,7 @@ static void DisplayPartyPokemonDataForBattlePyramidHeldItem(u8 slot)
         DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_DONT_HAVE);
 }
 
+
 // Returns TRUE if teaching move or cant evolve with item (i.e. description data is shown), FALSE otherwise
 static bool8 DisplayPartyPokemonDataForMoveTutorOrEvolutionItem(u8 slot)
 {
@@ -1171,8 +1172,16 @@ static bool8 DisplayPartyPokemonDataForMoveTutorOrEvolutionItem(u8 slot)
             DisplayPartyPokemonDataToTeachMove(slot, ItemIdToBattleMoveId(item));
             break;
         case 2: // Evolution stone
-            if (!GetMonData(currentPokemon, MON_DATA_IS_EGG) && GetEvolutionTargetSpecies(currentPokemon, EVO_MODE_ITEM_CHECK, item, NULL) != SPECIES_NONE)
+            if (!GetMonData(currentPokemon, MON_DATA_IS_EGG) && GetEvolutionTargetSpecies(currentPokemon, EVO_MODE_ITEM_CHECK, item, NULL) != SPECIES_NONE){
+                
+                //Display a "Not Ready" message if the evolution is valid, but Restricted Mode conditions are not met 
+                if (DoesNotMeetRestrictedEvoConditions(currentPokemon, item)){
+                    DebugPrintf("The Not Ready block is reached.");
+                    DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NOT_READY);
+                    return TRUE;
+                }
                 return FALSE;
+            }
             DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NO_USE);
             break;
         }
