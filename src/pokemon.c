@@ -4693,7 +4693,7 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
             {
             case EVO_FRIENDSHIP:
                 if (FlagGet(FLAG_RESTRICTED_MODE)){
-                    if ((species == SPECIES_WOOBAT || species == SPECIES_SNOM) 
+                    if ((species == SPECIES_WOOBAT || species == SPECIES_SNOM || species == SPECIES_CHINGLING) 
                         && level < 18){
                         break;
                     }

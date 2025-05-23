@@ -11074,12 +11074,12 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 #if P_FAMILY_LUVDISC
     [SPECIES_LUVDISC] =
     {
-        .baseHP        = 43,
+        .baseHP        = 53, //+10
         .baseAttack    = 30,
-        .baseDefense   = 55,
-        .baseSpeed     = 97,
+        .baseDefense   = 65, //+10
+        .baseSpeed     = 107, //+10
         .baseSpAttack  = 40,
-        .baseSpDefense = 65,
+        .baseSpDefense = 75, //+10
         .types = MON_TYPES(TYPE_WATER),
         .catchRate = 225,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 116 : 110,

@@ -2431,5 +2431,10 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .name = _("Dedicated"),
         .aiRating = 5,
         .description = COMPOUND_STRING("Extends field effects."),
+    },
+    [ABILITY_ASTRAL_CHARGE] = {
+        .name = _("Astral Charge"),
+        .aiRating = 5,
+        .description = COMPOUND_STRING("Psychic/Fairy hits up Sp.Atk."),
     }
 };

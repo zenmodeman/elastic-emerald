@@ -1617,6 +1617,7 @@ static const u16 sLedybaEggMoveLearnset[] = {
     MOVE_TAILWIND,
     MOVE_ENDURE,
     MOVE_COUNTER,
+    MOVE_WISH,
     MOVE_UNAVAILABLE,
 };
 #endif //P_FAMILY_LEDYBA

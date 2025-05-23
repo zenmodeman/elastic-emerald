@@ -1511,7 +1511,8 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
 #if P_FAMILY_CRANIDOS
     [SPECIES_CRANIDOS] =
     {
-        .baseHP        = 67,
+        //Stat Buffed
+        .baseHP        = 72, //+5
         .baseAttack    = 125,
         .baseDefense   = 40,
         .baseSpeed     = 58,
@@ -1648,7 +1649,8 @@ const struct SpeciesInfo gSpeciesInfoGen4[] =
 #if P_FAMILY_SHIELDON
     [SPECIES_SHIELDON] =
     {
-        .baseHP        = 30,
+        //Stat buffed
+        .baseHP        = 35, //+5 HP
         .baseAttack    = 42,
         .baseDefense   = 118,
         .baseSpeed     = 30,
