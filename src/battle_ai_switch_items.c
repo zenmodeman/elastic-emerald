@@ -31,6 +31,12 @@ static bool32 AI_OpponentCanFaintAiWithMod(u32 battler, u32 healAmount);
 static u32 GetSwitchinHazardsDamage(u32 battler, struct BattlePokemon *battleMon);
 static bool32 CanAbilityTrapOpponent(u16 ability, u32 opponent);
 
+
+//Custom static function
+static bool32 FindHealAbsorbMonWithSwitches(u32 battler, u16 move, u32 numRequiredSwitches);
+
+#define MIN_SWITCHES_FOR_PREDICTION 3
+
 static void InitializeSwitchinCandidate(struct Pokemon *mon)
 {
     PokemonToBattleMon(mon, &AI_DATA->switchinCandidate.battleMon);
@@ -275,7 +281,9 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
 
     // Start assessing whether or not mon has bad odds
     // Jump straight to switching out in cases where mon gets OHKO'd
-    if (((getsOneShot && gBattleMons[opposingBattler].speed > gBattleMons[battler].speed) // If the player OHKOs and outspeeds OR OHKOs, doesn't outspeed but isn't 4KO'd
+    if ((
+        // If the player OHKOs and outspeeds OR OHKOs, doesn't outspeed but isn't 4KO'd
+        (getsOneShot && gBattleMons[opposingBattler].speed > gBattleMons[battler].speed) 
             || (getsOneShot && gBattleMons[opposingBattler].speed <= gBattleMons[battler].speed && maxDamageDealt < gBattleMons[opposingBattler].hp / 4))
         && (gBattleMons[battler].hp >= ((gBattleMons[battler].maxHP * 3) / 4) // And the current mon has at least 3/4 their HP, or 1/4 HP and Regenerator
             || (aiAbility == ABILITY_REGENERATOR
@@ -434,29 +442,32 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
     bool32 isOpposingBattlerChargingOrInvulnerable = (IsSemiInvulnerable(opposingBattler, incomingMove) || IsTwoTurnNotSemiInvulnerableMove(opposingBattler, incomingMove));
     s32 i, j;
 
-    if (!(AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING))
-        return FALSE;
-    if (gBattleStruct->prevTurnSpecies[battler] != gBattleMons[battler].species) // AI mon has changed, player's behaviour no longer reliable; note to override this if using AI_FLAG_PREDICT_MOVE
-        return FALSE; 
-    if (HasSuperEffectiveMoveAgainstOpponents(battler, TRUE) && (RandomPercentage(RNG_AI_SWITCH_ABSORBING_STAY_IN, STAY_IN_ABSORBING_PERCENTAGE) || AI_DATA->aiSwitchPredictionInProgress))
-        return FALSE;
-    if (AreStatsRaised(battler))
-        return FALSE;
 
-    // Don't switch if mon could OHKO
-    for (i = 0; i < MAX_MON_MOVES; i++)
-    {
-        aiMove = gBattleMons[battler].moves[i];
-        if (aiMove != MOVE_NONE)
+    if (GetBattlerSide(battler) == B_SIDE_OPPONENT){ //Making these checks that only apply for the AI's side
+        if (!(AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING))
+            return FALSE;
+        if (gBattleStruct->prevTurnSpecies[battler] != gBattleMons[battler].species) // AI mon has changed, player's behaviour no longer reliable; note to override this if using AI_FLAG_PREDICT_MOVE
+            return FALSE; 
+        if (HasSuperEffectiveMoveAgainstOpponents(battler, TRUE) && (RandomPercentage(RNG_AI_SWITCH_ABSORBING_STAY_IN, STAY_IN_ABSORBING_PERCENTAGE) || AI_DATA->aiSwitchPredictionInProgress))
+            return FALSE;
+        if (AreStatsRaised(battler))
+            return FALSE;
+        // Don't switch if mon could outspeed and OHKO 
+        for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            // Only check damage if it's a damaging move
-            if (!IsBattleMoveStatus(aiMove))
+            aiMove = gBattleMons[battler].moves[i];
+            if (aiMove != MOVE_NONE)
             {
-                if (AI_DATA->simulatedDmg[battler][opposingBattler][i].expected > gBattleMons[opposingBattler].hp)
-                    return FALSE;
+                // Only check damage if it's a damaging move
+                if (!IsBattleMoveStatus(aiMove))
+                {
+                    if ((AI_DATA->simulatedDmg[battler][opposingBattler][i].expected > gBattleMons[opposingBattler].hp) && AI_IsFaster(battler, opposingBattler, aiMove))
+                        return FALSE;
+                }
             }
         }
-    }
+    }    
+
 
     if (IsDoubleBattle())
     {
@@ -808,9 +819,16 @@ static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 perc
     s32 i, j;
     u16 move;
 
-    // Similar functionality handled more thoroughly by ShouldSwitchIfHasBadOdds
-    if (AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING)
-        return FALSE;
+    //Separate the parts pertinent to AI-only logic vs predicting player logic
+    if (GetBattlerSide(battler) == B_SIDE_OPPONENT){
+        // Similar functionality handled more thoroughly by ShouldSwitchIfHasBadOdds
+        if (AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING)
+            return FALSE;
+    }
+
+    if (GetBattlerSide(battler) == B_SIDE_PLAYER){
+        DebugPrintf("Last Landed move for player is %d", gLastLandedMoves[battler]);
+    }
 
     if (gLastLandedMoves[battler] == MOVE_NONE)
         return FALSE;
@@ -863,6 +881,14 @@ static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 perc
         UpdateMoveResultFlags(typeMultiplier, &moveFlags);
         if (moveFlags & flags)
         {
+            if (GetBattlerSide(battler) == B_SIDE_PLAYER){
+                if (RandomPercentage(RNG_AI_SWITCH_SE_DEFENSIVE, percentChance)){
+                    DebugPrintf("The custom Player Side call occurred, species is %d, and i is %d.", species, i);
+                    return SetSwitchinAndSwitch(battler, i);
+                }else{
+                    DebugPrintf("Reached the immunity check, but RNG call did not go through.");
+                }
+            }
             battlerIn1 = gLastHitBy[battler];
 
             for (j = 0; j < MAX_MON_MOVES; j++)
@@ -1048,6 +1074,52 @@ static bool32 HasGoodSubstituteMove(u32 battler)
     return FALSE;
 }
 
+//NOTE: Need to verify whether AiPartyMon indexes align with SetSwitchinAndSwitch indices
+static bool32 FindHealAbsorbMonWithSwitches(u32 battler, u16 move, u32 numRequiredSwitches){
+
+    u32 i, count;
+    u32 moveType = GetMoveType(move);
+    struct AiPartyMon *aiMons;
+
+    if(IsValidDoubleBattle(battler)){
+        //Only consider singles for now.
+        return FALSE;
+    }
+
+    if (moveType != TYPE_ELECTRIC && moveType != TYPE_WATER && moveType != TYPE_GROUND){
+        return FALSE;
+    }
+
+    aiMons = AI_PARTY->mons[GetBattlerSide(battler)];
+
+    count = AI_PARTY->count[GetBattlerSide(battler)];
+
+    for (i=0; i < count; i++){
+        u16 monAbility = aiMons[i].ability;
+        bool32 isAbilityTypeMatch =  (
+            (monAbility == ABILITY_VOLT_ABSORB && moveType == TYPE_ELECTRIC)
+            || (monAbility == ABILITY_EARTH_EATER && moveType == TYPE_GROUND)
+            || ((monAbility == ABILITY_WATER_ABSORB || monAbility == ABILITY_DRY_SKIN) && moveType == TYPE_WATER)
+        );
+
+        if (!isAbilityTypeMatch) continue;
+        if (aiMons[i].species == gBattleMons[battler].species) continue;
+        //The switch-in mon needs to have had a large enough track record of switching in
+        else if (aiMons[i].switchInCount < numRequiredSwitches) continue;
+
+        //Perform a switch with an absorbing mon that doesn't violate the above conditions
+        if (RandomPercentage(RNG_AI_SWITCH_ABSORBING_STAY_IN, 50)){
+            DebugPrintf("HealAbsorb check was passed, but RNG check failed.");
+            return FALSE;
+        }else{
+            DebugPrintf("HealAbsorb RNG check passed.");
+            return SetSwitchinAndSwitch(battler, i);
+        }
+    }
+    return FALSE;
+
+}
+
 bool32 ShouldSwitch(u32 battler)
 {
     u32 battlerIn1, battlerIn2;
@@ -1057,6 +1129,7 @@ bool32 ShouldSwitch(u32 battler)
     s32 i;
     s32 availableToSwitch;
 
+
     if (gBattleMons[battler].status2 & (STATUS2_WRAPPED | STATUS2_ESCAPE_PREVENTION))
         return FALSE;
     if (gStatuses3[battler] & STATUS3_ROOTED)
@@ -1065,7 +1138,67 @@ bool32 ShouldSwitch(u32 battler)
         return FALSE;
     if (gBattleTypeFlags & BATTLE_TYPE_ARENA)
         return FALSE;
+    
+    if (GetBattlerSide(battler) == B_SIDE_PLAYER){
+        //Special player switch-in check
+        //Note, even if player mon can outspeed and OHKO, still carry through with the check, to prevent switch abuse in these cases
 
+        u32 aiBattler = GetOpposingSideBattler(battler); 
+        struct AiPartyMon *aiMons = AI_PARTY->mons[GetBattlerSide(battler)];
+        u16 aiBestDmgMove;
+        u16 storedMove;
+        bool32 immuneMonFound;
+        //AI battler must be able to do damage
+        if (GetBestDmgFromBattler(aiBattler, battler) == 0){
+            DebugPrintf("Player ShouldSwitch call: player mon takes no damage from AI mon's damaging moves; aborted.");
+            return FALSE;
+        }
+
+        aiBestDmgMove = (u16)GetBestDmgMoveFromBattler(aiBattler, battler);
+        
+        //Before the standard check for immunity looping, do a check for immunity healing abilities just to prevent them from getting
+        //infinite healing
+        if (FindHealAbsorbMonWithSwitches(battler, aiBestDmgMove, MIN_SWITCHES_FOR_PREDICTION)){
+            DebugPrintf("Heal Absorb mon check is being reached.");
+            return TRUE;
+        }
+
+        if (aiMons[gBattlerPartyIndexes[battler]].switchInCount < MIN_SWITCHES_FOR_PREDICTION){
+            // DebugPrintf("Player ShouldSwitch call: Current mon hasn't switched out enough; aborted.");
+            return FALSE;
+        }
+        //Switch prediction only triggered if the player mon is immune to one of the battler's moves
+        if (!HasIneffectiveDamagingMove(aiBattler, battler)){
+            // DebugPrintf("Player ShouldSwitch call: player mon  isn't immune to AI mon's moves; aborted.");
+            return FALSE;
+        }
+
+        
+        //Temporary inject last used move for FindMonThatAbsorbsOpponentsMove
+        storedMove = AI_DATA->lastUsedMove[aiBattler];
+        AI_DATA->lastUsedMove[aiBattler] = aiBestDmgMove;
+        immuneMonFound = FindMonThatAbsorbsOpponentsMove(battler);
+        AI_DATA->lastUsedMove[aiBattler] = storedMove;
+        // DebugPrintf("storedPredictedMove: %d, aiBestDmgMove: %d, restoredMove: %d", storedMove, aiBestDmgMove, 
+        //     AI_DATA->lastUsedMove[aiBattler]);
+        if (immuneMonFound){
+            DebugPrintf("Player Switch logic on Absorb is triggered.");
+            return TRUE;
+        }
+
+        //Temporary inject last landed move for FindMonWithFlagsAndSuperEffective
+        storedMove = gLastLandedMoves[aiBattler];
+        gLastLandedMoves[battler] = aiBestDmgMove;
+        immuneMonFound = FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_DOESNT_AFFECT_FOE, 50);
+        gLastLandedMoves[battler] = storedMove;
+        if (immuneMonFound){
+            DebugPrintf("Player Switch logic on Immunity is triggered.");
+            return TRUE;
+        }else{
+            DebugPrintf("Player Switch logic on immunity/Absorb is not triggered.");
+            return FALSE;
+        }
+    }
     // Sequence Switching AI never switches mid-battle
     if (AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SEQUENCE_SWITCHING)
         return FALSE;
@@ -2360,8 +2493,7 @@ static bool32 AI_ShouldHeal(u32 battler, u32 healAmount)
 
     //Idea is that if there are no Pokemon left, AI mon would faint, and is slower, might as well heal. 
     if (CountUsablePartyMons(battler) == 0 && CanTargetFaintAi(battlerOpposite, battler)
-    //Current hacky method of not taking priority into account and not computing the mon's next move
-    && !AI_IsFaster(battler, battlerOpposite, MOVE_TACKLE))
+    && !AI_IsFaster(battler, battlerOpposite, MOVE_IRRELEVANT))
     {
         shouldHeal = TRUE;
         return shouldHeal;

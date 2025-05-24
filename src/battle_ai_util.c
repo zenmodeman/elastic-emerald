@@ -2179,6 +2179,25 @@ bool32 AreAllMovesOfSplitIneffective(u32 battlerAtk, u32 battlerDef, u32 categor
     return TRUE;
 }
 
+bool32 HasIneffectiveDamagingMove(u32 battlerAtk, u32 battlerDef){
+    u32 i;
+    u32 currentMove;
+    for (i = 0; i < MAX_MON_MOVES; i++){
+        currentMove = gBattleMons[battlerAtk].moves[i];
+        //
+        if (gMovesInfo[currentMove].power == 0){
+            continue;
+        }
+        //A damaging move is ineffective
+        if (IsMoveIneffective(currentMove, battlerAtk, battlerDef)){
+            return TRUE;
+        }
+    }
+    //This can include if all moves are status moves
+    return FALSE;    
+}
+
+
 bool32 ShouldLowerAccuracy(u32 battlerAtk, u32 battlerDef, u32 defAbility)
 {
     if (AI_IsFaster(battlerAtk, battlerDef, AI_THINKING_STRUCT->moveConsidered)

@@ -3907,7 +3907,7 @@ s32 GetEVStatCap(void){
 //Returns True if the evolution is prevented by Restricted Mode conditions, False otherwise.
 //This is mainly used for cases where an alternate message should be sent. 
 //For things like friendship evos, those can be handled in the direct evolution logic.
-bool32 DoesNotMeetRestrictedEvoConditions(struct Pokemon *mon, u16 item){    
+bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, u16 item){    
     u8 level =  GetMonData(mon, MON_DATA_LEVEL, 0);
     u32 species = GetMonData(mon, MON_DATA_SPECIES);
 
@@ -3919,7 +3919,8 @@ bool32 DoesNotMeetRestrictedEvoConditions(struct Pokemon *mon, u16 item){
 
     switch (species){
         case SPECIES_SLOWPOKE: case SPECIES_SLOWBRO_GALAR:
-            if (level < 30) return TRUE;
+        case SPECIES_KADABRA: case SPECIES_GRAVELER: case SPECIES_MACHOKE : case SPECIES_HAUNTER:
+            if (level < 32) return TRUE;
             break;
         case SPECIES_NIDORINO : case SPECIES_NIDORINA:
             if (level < 25) return TRUE;
@@ -4232,7 +4233,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         {
                             u16 targetSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_ITEM_USE, item, NULL);
 
-                            if (targetSpecies != SPECIES_NONE && !DoesNotMeetRestrictedEvoConditions(mon, item))
+                            if (targetSpecies != SPECIES_NONE && !DoesNotMeetRestrictedEvoItemConditions(mon, item))
                             {
                                 BeginEvolutionScene(mon, targetSpecies, FALSE, partyIndex);
                                 return FALSE;
@@ -4696,7 +4697,11 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     if ((species == SPECIES_WOOBAT || species == SPECIES_SNOM || species == SPECIES_CHINGLING) 
                         && level < 18){
                         break;
-                    }
+                        }
+                    else if ((species == SPECIES_GOLBAT)
+                              && level < 30){
+                                break;
+                              }  
                 }
                 if (friendship >= FRIENDSHIP_EVO_THRESHOLD)
                     targetSpecies = evolutions[i].targetSpecies;

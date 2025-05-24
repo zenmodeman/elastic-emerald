@@ -53,6 +53,7 @@ bool32 OnlyOnePlayerDoublesMon();
 u32 GetConsecutiveMoveEffectUse(u32 battler, u32 moveEffect);
 struct StatsDelta ApplySimulatedStatChanges(u32 battlerAtk, u32 battlerDef, struct StatsDelta requestedStatChanges);
 void ReverseSimulatedStatChanges(u32 battler, struct StatsDelta statChangesMade);
+bool32 HasIneffectiveDamagingMove(u32 battlerAtk, u32 battlerDef);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);

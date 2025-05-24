@@ -757,7 +757,7 @@ u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves); //Custom function
 u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves);
 u8 GetNumberOfRelearnableMoves(struct Pokemon *mon); 
 u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon); //Custom function
-bool32 DoesNotMeetRestrictedEvoConditions(struct Pokemon *mon, u16 item);
+bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, u16 item);
 
 u16 SpeciesToPokedexNum(u16 species);
 bool32 IsSpeciesInHoennDex(u16 species);

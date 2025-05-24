@@ -1,16 +1,17 @@
-Elastic Emerald built on top of pokeemerald-expansion
-
 
 # Elastic Emerald
+Elastic Emerald is built on top of RHH's pokeemerald-expansion: https://github.com/rh-hideout/pokeemerald-expansion/.
 
 ## Credits
 Thunderbyrd25: [Menufly](https://github.com/Thunderbyrd25/pokeemerald/compare/master...menufly)
+
 psf and Jaizu: [No Whiteout After Player Loss](https://github.com/PokemonSanFran/pokeemerald/wiki/No-Whiteout-After-Player-Loss)
+
 BuffelSaft: Designated HM Users
 
-Full credits of expansion contributers eventually
+Rom Hacking Hideout: for [pokeemerald-expansion itself](https://github.com/rh-hideout/pokeemerald-expansion/)
 
-## Pokeemerald-expansion
+# Pokeemerald-expansion
 
 
 pokeemerald-expansion is ***a romhack base*** based off pret's [pokeemerald](https://github.com/pret/pokeemerald) decompilation project. ***It is NOT a playable romhack,*** but it has multiple features available to romhackers so that they can create their own games, so it's not meant to be played on its own.

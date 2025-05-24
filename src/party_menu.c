@@ -1175,7 +1175,7 @@ static bool8 DisplayPartyPokemonDataForMoveTutorOrEvolutionItem(u8 slot)
             if (!GetMonData(currentPokemon, MON_DATA_IS_EGG) && GetEvolutionTargetSpecies(currentPokemon, EVO_MODE_ITEM_CHECK, item, NULL) != SPECIES_NONE){
                 
                 //Display a "Not Ready" message if the evolution is valid, but Restricted Mode conditions are not met 
-                if (DoesNotMeetRestrictedEvoConditions(currentPokemon, item)){
+                if (DoesNotMeetRestrictedEvoItemConditions(currentPokemon, item)){
                     DebugPrintf("The Not Ready block is reached.");
                     DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NOT_READY);
                     return TRUE;

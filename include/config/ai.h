@@ -48,6 +48,6 @@
 #define LOW_ACCURACY_THRESHOLD                                  75 // Moves with accuracy equal OR below this value are considered low accuracy 
 
 // AI prediction chances
-#define PREDICT_SWITCH_CHANCE                                   50
+#define PREDICT_SWITCH_CHANCE                                   75 //Modified from 50 to 75 since most of the switch checks themselves are 50%
 
 #endif // GUARD_CONFIG_AI_H
