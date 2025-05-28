@@ -657,6 +657,7 @@ LittlerootTown_ProfessorBirchsLab_EventScript_ScottAboardSSTidalCall::
 	releaseall
 	end
 
+
 LittlerootTown_ProfessorBirchsLab_Text_BirchAwayOnFieldwork:
 	.string "Hunh? PROF. BIRCH?\p"
 	.string "The PROF's away on fieldwork.\n"
@@ -1077,6 +1078,12 @@ script Littleroot_GetStarterOption{
 	msgbox(format("Now that you have a Pokemon, every trainer these days needs a Box Link as well. Here you go!"))
 	giveItem(ITEM_POKEMON_BOX_LINK)
 	msgbox(format("With the Box link, you'll be able to access your Pokemon PC wherever you go. It's great when you need to work in the field a lot!"))
+	checkplayergender
+	if (var(VAR_RESULT) == MALE){
+		setflag(FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_RIVAL_BEDROOM)
+	}else{
+		setflag(FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_RIVAL_BEDROOM)
+	}	
 	goto(LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival)
 }
 
