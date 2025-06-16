@@ -6889,6 +6889,8 @@ bool32 CanBeBurned(u32 battler, u32 ability)
      || ability == ABILITY_PURIFYING_SALT
      || IsAbilityStatusProtected(battler, ability)
      || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN)
+     //Water Sport has an edge case bug when the attacker is a non-Fire type using a Fire move against a Flame Body user.
+     //The unlikeliness of this scenario makes it not worth changing the approach to not use gCurrentMove
       || (gFieldStatuses & STATUS_FIELD_WATERSPORT &&  GetBattleMoveType(gCurrentMove) == TYPE_FIRE))
         return FALSE;
     return TRUE;
@@ -6904,6 +6906,8 @@ bool32 CanBeParalyzed(u32 battler, u32 ability)
       || gBattleMons[battler].status1 & STATUS1_ANY
       || IsAbilityStatusProtected(battler, ability)
       || IsBattlerTerrainAffected(battler, STATUS_FIELD_MISTY_TERRAIN)
+      //Mud Sport has an edge case bug when the attacker is a non-Electric type using a Electric move against a Static user.
+      //The unlikeliness of this scenario makes it not worth changing the approach to not use gCurrentMove
         || (gFieldStatuses & STATUS_FIELD_MUDSPORT &&  GetBattleMoveType(gCurrentMove) == TYPE_ELECTRIC))
         return FALSE;
     return TRUE;
