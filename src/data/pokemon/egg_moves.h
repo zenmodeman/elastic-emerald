@@ -4958,6 +4958,7 @@ static const u16 sChespinEggMoveLearnset[] = {
 
 #if P_FAMILY_FENNEKIN
 static const u16 sFennekinEggMoveLearnset[] = {
+    MOVE_COPYCAT,
     MOVE_WISH,
     MOVE_HYPNOSIS,
     MOVE_HEAT_WAVE,

@@ -4486,9 +4486,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 #if P_FAMILY_SABLEYE
     [SPECIES_SABLEYE] =
     {
+        //StatBuffed
         .baseHP        = 50,
-        .baseAttack    = 75,
-        .baseDefense   = 75,
+        .baseAttack    = 85, //+10
+        .baseDefense   = 85, //+10
         .baseSpeed     = 50,
         .baseSpAttack  = 65,
         .baseSpDefense = 65,
@@ -4564,10 +4565,11 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 #if P_MEGA_EVOLUTIONS
     [SPECIES_SABLEYE_MEGA] =
     {
+        //StatBuffed
         .baseHP        = 50,
-        .baseAttack    = 85,
+        .baseAttack    = 95, //+10
         .baseDefense   = 125,
-        .baseSpeed     = 20,
+        .baseSpeed     = 30, //+10
         .baseSpAttack  = 85,
         .baseSpDefense = 115,
         .types = MON_TYPES(TYPE_DARK, TYPE_GHOST),
@@ -4641,9 +4643,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 
     [SPECIES_MAWILE] =
     {
+        //StatBuffed
         .baseHP        = 50,
-        .baseAttack    = 85,
-        .baseDefense   = 85,
+        .baseAttack    = 95, //+10
+        .baseDefense   = 95, //+10
         .baseSpeed     = 50,
         .baseSpAttack  = 55,
         .baseSpDefense = 55,
@@ -4717,11 +4720,12 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 #if P_MEGA_EVOLUTIONS
     [SPECIES_MAWILE_MEGA] =
     {
+        //StatBuffed
         .baseHP        = 50,
         .baseAttack    = 105,
         .baseDefense   = 125,
         .baseSpeed     = 50,
-        .baseSpAttack  = 55,
+        .baseSpAttack  = 75, //+20
         .baseSpDefense = 95,
         .types = MAWILE_TYPES,
         .catchRate = 45,

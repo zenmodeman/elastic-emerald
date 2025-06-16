@@ -1,6 +1,9 @@
 #ifndef GUARD_CONSTANTS_TMS_HMS_H
 #define GUARD_CONSTANTS_TMS_HMS_H
 
+//Consider replacing the following:
+// Snatch (exclusive), probably Toxic (into a center tutor move), Hidden Power (exclusive), probably Giga Drain (into a center tutor move)
+//Shock Wave (into a center tutor move), Aerial Ace (into a center tutor move), Torment (Tech Tutor)
 #define FOREACH_TM(F) \
     F(FOCUS_PUNCH) \
     F(DRAGON_CLAW) \
@@ -54,7 +57,9 @@
     F(OVERHEAT)\
     F(THROAT_CHOP)\
     F(SPEED_SWAP)\
-    F(HARD_PRESS)
+    F(HARD_PRESS)\
+    F(TRICK)\
+    F(POWER_SPLIT)
 
 #define FOREACH_HM(F) \
     F(CUT) \
