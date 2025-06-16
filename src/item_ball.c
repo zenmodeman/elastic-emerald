@@ -3,6 +3,7 @@
 #include "event_data.h"
 #include "constants/event_objects.h"
 #include "constants/items.h"
+#include "item.h"
 
 static u32 GetItemBallAmountFromTemplate(u32);
 static u32 GetItemBallIdFromTemplate(u32);
@@ -10,6 +11,14 @@ static u32 GetItemBallIdFromTemplate(u32);
 static u32 GetItemBallAmountFromTemplate(u32 itemBallId)
 {
     u32 amount = gMapHeader.events->objectEvents[itemBallId].movementRangeX;
+    u32 itemId;
+    //Add logic to make ground TMs always 1 when resource mode is not in play (since in this case, the player should only get 1 of each TM)
+    if (!FlagGet(FLAG_RESOURCE_MODE)){
+        itemId = GetItemBallIdFromTemplate(itemBallId);
+        if (GetPocketByItemId(itemId) == POCKET_TM_HM){
+            amount = 1;
+        }
+    }
 
     if (amount > MAX_BAG_ITEM_CAPACITY)
         return MAX_BAG_ITEM_CAPACITY;
