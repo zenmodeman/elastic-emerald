@@ -10507,7 +10507,7 @@ const struct Item gItemsInfo[] =
         .secondaryId = MOVE_HAIL,
     },
 
-    [ITEM_TM_BULK_UP] =
+    [ITEM_TM_LOW_KICK] =
     {
         .name = _("TM08"),
         .price = 3000,
@@ -10519,7 +10519,7 @@ const struct Item gItemsInfo[] =
         .pocket = POCKET_TM_HM,
         .type = ITEM_USE_PARTY_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_TMHM,
-        .secondaryId = MOVE_BULK_UP,
+        .secondaryId = MOVE_LOW_KICK,
     },
 
     [ITEM_TM_HELPING_HAND] =

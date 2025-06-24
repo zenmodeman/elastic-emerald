@@ -5042,33 +5042,51 @@ Class: Leader
 Pic: Leader Brawly
 Gender: Male
 Music: Male
-Items: Super Potion / Super Potion
 Double Battle: No
 AI: Smart Trainer
 
-Machop
-Level: 16
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Karate Chop
-- Low Kick
-- Seismic Toss
-- Bulk Up
+Meditite @ Coba Berry
+Ability: Pure Power  
+Level: 17  
+EVs: 48 Atk / 32 Def / 16 Spe  
+Naive Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Low Kick  
+- Psychic  
+- Light Screen  
+- Rock Tomb  
 
-Meditite
-Level: 16
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
-- Focus Punch
-- Light Screen
-- Reflect
-- Bulk Up
+Pignite @ Expert Belt  
+Ability: Blaze  
+Level: 17  
+EVs: 8 HP / 48 Atk / 32 Def  
+Naughty Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Grass Knot  
+- Low Kick  
+- Flame Charge  
+- Work Up  
 
-Makuhita @ Sitrus Berry
-Level: 19
-IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
-- Arm Thrust
-- Vital Throw
-- Reversal
-- Bulk Up
+Pawniard @ Protective Pads  
+Ability: Inner Focus  
+Level: 18  
+Tera Type: Fighting  
+EVs: 28 HP / 48 Atk / 28 Def  
+Impish Nature  
+- Low Kick  
+- Metal Claw  
+- Taunt  
+- Assurance  
+
+Makuhita @ Eviolite  
+Ability: Sheer Force  
+Level: 19  
+EVs: 4 HP / 48 Atk / 48 Def  
+Adamant Nature  
+- Bulk Up  
+- Force Palm  
+- Bulldoze 
+- Body Slam  
 
 === TRAINER_WATTSON_1 ===
 Name: WATTSON
@@ -16813,68 +16831,140 @@ Sandshrew
 Level: 31
 IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
 
-=== TRAINER_ANDRES_3 ===
-Name: ANDRES
-Class: Ruin Maniac
-Pic: Ruin Maniac
+=== TRAINER_BRAWLY_1_3MON_DOUBLES ===
+Name: BRAWLY
+Class: Leader
+Pic: Leader Brawly
 Gender: Male
-Music: Hiker
-Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+Music: Male
+Double Battle: Yes
+AI: Smart Trainer
 
-Nosepass
-Level: 33
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
 
-Sandshrew
-Level: 33
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
+Meditite @ Coba Berry
+Ability: Pure Power  
+Level: 17  
+EVs: 48 Atk / 32 Def / 16 Spe  
+Naive Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Low Kick  
+- Psychic  
+- Light Screen  
+- Rock Tomb  
 
-Sandshrew
-Level: 33
-IVs: 2 HP / 2 Atk / 2 Def / 2 SpA / 2 SpD / 2 Spe
+Pawniard @ Protective Pads  
+Ability: Inner Focus  
+Level: 18  
+Tera Type: Fighting  
+EVs: 28 HP / 48 Atk / 28 Def  
+Impish Nature  
+- Low Kick  
+- Metal Claw  
+- Taunt  
+- Assurance  
 
-=== TRAINER_ANDRES_4 ===
-Name: ANDRES
-Class: Ruin Maniac
-Pic: Ruin Maniac
+Makuhita @ Eviolite  
+Ability: Sheer Force  
+Level: 19  
+EVs: 4 HP / 48 Atk / 48 Def  
+Adamant Nature  
+- Bulk Up  
+- Force Palm  
+- Bulldoze 
+- Body Slam  
+
+=== TRAINER_BRAWLY_1_DOUBLES ===
+Name: BRAWLY
+Class: Leader
+Pic: Leader Brawly
 Gender: Male
-Music: Hiker
-Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+Music: Male
+Double Battle: Yes
+AI: Smart Trainer
 
-Nosepass
-Level: 35
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Meditite @ Coba Berry
+Ability: Pure Power  
+Level: 17  
+EVs: 48 Atk / 32 Def / 16 Spe  
+Naive Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Low Kick  
+- Psychic  
+- Light Screen  
+- Rock Tomb  
 
-Sandshrew
-Level: 35
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Pignite @ Expert Belt  
+Ability: Blaze  
+Level: 17  
+EVs: 8 HP / 48 Atk / 32 Def  
+Naughty Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Grass Knot  
+- Low Kick  
+- Flame Charge  
+- Helping Hand
 
-Sandshrew
-Level: 35
-IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
+Pawniard @ Protective Pads  
+Ability: Inner Focus  
+Level: 18  
+Tera Type: Fighting  
+EVs: 28 HP / 48 Atk / 28 Def  
+Impish Nature  
+- Low Kick  
+- Metal Claw  
+- Taunt  
+- Assurance  
 
-=== TRAINER_ANDRES_5 ===
-Name: ANDRES
-Class: Ruin Maniac
-Pic: Ruin Maniac
+Makuhita @ Eviolite  
+Ability: Sheer Force  
+Level: 19  
+EVs: 4 HP / 48 Atk / 48 Def  
+Adamant Nature  
+- Bulk Up  
+- Force Palm  
+- Bulldoze 
+- Body Slam  
+
+=== TRAINER_BRAWLY_1_3MON ===
+Name: BRAWLY
+Class: Leader
+Pic: Leader Brawly
 Gender: Male
-Music: Hiker
+Music: Male
 Double Battle: No
-AI: Check Bad Move / Try To Faint / Check Viability / Smart Switching / Smart Mon Choices
+AI: Smart Trainer
 
-Nosepass
-Level: 37
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Meditite @ Coba Berry
+Ability: Pure Power  
+Level: 17  
+EVs: 48 Atk / 32 Def / 16 Spe  
+Naive Nature  
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+- Low Kick  
+- Psychic  
+- Light Screen  
+- Rock Tomb  
 
-Sandslash
-Level: 37
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Pawniard @ Protective Pads  
+Ability: Inner Focus  
+Level: 18  
+Tera Type: Fighting  
+EVs: 28 HP / 48 Atk / 28 Def  
+Impish Nature  
+- Low Kick  
+- Metal Claw  
+- Taunt  
+- Assurance  
 
-Sandslash
-Level: 37
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
+Makuhita @ Eviolite  
+Ability: Sheer Force  
+Level: 19  
+EVs: 4 HP / 48 Atk / 48 Def  
+Adamant Nature  
+- Bulk Up  
+- Force Palm  
+- Bulldoze 
+- Body Slam  
 
 === TRAINER_CORY_2 ===
 Name: CORY

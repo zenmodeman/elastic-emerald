@@ -133,11 +133,11 @@ DewfordTown_Gym_EventScript_CheckLilith::
 DewfordTown_Gym_EventScript_StopCountingTrainers::
 	return
 
-DewfordTown_Gym_EventScript_Brawly::
+DewfordTown_Gym_EventScript_Brawly_Old::
 	trainerbattle_single TRAINER_BRAWLY_1, DewfordTown_Gym_Text_BrawlyIntro, DewfordTown_Gym_Text_BrawlyDefeat, DewfordTown_Gym_EventScript_BrawlyDefeated, NO_MUSIC
 	specialvar VAR_RESULT, ShouldTryRematchBattle
 	goto_if_eq VAR_RESULT, TRUE, DewfordTown_Gym_EventScript_BrawlyRematch
-	goto_if_unset FLAG_RECEIVED_TM_BULK_UP, DewfordTown_Gym_EventScript_GiveBulkUp2
+	goto_if_unset FLAG_RECEIVED_TM_LOW_KICK, DewfordTown_Gym_EventScript_GiveLowKick
 	msgbox DewfordTown_Gym_Text_BrawlyPostBattle, MSGBOX_DEFAULT
 	release
 	end
@@ -165,21 +165,22 @@ DewfordTown_Gym_EventScript_BrawlyDefeated::
 	setflag FLAG_ENABLE_BRAWLY_MATCH_CALL
 	setvar VAR_ROXANNE_CALL_STEP_COUNTER, 0
 	setflag FLAG_ENABLE_ROXANNE_FIRST_CALL
+	goto DewfordTown_Gym_EventScript_GiveLowKick
 	release
 	end
 
 DewfordTown_Gym_EventScript_GiveBulkUp::
-	giveitem ITEM_TM_BULK_UP
+	giveitem ITEM_TM_LOW_KICK
 	goto_if_eq VAR_RESULT, 0, Common_EventScript_BagIsFull
 	msgbox DewfordTown_Gym_Text_ExplainBulkUp, MSGBOX_DEFAULT
-	setflag FLAG_RECEIVED_TM_BULK_UP
+	setflag FLAG_RECEIVED_TM_LOW_KICK
 	return
 
 DewfordTown_Gym_EventScript_GiveBulkUp2:
-	giveitem ITEM_TM_BULK_UP
+	giveitem ITEM_TM_LOW_KICK
 	goto_if_eq VAR_RESULT, 0, Common_EventScript_ShowBagIsFull
 	msgbox DewfordTown_Gym_Text_ExplainBulkUp, MSGBOX_DEFAULT
-	setflag FLAG_RECEIVED_TM_BULK_UP
+	setflag FLAG_RECEIVED_TM_LOW_KICK
 	release
 	end
 
@@ -458,7 +459,97 @@ DewfordTown_Gym_Text_BrawlyRematchNeedTwoMons:
 	.string "that can battle.\p"
 	.string "I'm sorry, but I'd like you to come back\n"
 	.string "with at least two POKéMON.$"
-
-
 `
+script DewfordTown_Gym_EventScript_Brawly {
+    lock
+	faceplayer
+    if (!flag(FLAG_RECEIVED_TM_LOW_KICK)){
+        if (flag(FLAG_RESTRICTED_MODE)) {
+            specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
+            if (var(VAR_RESULT) == FALSE) {
+                goto(Brawly_Restrict_Item_Clause)
+            }
+        }
+        goto(BrawlyFirstGymBattleScript)
+    }
+    msgbox(DewfordTown_Gym_Text_BrawlyPostBattle)
+    release
+    end
+}
+
+
+script BrawlyFirstGymBattleScript {
+    msgbox(format("I'm BRAWLY! \nDEWFORD's GYM LEADER!"))
+	msgbox(format("I've been churned in the rough waves\n of these parts."))
+	msgbox(format("But I'm sure you've had it tough in my gym as well."))
+	msgbox(format("Here, let me heal your POKéMON for you."))
+    playse(SE_USE_ITEM)
+    special(HealPlayerParty)
+	msgbox(format("I've grown tough in the pitch-black cave!"))
+	msgbox(format("So you wanted to challenge me?"))
+    msgbox(format("Would you like to have a Single or a Double Battle?"))
+    dynmultichoice(0, 100, TRUE, 2, 0, DYN_MULTICHOICE_CB_NONE, "Single Battle", "Double Battle")
+    if (var(VAR_RESULT) == 0) {
+        msgbox(format("One on One? That's what I'm talking about!"))
+        msgbox(format("Let me see what you're made of!"))
+		if (var(VAR_MONOTYPE) == TYPE_NONE || var(VAR_MONOTYPE) == TYPE_FLYING || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1 
+		|| var(VAR_MONOTYPE) == TYPE_FAIRY - 1 || var(VAR_MONOTYPE) == TYPE_POISON || var(VAR_MONOTYPE) == TYPE_GHOST
+		|| var(VAR_MONOTYPE) == TYPE_BUG || var(VAR_MONOTYPE) == TYPE_WATER -1)
+		//Including Water just because Water is so stacked with encounters
+		{
+			trainerbattle_no_intro(TRAINER_BRAWLY_1, DewfordTown_Gym_Text_BrawlyDefeat)
+		}else{
+			trainerbattle_no_intro(TRAINER_BRAWLY_1_3MON, DewfordTown_Gym_Text_BrawlyDefeat)
+		}
+        
+        call(DewfordTown_Gym_EventScript_BrawlyDefeated)
+    } elif(var(VAR_RESULT) == 1) {
+        msgbox(format("Two on Two? You'll see our pair training!"))
+        msgbox(format("Let me see what you're made of!"))
+		if (var(VAR_MONOTYPE) == TYPE_NONE || var(VAR_MONOTYPE) == TYPE_FLYING || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1 
+		|| var(VAR_MONOTYPE) == TYPE_FAIRY - 1 || var(VAR_MONOTYPE) == TYPE_POISON || var(VAR_MONOTYPE) == TYPE_GHOST
+		|| var(VAR_MONOTYPE) == TYPE_BUG || var(VAR_MONOTYPE) == TYPE_WATER -1)
+		{
+			trainerbattle_no_intro(TRAINER_BRAWLY_1_DOUBLES, DewfordTown_Gym_Text_BrawlyDefeat)
+		}else{
+			trainerbattle_no_intro(TRAINER_BRAWLY_1_3MON_DOUBLES, DewfordTown_Gym_Text_BrawlyDefeat)
+		}
+        call(DewfordTown_Gym_EventScript_BrawlyDefeated)
+    }
+    release
+    end
+}
+
+script Brawly_Restrict_Item_Clause {
+    msgbox(format("I'd love to fight, but League rules say I can't if you carry duplicate items."))
+    release
+    end
+}
+
+script DewfordTown_Gym_EventScript_GiveLowKick {
+	if (var(VAR_MONOTYPE) > 0){
+		addvar(VAR_REMAINING_TUTOR, 2)
+		addvar(VAR_REMAINING_RELEARNER, 2)
+	}else{
+		addvar(VAR_REMAINING_TUTOR, 1)
+		addvar(VAR_REMAINING_RELEARNER, 1)
+	}
+
+
+    if (!flag(FLAG_RESOURCE_MODE)) {
+        giveitem(ITEM_TM_LOW_KICK)
+        goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)
+        setflag(FLAG_RECEIVED_TM_LOW_KICK)
+    } else {
+        giveitem(ITEM_TM_LOW_KICK, 3)
+        goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)
+        setflag(FLAG_RECEIVED_TM_LOW_KICK)
+    }
+	msgbox(format("Here, take this TM. It's one of my favorite moves. LOW KICK."))
+	msgbox(format("It's all about weight and timing-"))
+	msgbox(format("The bigger they are, the harder they fall!"))
+	msgbox(format("Use it well, and you'll have 'em hitting the mat in no time!"))
+    release
+    end
+}
 

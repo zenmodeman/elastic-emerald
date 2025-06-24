@@ -12,7 +12,7 @@
     F(ROAR) \
     F(TOXIC) \
     F(HAIL) \
-    F(BULK_UP) \
+    F(LOW_KICK) \
     F(HELPING_HAND) \
     F(HIDDEN_POWER) \
     F(SUNNY_DAY) \
