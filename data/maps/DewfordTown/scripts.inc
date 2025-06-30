@@ -1643,7 +1643,7 @@ DewfordTown_EventScript_GoodRod_Fisherman_2:
 # 825 "data/maps/DewfordTown/scripts.pory"
 	msgbox DewfordTown_EventScript_GoodRod_Fisherman_Text_0
 # 826 "data/maps/DewfordTown/scripts.pory"
-	giveitem ITEM_OLD_ROD
+	giveitem ITEM_GOOD_ROD
 # 827 "data/maps/DewfordTown/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq DewfordTown_EventScript_GoodRod_Fisherman_6

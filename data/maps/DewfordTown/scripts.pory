@@ -823,7 +823,7 @@ script DewfordTown_EventScript_GoodRod_Fisherman {
 	faceplayer
     if (!flag(FLAG_RECEIVED_GOOD_ROD)){
         msgbox(format("The fish around here are quite varied. Here, take this Good Rod to see for yourself!"))
-        giveitem(ITEM_OLD_ROD)
+        giveitem(ITEM_GOOD_ROD)
         if (var(VAR_RESULT) == FALSE){
             call(Common_EventScript_ShowBagIsFull)
 			release
