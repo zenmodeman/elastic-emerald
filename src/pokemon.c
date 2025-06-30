@@ -2466,9 +2466,11 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_POLITOED: 
             return TYPE_FAIRY;
         case SPECIES_KRABBY: case SPECIES_KINGLER:
-            return TYPE_STEEL;
+            return TYPE_ROCK;
         case SPECIES_GOLDEEN: case SPECIES_SEAKING:
             return TYPE_FLYING;
+        case SPECIES_STARYU:
+            return TYPE_NORMAL;
         case SPECIES_MAGIKARP:
             return TYPE_DRAGON;
         case SPECIES_VAPOREON:
@@ -2476,9 +2478,9 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_TOTODILE: case SPECIES_CROCONAW: case SPECIES_FERALIGATR:
             return TYPE_DARK;
         case SPECIES_REMORAID: case SPECIES_OCTILLERY:
-            return TYPE_NORMAL;
+            return TYPE_NORMAL; //Wring Out
         case SPECIES_SUICUNE:
-            return TYPE_BUG;
+            return TYPE_ICE;
         case SPECIES_WAILMER: case SPECIES_WAILORD:
             return TYPE_GRASS;
         case SPECIES_FEEBAS: case SPECIES_MILOTIC:
@@ -2511,6 +2513,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DRAGON;
         case SPECIES_WIGLETT: case SPECIES_WUGTRIO: //Maybe do Tera Water Dugtrio-Alola as a complement
             return TYPE_STEEL;
+
         //Grass
         case SPECIES_APPLIN: case SPECIES_FLAPPLE: case SPECIES_APPLETUN: case SPECIES_DIPPLIN: case SPECIES_HYDRAPPLE:
             return TYPE_BUG;

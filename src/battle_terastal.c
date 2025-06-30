@@ -27,10 +27,7 @@ void ActivateTera(u32 battler)
     SetGimmickAsActivated(battler, GIMMICK_TERA);
 
     // Remove Tera Orb charge.
-    if (B_FLAG_TERA_ORB_CHARGED != 0
-        && (B_FLAG_TERA_ORB_NO_COST == 0 || !FlagGet(B_FLAG_TERA_ORB_NO_COST))
-        && side == B_SIDE_PLAYER
-        && !(IsDoubleBattle() && !IsPartnerMonFromSameTrainer(battler)))
+    if (B_FLAG_TERA_ORB_CHARGED != 0 && (B_FLAG_TERA_ORB_NO_COST == 0 || !FlagGet(B_FLAG_TERA_ORB_NO_COST)) && side == B_SIDE_PLAYER && !(IsDoubleBattle() && !IsPartnerMonFromSameTrainer(battler)))
     {
         FlagClear(B_FLAG_TERA_ORB_CHARGED);
     }
@@ -58,28 +55,33 @@ void ApplyBattlerVisualsForTeraAnim(u32 battler)
     BlendPalette(OBJ_PLTT_ID(battler), 16, 16, RGB_WHITEALPHA);
 }
 
-bool32 IsRestrictedModeTeraBanned(u32 battler){
+bool32 IsRestrictedModeTeraBanned(u32 battler)
+{
     u16 species = gBattleMons[battler].species;
 
-    switch(species){
-        case SPECIES_DRAGONITE:
-        case SPECIES_TYRANITAR:
-        case SPECIES_SALAMENCE: //Metagross excused for now
-        case SPECIES_GARCHOMP:
-        case SPECIES_HYDREIGON:
-        //For now, excusing both Goodras, and Kommo-o
-        //Note: Goodra-Hisui will probably be Rock, and Goodra-Unova Water
-        // case SPECIES_GOODRA_HISUI: 
-        // case SPECIES_KOMMO_O:
-        case SPECIES_DRAGAPULT:
-        case SPECIES_BAXCALIBUR:
-        case SPECIES_URSHIFU_SINGLE_STRIKE: case SPECIES_URSHIFU_RAPID_STRIKE:
-            return TRUE;
-        default:
-            return FALSE;
+    switch (species)
+    {
+    case SPECIES_DRAGONITE:
+    // case SPECIES_TYRANITAR:
+    case SPECIES_SALAMENCE:
+    // case SPECIES_METAGROSS:
+    case SPECIES_GARCHOMP:
+    // case SPECIES_HYDREIGON:
+    // For now, excusing both Goodras, and Kommo-o
+    // Note: Goodra-Hisui will probably be Rock, and Goodra-Unova Water
+    // case SPECIES_GOODRA_HISUI:
+    // case SPECIES_KOMMO_O:
+    case SPECIES_DRAGAPULT:
+    // case SPECIES_BAXCALIBUR:
+    case SPECIES_URSHIFU_SINGLE_STRIKE:
+    case SPECIES_URSHIFU_RAPID_STRIKE:
+        return TRUE;
+    case SPECIES_ARCHALUDON:
+        return TRUE;
+    default:
+        return FALSE;
     }
 }
-
 
 // Returns whether a battler can Terastallize.
 bool32 CanTerastallize(u32 battler)
@@ -91,15 +93,15 @@ bool32 CanTerastallize(u32 battler)
     if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE && GetBattlerSide(battler) == B_SIDE_OPPONENT)
         return FALSE;
 
-    //For monotypes, only permit teras that don't remove the type relevant to the monotype
-
+    // For monotypes, only permit teras that don't remove the type relevant to the monotype
 
     if (TESTING || GetBattlerSide(battler) == B_SIDE_OPPONENT)
     {
         // Skip all other checks in this block, go to HasTrainerUsedGimmick
     }
 
-    else if (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeTeraBanned(battler)){
+    else if (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeTeraBanned(battler))
+    {
         return FALSE;
     }
 
@@ -108,8 +110,9 @@ bool32 CanTerastallize(u32 battler)
         return FALSE;
     }
 
-    //For now, disable tera when AI is taking the player side, but this may need to be adjusted in the future
-    else if (FlagGet(B_FLAG_AI_VS_AI_BATTLE)){
+    // For now, disable tera when AI is taking the player side, but this may need to be adjusted in the future
+    else if (FlagGet(B_FLAG_AI_VS_AI_BATTLE))
+    {
         return FALSE;
     }
     else if (FlagGet(B_FLAG_TERA_ORB_NO_COST))
@@ -121,12 +124,14 @@ bool32 CanTerastallize(u32 battler)
         return FALSE;
     }
 
-    //Note depending on what AI battles are going to be incorporated,
-    //May have to add additional logic to not require the tera orb checks
-    //for AI battles
-    else if (VarGet(VAR_MONOTYPE) != 0 && !(FlagGet(B_FLAG_AI_VS_AI_BATTLE))){
+    // Note depending on what AI battles are going to be incorporated,
+    // May have to add additional logic to not require the tera orb checks
+    // for AI battles
+    else if (VarGet(VAR_MONOTYPE) != 0 && !(FlagGet(B_FLAG_AI_VS_AI_BATTLE)))
+    {
         monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
-        if (teraType != monotype && teraType != TYPE_STELLAR){
+        if (teraType != monotype && teraType != TYPE_STELLAR)
+        {
             return FALSE;
         }
     }
@@ -209,8 +214,7 @@ uq4_12_t GetTeraMultiplier(u32 battler, u32 type)
             return UQ_4_12(2.0);
     }
     // Base or Tera type only.
-    else if ((type == teraType && !IS_BATTLER_OF_BASE_TYPE(battler, type))
-             || (type != teraType && IS_BATTLER_OF_BASE_TYPE(battler, type)))
+    else if ((type == teraType && !IS_BATTLER_OF_BASE_TYPE(battler, type)) || (type != teraType && IS_BATTLER_OF_BASE_TYPE(battler, type)))
     {
         if (hasAdaptability)
             return UQ_4_12(2.0);
