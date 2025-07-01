@@ -24,6 +24,7 @@ DewfordTown_EventScript_Briney::
 	lock
 	faceplayer
 	goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, DewfordTown_EventScript_ReturnToPetalburgPrompt
+	goto_if_unset FLAG_DEMO_GUARD, BrineyDewford_DemoMessage
 	message DewfordTown_Text_WhereAreWeBound
 	waitmessage
 	multichoicedefault 21, 6, MULTI_BRINEY_ON_DEWFORD, 2, FALSE
@@ -835,5 +836,16 @@ script DewfordTown_EventScript_GoodRod_Fisherman {
         msgbox(Route118_Text_TryCatchingMonWithGoodRod)
     }
     release
+    end
+}
+
+script BrineyDewford_DemoMessage{
+    msgbox(format("NOTE: This demo does not go to Slateport until v.0.3.0 releases."))
+	msgbox(format("Would you like to go to Petalburg?"), MSGBOX_YESNO)
+	if (var(VAR_RESULT) == YES){
+		goto(DewfordTown_EventScript_SailBackToPetalburg)
+	}
+	msgbox(format("I'll wait for you next Demo!"))
+    releaseall
     end
 }

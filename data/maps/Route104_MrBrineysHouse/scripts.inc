@@ -57,7 +57,7 @@ Route104_MrBrineysHouse_EventScript_Briney::
 # 29 "data/maps/Route104_MrBrineysHouse/scripts.pory"
 	faceplayer
 # 30 "data/maps/Route104_MrBrineysHouse/scripts.pory"
-    goto_if_unset FLAG_DEMO_GUARD, BrineysHouse_DemoMessage
+    // goto_if_unset FLAG_DEMO_GUARD, BrineysHouse_DemoMessage
 # 31 "data/maps/Route104_MrBrineysHouse/scripts.pory"
 	call_if_unset FLAG_MR_BRINEY_SAILING_INTRO, Route104_MrBrineysHouse_EventScript_SailingIntro
 # 32 "data/maps/Route104_MrBrineysHouse/scripts.pory"
