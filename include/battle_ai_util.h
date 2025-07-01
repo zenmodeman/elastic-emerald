@@ -41,7 +41,7 @@ u32 GetStatusMoveCount(u32 battler);
 bool32 HasNoMovesKnown(u32 battler);
 bool32 HasNoKnownNonProtectingMoves(u32 battler);
 bool32 HasAllKnownMoves(u32 battler);
-u16 *GetMovesArrayWithHiddenSTAB(u32 battler, u16 *moves);
+u16 *GetMovesArrayWithHiddenSTAB(u32 battler, u16 *moves); // Returns revealed moves + unrevealed STAB moves for non-AI battlers
 u32 GetBestDmgMoveofType(u32 battlerAtk, u32 battlerDef, u32 type);
 bool32 AI_ShouldTerastal(u32 battler);
 bool32 IsStatReductionGuarded(u32 battler);

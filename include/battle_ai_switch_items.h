@@ -40,6 +40,19 @@ enum SwitchType
     SWITCH_MID_BATTLE,
 };
 
+// Debug categories for SetBattleAISwitchItemsDebug
+#define DEBUG_SWITCH_DECISIONS      0
+#define DEBUG_ITEM_DECISIONS        1
+#define DEBUG_SWITCH_REASONS        2
+#define DEBUG_MON_EVALUATION        3
+#define DEBUG_TYPE_MATCHUPS         4
+#define DEBUG_DAMAGE_CALCULATIONS   5
+#define DEBUG_HAZARD_CALCULATIONS   6
+#define DEBUG_STATUS_CONDITIONS     7
+#define DEBUG_ABILITY_CHECKS        8
+#define DEBUG_PLAYER_PREDICTION     9
+#define DEBUG_ALL_CATEGORIES        99
+
 void GetAIPartyIndexes(u32 battlerId, s32 *firstId, s32 *lastId);
 void AI_TrySwitchOrUseItem(u32 battler);
 u32 GetMostSuitableMonToSwitchInto(u32 battler, enum SwitchType switchType);
@@ -47,4 +60,8 @@ bool32 ShouldSwitch(u32 battler);
 bool32 IsMonGrounded(u16 heldItemEffect, u32 ability, u8 type1, u8 type2);
 
 bool32 HasHealItemWithEffect(u8 battleUsageID);
+
+// Debug function to toggle debug output categories
+void SetBattleAISwitchItemsDebug(u32 category, bool32 enabled);
+
 #endif // GUARD_BATTLE_AI_SWITCH_ITEMS_H

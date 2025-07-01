@@ -21,6 +21,71 @@
 #include "constants/items.h"
 #include "constants/moves.h"
 
+// Debug toggle variables for battle_ai_switch_items
+static bool32 sDebugSwitchDecisions = FALSE;
+static bool32 sDebugItemDecisions = FALSE;
+static bool32 sDebugSwitchReasons = FALSE;
+static bool32 sDebugMonEvaluation = FALSE;
+static bool32 sDebugTypeMatchups = FALSE;
+static bool32 sDebugDamageCalculations = FALSE;
+static bool32 sDebugHazardCalculations = FALSE;
+static bool32 sDebugStatusConditions = FALSE;
+static bool32 sDebugAbilityChecks = FALSE;
+static bool32 sDebugPlayerPrediction = FALSE;
+
+// Debug macros for cleaner code
+#define DEBUG_SWITCH(format, ...) do { if (sDebugSwitchDecisions) DebugPrintf("[SWITCH] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_ITEM(format, ...) do { if (sDebugItemDecisions) DebugPrintf("[ITEM] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_REASON(format, ...) do { if (sDebugSwitchReasons) DebugPrintf("[REASON] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_MON_EVAL(format, ...) do { if (sDebugMonEvaluation) DebugPrintf("[MON_EVAL] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_TYPE(format, ...) do { if (sDebugTypeMatchups) DebugPrintf("[TYPE] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_DAMAGE(format, ...) do { if (sDebugDamageCalculations) DebugPrintf("[DAMAGE] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_HAZARD(format, ...) do { if (sDebugHazardCalculations) DebugPrintf("[HAZARD] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_STATUS(format, ...) do { if (sDebugStatusConditions) DebugPrintf("[STATUS] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_ABILITY(format, ...) do { if (sDebugAbilityChecks) DebugPrintf("[ABILITY] " format, ##__VA_ARGS__); } while(0)
+#define DEBUG_PREDICT(format, ...) do { if (sDebugPlayerPrediction) DebugPrintf("[PREDICT] " format, ##__VA_ARGS__); } while(0)
+
+// Function to toggle debug categories
+void SetBattleAISwitchItemsDebug(u32 category, bool32 enabled)
+{
+    switch (category)
+    {
+    case 0: sDebugSwitchDecisions = enabled; break;
+    case 1: sDebugItemDecisions = enabled; break;
+    case 2: sDebugSwitchReasons = enabled; break;
+    case 3: sDebugMonEvaluation = enabled; break;
+    case 4: sDebugTypeMatchups = enabled; break;
+    case 5: sDebugDamageCalculations = enabled; break;
+    case 6: sDebugHazardCalculations = enabled; break;
+    case 7: sDebugStatusConditions = enabled; break;
+    case 8: sDebugAbilityChecks = enabled; break;
+    case 9: sDebugPlayerPrediction = enabled; break;
+    case 99: // Enable all
+        sDebugSwitchDecisions = sDebugItemDecisions = sDebugSwitchReasons =
+        sDebugMonEvaluation = sDebugTypeMatchups = sDebugDamageCalculations =
+        sDebugHazardCalculations = sDebugStatusConditions = sDebugAbilityChecks =
+        sDebugPlayerPrediction = enabled;
+        break;
+    }
+}
+
+
+// // Enable all debug output
+// SetBattleAISwitchItemsDebug(DEBUG_ALL_CATEGORIES, TRUE);
+
+// // Enable only switch-related debugging
+// SetBattleAISwitchItemsDebug(DEBUG_SWITCH_DECISIONS, TRUE);
+// SetBattleAISwitchItemsDebug(DEBUG_SWITCH_REASONS, TRUE);
+// SetBattleAISwitchItemsDebug(DEBUG_DAMAGE_CALCULATIONS, TRUE);
+
+// // Enable only item debugging
+// SetBattleAISwitchItemsDebug(DEBUG_ITEM_DECISIONS, TRUE);
+// SetBattleAISwitchItemsDebug(DEBUG_STATUS_CONDITIONS, TRUE);
+
+// // Disable all debugging
+// SetBattleAISwitchItemsDebug(DEBUG_ALL_CATEGORIES, FALSE);
+
+
 // this file's functions
 static bool32 HasSuperEffectiveMoveAgainstOpponents(u32 battler, bool32 noRng);
 static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 moduloPercent);
@@ -183,16 +248,25 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     u16 typeEffectiveness = UQ_4_12(1.0), aiMoveEffect; //baseline typing damage
     uq4_12_t effectiveness;
 
+    DEBUG_REASON("--- Checking if should switch due to bad odds ---");
+
     // Only use this if AI_FLAG_SMART_SWITCHING is set for the trainer
     if (!(AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING))
+    {
+        DEBUG_REASON("Smart switching not enabled - skipping bad odds check");
         return FALSE;
+    }
 
     // Double Battles aren't included in AI_FLAG_SMART_MON_CHOICE. Defaults to regular switch in logic
     if (IsDoubleBattle())
+    {
+        DEBUG_REASON("Double battle - skipping bad odds check");
         return FALSE;
+    }
 
     opposingPosition = BATTLE_OPPOSITE(GetBattlerPosition(battler));
     opposingBattler = GetBattlerAtPosition(opposingPosition);
+    DEBUG_REASON("Analyzing matchup: AI battler %d vs opponent %d", battler, opposingBattler);
 
     // Gets types of player (opposingBattler) and computer (battler)
     atkType1 = gBattleMons[opposingBattler].types[0];
@@ -201,13 +275,15 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     defType2 = gBattleMons[battler].types[1];
 
     // Check AI moves for damage dealt
+    DEBUG_DAMAGE("Analyzing AI's moves:");
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         aiMove = gBattleMons[battler].moves[i];
-        // DebugPrintf("AI move: %d", aiMove);
         aiMoveEffect = GetMoveEffect(aiMove);
         if (aiMove != MOVE_NONE)
         {
+            DEBUG_DAMAGE("Move %d: %d (effect: %d)", i, aiMove, aiMoveEffect);
+
             // Check if mon has an "important" status move
             if (aiMoveEffect == EFFECT_REFLECT || aiMoveEffect == EFFECT_LIGHT_SCREEN
             || aiMoveEffect == EFFECT_SPIKES || aiMoveEffect == EFFECT_TOXIC_SPIKES || aiMoveEffect == EFFECT_STEALTH_ROCK || aiMoveEffect == EFFECT_STICKY_WEB || aiMoveEffect == EFFECT_LEECH_SEED
@@ -217,28 +293,37 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
             )
             {
                 hasStatusMove = TRUE;
+                DEBUG_DAMAGE("Found important status move: %d", aiMove);
             }
 
             // Only check damage if it's a damaging move
             if (!IsBattleMoveStatus(aiMove))
             {
                 // Check if mon has a super effective move
-                if (AI_GetMoveEffectiveness(aiMove, battler, opposingBattler) >= UQ_4_12(2.0))
+                uq4_12_t effectiveness = AI_GetMoveEffectiveness(aiMove, battler, opposingBattler);
+                if (effectiveness >= UQ_4_12(2.0))
+                {
                     hasSuperEffectiveMove = TRUE;
+                    DEBUG_DAMAGE("Found super effective move: %d (effectiveness: %d)", aiMove, effectiveness);
+                }
 
                 // Get maximum damage mon can deal
                 damageDealt = AI_DATA->simulatedDmg[battler][opposingBattler][i].expected;
+                DEBUG_DAMAGE("Move %d damage: %d", aiMove, damageDealt);
                 if(damageDealt > maxDamageDealt)
                 {
                     maxDamageDealt = damageDealt;
                     aiBestMove = aiMove;
+                    DEBUG_DAMAGE("New best move: %d (damage: %d)", aiBestMove, maxDamageDealt);
                 }
-
             }
         }
     }
+    DEBUG_DAMAGE("AI analysis complete - Max damage: %d, Has status move: %s, Has SE move: %s",
+                 maxDamageDealt, hasStatusMove ? "YES" : "NO", hasSuperEffectiveMove ? "YES" : "NO");
 
     // Calculate type advantage
+    DEBUG_TYPE("Calculating type matchup - Attacker: %d/%d vs Defender: %d/%d", atkType1, atkType2, defType1, defType2);
     typeEffectiveness = uq4_12_multiply(typeEffectiveness, (GetTypeModifier(atkType1, defType1)));
     if (atkType2 != atkType1)
         typeEffectiveness = uq4_12_multiply(typeEffectiveness, (GetTypeModifier(atkType2, defType1)));
@@ -248,75 +333,129 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         if (atkType2 != atkType1)
             typeEffectiveness = uq4_12_multiply(typeEffectiveness, (GetTypeModifier(atkType2, defType2)));
     }
+    DEBUG_TYPE("Final type effectiveness: %d (1.0 = %d)", typeEffectiveness, UQ_4_12(1.0));
 
     // Get max damage mon could take
+    DEBUG_DAMAGE("Analyzing opponent's moves (revealed + STAB only):");
+    u16 opponentMoves[MAX_MON_MOVES];
+    GetMovesArrayWithHiddenSTAB(opposingBattler, opponentMoves);
+
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        playerMove = gBattleMons[opposingBattler].moves[i];
-        if (playerMove != MOVE_NONE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
+        playerMove = opponentMoves[i];
+        if (playerMove != MOVE_NONE && playerMove != MOVE_UNAVAILABLE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
         {
             damageTaken = AI_CalcDamage(playerMove, opposingBattler, battler, &effectiveness, FALSE, weather, DMG_ROLL_HIGHEST).expected;
+            DEBUG_DAMAGE("Opponent move %d: %d damage", playerMove, damageTaken);
             if (damageTaken > maxDamageTaken)
+            {
                 maxDamageTaken = damageTaken;
+                DEBUG_DAMAGE("New max damage taken: %d", maxDamageTaken);
+            }
+        }
+        else if (playerMove != MOVE_NONE && playerMove != MOVE_UNAVAILABLE)
+        {
+            DEBUG_DAMAGE("Skipping opponent move %d (status/Focus Punch)", playerMove);
         }
     }
+    DEBUG_DAMAGE("Opponent analysis complete - Max damage to AI: %d (AI HP: %d/%d)",
+                 maxDamageTaken, gBattleMons[battler].hp, gBattleMons[battler].maxHP);
 
     // Check if mon gets one shot
-    if(maxDamageTaken > gBattleMons[battler].hp
-        && !(gItemsInfo[gBattleMons[battler].item].holdEffect == HOLD_EFFECT_FOCUS_SASH || (!IsMoldBreakerTypeAbility(opposingBattler, gBattleMons[opposingBattler].ability) && B_STURDY >= GEN_5 && aiAbility == ABILITY_STURDY)))
+    bool32 hasFocusSash = (gItemsInfo[gBattleMons[battler].item].holdEffect == HOLD_EFFECT_FOCUS_SASH);
+    bool32 hasSturdy = (!IsMoldBreakerTypeAbility(opposingBattler, gBattleMons[opposingBattler].ability) && B_STURDY >= GEN_5 && aiAbility == ABILITY_STURDY);
+    if(maxDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy))
     {
         getsOneShot = TRUE;
+        DEBUG_REASON("AI mon gets OHKO'd (damage: %d, HP: %d, Focus Sash: %s, Sturdy: %s)",
+                     maxDamageTaken, gBattleMons[battler].hp, hasFocusSash ? "YES" : "NO", hasSturdy ? "YES" : "NO");
     }
 
     // Check if current mon can outspeed and KO in spite of bad matchup, and don't switch out if it can
-    if(damageDealt > gBattleMons[opposingBattler].hp)
+    if(maxDamageDealt > gBattleMons[opposingBattler].hp)
     {
-        if (AI_IsFaster(battler, opposingBattler, aiBestMove))
+        bool32 isFaster = AI_IsFaster(battler, opposingBattler, aiBestMove);
+        DEBUG_REASON("AI can OHKO opponent (damage: %d, opponent HP: %d, AI faster: %s)",
+                     maxDamageDealt, gBattleMons[opposingBattler].hp, isFaster ? "YES" : "NO");
+        if (isFaster)
+        {
+            DEBUG_REASON("Not switching - AI can outspeed and OHKO");
             return FALSE;
+        }
     }
 
     // If we don't have any other viable options, don't switch out
     if (AI_DATA->mostSuitableMonId[battler] == PARTY_SIZE)
+    {
+        DEBUG_REASON("Not switching - no suitable replacement mon available");
         return FALSE;
+    }
 
     // Start assessing whether or not mon has bad odds
+    DEBUG_REASON("=== Bad Odds Decision Logic ===");
+    DEBUG_REASON("Gets OHKO: %s, Type effectiveness: %d, AI HP: %d/%d",
+                 getsOneShot ? "YES" : "NO", typeEffectiveness, gBattleMons[battler].hp, gBattleMons[battler].maxHP);
+
     // Jump straight to switching out in cases where mon gets OHKO'd
+    bool32 opponentFaster = (gBattleMons[opposingBattler].speed > gBattleMons[battler].speed);
+    bool32 cantFourKO = (maxDamageDealt < gBattleMons[opposingBattler].hp / 4);
+    bool32 hasGoodHP = (gBattleMons[battler].hp >= ((gBattleMons[battler].maxHP * 3) / 4));
+    bool32 hasRegenHP = (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4);
+
     if ((
         // If the player OHKOs and outspeeds OR OHKOs, doesn't outspeed but isn't 4KO'd
-        (getsOneShot && gBattleMons[opposingBattler].speed > gBattleMons[battler].speed) 
-            || (getsOneShot && gBattleMons[opposingBattler].speed <= gBattleMons[battler].speed && maxDamageDealt < gBattleMons[opposingBattler].hp / 4))
-        && (gBattleMons[battler].hp >= ((gBattleMons[battler].maxHP * 3) / 4) // And the current mon has at least 3/4 their HP, or 1/4 HP and Regenerator
-            || (aiAbility == ABILITY_REGENERATOR
-            && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4)))
+        (getsOneShot && opponentFaster)
+            || (getsOneShot && !opponentFaster && cantFourKO))
+        && (hasGoodHP || hasRegenHP)) // And the current mon has at least 3/4 their HP, or 1/4 HP and Regenerator
     {
-        // 50% chance to stay in regardless
-        if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - GetSwitchChance(SHOULD_SWITCH_HASBADODDS))) && !AI_DATA->aiSwitchPredictionInProgress)
-            return FALSE;
+        DEBUG_REASON("OHKO scenario - Opponent faster: %s, Can't 4KO: %s, Good HP: %s, Regen HP: %s",
+                     opponentFaster ? "YES" : "NO", cantFourKO ? "YES" : "NO",
+                     hasGoodHP ? "YES" : "NO", hasRegenHP ? "YES" : "NO");
 
-        // Switch mon out
+        // 50% chance to stay in regardless
+        u32 switchChance = GetSwitchChance(SHOULD_SWITCH_HASBADODDS);
+        if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - switchChance)) && !AI_DATA->aiSwitchPredictionInProgress)
+        {
+            DEBUG_REASON("RNG check failed (%d%% chance) - staying in", switchChance);
+            return FALSE;
+        }
+
+        DEBUG_REASON("Switching due to OHKO scenario");
         return SetSwitchinAndSwitch(battler, PARTY_SIZE);
     }
 
     // General bad type matchups have more wiggle room
     if (typeEffectiveness >= UQ_4_12(2.0)) // If the player has at least a 2x type advantage
     {
-        if (!hasSuperEffectiveMove // If the AI doesn't have a super effective move
-        && (gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 2 // And the current mon has at least 1/2 their HP, or 1/4 HP and Regenerator
-            || (aiAbility == ABILITY_REGENERATOR
-            && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4)))
+        DEBUG_REASON("Bad type matchup (2x+ effectiveness) - checking conditions");
+        bool32 hasGoodHPForType = (gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 2);
+        bool32 hasRegenHPForType = (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4);
+
+        if (!hasSuperEffectiveMove && (hasGoodHPForType || hasRegenHPForType))
         {
+            DEBUG_REASON("No SE move, good HP (%s) or regen HP (%s)",
+                         hasGoodHPForType ? "YES" : "NO", hasRegenHPForType ? "YES" : "NO");
+
             // Then check if they have an important status move, which is worth using even in a bad matchup
             if (hasStatusMove)
+            {
+                DEBUG_REASON("Has important status move - staying in despite bad matchup");
                 return FALSE;
+            }
 
             // 50% chance to stay in regardless
-            if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - GetSwitchChance(SHOULD_SWITCH_HASBADODDS))) && !AI_DATA->aiSwitchPredictionInProgress)
+            u32 switchChance = GetSwitchChance(SHOULD_SWITCH_HASBADODDS);
+            if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - switchChance)) && !AI_DATA->aiSwitchPredictionInProgress)
+            {
+                DEBUG_REASON("RNG check failed (%d%% chance) - staying in", switchChance);
                 return FALSE;
+            }
 
-            // Switch mon out
+            DEBUG_REASON("Switching due to bad type matchup");
             return SetSwitchinAndSwitch(battler, PARTY_SIZE);
         }
     }
+    DEBUG_REASON("No bad odds conditions met - staying in");
     return FALSE;
 }
 
@@ -442,6 +581,11 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
     bool32 isOpposingBattlerChargingOrInvulnerable = (IsSemiInvulnerable(opposingBattler, incomingMove) || IsTwoTurnNotSemiInvulnerableMove(opposingBattler, incomingMove));
     s32 i, j;
 
+    DEBUG_ABILITY("--- FindMonThatAbsorbsOpponentsMove ---");
+    DEBUG_ABILITY("Incoming move: %d (type: %d), Predicted move: %d (type: %d)",
+                  incomingMove, incomingType, predictedMove, predictedType);
+    DEBUG_ABILITY("Opponent charging/invulnerable: %s", isOpposingBattlerChargingOrInvulnerable ? "YES" : "NO");
+
 
     if (GetBattlerSide(battler) == B_SIDE_OPPONENT){ //Making these checks that only apply for the AI's side
         if (!(AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING))
@@ -484,52 +628,72 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
     }
 
     // Create an array of possible absorb abilities so the AI considers all of them
+    DEBUG_ABILITY("Determining absorbing abilities for type %d:", predictedType);
     if (predictedType == TYPE_FIRE)
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_FLASH_FIRE;
+        DEBUG_ABILITY("Added Flash Fire");
     }
     else if (predictedType == TYPE_WATER || (isOpposingBattlerChargingOrInvulnerable && incomingType == TYPE_WATER))
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_WATER_ABSORB;
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_DRY_SKIN;
+        DEBUG_ABILITY("Added Water Absorb, Dry Skin");
         if (B_REDIRECT_ABILITY_IMMUNITY >= GEN_5)
+        {
             absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_STORM_DRAIN;
+            DEBUG_ABILITY("Added Storm Drain");
+        }
     }
     else if (predictedType == TYPE_ELECTRIC || (isOpposingBattlerChargingOrInvulnerable && incomingType == TYPE_ELECTRIC))
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_VOLT_ABSORB;
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_MOTOR_DRIVE;
+        DEBUG_ABILITY("Added Volt Absorb, Motor Drive");
         if (B_REDIRECT_ABILITY_IMMUNITY >= GEN_5)
+        {
             absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_LIGHTNING_ROD;
+            DEBUG_ABILITY("Added Lightning Rod");
+        }
     }
     else if (predictedType == TYPE_GRASS || (isOpposingBattlerChargingOrInvulnerable && incomingType == TYPE_GRASS))
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_SAP_SIPPER;
+        DEBUG_ABILITY("Added Sap Sipper");
     }
     else if (predictedType == TYPE_GROUND || (isOpposingBattlerChargingOrInvulnerable && incomingType == TYPE_GROUND))
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_EARTH_EATER;
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_LEVITATE;
+        DEBUG_ABILITY("Added Earth Eater, Levitate");
     }
     else if (IsSoundMove(predictedMove) || (isOpposingBattlerChargingOrInvulnerable && IsSoundMove(incomingMove)))
     {
         absorbingTypeAbilities[numAbsorbingAbilities++] = ABILITY_SOUNDPROOF;
+        DEBUG_ABILITY("Added Soundproof");
     }
     else
     {
+        DEBUG_ABILITY("No absorbing abilities for this move type - returning false");
         return FALSE;
     }
+    DEBUG_ABILITY("Total absorbing abilities found: %d", numAbsorbingAbilities);
 
     // Check current mon for all absorbing abilities
+    DEBUG_ABILITY("Checking if current mon already has absorbing ability:");
     for (i = 0; i < numAbsorbingAbilities; i++)
     {
         if (gBattleMons[battler].ability == absorbingTypeAbilities[i])
+        {
+            DEBUG_ABILITY("Current mon already has absorbing ability %d - not switching", absorbingTypeAbilities[i]);
             return FALSE;
+        }
     }
 
     // Check party for mon with ability that absorbs move
     GetAIPartyIndexes(battler, &firstId, &lastId);
     party = GetBattlerParty(battler);
+    DEBUG_ABILITY("Checking party slots %d to %d for absorbing abilities", firstId, lastId - 1);
 
     for (i = firstId; i < lastId; i++)
     {
@@ -547,14 +711,28 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
             continue;
 
         monAbility = GetMonAbility(&party[i]);
+        DEBUG_ABILITY("Checking party slot %d (species: %d, ability: %d)", i, GetMonData(&party[i], MON_DATA_SPECIES), monAbility);
 
         for (j = 0; j < numAbsorbingAbilities; j++)
         {
             // Found a mon
-            if (absorbingTypeAbilities[j] == monAbility && RandomPercentage(RNG_AI_SWITCH_ABSORBING, GetSwitchChance(SHOULD_SWITCH_ABSORBS_MOVE)))
-                return SetSwitchinAndSwitch(battler, i);
+            if (absorbingTypeAbilities[j] == monAbility)
+            {
+                u32 switchChance = GetSwitchChance(SHOULD_SWITCH_ABSORBS_MOVE);
+                DEBUG_ABILITY("Found absorbing mon! Ability %d matches, switch chance: %d%%", monAbility, switchChance);
+                if (RandomPercentage(RNG_AI_SWITCH_ABSORBING, switchChance))
+                {
+                    DEBUG_ABILITY("RNG passed - switching to absorbing mon in slot %d", i);
+                    return SetSwitchinAndSwitch(battler, i);
+                }
+                else
+                {
+                    DEBUG_ABILITY("RNG failed - not switching despite having absorbing mon");
+                }
+            }
         }
     }
+    DEBUG_ABILITY("No suitable absorbing mon found in party");
     return FALSE;
 }
 
@@ -1129,80 +1307,113 @@ bool32 ShouldSwitch(u32 battler)
     s32 i;
     s32 availableToSwitch;
 
+    DEBUG_SWITCH("=== ShouldSwitch called for battler %d (species: %d, HP: %d/%d) ===",
+                 battler, gBattleMons[battler].species, gBattleMons[battler].hp, gBattleMons[battler].maxHP);
 
+    // Check escape prevention conditions
     if (gBattleMons[battler].status2 & (STATUS2_WRAPPED | STATUS2_ESCAPE_PREVENTION))
+    {
+        DEBUG_SWITCH("Cannot switch - trapped by wrap/escape prevention");
         return FALSE;
+    }
     if (gStatuses3[battler] & STATUS3_ROOTED)
+    {
+        DEBUG_SWITCH("Cannot switch - rooted by Ingrain");
         return FALSE;
+    }
     if (IsAbilityPreventingEscape(battler))
+    {
+        DEBUG_SWITCH("Cannot switch - ability preventing escape");
         return FALSE;
+    }
     if (gBattleTypeFlags & BATTLE_TYPE_ARENA)
+    {
+        DEBUG_SWITCH("Cannot switch - Arena battle type");
         return FALSE;
+    }
     
     if (GetBattlerSide(battler) == B_SIDE_PLAYER){
+        DEBUG_PREDICT("=== Player Switch Prediction Logic ===");
         //Special player switch-in check
         //Note, even if player mon can outspeed and OHKO, still carry through with the check, to prevent switch abuse in these cases
 
-        u32 aiBattler = GetOpposingSideBattler(battler); 
+        u32 aiBattler = GetOpposingSideBattler(battler);
         struct AiPartyMon *aiMons = AI_PARTY->mons[GetBattlerSide(battler)];
         u16 aiBestDmgMove;
         u16 storedMove;
         bool32 immuneMonFound;
+
+        DEBUG_PREDICT("AI battler: %d, Player battler: %d", aiBattler, battler);
+
         //AI battler must be able to do damage
-        if (GetBestDmgFromBattler(aiBattler, battler) == 0){
-            DebugPrintf("Player ShouldSwitch call: player mon takes no damage from AI mon's damaging moves; aborted.");
+        u32 bestDamage = GetBestDmgFromBattler(aiBattler, battler);
+        if (bestDamage == 0){
+            DEBUG_PREDICT("Player ShouldSwitch call: player mon takes no damage from AI mon's damaging moves; aborted.");
             return FALSE;
         }
+        DEBUG_PREDICT("AI's best damage against player: %d", bestDamage);
 
         aiBestDmgMove = (u16)GetBestDmgMoveFromBattler(aiBattler, battler);
-        
+        DEBUG_PREDICT("AI's best damage move: %d", aiBestDmgMove);
+
         //Before the standard check for immunity looping, do a check for immunity healing abilities just to prevent them from getting
         //infinite healing
         if (FindHealAbsorbMonWithSwitches(battler, aiBestDmgMove, MIN_SWITCHES_FOR_PREDICTION)){
-            DebugPrintf("Heal Absorb mon check is being reached.");
+            DEBUG_PREDICT("Heal Absorb mon check is being reached - switching!");
             return TRUE;
         }
 
-        if (aiMons[gBattlerPartyIndexes[battler]].switchInCount < MIN_SWITCHES_FOR_PREDICTION){
-            // DebugPrintf("Player ShouldSwitch call: Current mon hasn't switched out enough; aborted.");
-            return FALSE;
-        }
-        //Switch prediction only triggered if the player mon is immune to one of the battler's moves
-        if (!HasIneffectiveDamagingMove(aiBattler, battler)){
-            // DebugPrintf("Player ShouldSwitch call: player mon  isn't immune to AI mon's moves; aborted.");
+        u32 switchCount = aiMons[gBattlerPartyIndexes[battler]].switchInCount;
+        DEBUG_PREDICT("Current mon switch count: %d (required: %d)", switchCount, MIN_SWITCHES_FOR_PREDICTION);
+        if (switchCount < MIN_SWITCHES_FOR_PREDICTION){
+            DEBUG_PREDICT("Player ShouldSwitch call: Current mon hasn't switched out enough; aborted.");
             return FALSE;
         }
 
-        
+        //Switch prediction only triggered if the player mon is immune to one of the battler's moves
+        bool32 hasIneffectiveMove = HasIneffectiveDamagingMove(aiBattler, battler);
+        DEBUG_PREDICT("AI has ineffective move against player: %s", hasIneffectiveMove ? "YES" : "NO");
+        if (!hasIneffectiveMove){
+            DEBUG_PREDICT("Player ShouldSwitch call: player mon isn't immune to AI mon's moves; aborted.");
+            return FALSE;
+        }
+
+
         //Temporary inject last used move for FindMonThatAbsorbsOpponentsMove
         storedMove = AI_DATA->lastUsedMove[aiBattler];
         AI_DATA->lastUsedMove[aiBattler] = aiBestDmgMove;
+        DEBUG_PREDICT("Testing absorb logic - injected move: %d (stored: %d)", aiBestDmgMove, storedMove);
         immuneMonFound = FindMonThatAbsorbsOpponentsMove(battler);
         AI_DATA->lastUsedMove[aiBattler] = storedMove;
-        // DebugPrintf("storedPredictedMove: %d, aiBestDmgMove: %d, restoredMove: %d", storedMove, aiBestDmgMove, 
-        //     AI_DATA->lastUsedMove[aiBattler]);
+        DEBUG_PREDICT("Absorb mon found: %s", immuneMonFound ? "YES" : "NO");
         if (immuneMonFound){
-            DebugPrintf("Player Switch logic on Absorb is triggered.");
+            DEBUG_PREDICT("Player Switch logic on Absorb is triggered - switching!");
             return TRUE;
         }
 
         //Temporary inject last landed move for FindMonWithFlagsAndSuperEffective
         storedMove = gLastLandedMoves[aiBattler];
         gLastLandedMoves[battler] = aiBestDmgMove;
+        DEBUG_PREDICT("Testing immunity logic - injected move: %d (stored: %d)", aiBestDmgMove, storedMove);
         immuneMonFound = FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_DOESNT_AFFECT_FOE, 50);
         gLastLandedMoves[battler] = storedMove;
+        DEBUG_PREDICT("Immune mon found: %s", immuneMonFound ? "YES" : "NO");
         if (immuneMonFound){
-            DebugPrintf("Player Switch logic on Immunity is triggered.");
+            DEBUG_PREDICT("Player Switch logic on Immunity is triggered - switching!");
             return TRUE;
         }else{
-            DebugPrintf("Player Switch logic on immunity/Absorb is not triggered.");
+            DEBUG_PREDICT("Player Switch logic on immunity/Absorb is not triggered - staying in.");
             return FALSE;
         }
     }
     // Sequence Switching AI never switches mid-battle
     if (AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SEQUENCE_SWITCHING)
+    {
+        DEBUG_SWITCH("Sequence switching AI - never switches mid-battle");
         return FALSE;
+    }
 
+    DEBUG_SWITCH("=== AI Switch Decision Logic ===");
     availableToSwitch = 0;
 
     if (IsDoubleBattle())
@@ -1213,15 +1424,18 @@ bool32 ShouldSwitch(u32 battler)
             battlerIn2 = battler;
         else
             battlerIn2 = partner;
+        DEBUG_SWITCH("Double battle - battlerIn1: %d, battlerIn2: %d", battlerIn1, battlerIn2);
     }
     else
     {
         battlerIn1 = battler;
         battlerIn2 = battler;
+        DEBUG_SWITCH("Single battle - battler: %d", battler);
     }
 
     GetAIPartyIndexes(battler, &firstId, &lastId);
     party = GetBattlerParty(battler);
+    DEBUG_SWITCH("Party range: %d to %d", firstId, lastId - 1);
 
     for (i = firstId; i < lastId; i++)
     {
@@ -1236,13 +1450,20 @@ bool32 ShouldSwitch(u32 battler)
         if (i == gBattleStruct->monToSwitchIntoId[battlerIn2])
             continue;
         if (IsAceMon(battler, i))
+        {
+            DEBUG_SWITCH("Slot %d is ace mon - skipping for now", i);
             continue;
+        }
 
         availableToSwitch++;
     }
 
+    DEBUG_SWITCH("Available mons to switch to: %d", availableToSwitch);
     if (availableToSwitch == 0)
-            return FALSE;
+    {
+        DEBUG_SWITCH("No available mons to switch to - staying in");
+        return FALSE;
+    }
 
     // NOTE: The sequence of the below functions matter! Do not change unless you have carefully considered the outcome.
     // Since the order is sequential, and some of these functions prompt switch to specific party members.
@@ -1250,51 +1471,114 @@ bool32 ShouldSwitch(u32 battler)
     // FindMon functions can prompt a switch to specific party members that override GetMostSuitableMonToSwitchInto
     // The rest can prompt a switch to party member returned by GetMostSuitableMonToSwitchInto
 
+    DEBUG_SWITCH("=== Checking Switch Conditions (in priority order) ===");
+
     if (FindMonThatHitsWonderGuard(battler))
+    {
+        DEBUG_REASON("SWITCHING: Found mon that hits Wonder Guard");
         return TRUE;
+    }
     if ((AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING) && (CanMonSurviveHazardSwitchin(battler) == FALSE))
+    {
+        DEBUG_REASON("NOT SWITCHING: Cannot survive hazard switch-in");
         return FALSE;
+    }
     if (HasGoodSubstituteMove(battler))
+    {
+        DEBUG_REASON("NOT SWITCHING: Has good substitute move");
         return FALSE;
+    }
     if (ShouldSwitchIfTrapperInParty(battler))
+    {
+        DEBUG_REASON("SWITCHING: Trapper in party");
         return TRUE;
+    }
     if (FindMonThatAbsorbsOpponentsMove(battler))
+    {
+        DEBUG_REASON("SWITCHING: Found mon that absorbs opponent's move");
         return TRUE;
+    }
     if (ShouldSwitchIfOpponentChargingOrInvulnerable(battler))
+    {
+        DEBUG_REASON("SWITCHING: Opponent charging or invulnerable");
         return TRUE;
+    }
     if (ShouldSwitchIfTruant(battler))
+    {
+        DEBUG_REASON("SWITCHING: Truant vulnerability");
         return TRUE;
+    }
     if (ShouldSwitchIfAllMovesBad(battler))
+    {
+        DEBUG_REASON("SWITCHING: All moves are bad/ineffective");
         return TRUE;
+    }
     if (ShouldSwitchIfBadlyStatused(battler))
+    {
+        DEBUG_REASON("SWITCHING: Badly statused");
         return TRUE;
+    }
     if (ShouldSwitchIfAbilityBenefit(battler))
+    {
+        DEBUG_REASON("SWITCHING: Ability benefit (Natural Cure/Regenerator)");
         return TRUE;
+    }
     if (ShouldSwitchIfHasBadOdds(battler))
+    {
+        DEBUG_REASON("SWITCHING: Has bad odds in current matchup");
         return TRUE;
+    }
     if (ShouldSwitchIfEncored(battler))
+    {
+        DEBUG_REASON("SWITCHING: Encored into bad move");
         return TRUE;
+    }
     if (ShouldSwitchIfBadChoiceLock(battler))
+    {
+        DEBUG_REASON("SWITCHING: Bad choice item lock");
         return TRUE;
+    }
     if (ShouldSwitchIfAttackingStatsLowered(battler))
+    {
+        DEBUG_REASON("SWITCHING: Attacking stats severely lowered");
         return TRUE;
+    }
 
     // Removing switch capabilites under specific conditions
     // These Functions prevent the "FindMonWithFlagsAndSuperEffective" from getting out of hand.
     // We don't use FindMonWithFlagsAndSuperEffective with AI_FLAG_SMART_SWITCHING, so we can bail early.
+    DEBUG_SWITCH("=== Final Switch Checks ===");
     if (AI_THINKING_STRUCT->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING)
+    {
+        DEBUG_REASON("NOT SWITCHING: Smart switching enabled - skipping default logic");
         return FALSE;
+    }
     if (HasSuperEffectiveMoveAgainstOpponents(battler, FALSE))
+    {
+        DEBUG_REASON("NOT SWITCHING: Has super effective move against opponents");
         return FALSE;
+    }
     if (AreStatsRaised(battler))
+    {
+        DEBUG_REASON("NOT SWITCHING: Stats are raised");
         return FALSE;
+    }
 
     // Default Function
     // Can prompt switch if AI has a pokemon in party that resists current opponent & has super effective move
-    if (FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_DOESNT_AFFECT_FOE, 50)
-        || FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_NOT_VERY_EFFECTIVE, 33))
+    DEBUG_SWITCH("Checking default switch logic (type matchup + super effective move)");
+    if (FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_DOESNT_AFFECT_FOE, 50))
+    {
+        DEBUG_REASON("SWITCHING: Found immune mon with super effective move (50% chance)");
         return TRUE;
+    }
+    if (FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_NOT_VERY_EFFECTIVE, 33))
+    {
+        DEBUG_REASON("SWITCHING: Found resistant mon with super effective move (33% chance)");
+        return TRUE;
+    }
 
+    DEBUG_SWITCH("No switch conditions met - staying in");
     return FALSE;
 }
 
@@ -1954,17 +2238,36 @@ static s32 GetMaxDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposingBattle
     int i = 0;
     u32 playerMove;
     s32 damageTaken = 0, maxDamageTaken = 0;
+    u16 playerMoves[MAX_MON_MOVES];
+
+    // Use GetMovesArrayWithHiddenSTAB to only consider revealed moves + STAB moves
+    GetMovesArrayWithHiddenSTAB(opposingBattler, playerMoves);
+
+    DEBUG_DAMAGE("Analyzing player moves for switch-in damage (revealed + STAB only):");
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        playerMove = gBattleMons[opposingBattler].moves[i];
-        if (playerMove != MOVE_NONE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
+        playerMove = playerMoves[i];
+        if (playerMove != MOVE_NONE && playerMove != MOVE_UNAVAILABLE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
         {
             damageTaken = AI_CalcPartyMonDamage(playerMove, opposingBattler, battler, battleMon, FALSE, DMG_ROLL_HIGHEST);
+            DEBUG_DAMAGE("Player move %d: %d damage to switch-in", playerMove, damageTaken);
             if (damageTaken > maxDamageTaken)
+            {
                 maxDamageTaken = damageTaken;
+                DEBUG_DAMAGE("New max damage to switch-in: %d", maxDamageTaken);
+            }
+        }
+        else if (playerMove != MOVE_NONE && playerMove != MOVE_UNAVAILABLE)
+        {
+            DEBUG_DAMAGE("Skipping player move %d (status/Focus Punch)", playerMove);
         }
     }
+
+    if (GetBattlerSide(battler) == B_SIDE_OPPONENT){
+        DEBUG_DAMAGE("The max damage that switched in mon %d takes is %d (using revealed+STAB moves only)", battleMon.species, maxDamageTaken);
+    }
+
     return maxDamageTaken;
 }
 
@@ -2376,19 +2679,33 @@ static bool32 ShouldUseItem(u32 battler)
     u8 validMons = 0;
     bool32 shouldUse = FALSE;
 
+    DEBUG_ITEM("=== ShouldUseItem called for battler %d ===", battler);
+
     if (IsAiVsAiBattle())
+    {
+        DEBUG_ITEM("AI vs AI battle - no item usage");
         return FALSE;
+    }
 
     // If teaming up with player and Pokemon is on the right, or Pokemon is currently held by Sky Drop
     if ((gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && GetBattlerPosition(battler) == B_POSITION_PLAYER_RIGHT)
        || gStatuses3[battler] & STATUS3_SKY_DROPPED)
+    {
+        DEBUG_ITEM("Cannot use items - partner battle or sky dropped");
         return FALSE;
+    }
 
     if (gStatuses3[battler] & STATUS3_EMBARGO)
+    {
+        DEBUG_ITEM("Cannot use items - under Embargo");
         return FALSE;
+    }
 
     if (AiExpectsToFaintPlayer(battler))
+    {
+        DEBUG_ITEM("Expecting to faint player - not using items");
         return FALSE;
+    }
 
     party = GetBattlerParty(battler);
 
@@ -2400,6 +2717,7 @@ static bool32 ShouldUseItem(u32 battler)
         }
     }
 
+    DEBUG_ITEM("Checking available items:");
     for (i = 0; i < MAX_TRAINER_ITEMS; i++)
     {
         u16 item;
@@ -2413,65 +2731,118 @@ static bool32 ShouldUseItem(u32 battler)
         if (itemEffects == NULL)
             continue;
 
-        switch (ItemId_GetBattleUsage(item))
+        u8 battleUsage = ItemId_GetBattleUsage(item);
+        DEBUG_ITEM("Evaluating item %d (usage type: %d)", item, battleUsage);
+
+        switch (battleUsage)
         {
         case EFFECT_ITEM_HEAL_AND_CURE_STATUS:
-            // DebugPrintf("Reached Full Restore check.");
-            // shouldUse = AI_ShouldHeal(battler, 0);
+            DEBUG_ITEM("Checking Full Restore usage");
             shouldUse = AI_ShouldHeal(battler, 700);
+            DEBUG_ITEM("Full Restore decision: %s", shouldUse ? "USE" : "DON'T USE");
             break;
         case EFFECT_ITEM_RESTORE_HP:
-            shouldUse = AI_ShouldHeal(battler, itemEffects[GetItemEffectParamOffset(battler, item, 4, ITEM4_HEAL_HP)]);
+            {
+                u32 healAmount = itemEffects[GetItemEffectParamOffset(battler, item, 4, ITEM4_HEAL_HP)];
+                DEBUG_ITEM("Checking HP restore item (heal amount: %d)", healAmount);
+                shouldUse = AI_ShouldHeal(battler, healAmount);
+                DEBUG_ITEM("HP restore decision: %s", shouldUse ? "USE" : "DON'T USE");
+            }
             break;
         case EFFECT_ITEM_CURE_STATUS:
+            DEBUG_ITEM("Checking status cure item");
+            DEBUG_STATUS("Current status1: 0x%X, status2: 0x%X", gBattleMons[battler].status1, gBattleMons[battler].status2);
             if (itemEffects[3] & ITEM3_SLEEP && gBattleMons[battler].status1 & STATUS1_SLEEP)
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using item to cure sleep");
+            }
             if (itemEffects[3] & ITEM3_POISON && (gBattleMons[battler].status1 & STATUS1_POISON
                                                || gBattleMons[battler].status1 & STATUS1_TOXIC_POISON))
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using item to cure poison");
+            }
             if (itemEffects[3] & ITEM3_BURN && gBattleMons[battler].status1 & STATUS1_BURN)
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using item to cure burn");
+            }
             if (itemEffects[3] & ITEM3_FREEZE && (gBattleMons[battler].status1 & STATUS1_FREEZE || gBattleMons[battler].status1 & STATUS1_FROSTBITE))
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using item to cure freeze/frostbite");
+            }
             if (itemEffects[3] & ITEM3_PARALYSIS && gBattleMons[battler].status1 & STATUS1_PARALYSIS)
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using item to cure paralysis");
+            }
             if (itemEffects[3] & ITEM3_CONFUSION && gBattleMons[battler].status2 & STATUS2_CONFUSION)
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using item to cure confusion");
+            }
             break;
         case EFFECT_ITEM_INCREASE_STAT:
         case EFFECT_ITEM_INCREASE_ALL_STATS:
+            DEBUG_ITEM("Checking stat boost item (first turn: %s)", gDisableStructs[battler].isFirstTurn ? "YES" : "NO");
             if (!gDisableStructs[battler].isFirstTurn
                 || AI_OpponentCanFaintAiWithMod(battler, 0))
+            {
+                DEBUG_ITEM("Not using stat boost - not first turn or opponent can faint");
                 break;
+            }
             shouldUse = TRUE;
+            DEBUG_ITEM("Using stat boost item");
             break;
         case EFFECT_ITEM_SET_FOCUS_ENERGY:
+            DEBUG_ITEM("Checking Focus Energy item");
             if (!gDisableStructs[battler].isFirstTurn
                 || gBattleMons[battler].status2 & STATUS2_FOCUS_ENERGY_ANY
                 || AI_OpponentCanFaintAiWithMod(battler, 0))
+            {
+                DEBUG_ITEM("Not using Focus Energy - not first turn, already focused, or opponent can faint");
                 break;
+            }
             shouldUse = TRUE;
+            DEBUG_ITEM("Using Focus Energy item");
             break;
         case EFFECT_ITEM_SET_MIST:
             battlerSide = GetBattlerSide(battler);
+            DEBUG_ITEM("Checking Mist item (first turn: %s, mist active: %s)",
+                       gDisableStructs[battler].isFirstTurn ? "YES" : "NO",
+                       (gSideStatuses[battlerSide] & SIDE_STATUS_MIST) ? "YES" : "NO");
             if (gDisableStructs[battler].isFirstTurn && !(gSideStatuses[battlerSide] & SIDE_STATUS_MIST))
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using Mist item");
+            }
             break;
         case EFFECT_ITEM_REVIVE:
             gBattleStruct->itemPartyIndex[battler] = GetFirstFaintedPartyIndex(battler);
+            DEBUG_ITEM("Checking Revive item (fainted mon index: %d)", gBattleStruct->itemPartyIndex[battler]);
             if (gBattleStruct->itemPartyIndex[battler] != PARTY_SIZE) // Revive if possible.
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using Revive item on party slot %d", gBattleStruct->itemPartyIndex[battler]);
+            }
             break;
         case EFFECT_ITEM_USE_POKE_FLUTE:
+            DEBUG_ITEM("Checking Poke Flute (asleep: %s)", (gBattleMons[battler].status1 & STATUS1_SLEEP) ? "YES" : "NO");
             if (gBattleMons[battler].status1 & STATUS1_SLEEP)
+            {
                 shouldUse = TRUE;
+                DEBUG_ITEM("Using Poke Flute to wake up");
+            }
             break;
         default:
+            DEBUG_ITEM("Unknown item usage type: %d", battleUsage);
             return FALSE;
         }
         if (shouldUse)
         {
-            DebugPrintf("Reached the check for ShouldUse");
+            DEBUG_ITEM("=== USING ITEM %d ===", item);
             // Set selected party ID to current battler if none chosen.
             if (gBattleStruct->itemPartyIndex[battler] == PARTY_SIZE)
                 gBattleStruct->itemPartyIndex[battler] = gBattlerPartyIndexes[battler];
@@ -2482,6 +2853,7 @@ static bool32 ShouldUseItem(u32 battler)
         }
     }
 
+    DEBUG_ITEM("No items to use");
     return FALSE;
 }
 
@@ -2491,21 +2863,44 @@ static bool32 AI_ShouldHeal(u32 battler, u32 healAmount)
     u32 battlerOpposite = BATTLE_OPPOSITE(GetBattlerPosition(battler));
     bool32 shouldHeal = FALSE;
 
-    //Idea is that if there are no Pokemon left, AI mon would faint, and is slower, might as well heal. 
-    if (CountUsablePartyMons(battler) == 0 && CanTargetFaintAi(battlerOpposite, battler)
-    && !AI_IsFaster(battler, battlerOpposite, MOVE_IRRELEVANT))
+    DEBUG_ITEM("--- AI_ShouldHeal: battler %d, heal amount %d ---", battler, healAmount);
+    DEBUG_ITEM("Current HP: %d/%d, Opponent: %d", gBattleMons[battler].hp, gBattleMons[battler].maxHP, battlerOpposite);
+
+    //Idea is that if there are no Pokemon left, AI mon would faint, and is slower, might as well heal.
+    u32 usablePartyMons = CountUsablePartyMons(battler);
+    bool32 opponentCanFaint = CanTargetFaintAi(battlerOpposite, battler);
+    bool32 aiFaster = AI_IsFaster(battler, battlerOpposite, MOVE_IRRELEVANT);
+
+    DEBUG_ITEM("Usable party mons: %d, Opponent can faint: %s, AI faster: %s",
+               usablePartyMons, opponentCanFaint ? "YES" : "NO", aiFaster ? "YES" : "NO");
+
+    if (usablePartyMons == 0 && opponentCanFaint && !aiFaster)
     {
         shouldHeal = TRUE;
+        DEBUG_ITEM("Last mon scenario - healing to buy time");
         return shouldHeal;
     }
 
-    if (gBattleMons[battler].hp < gBattleMons[battler].maxHP / 4
-     || gBattleMons[battler].hp == 0
-     || (healAmount != 0 && gBattleMons[battler].maxHP - gBattleMons[battler].hp > healAmount))
-    {   
+    u32 hpThreshold = gBattleMons[battler].maxHP / 4;
+    u32 missingHP = gBattleMons[battler].maxHP - gBattleMons[battler].hp;
+    bool32 lowHP = (gBattleMons[battler].hp < hpThreshold);
+    bool32 fainted = (gBattleMons[battler].hp == 0);
+    bool32 worthHealing = (healAmount != 0 && missingHP > healAmount);
+
+    DEBUG_ITEM("HP threshold: %d, Missing HP: %d, Low HP: %s, Fainted: %s, Worth healing: %s",
+               hpThreshold, missingHP, lowHP ? "YES" : "NO", fainted ? "YES" : "NO", worthHealing ? "YES" : "NO");
+
+    if (lowHP || fainted || worthHealing)
+    {
         // We have low enough HP to consider healing
-        shouldHeal = !AI_OpponentCanFaintAiWithMod(battler, healAmount); // if target can kill us even after we heal, why bother
-        DebugPrintf("Have reached the heal threshold code and ShouldHeal is %d", shouldHeal);
+        bool32 opponentCanStillFaint = AI_OpponentCanFaintAiWithMod(battler, healAmount);
+        shouldHeal = !opponentCanStillFaint; // if target can kill us even after we heal, why bother
+        DEBUG_ITEM("Opponent can still faint after heal: %s, Final decision: %s",
+                   opponentCanStillFaint ? "YES" : "NO", shouldHeal ? "HEAL" : "DON'T HEAL");
+    }
+    else
+    {
+        DEBUG_ITEM("HP too high to consider healing");
     }
 
     return shouldHeal;
