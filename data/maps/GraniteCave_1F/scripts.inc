@@ -100,12 +100,14 @@ GraniteCave_1F_ProtectivePad_Kenji_1:
 # 54 "data/maps/GraniteCave_1F/scripts.pory"
 	compare VAR_RESULT, 1
 	goto_if_eq GraniteCave_1F_ProtectivePad_Kenji_5
-# 63 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_ProtectivePad_Kenji_Text_7
 # 64 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox GraniteCave_1F_ProtectivePad_Kenji_Text_7
+# 65 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_KENJI, Common_Movement_FaceOriginalDirection
-GraniteCave_1F_ProtectivePad_Kenji_4:
 # 66 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_KENJI
+GraniteCave_1F_ProtectivePad_Kenji_4:
+# 68 "data/maps/GraniteCave_1F/scripts.pory"
 	release
 	end
 
@@ -129,153 +131,169 @@ GraniteCave_1F_ProtectivePad_Kenji_5:
 	msgbox GraniteCave_1F_ProtectivePad_Kenji_Text_6
 # 61 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_KENJI, Common_Movement_FaceOriginalDirection
+# 62 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_KENJI
 	goto GraniteCave_1F_ProtectivePad_Kenji_4
 
 
 Kenji_Beaten::
-# 70 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox Kenji_Beaten_Text_0
-# 71 "data/maps/GraniteCave_1F/scripts.pory"
-	applymovement LOCALID_KENJI, Common_Movement_FaceOriginalDirection
 # 72 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox Kenji_Beaten_Text_0
+# 73 "data/maps/GraniteCave_1F/scripts.pory"
+	applymovement LOCALID_KENJI, Common_Movement_FaceOriginalDirection
+# 74 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_KENJI
+# 75 "data/maps/GraniteCave_1F/scripts.pory"
 	release
 	end
 
 
 GraniteCave_1F_MuscleBand_Daichi::
-# 77 "data/maps/GraniteCave_1F/scripts.pory"
+# 80 "data/maps/GraniteCave_1F/scripts.pory"
 	lock
-# 78 "data/maps/GraniteCave_1F/scripts.pory"
+# 81 "data/maps/GraniteCave_1F/scripts.pory"
 	faceplayer
-# 79 "data/maps/GraniteCave_1F/scripts.pory"
+# 82 "data/maps/GraniteCave_1F/scripts.pory"
 	goto_if_set TRAINER_FLAGS_START + TRAINER_DAICHI, GraniteCave_1F_MuscleBand_Daichi_2
 GraniteCave_1F_MuscleBand_Daichi_1:
-# 82 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_0
-# 83 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_1, MSGBOX_YESNO
 # 85 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_0
+# 86 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_1, MSGBOX_YESNO
+# 88 "data/maps/GraniteCave_1F/scripts.pory"
 	compare VAR_RESULT, 1
 	goto_if_eq GraniteCave_1F_MuscleBand_Daichi_5
-# 94 "data/maps/GraniteCave_1F/scripts.pory"
+# 98 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_7
-# 95 "data/maps/GraniteCave_1F/scripts.pory"
+# 99 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_DAICHI, Common_Movement_FaceOriginalDirection
+# 100 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_DAICHI
 GraniteCave_1F_MuscleBand_Daichi_4:
-# 97 "data/maps/GraniteCave_1F/scripts.pory"
+# 102 "data/maps/GraniteCave_1F/scripts.pory"
 	release
 	end
 
 GraniteCave_1F_MuscleBand_Daichi_2:
-# 80 "data/maps/GraniteCave_1F/scripts.pory"
+# 83 "data/maps/GraniteCave_1F/scripts.pory"
 	goto Daichi_Beaten
 	goto GraniteCave_1F_MuscleBand_Daichi_1
 
 GraniteCave_1F_MuscleBand_Daichi_5:
-# 86 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_2
-# 87 "data/maps/GraniteCave_1F/scripts.pory"
-	trainerbattle_no_intro TRAINER_DAICHI, GraniteCave_1F_MuscleBand_Daichi_Text_3
-# 88 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_4
 # 89 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_5
+	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_2
 # 90 "data/maps/GraniteCave_1F/scripts.pory"
-	giveitem ITEM_MUSCLE_BAND
+	trainerbattle_no_intro TRAINER_DAICHI, GraniteCave_1F_MuscleBand_Daichi_Text_3
 # 91 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_6
+	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_4
 # 92 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_5
+# 93 "data/maps/GraniteCave_1F/scripts.pory"
+	giveitem ITEM_MUSCLE_BAND
+# 94 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox GraniteCave_1F_MuscleBand_Daichi_Text_6
+# 95 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_DAICHI, Common_Movement_FaceOriginalDirection
+# 96 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_DAICHI
 	goto GraniteCave_1F_MuscleBand_Daichi_4
 
 
 Daichi_Beaten::
-# 102 "data/maps/GraniteCave_1F/scripts.pory"
+# 107 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox Daichi_Beaten_Text_0
-# 103 "data/maps/GraniteCave_1F/scripts.pory"
+# 108 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_DAICHI, Common_Movement_FaceOriginalDirection
-# 104 "data/maps/GraniteCave_1F/scripts.pory"
+# 109 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_DAICHI
+# 110 "data/maps/GraniteCave_1F/scripts.pory"
 	release
 	end
 
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji::
-# 109 "data/maps/GraniteCave_1F/scripts.pory"
+# 115 "data/maps/GraniteCave_1F/scripts.pory"
 	lock
-# 110 "data/maps/GraniteCave_1F/scripts.pory"
-	faceplayer
-# 111 "data/maps/GraniteCave_1F/scripts.pory"
-	goto_if_unset FLAG_BADGE02_GET, GraniteCave_1F_BlackBelt_Leader_Ryuji_2
 # 116 "data/maps/GraniteCave_1F/scripts.pory"
+	faceplayer
+# 117 "data/maps/GraniteCave_1F/scripts.pory"
+	goto_if_unset FLAG_BADGE02_GET, GraniteCave_1F_BlackBelt_Leader_Ryuji_2
+# 123 "data/maps/GraniteCave_1F/scripts.pory"
 	goto_if_set TRAINER_FLAGS_START + TRAINER_DAICHI, GraniteCave_1F_BlackBelt_Leader_Ryuji_7
 GraniteCave_1F_BlackBelt_Leader_Ryuji_6:
-# 140 "data/maps/GraniteCave_1F/scripts.pory"
+# 148 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_12
-# 141 "data/maps/GraniteCave_1F/scripts.pory"
+# 149 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_13
-# 142 "data/maps/GraniteCave_1F/scripts.pory"
+# 150 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_RYUJI, Common_Movement_FaceOriginalDirection
+# 151 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_RYUJI
 GraniteCave_1F_BlackBelt_Leader_Ryuji_1:
-# 146 "data/maps/GraniteCave_1F/scripts.pory"
+# 154 "data/maps/GraniteCave_1F/scripts.pory"
 	release
 	end
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_2:
-# 112 "data/maps/GraniteCave_1F/scripts.pory"
+# 118 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_0
-# 113 "data/maps/GraniteCave_1F/scripts.pory"
+# 119 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_1
-# 114 "data/maps/GraniteCave_1F/scripts.pory"
+# 120 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_RYUJI, Common_Movement_FaceOriginalDirection
+# 121 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_RYUJI
 	goto GraniteCave_1F_BlackBelt_Leader_Ryuji_1
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_5:
-# 117 "data/maps/GraniteCave_1F/scripts.pory"
+# 124 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_2
-# 118 "data/maps/GraniteCave_1F/scripts.pory"
+# 125 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_3, MSGBOX_YESNO
-# 119 "data/maps/GraniteCave_1F/scripts.pory"
+# 126 "data/maps/GraniteCave_1F/scripts.pory"
 	compare VAR_RESULT, 1
 	goto_if_eq GraniteCave_1F_BlackBelt_Leader_Ryuji_10
-# 135 "data/maps/GraniteCave_1F/scripts.pory"
+# 142 "data/maps/GraniteCave_1F/scripts.pory"
 	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_11
-# 136 "data/maps/GraniteCave_1F/scripts.pory"
+# 143 "data/maps/GraniteCave_1F/scripts.pory"
 	applymovement LOCALID_RYUJI, Common_Movement_FaceOriginalDirection
+# 144 "data/maps/GraniteCave_1F/scripts.pory"
+	waitmovement LOCALID_RYUJI
 	goto GraniteCave_1F_BlackBelt_Leader_Ryuji_1
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_7:
-# 116 "data/maps/GraniteCave_1F/scripts.pory"
+# 123 "data/maps/GraniteCave_1F/scripts.pory"
 	goto_if_set TRAINER_FLAGS_START + TRAINER_KENJI, GraniteCave_1F_BlackBelt_Leader_Ryuji_5
 	goto GraniteCave_1F_BlackBelt_Leader_Ryuji_6
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_10:
-# 120 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_4
-# 121 "data/maps/GraniteCave_1F/scripts.pory"
-	trainerbattle_no_intro TRAINER_RYUJI, GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_5
-# 122 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_6
-# 123 "data/maps/GraniteCave_1F/scripts.pory"
-	giveitem ITEM_BLACK_BELT
-# 124 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_7
-# 125 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_8
-# 126 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_9
 # 127 "data/maps/GraniteCave_1F/scripts.pory"
-	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_10
+	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_4
 # 128 "data/maps/GraniteCave_1F/scripts.pory"
-	fadescreen FADE_TO_BLACK
+	trainerbattle_no_intro TRAINER_RYUJI, GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_5
 # 129 "data/maps/GraniteCave_1F/scripts.pory"
-	setflag FLAG_HIDE_GRANITE_BLACK_BELTS
+	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_6
 # 130 "data/maps/GraniteCave_1F/scripts.pory"
-	removeobject LOCALID_RYUJI
+	giveitem ITEM_BLACK_BELT
 # 131 "data/maps/GraniteCave_1F/scripts.pory"
-	removeobject LOCALID_KENJI
+	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_7
 # 132 "data/maps/GraniteCave_1F/scripts.pory"
-	removeobject LOCALID_DAICHI
+	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_8
 # 133 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_9
+# 134 "data/maps/GraniteCave_1F/scripts.pory"
+	msgbox GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_10
+# 135 "data/maps/GraniteCave_1F/scripts.pory"
+	fadescreen FADE_TO_BLACK
+# 136 "data/maps/GraniteCave_1F/scripts.pory"
+	setflag FLAG_HIDE_GRANITE_BLACK_BELTS
+# 137 "data/maps/GraniteCave_1F/scripts.pory"
+	removeobject LOCALID_RYUJI
+# 138 "data/maps/GraniteCave_1F/scripts.pory"
+	removeobject LOCALID_KENJI
+# 139 "data/maps/GraniteCave_1F/scripts.pory"
+	removeobject LOCALID_DAICHI
+# 140 "data/maps/GraniteCave_1F/scripts.pory"
 	fadescreen FADE_FROM_BLACK
 	goto GraniteCave_1F_BlackBelt_Leader_Ryuji_1
 
@@ -314,119 +332,119 @@ GraniteCave_1F_ProtectivePad_Kenji_Text_6:
 	.string "I'll go back to improving my skills.$"
 
 GraniteCave_1F_ProtectivePad_Kenji_Text_7:
-# 63 "data/maps/GraniteCave_1F/scripts.pory"
+# 64 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Back to training, then.$"
 
 Kenji_Beaten_Text_0:
-# 70 "data/maps/GraniteCave_1F/scripts.pory"
+# 72 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "I still have more techniques to hone.$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_0:
-# 82 "data/maps/GraniteCave_1F/scripts.pory"
+# 85 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "My Pokemon and I wear a Muscle Band to\n"
 	.string "show our might. These rocks are\l"
 	.string "nothing!$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_1:
-# 83 "data/maps/GraniteCave_1F/scripts.pory"
+# 86 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "We'll win Pokemon battles too. Wanna see\n"
 	.string "how strong we are?$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_2:
-# 86 "data/maps/GraniteCave_1F/scripts.pory"
+# 89 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Let's go!$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_3:
-# 87 "data/maps/GraniteCave_1F/scripts.pory"
+# 90 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "We need more power!$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_4:
-# 88 "data/maps/GraniteCave_1F/scripts.pory"
+# 91 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "We weren't enough. I'll have to keep\n"
 	.string "getting stronger!$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_5:
-# 89 "data/maps/GraniteCave_1F/scripts.pory"
+# 92 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "But I can see your power. Your Pokemon\n"
 	.string "should wear a Muscle Band too!$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_6:
-# 91 "data/maps/GraniteCave_1F/scripts.pory"
+# 94 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "I'll go back to getting stronger.$"
 
 GraniteCave_1F_MuscleBand_Daichi_Text_7:
-# 94 "data/maps/GraniteCave_1F/scripts.pory"
+# 98 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Okay, I'll get stronger!$"
 
 Daichi_Beaten_Text_0:
-# 102 "data/maps/GraniteCave_1F/scripts.pory"
+# 107 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "I'm going to toughen up!$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_0:
-# 112 "data/maps/GraniteCave_1F/scripts.pory"
+# 118 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "These rocks are wonderful training. No\n"
 	.string "wonder Brawly became skilled enough to\l"
 	.string "train with Bruno. I strive to beat\l"
 	.string "Brawly one day.$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_1:
-# 113 "data/maps/GraniteCave_1F/scripts.pory"
+# 119 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Now if you'll excuse me, I need to get\n"
 	.string "back to training.$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_2:
-# 117 "data/maps/GraniteCave_1F/scripts.pory"
+# 124 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Wow, you've beaten my students and\n"
 	.string "Brawly too?$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_3:
-# 118 "data/maps/GraniteCave_1F/scripts.pory"
+# 125 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "I'd love to train my duo Pokemon with\n"
 	.string "you. What do you say?$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_4:
-# 120 "data/maps/GraniteCave_1F/scripts.pory"
+# 127 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "I'll show you my experience!$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_5:
-# 121 "data/maps/GraniteCave_1F/scripts.pory"
+# 128 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "As expected of a Knuckle Badge holder!$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_6:
-# 122 "data/maps/GraniteCave_1F/scripts.pory"
+# 129 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Truly wonderful fighting! You're worthy\n"
 	.string "of a Black Belt$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_7:
-# 124 "data/maps/GraniteCave_1F/scripts.pory"
+# 131 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Wear that and stay proud of your\n"
 	.string "strength!$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_8:
-# 125 "data/maps/GraniteCave_1F/scripts.pory"
+# 132 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "My students and I have been training\n"
 	.string "here long enough. We should head\l"
 	.string "somewhere else.$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_9:
-# 126 "data/maps/GraniteCave_1F/scripts.pory"
+# 133 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "One day I hope you meet my master. He's\n"
 	.string "a true expert!$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_10:
-# 127 "data/maps/GraniteCave_1F/scripts.pory"
+# 134 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Farewell!$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_11:
-# 135 "data/maps/GraniteCave_1F/scripts.pory"
+# 142 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Too bad, then I'll keep training!$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_12:
-# 140 "data/maps/GraniteCave_1F/scripts.pory"
+# 148 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "Oh, you beat Brawly? You're mighty\n"
 	.string "tough.$"
 
 GraniteCave_1F_BlackBelt_Leader_Ryuji_Text_13:
-# 141 "data/maps/GraniteCave_1F/scripts.pory"
+# 149 "data/maps/GraniteCave_1F/scripts.pory"
 	.string "I'm still not done my training, but you\n"
 	.string "might want to fight my students.$"

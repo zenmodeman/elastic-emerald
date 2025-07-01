@@ -59,9 +59,11 @@ script GraniteCave_1F_ProtectivePad_Kenji{
 		giveitem(ITEM_PROTECTIVE_PADS)
 		msgbox("I'll go back to improving my skills.")
 		applymovement(LOCALID_KENJI, Common_Movement_FaceOriginalDirection)
+		waitmovement(LOCALID_KENJI)
 	}else{
 		msgbox("Back to training, then.")
 		applymovement(LOCALID_KENJI, Common_Movement_FaceOriginalDirection)
+		waitmovement(LOCALID_KENJI)
 	}
 	release
 	end
@@ -69,6 +71,7 @@ script GraniteCave_1F_ProtectivePad_Kenji{
 script Kenji_Beaten{
 	msgbox(format("I still have more techniques to hone."))
 	applymovement(LOCALID_KENJI, Common_Movement_FaceOriginalDirection)
+	waitmovement(LOCALID_KENJI)
 	release
 	end
 }
@@ -90,9 +93,11 @@ script GraniteCave_1F_MuscleBand_Daichi{
 		giveitem(ITEM_MUSCLE_BAND)
 		msgbox("I'll go back to getting stronger.")
 		applymovement(LOCALID_DAICHI, Common_Movement_FaceOriginalDirection)
+		waitmovement(LOCALID_DAICHI)
 	}else{
 		msgbox("Okay, I'll get stronger!")
 		applymovement(LOCALID_DAICHI, Common_Movement_FaceOriginalDirection)
+		waitmovement(LOCALID_DAICHI)
 	}
 	release
 	end
@@ -101,6 +106,7 @@ script GraniteCave_1F_MuscleBand_Daichi{
 script Daichi_Beaten{
 	msgbox(format("I'm going to toughen up!"))
 	applymovement(LOCALID_DAICHI, Common_Movement_FaceOriginalDirection)
+	waitmovement(LOCALID_DAICHI)
 	release
 	end
 }
@@ -112,6 +118,7 @@ script GraniteCave_1F_BlackBelt_Leader_Ryuji{
 		msgbox(format("These rocks are wonderful training. No wonder Brawly became skilled enough to train with Bruno. I strive to beat Brawly one day."))
 		msgbox(format("Now if you'll excuse me, I need to get back to training."))
 		applymovement(LOCALID_RYUJI, Common_Movement_FaceOriginalDirection)
+		waitmovement(LOCALID_RYUJI)
 	}else{
 		if (flag(TRAINER_FLAGS_START + TRAINER_DAICHI) && flag(TRAINER_FLAGS_START + TRAINER_KENJI)){
 			msgbox(format("Wow, you've beaten my students and Brawly too?"))
@@ -134,14 +141,15 @@ script GraniteCave_1F_BlackBelt_Leader_Ryuji{
 			}else{
 				msgbox("Too bad, then I'll keep training!")
 				applymovement(LOCALID_RYUJI, Common_Movement_FaceOriginalDirection)
+				waitmovement(LOCALID_RYUJI)
 			}			
 		}
 		else{
 			msgbox(format("Oh, you beat Brawly? You're mighty tough."))
 			msgbox(format("I'm still not done my training, but you might want to fight my students."))
 			applymovement(LOCALID_RYUJI, Common_Movement_FaceOriginalDirection)
+			waitmovement(LOCALID_RYUJI)
 		}
-
 	}
 	release
 	end
