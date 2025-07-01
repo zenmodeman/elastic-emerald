@@ -65,15 +65,16 @@ static s32 AI_FirstBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 static s32 AI_PowerfulStatus(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 static s32 AI_DynamicFunc(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
+static s32 AI_PredictSwitch(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
 
 //My custom static functions
 static bool32 DoesBattlerPreferDamagingOtherTarget(u32 battlerAtk, u32 battlerDef);
 static u8 GetTargetToKOInDoubles(u8 battler);
 static u8 FindSpeedTargetPreference(u8 battler);
 static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef);
-
-static s32 AI_PredictSwitch(u32 battlerAtk, u32 battlerDef, u32 move, s32 score);
-
+static bool32 ShouldUseSpeedControl(u32 battlerAtk, u32 battlerDef, u32 move, s8 speedChange, bool32 boostAffectsSelf);
+static bool32 OppositeSideHas2Mons(u32 battler);
+static bool32 IsBattleMovePreferableOnCurrentTarget(u32 battlerAtk, u32 battlerDef, u32 move);
 
 static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
 {
@@ -3005,13 +3006,105 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef){
 
     //The IsBattlerAlive check is mainly to simplify double battle inputs
-    if (IsBattlerAlive(battlerAtk) && CanTargetFaintAi(battlerAtk, battlerDef) 
+    if (IsBattlerAlive(battlerAtk) && CanTargetFaintAi(battlerAtk, battlerDef)
         && AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT))
         {
             return TRUE;
 
         }
     return FALSE;
+}
+
+//Simple function to check if there are two battlers on the opposing side, for various doubles checks
+//This is a more restricted form of `IsValidDoubleBattle`
+static bool32 OppositeSideHas2Mons(u32 battler){
+    bool32 oppositeAlive;
+    bool32 oppositePartnerAlive;
+
+    if (!IsDoubleBattle()){
+        return FALSE;
+    }
+
+    oppositeAlive = IsBattlerAlive(BATTLE_OPPOSITE(battler));
+    oppositePartnerAlive = IsBattlerAlive(BATTLE_PARTNER(BATTLE_OPPOSITE(battler)));
+
+    if (oppositeAlive && oppositePartnerAlive){
+        return TRUE;
+
+    }
+    return FALSE;
+}
+
+
+// More specific Speed control checks
+//move is currently unused but may be used in the future
+//There's also the option to refactor to computing boostAffectsSelf from move
+static bool32 ShouldUseSpeedControl(u32 battlerAtk, u32 battlerDef, u32 move, s8 speedChange, bool32 boostAffectsSelf)
+{
+    struct StatsDelta statChanges = {0};
+    struct StatsDelta appliedChanges;
+    u32 targetBattler; 
+    bool32 wouldOutspeedAfter = FALSE;
+    bool32 currentlyOutspeeds = AI_IsFaster(battlerAtk, battlerDef, move);
+
+    if (currentlyOutspeeds){
+        return FALSE;
+    }
+
+    //In the case of boosting the user's own speed, base the speed checks on the faster opponent.
+    //This means altering the working battlerDef.
+    if (boostAffectsSelf && speedChange > 0 
+        && (GetBattlerSide(battlerDef) != GetBattlerSide(battlerAtk))
+        && OppositeSideHas2Mons(battlerAtk)){
+            u32 opposingPartner = BATTLE_PARTNER(battlerDef);
+            if (AI_IsFaster(opposingPartner, battlerDef, MOVE_IRRELEVANT)){
+                battlerDef = opposingPartner;
+            }
+        }
+    targetBattler = boostAffectsSelf ? battlerAtk : battlerDef;
+
+    // Set up the stat change for simulation
+    statChanges.speed = speedChange;
+
+    // Apply simulated stat changes to see the result
+    appliedChanges = ApplySimulatedStatChanges(battlerAtk, targetBattler, statChanges);
+
+    // Check if speed relationship would change after the move
+    wouldOutspeedAfter = AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT);
+
+    // Reverse the changes
+    ReverseSimulatedStatChanges(targetBattler, appliedChanges);
+
+    // Base scoring logic
+
+    if (!wouldOutspeedAfter){
+        return FALSE; //For now, this doesn't account for opting to speed reduce over multiple turns because it's favorable. 
+    }
+
+    //If the fastest opponent has an outspeed line, there's a chance to ignore the speed incentive
+    if (GetBattlerSide(targetBattler) != GetBattlerSide(battlerAtk)){
+        //These checks each have to do a moveset iteration, so if the AI ends up computing too slowly, I'd have to do a tailor-made iteration.
+        if (HasMoveEffect(targetBattler, EFFECT_SPEED_UP)
+            || HasMoveEffect(targetBattler, EFFECT_SPEED_UP_2)
+            || HasMoveEffect(targetBattler, EFFECT_SPEED_DOWN)
+            || HasMoveEffect(targetBattler, EFFECT_SPEED_DOWN_2)
+            || HasMoveWithAdditionalEffect(targetBattler, MOVE_EFFECT_SPD_PLUS_1)
+            || HasMoveWithAdditionalEffect(targetBattler, MOVE_EFFECT_SPD_PLUS_2)
+
+            //These two cases I think have an edge case with Hammer Arm,
+            //but because Hammer Arm lowers speed, it shouldn't be a problem practically; the mon would typically be slower after user,
+            //unless it has contrary, in which case these checks do work
+            || HasMoveWithAdditionalEffect(targetBattler, MOVE_EFFECT_SPD_MINUS_1)
+            || HasMoveWithAdditionalEffect(targetBattler, MOVE_EFFECT_SPD_MINUS_2)
+        ){
+            if (AI_RandLessThan(128)){
+                return FALSE;
+            }
+        }
+    }
+
+    //If needed, I might also add some XTurnsAgo checks to reduce constant spamming from the user. 
+    return TRUE;
 }
 
 
@@ -3054,6 +3147,7 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             && GetWhichBattlerFasterOrTies(battlerAtk, battlerDef, TRUE) != AI_IS_FASTER
             && GetBattleMovePriority(battlerAtk, move) > 0)
     {
+        //Make it a chance to do last chance if an attacking move wasn't used.
         if (AI_DATA->lastUsedMove[battlerDef] == MOVE_NONE || IsBattleMoveStatus(AI_DATA->lastUsedMove[battlerDef])){
             if (AI_RandLessThan(127)){
                 ADJUST_SCORE(LAST_CHANCE);
@@ -3624,6 +3718,45 @@ static bool32 DoesBattlerPreferDamagingOtherTarget(u32 battlerAtk, u32 battlerDe
     return FALSE;
 
 }
+
+ 
+//Used to determine which target a certain move should be used under, paired with logic where the target could be either
+//E.g. Flame Charge 
+//For now, if ally KO factors aren't at play, prioritize based on damage
+static bool32 IsBattleMovePreferableOnCurrentTarget(u32 battlerAtk, u32 battlerDef, u32 move){
+    u32 battlerPartner = BATTLE_PARTNER(battlerAtk);
+    u32 opposingPartner = BATTLE_PARTNER(battlerDef);
+    u32 movesetIndex; 
+
+    if (GetBattlerSide(battlerDef) == GetBattlerSide(battlerAtk)){
+        return TRUE; //Don't do any further checks for self or partner
+    }
+    if (!IsDoubleBattle()){
+        return TRUE; //There is only one target so of course
+    }
+    if (!IsBattlerAlive(opposingPartner)){
+        return TRUE; 
+    }
+    if (IsBattlerAlive(battlerPartner)){
+        //Does not prefer current target if the ally is flagged to KO
+        if (AI_DATA->doublesKoTargets[battlerPartner] == battlerDef){
+            return FALSE;
+        }
+        //Prefers current target if the ally is flagged to KO opposing
+        if (AI_DATA->doublesKoTargets[battlerPartner] == opposingPartner){
+            return TRUE;
+        }
+    }
+    movesetIndex = FindMoveIndex(battlerAtk, move);
+    if (AI_DATA->simulatedDmg[battlerAtk][battlerDef][movesetIndex].expected
+        >= AI_DATA->simulatedDmg[battlerAtk][opposingPartner][movesetIndex].expected){
+            return TRUE;
+        }
+    else{
+        return FALSE;
+    }
+}
+
 static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
 {
     u32 i;
@@ -3653,9 +3786,9 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
             if (DoesBattlerPreferDamagingOtherTarget(battlerAtk, battlerDef)){
                 return score;
             }
-            if (moves[i] == 664 && gBattleMons[battlerDef].species == SPECIES_BEAUTIFLY){
-            // DebugPrintf("Code below DoesBattlerPreferDamagingOtherTarget has been reached for %d, %d", battlerAtk, battlerDef);
-            }
+            // if (moves[i] == 664 && gBattleMons[battlerDef].species == SPECIES_BEAUTIFLY){
+            // // DebugPrintf("Code below DoesBattlerPreferDamagingOtherTarget has been reached for %d, %d", battlerAtk, battlerDef);
+            // }
 
             noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i);
             if (ShouldUseSpreadDamageMove(battlerAtk,moves[i], i, noOfHits[i]))
@@ -3794,7 +3927,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     struct AiLogicData *aiData = AI_DATA;
     u32 movesetIndex = AI_THINKING_STRUCT->movesetIndex;
     uq4_12_t effectiveness = aiData->effectiveness[battlerAtk][battlerDef][movesetIndex];
-
     s32 score = 0;
     u32 predictedMove = aiData->lastUsedMove[battlerDef];
     u32 predictedType = GetMoveType(predictedMove);
@@ -4224,7 +4356,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_AURORA_VEIL:
         if (ShouldSetScreen(battlerAtk, battlerDef, moveEffect))
         {
-            ADJUST_SCORE(DECENT_EFFECT);
+            ADJUST_SCORE(WEAK_EFFECT);
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_LIGHT_CLAY)
                 ADJUST_SCORE(DECENT_EFFECT);
         }
@@ -5455,16 +5587,38 @@ case EFFECT_DISABLE:
                 switch (additionalEffect->moveEffect)
                 {
                 case MOVE_EFFECT_SPD_PLUS_1:
-                    if (gMovesInfo[move].additionalEffects[i].chance == 100
-                     && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
-                        //This check is only true against neutral targets, so perhaps improve it later for any stat stages
-                        if (((aiData->speedStats[battlerAtk] * 150)/100) > aiData->speedStats[battlerDef]){
-                            ADJUST_SCORE(DECENT_EFFECT);
-                        }else{
-                            ADJUST_SCORE(WEAK_EFFECT);
+                case MOVE_EFFECT_SPD_PLUS_2:
+                    {
+                        u32 targetToOutspeed = battlerDef;
+                        u32 speedValue = 1;
+
+                        if (additionalEffect->moveEffect == MOVE_EFFECT_SPD_PLUS_2){
+                            speedValue = 2;
                         }
+                        //Doubles logic for determining 
+                        if (OppositeSideHas2Mons(battlerAtk) && (battlerDef != BATTLE_PARTNER(battlerAtk))){
+                            u32 opposingPartner = BATTLE_PARTNER(battlerDef);
+                            //Don't use if the move would be preferable on the other target
+                            if (!IsBattleMovePreferableOnCurrentTarget(battlerAtk, battlerDef, move)){
+                                break;
+                            }
+                            if (AI_IsFaster(opposingPartner, battlerDef, MOVE_IRRELEVANT)){
+                                //In doubles, the target to factor should be the faster target
+                                targetToOutspeed = opposingPartner;
+                            }
+                        }
+                        if (gMovesInfo[move].additionalEffects[i].chance == 100
+                        && aiData->speedStats[targetToOutspeed] > aiData->speedStats[battlerAtk]){
+                            //Still uses battlerDef instead of Outspeed target, for futureproofing ShouldUseSpeedControl checks
+                            if (ShouldUseSpeedControl(battlerAtk, battlerDef, move, speedValue, TRUE)){
+                                ADJUST_SCORE(DECENT_EFFECT);
+                            }else{
+                                ADJUST_SCORE(WEAK_EFFECT);
+                            }
+                        }
+                        break;                        
                     }
-                    break;
+
                 case MOVE_EFFECT_ATK_PLUS_1:
                 case MOVE_EFFECT_DEF_PLUS_1:
                 case MOVE_EFFECT_SP_ATK_PLUS_1:
@@ -5474,7 +5628,6 @@ case EFFECT_DISABLE:
                     break;
                 case MOVE_EFFECT_ATK_PLUS_2:
                 case MOVE_EFFECT_DEF_PLUS_2:
-                case MOVE_EFFECT_SPD_PLUS_2:
                 case MOVE_EFFECT_SP_ATK_PLUS_2:
                 case MOVE_EFFECT_SP_DEF_PLUS_2:
                     StageStatId = STAT_CHANGE_ATK_2 + additionalEffect->moveEffect - MOVE_EFFECT_ATK_PLUS_1;
@@ -5542,28 +5695,31 @@ case EFFECT_DISABLE:
                     score += ShouldTryToFlinch(battlerAtk, battlerDef, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], move);
                     break;
                 case MOVE_EFFECT_SPD_MINUS_1:
-                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && 
-                    ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
-
-                        //This check is only true against neutral targets, so perhaps improve it later for any stat stages
-                        if (((aiData->speedStats[battlerAtk] * 150)/100) > aiData->speedStats[battlerDef]){
-                            ADJUST_SCORE(DECENT_EFFECT);
-                        }else{
-                            ADJUST_SCORE(WEAK_EFFECT);
-                        }
-                    }
-                    break;
                 case MOVE_EFFECT_SPD_MINUS_2:
-                    if (gMovesInfo[move].additionalEffects[i].chance == 100 && 
-                    ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef] && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]))
-                    {
-                        if ((aiData->speedStats[battlerAtk] * 2) > aiData->speedStats[battlerDef]){
-                            ADJUST_SCORE(DECENT_EFFECT);
-                        }else{
+                {
+                    s8 speedValue = -1;
+
+                    if (additionalEffect->moveEffect == MOVE_EFFECT_SPD_MINUS_2){
+                        speedValue = -2;
+                    }
+
+                    //When the chance is not 100%, it's only going to factor in AI_CompareDamagingMoves
+                    if (gMovesInfo[move].additionalEffects[i].chance == 100 &&
+                    ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
+                        if (ShouldUseSpeedControl(battlerAtk, battlerDef, move, speedValue, FALSE)){
+                            if (AI_GetMoveEffectiveness(move, battlerAtk, battlerDef) < UQ_4_12(1.0)){
+                                //Lower incentive for resisted moves because the damage value is less impactful
+                                //Making this guarenteed would make resistance manipulation easier
+                                ADJUST_SCORE(WEAK_EFFECT);
+                            }else{
+                                ADJUST_SCORE(DECENT_EFFECT);
+                            }
+                        }else if (AI_GetMoveEffectiveness(move, battlerAtk, battlerDef) >= UQ_4_12(1.0)){
                             ADJUST_SCORE(WEAK_EFFECT);
                         }
                     }
                     break;
+                }
                 case MOVE_EFFECT_ATK_MINUS_1:
                     if (gMovesInfo[move].additionalEffects[i].chance == 100 && ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && AI_RandLessThan(127)){
                         ADJUST_SCORE(WEAK_EFFECT);

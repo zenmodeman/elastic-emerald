@@ -2197,6 +2197,19 @@ bool32 HasIneffectiveDamagingMove(u32 battlerAtk, u32 battlerDef){
     return FALSE;    
 }
 
+//Made this index identification function because I couldn't find it in the codebase, though I'm pretty sure it's somewhere.
+u32 FindMoveIndex(u32 battler, u32 move){
+    u32 i;
+    u32 currentMove;
+    for (i = 0; i < MAX_MON_MOVES; i++){
+        currentMove = gBattleMons[battler].moves[i];
+        if (currentMove == move){
+            return i;
+        }
+    }
+    return MOVE_UNAVAILABLE;
+}
+
 
 bool32 ShouldLowerAccuracy(u32 battlerAtk, u32 battlerDef, u32 defAbility)
 {
@@ -2303,7 +2316,6 @@ u16 *GetMovesArrayWithHiddenSTAB(u32 battler, u16 *moves){
                 
             }
         }
-        
     }
     return moves;
 }
@@ -3893,7 +3905,11 @@ u32 GetAllyChosenMove(u32 battlerId)
     if (!IsBattlerAlive(partnerBattler) || !IsAiBattlerAware(partnerBattler))
         return MOVE_NONE;
     else if (partnerBattler > battlerId) // Battler with the lower id chooses the move first.
-        return gLastMoves[partnerBattler];
+    //NOTE: For now, I decided to remove guessing based on the previous move used by the partner.
+    //Probably best of the lower index mon to make a separate decision. 
+    //But there may be considerations based on what moves the ally has.      
+    // return gLastMoves[partnerBattler];
+        return MOVE_NONE;
     else
         return gBattleMons[partnerBattler].moves[gBattleStruct->chosenMovePositions[partnerBattler]];
 }
