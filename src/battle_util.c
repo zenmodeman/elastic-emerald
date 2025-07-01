@@ -8309,6 +8309,18 @@ u32 ItemBattleEffects(enum ItemCaseId caseID, u32 battler, bool32 moveTurn)
         if (!(gBattleStruct->moveResultFlags[gBattlerTarget] & MOVE_RESULT_NO_EFFECT))
         {
             moveType = GetBattleMoveType(gCurrentMove);
+
+            //Reveal items that could generally be inferred from damage calculations
+            if (GetMoveEffect(gCurrentMove) == EFFECT_LOW_KICK && battlerHoldEffect == HOLD_EFFECT_FLOAT_STONE){
+                RecordItemEffectBattle(battler, HOLD_EFFECT_FLOAT_STONE);
+            }
+            if(battlerHoldEffect == HOLD_EFFECT_EVIOLITE){
+                RecordItemEffectBattle(battler, HOLD_EFFECT_EVIOLITE);
+            }
+            if(battlerHoldEffect == HOLD_EFFECT_ASSAULT_VEST && GetMoveCategory(gCurrentMove) == DAMAGE_CATEGORY_SPECIAL){
+                 RecordItemEffectBattle(battler, HOLD_EFFECT_ASSAULT_VEST);
+            }
+            
             switch (battlerHoldEffect)
             {
             case HOLD_EFFECT_AIR_BALLOON:
