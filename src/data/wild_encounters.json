@@ -74,9 +74,9 @@
           "encounter_rates": [
             60,
             40,
-            60,
-            20,
-            20,
+            50,
+            25,
+            25,
             30,
             30,
             20,
@@ -1254,17 +1254,17 @@
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
                 "species": "SPECIES_MAGIKARP"
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
                 "species": "SPECIES_MAGIKARP"
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
                 "species": "SPECIES_MAGIKARP"
               },
               {
@@ -6832,21 +6832,21 @@
               {
                 "min_level": 5,
                 "max_level": 10,
-                "species": "SPECIES_WISHIWASHI"
-              },
-              {
-                "min_level": 10,
-                "max_level": 30,
                 "species": "SPECIES_MAGIKARP"
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
+                "species": "SPECIES_MAGIKARP"
+              },
+              {
+                "min_level": 10,
+                "max_level": 15,
                 "species": "SPECIES_TENTACOOL"
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
                 "species": "SPECIES_WAILMER"
               },
               {
@@ -18252,17 +18252,17 @@
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
                 "species": "SPECIES_MAGIKARP"
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
                 "species": "SPECIES_GOLDEEN"
               },
               {
                 "min_level": 10,
-                "max_level": 30,
+                "max_level": 15,
                 "species": "SPECIES_CORPHISH"
               },
               {
@@ -25294,17 +25294,17 @@
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_NONE"
+                "species": "SPECIES_MAGIKARP"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_NONE"
+                "species": "SPECIES_WISHIWASHI"
               },
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_NONE"
+                "species": "SPECIES_WISHIWASHI"
               },
               {
                 "min_level": 5,
@@ -25626,12 +25626,12 @@
               {
                 "min_level": 10,
                 "max_level": 15,
-                "species": "SPECIES_GOLDEEN"
+                "species": "SPECIES_MAGIKARP"
               },
               {
                 "min_level": 10,
                 "max_level": 15,
-                "species": "SPECIES_MAGIKARP"
+                "species": "SPECIES_GOLDEEN"
               },
               {
                 "min_level": 5,
@@ -25908,29 +25908,29 @@
             "encounter_rate": 30,
             "mons": [
               {
-                "min_level": 6,
-                "max_level": 8,
+                "min_level": 5,
+                "max_level": 10,
                 "species": "SPECIES_SPHEAL"
               },
               {
-                "min_level": 6,
-                "max_level": 8,
-                "species": "SPECIES_FINNEON"
+                "min_level": 5,
+                "max_level": 10,
+                "species": "SPECIES_GOLDEEN"
               },
               {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_NONE"
+                "min_level": 10,
+                "max_level": 15,
+                "species": "SPECIES_SPHEAL"
               },
               {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_NONE"
+                "min_level": 10,
+                "max_level": 15,
+                "species": "SPECIES_GOLDEEN"
               },
               {
-                "min_level": 5,
-                "max_level": 5,
-                "species": "SPECIES_NONE"
+                "min_level": 10,
+                "max_level": 15,
+                "species": "SPECIES_MAGIKARP"
               },
               {
                 "min_level": 5,

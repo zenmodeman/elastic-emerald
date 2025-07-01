@@ -4913,6 +4913,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
             }
             break;
         case ABILITY_DOWNLOAD:
+        case ABILITY_DOMINATE:
             if (!gSpecialStatuses[battler].switchInAbilityDone)
             {
                 u32 statId, opposingBattler;
@@ -9568,6 +9569,10 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageCalculationData *
         if (moveType == TYPE_STEEL)
            modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
         break;
+    case ABILITY_MYSTIC:
+        if (moveType == TYPE_PSYCHIC)
+           modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
+        break;        
     case ABILITY_PIXILATE:
         if (moveType == TYPE_FAIRY && gBattleStruct->ateBoost[battlerAtk])
             modifier = uq4_12_multiply(modifier, UQ_4_12(1.2));

@@ -2436,5 +2436,16 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .name = _("Astral Charge"),
         .aiRating = 5,
         .description = COMPOUND_STRING("Psychic/Fairy hits up Sp.Atk."),
+    },
+    [ABILITY_MYSTIC] = {
+        .name = _("Mystic"),
+        .aiRating = 5,
+        .description = COMPOUND_STRING("Ups Psychic moves."),        
+    },
+    [ABILITY_DOMINATE] = {
+        .name = _("Dominate"),
+        .aiRating = 5,
+        .description = COMPOUND_STRING("Adjusts power favorably."),        
     }
+
 };
