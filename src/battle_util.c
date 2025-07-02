@@ -4889,6 +4889,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 {
                     gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SWITCHIN_ANTICIPATION;
                     gSpecialStatuses[battler].switchInAbilityDone = TRUE;
+                    gStatuses4[gBattlerAttacker] |= STATUS4_ANTICIPATION;
                     BattleScriptPushCursorAndCallback(BattleScript_SwitchInAbilityMsg);
                 }
             }
@@ -10402,6 +10403,15 @@ static inline uq4_12_t GetDefenderAbilitiesModifier(u32 move, u32 moveType, u32 
     case ABILITY_PRISM_ARMOR:
         if (typeEffectivenessModifier >= UQ_4_12(2.0))
             return UQ_4_12(0.75);
+        break;
+    case ABILITY_ANTICIPATION:
+        if (gStatuses4[battlerDef] & STATUS4_ANTICIPATION){
+            if (typeEffectivenessModifier >= UQ_4_12(4.0)){
+                return UQ_4_12(0.5625);
+            }else if (typeEffectivenessModifier >= UQ_4_12(2.0)){
+                return UQ_4_12(0.75);
+            }
+        }
         break;
     case ABILITY_FLUFFY:
         if (!IsMoveMakingContact(move, battlerAtk) && moveType == TYPE_FIRE)
