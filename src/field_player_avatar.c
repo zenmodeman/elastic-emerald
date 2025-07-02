@@ -1735,17 +1735,17 @@ static void Task_WaitStopSurfing(u8 taskId)
 #define FISHING_STICKY_BOOST 36
 
 #if I_FISHING_BITE_ODDS >= GEN_4
-#define FISHING_OLD_ROD_ODDS 45  // Instead of 75
-#define FISHING_GOOD_ROD_ODDS 35 // Instead of 50
-#define FISHING_SUPER_ROD_ODDS 25
+#define FISHING_OLD_ROD_ODDS 45  //Instead of 75
+#define FISHING_GOOD_ROD_ODDS 35 //Instead of 50
+#define FISHING_SUPER_ROD_ODDS 25 
 #elif I_FISHING_BITE_ODDS >= GEN_3
-#define FISHING_OLD_ROD_ODDS 50
-#define FISHING_GOOD_ROD_ODDS 50
-#define FISHING_SUPER_ROD_ODDS 50
+#define FISHING_OLD_ROD_ODDS 50  
+#define FISHING_GOOD_ROD_ODDS 50 
+#define FISHING_SUPER_ROD_ODDS 50 
 #else
 #define FISHING_OLD_ROD_ODDS 0
 #define FISHING_GOOD_ROD_ODDS 33
-#define FISHING_SUPER_ROD_ODDS 50
+#define FISHING_SUPER_ROD_ODDS 50 
 #endif
 
 enum
@@ -1822,9 +1822,9 @@ static bool32 Fishing_GetRodOut(struct Task *task)
         [GOOD_ROD] = 1,
         [SUPER_ROD] = 1};
     const s16 minRounds2[] = {
-        [OLD_ROD] = 1,
-        [GOOD_ROD] = 3,
-        [SUPER_ROD] = 6};
+        [OLD_ROD] = 1,     // Stays 1 (total: 1-2 rounds)
+        [GOOD_ROD] = 2,    // Stays 2 (total: 1-3 rounds)
+        [SUPER_ROD] = 3};  // Increased to 3 (total: 1-4 rounds, down from original 1-7)
 
     task->tRoundsPlayed = 0;
     task->tMinRoundsRequired = minRounds1[task->tFishingRod] + (Random() % minRounds2[task->tFishingRod]);
@@ -1877,10 +1877,20 @@ static bool32 Fishing_ShowDots(struct Task *task)
         if (!DoesFishingMinigameAllowCancel())
             return FALSE;
 
-        task->tStep = FISHING_NOT_EVEN_NIBBLE;
-        if (task->tRoundsPlayed != 0)
-            // task->tStep = FISHING_GOT_AWAY;
-            task->tStep = FISHING_GOT_BITE;
+        // Grace period: if pressed early but close to completion, be more forgiving
+        bool32 nearCompletion = (task->tNumDots >= (task->tDotsRequired - 2));
+        bool32 hasGracePeriod = (task->tRoundsPlayed > 0 && nearCompletion);
+
+        if (hasGracePeriod && (Random() % 100) < 40) // 40% chance to forgive early press
+        {
+            task->tStep = FISHING_CHECK_FOR_BITE; // Give them the bite anyway
+        }
+        else
+        {
+            task->tStep = FISHING_NOT_EVEN_NIBBLE;
+            if (task->tRoundsPlayed != 0)
+                task->tStep = FISHING_GOT_AWAY;
+        }
         return TRUE;
     }
     else
@@ -1965,15 +1975,16 @@ static bool32 Fishing_ChangeMinigame(struct Task *task)
 static bool32 Fishing_WaitForA(struct Task *task)
 {
     const s16 reelTimeouts[3] = {
-        [OLD_ROD] = 36,
-        [GOOD_ROD] = 33,
-        [SUPER_ROD] = 30};
+        [OLD_ROD] = 45,    // originally 36
+        [GOOD_ROD] = 42,   // originally 33
+        [SUPER_ROD] = 39}; // originally 30
 
     AlignFishingAnimationFrames();
     task->tFrameCounter++;
     if (task->tFrameCounter >= reelTimeouts[task->tFishingRod])
-        // task->tStep = FISHING_GOT_AWAY;
-        task->tStep = FISHING_GOT_BITE;
+        task->tStep = FISHING_GOT_AWAY;
+        //The below was me trying out eliminating getting away
+        // task->tStep = FISHING_GOT_BITE; 
     else if (JOY_NEW(A_BUTTON))
         task->tStep = FISHING_CHECK_MORE_DOTS;
     return FALSE;
@@ -1992,9 +2003,10 @@ static bool32 Fishing_CheckMoreDots(struct Task *task)
 {
     const s16 moreDotsChance[][2] =
         {
-            [OLD_ROD] = {0, 0},
-            [GOOD_ROD] = {40, 10},
-            [SUPER_ROD] = {70, 30}};
+            [OLD_ROD] = {0, 0},      // No additional rounds
+            [GOOD_ROD] = {15, 3},    // Reduced from {20, 5}
+            [SUPER_ROD] = {30, 15}}; // Reduced from {40, 20}
+            //Originals were: [GOOD_ROD] = {40, 10}, [SUPER_ROD] = {70, 30}
 
     AlignFishingAnimationFrames();
     task->tStep = FISHING_MON_ON_HOOK;
