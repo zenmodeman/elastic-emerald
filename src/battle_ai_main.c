@@ -4493,8 +4493,37 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             break;
         //fallthrough
     case EFFECT_HIT_ESCAPE:
-    case EFFECT_PARTING_SHOT:
     case EFFECT_CHILLY_RECEPTION:
+            //Extra incentive if there's an opportunity for Damp healing.
+            if (GetBattlerAbility(battlerAtk) == ABILITY_DAMP && CountUsablePartyMons(battlerAtk) > 0
+            && (gStatuses4[battlerAtk] & STATUS4_WATER_SPORT)){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+            if (!IsDoubleBattle())
+            {
+                switch (ShouldPivot(battlerAtk, battlerDef, aiData->abilities[battlerDef], move, movesetIndex))
+                {
+                case DONT_PIVOT:
+                    // ADJUST_SCORE(-10);    // technically should go in CheckBadMove, but this is easier/less computationally demanding
+                    break;
+                case CAN_TRY_PIVOT:
+                    break;
+                case SHOULD_PIVOT:
+                    ADJUST_SCORE(BEST_EFFECT);
+                    break;
+                }
+            }
+            else //Double Battle
+            {
+                if (CountUsablePartyMons(battlerAtk) == 0)
+                    break; // Can't switch
+
+                //if (switchAbility == ABILITY_INTIMIDATE && PartyHasMoveCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+                    //ADJUST_SCORE(7);
+            }
+            break;
+    //Currently have Parting Shot and the others code duplicated from above apart from the lower checks, but this will need an eventual overhaul.
+    case EFFECT_PARTING_SHOT:
         if (!IsDoubleBattle())
         {
             if (ShouldLowerAttack(battlerAtk, battlerDef, aiData->abilities[battlerDef]) ||  ShouldLowerSpAtk(battlerAtk, battlerDef, aiData->abilities[battlerDef])){
@@ -5169,13 +5198,73 @@ case EFFECT_DISABLE:
             ADJUST_SCORE(GOOD_EFFECT); // Steal move
         break;
     case EFFECT_MUD_SPORT:
-        if (!HasMoveWithType(battlerAtk, TYPE_ELECTRIC) && HasMoveWithType(battlerDef, TYPE_ELECTRIC))
-            ADJUST_SCORE(WEAK_EFFECT);
+    {
+        bool32 defenderIsOpponent, opponentIsElectric, opponentHasUnrevealedMoves, opponentHasElectricDamage, attackerIsWeakToElectric;
+
+        defenderIsOpponent = GetBattlerSide(battlerDef) != GetBattlerSide(battlerAtk);
+
+        //Hard break because it should be depending on opponents; conditionals involving allies would involve function calls
+        if (!defenderIsOpponent){
+            break;
+        }
+
+        opponentIsElectric = gBattleMons[battlerDef].types[0] == TYPE_ELECTRIC || gBattleMons[battlerDef].types[1] == TYPE_ELECTRIC;
+        opponentHasUnrevealedMoves = !HasAllKnownMoves(battlerDef);
+        opponentHasElectricDamage = HasDamagingMoveOfType(battlerDef, TYPE_ELECTRIC);
+        attackerIsWeakToElectric = CalcTypeEffectivenessMultiplier(MOVE_IRRELEVANT, TYPE_ELECTRIC, battlerDef, 
+            battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0);
+        
+        if (opponentHasElectricDamage || (opponentIsElectric && opponentHasUnrevealedMoves)){
+            if (attackerIsWeakToElectric){
+                ADJUST_SCORE(DECENT_EFFECT);
+            }
+        }
+
+        // if (!HasMoveWithType(battlerAtk, TYPE_ELECTRIC) && HasMoveWithType(battlerDef, TYPE_ELECTRIC))
+        //     ADJUST_SCORE(WEAK_EFFECT);
         break;
+    }
     case EFFECT_WATER_SPORT:
-        if (!HasMoveWithType(battlerAtk, TYPE_FIRE) && (HasMoveWithType(battlerDef, TYPE_FIRE)))
-            ADJUST_SCORE(WEAK_EFFECT);
+    {   
+        bool32 defenderIsOpponent, opponentIsFire, opponentHasUnrevealedMoves, opponentHasFireDamage, attackerIsWeakToFire;
+        bool32 attackerIsFaster, attackerLives1HitAfterDampHealing, attackerLives2HitsAfterDampHealing, attackerHasPartyMons;
+
+        defenderIsOpponent = GetBattlerSide(battlerDef) != GetBattlerSide(battlerAtk);
+
+        //Hard break because it should be depending on opponents; conditionals involving allies would involve function calls
+        if (!defenderIsOpponent){
+            break;
+        }
+
+        opponentIsFire = gBattleMons[battlerDef].types[0] == TYPE_FIRE || gBattleMons[battlerDef].types[1] == TYPE_FIRE;
+        opponentHasUnrevealedMoves = !HasAllKnownMoves(battlerDef);
+        opponentHasFireDamage = HasDamagingMoveOfType(battlerDef, TYPE_FIRE);
+        attackerIsWeakToFire = CalcTypeEffectivenessMultiplier(MOVE_IRRELEVANT, TYPE_FIRE, battlerDef, 
+            battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0);
+        
+        if (opponentHasFireDamage || (opponentIsFire && opponentHasUnrevealedMoves)){
+            if (attackerIsWeakToFire){
+                ADJUST_SCORE(DECENT_EFFECT);
+            }
+        }
+
+        attackerIsFaster = AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT);
+        //Water Sport will do Damp healing of 33% so factor that into KO calcs
+        attackerLives1HitAfterDampHealing = !CanTargetFaintAiWithMod(battlerDef, battlerAtk, gBattleMons[battlerAtk].maxHP/3, 1);
+        attackerLives2HitsAfterDampHealing = !CanTargetFaintAiWithMod(battlerDef, battlerAtk, gBattleMons[battlerAtk].maxHP / 3, 2);
+        attackerHasPartyMons = CountUsablePartyMons(battlerAtk) > 0;
+
+        //Damp + Water Sport + Flip Turn can give an incentive when there's a mon to switch to, thanks to Damp healing
+        if (GetBattlerAbility(battlerAtk) == ABILITY_DAMP && HasMoveEffect(battlerAtk, EFFECT_HIT_ESCAPE) && attackerHasPartyMons){
+            if ((attackerIsFaster && attackerLives1HitAfterDampHealing) || attackerLives2HitsAfterDampHealing){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
+        }
+
+        // if (!HasMoveWithType(battlerAtk, TYPE_FIRE) && (HasMoveWithType(battlerDef, TYPE_FIRE)))
+        //     ADJUST_SCORE(WEAK_EFFECT);
         break;
+    }
     case EFFECT_TICKLE:
         if (gBattleMons[battlerDef].statStages[STAT_DEF] > 4 && HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)
          && aiData->abilities[battlerDef] != ABILITY_CONTRARY && ShouldLowerDefense(battlerAtk, battlerDef, aiData->abilities[battlerDef]))
@@ -5482,8 +5571,8 @@ case EFFECT_DISABLE:
         //, and the current type does not resist both STABs
         //uses MOVE_CONSTRICT as a hacky way to only consider types and not specific move logic
         && 
-        (CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].types[0], battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0)
-        || CalcTypeEffectivenessMultiplier(MOVE_CONSTRICT, gBattleMons[battlerDef].types[1], battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0))
+        (CalcTypeEffectivenessMultiplier(MOVE_IRRELEVANT, gBattleMons[battlerDef].types[0], battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0)
+        || CalcTypeEffectivenessMultiplier(MOVE_IRRELEVANT, gBattleMons[battlerDef].types[1], battlerDef, battlerAtk, aiData->abilities[battlerAtk], FALSE) >= UQ_4_12(1.0))
         ){
             //~50% chance incentive
             if (AI_RandLessThan(127)){
