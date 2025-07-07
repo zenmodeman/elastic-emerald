@@ -126,6 +126,9 @@ static u32 Crc32B (const u8 *data, u32 size);
 static u32 GeneratePartyHash(const struct Trainer *trainer, u32 i);
 static s32 Factorial(s32);
 
+//My custom static functions
+static u32 GetNPCMonLevelIncrease(u16 opponent);
+
 EWRAM_DATA u16 gBattle_BG0_X = 0;
 EWRAM_DATA u16 gBattle_BG0_Y = 0;
 EWRAM_DATA u16 gBattle_BG1_X = 0;
@@ -1853,6 +1856,25 @@ void CustomTrainerPartyAssignMoves(struct Pokemon *mon, const struct TrainerMon 
     }
 }
 
+static u32 GetNPCMonLevelIncrease(u16 opponent){
+    switch (opponent){
+        case TRAINER_CINDY_1:
+            {
+                u32 baseRate = 3;
+                //The expectation is that TRAINER_CINDY_2 will be used after badge 3, so only check badges 1 and 2
+                if (FLAG_BADGE02_GET){
+                    return baseRate * 2;
+                }
+                else if (FLAG_BADGE01_GET){
+                    return baseRate;
+                }
+                break;
+            }
+        default: 
+            return 0;
+    }
+}
+
 u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer *trainer, bool32 firstTrainer, u32 battleTypeFlags)
 {
     u32 personalityValue;
@@ -1889,6 +1911,8 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             u32 otIdType = OT_ID_RANDOM_NO_SHINY;
             u32 fixedOtId = 0;
             u32 ability = 0;
+            u32 monLevel = partyData[monIndex].lvl;
+            monLevel += GetNPCMonLevelIncrease(TRAINER_BATTLE_PARAM.opponentA);
 
             if (trainer->doubleBattle == TRUE)
                 personalityValue = 0x80;
@@ -1910,7 +1934,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                 otIdType = OT_ID_PRESET;
                 fixedOtId = HIHALF(personalityValue) ^ LOHALF(personalityValue);
             }
-            CreateMon(&party[i], partyData[monIndex].species, partyData[monIndex].lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
+            CreateMon(&party[i], partyData[monIndex].species, monLevel, 0, TRUE, personalityValue, otIdType, fixedOtId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[monIndex].heldItem);
 
             CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
