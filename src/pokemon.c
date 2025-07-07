@@ -2453,7 +2453,6 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
     switch(species){
         //Pure Water Tera Types
         /*
-            Tera Types to still cover:  Water  Dragon 
         */  
         case SPECIES_SQUIRTLE: case SPECIES_WARTORTLE: case SPECIES_BLASTOISE:
             return TYPE_STEEL;
@@ -2513,7 +2512,75 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DRAGON;
         case SPECIES_WIGLETT: case SPECIES_WUGTRIO: //Maybe do Tera Water Dugtrio-Alola as a complement
             return TYPE_STEEL;
+        case SPECIES_DONDOZO:
+            return TYPE_ICE; //Ice Fang and Avalanche; want to make the defensive typing not too good.
+        case SPECIES_PALAFIN: //Restricted Mode Tera Banned
+            return TYPE_NORMAL;
 
+        //Pure Normal Tera Types
+        case SPECIES_RATTATA: case SPECIES_RATICATE:
+            return TYPE_BUG; //U-Turn
+        case SPECIES_MEOWTH: case SPECIES_PERSIAN:
+            return TYPE_FLYING; //Technician Aerial Ace
+        case SPECIES_LICKITUNG: case SPECIES_LICKILICKY:
+            return TYPE_STELLAR; //Various coverage and giving a one-time boost to Wring Out
+        case SPECIES_HAPPINY: case SPECIES_CHANSEY: case SPECIES_BLISSEY:
+            return TYPE_ICE;
+        case SPECIES_KANGASKHAN:
+            return TYPE_FIGHTING;
+        case SPECIES_TAUROS:
+            return TYPE_ROCK; //Sheer Force Rock Slide
+        case SPECIES_DITTO:
+            return TYPE_STELLAR;
+        case SPECIES_EEVEE:
+            return TYPE_NORMAL;
+        case SPECIES_PORYGON: case SPECIES_PORYGON2: case SPECIES_PORYGON_Z:
+            return TYPE_ELECTRIC;
+        case SPECIES_MUNCHLAX: case SPECIES_SNORLAX:
+            return TYPE_GRASS; //THick Fat and Seed Bomb
+        case SPECIES_SENTRET: case SPECIES_FURRET:
+            return TYPE_FAIRY;
+        case SPECIES_STANTLER: case SPECIES_WYRDEER:
+            return TYPE_GRASS; //Sap Sipper and Energy Ball + Trailblaze
+        case SPECIES_DUNSPARCE: case SPECIES_DUDUNSPARCE:
+            return TYPE_DRAGON; //Scale Shot, Dragon Tail, e.t.c.
+        case SPECIES_CASTFORM: 
+            return TYPE_STELLAR;
+        //Teddiursa line pivots the curated Tera Type
+        case SPECIES_TEDDIURSA:
+            return TYPE_BUG;
+        case SPECIES_URSARING:
+            return TYPE_FIGHTING;
+        case SPECIES_URSALUNA:
+            return TYPE_ROCK; //To give it a new STAB while keeping many of the existing weaknesses (Fighting, Grass, Water)
+        case SPECIES_AIPOM: case SPECIES_AMBIPOM:
+            return TYPE_DRAGON; //Dual Chop
+        case SPECIES_SMEARGLE:
+            return TYPE_GHOST; //Immunity for frailness
+        case SPECIES_MILTANK:
+            return TYPE_FAIRY; //Play Rough
+
+        //Pure Fire    
+        case SPECIES_VULPIX: case SPECIES_NINETALES:
+            return TYPE_GHOST; //One of the rare Pure Fires to get Shadow Ball
+        case SPECIES_GROWLITHE: case SPECIES_ARCANINE:
+            return TYPE_STEEL;
+        case SPECIES_MAGBY: case SPECIES_MAGMAR: case SPECIES_MAGMORTAR:
+            return TYPE_PSYCHIC; //Psychic (move)
+        case SPECIES_DARUMAKA: case SPECIES_DARMANITAN: case SPECIES_DARMANITAN_ZEN: case SPECIES_DARMANITAN_GALAR_ZEN:
+            return TYPE_PSYCHIC;
+
+        case SPECIES_HEATMOR:
+            return TYPE_GRASS; //Giga Drain; and Flash Fire synergy
+
+        case SPECIES_SILVALLY_FIRE: case SPECIES_CASTFORM_SUNNY:
+            return TYPE_STELLAR;
+
+        //Fire Dual Types
+        case SPECIES_LITTEN: case SPECIES_TORRACAT: case SPECIES_INCINEROAR:
+            return TYPE_BUG; //U-Turn and Leech Life
+        case SPECIES_ROLYCOLY: case SPECIES_CARKOL: case SPECIES_COALOSSAL:
+            return TYPE_WATER;
         //Grass
         case SPECIES_APPLIN: case SPECIES_FLAPPLE: case SPECIES_APPLETUN: case SPECIES_DIPPLIN: case SPECIES_HYDRAPPLE:
             return TYPE_BUG;

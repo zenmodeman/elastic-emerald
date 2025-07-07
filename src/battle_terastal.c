@@ -69,15 +69,16 @@ bool32 IsRestrictedModeTeraBanned(u32 battler)
     // case SPECIES_HYDREIGON:
     // For now, excusing both Goodras, and Kommo-o
     // Note: Goodra-Hisui will probably be Rock, and Goodra-Unova Water
+    // case SPECIES_GOODRA:
     // case SPECIES_GOODRA_HISUI:
     // case SPECIES_KOMMO_O:
     case SPECIES_DRAGAPULT:
     // case SPECIES_BAXCALIBUR:
     case SPECIES_URSHIFU_SINGLE_STRIKE:
     case SPECIES_URSHIFU_RAPID_STRIKE:
-        return TRUE;
+    case SPECIES_PALAFIN:
     case SPECIES_ARCHALUDON:
-        return TRUE;
+        return TRUE;    
     default:
         return FALSE;
     }

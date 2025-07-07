@@ -57,6 +57,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Anticipation has double reduction when sent out 
     } SCENE {
         HP_BAR(opponent, captureDamage: &results[i].damage);
     } FINALLY {
+        //0.75 * 0.75 reduction
         EXPECT_MUL_EQ(results[1].damage, UQ_4_12(0.565), results[0].damage);
     }
 }
