@@ -10536,14 +10536,13 @@ const struct Item gItemsInfo[] =
         .secondaryId = MOVE_HELPING_HAND,
     },
 
-    [ITEM_TM_HIDDEN_POWER] =
+    [ITEM_TM_NATURE_POWER] =
     {
         .name = _("TM10"),
         .price = 3000,
         .description = COMPOUND_STRING(
-            "The attack power\n"
-            "varies among\n"
-            "different Pokémon."),
+            "The type of attack varies\n"
+            "depending on the location."),
         .importance = I_REUSABLE_TMS,
         .pocket = POCKET_TM_HM,
         .type = ITEM_USE_PARTY_MENU,
@@ -10996,14 +10995,13 @@ const struct Item gItemsInfo[] =
         .secondaryId = MOVE_ROCK_TOMB,
     },
 
-    [ITEM_TM_AERIAL_ACE] =
+    [ITEM_TM_ROOST] =
     {
         .name = _("TM40"),
         .price = 3000,
         .description = COMPOUND_STRING(
-            "An extremely fast\n"
-            "attack that can't\n"
-            "be avoided."),
+            "Restores the user's HP by\n"
+            "half of its max HP."),
         .importance = I_REUSABLE_TMS,
         .pocket = POCKET_TM_HM,
         .type = ITEM_USE_PARTY_MENU,
