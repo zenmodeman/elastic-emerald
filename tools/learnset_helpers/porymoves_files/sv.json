@@ -9705,7 +9705,7 @@
       "MOVE_PRESENT",
       "MOVE_SEISMIC_TOSS"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_HAPPY_HOUR"]
   },
   "TANGELA": {
     "LevelMoves": [],
@@ -21969,7 +21969,7 @@
       "MOVE_PRESENT",
       "MOVE_SEISMIC_TOSS"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_HAPPY_HOUR"]
   },
   "RAIKOU": {
     "LevelMoves": [
@@ -39029,7 +39029,7 @@
       "MOVE_PRESENT",
       "MOVE_SEISMIC_TOSS"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_HAPPY_HOUR"]
   },
   "CHATOT": {
     "LevelMoves": [],
@@ -68169,7 +68169,7 @@
       "MOVE_ICE_SHARD",
       "MOVE_MIST"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_WATER_SPORT", "MOVE_MUD_SPORT"]
   },
   "DRIZZILE": {
     "LevelMoves": [
@@ -68257,7 +68257,7 @@
       "MOVE_ICE_SHARD",
       "MOVE_MIST"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_WATER_SPORT", "MOVE_MUD_SPORT"]
   },
   "INTELEON": {
     "LevelMoves": [
@@ -68381,7 +68381,7 @@
       "MOVE_ICE_SHARD",
       "MOVE_MIST"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_WATER_SPORT", "MOVE_MUD_SPORT"]
   },
   "SKWOVET": {
     "LevelMoves": [

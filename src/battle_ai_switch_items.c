@@ -1004,9 +1004,9 @@ static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 perc
             return FALSE;
     }
 
-    if (GetBattlerSide(battler) == B_SIDE_PLAYER){
-        DebugPrintf("Last Landed move for player is %d", gLastLandedMoves[battler]);
-    }
+    // if (GetBattlerSide(battler) == B_SIDE_PLAYER){
+    //     DebugPrintf("Last Landed move for player is %d", gLastLandedMoves[battler]);
+    // }
 
     if (gLastLandedMoves[battler] == MOVE_NONE)
         return FALSE;
@@ -1061,10 +1061,10 @@ static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 perc
         {
             if (GetBattlerSide(battler) == B_SIDE_PLAYER){
                 if (RandomPercentage(RNG_AI_SWITCH_SE_DEFENSIVE, percentChance)){
-                    DebugPrintf("The custom Player Side call occurred, species is %d, and i is %d.", species, i);
+                    DEBUG_PREDICT("The custom Player Side call occurred, species is %d, and i is %d.", species, i);
                     return SetSwitchinAndSwitch(battler, i);
                 }else{
-                    DebugPrintf("Reached the immunity check, but RNG call did not go through.");
+                    DEBUG_PREDICT("Reached the immunity check, but RNG call did not go through.");
                 }
             }
             battlerIn1 = gLastHitBy[battler];
@@ -1253,6 +1253,7 @@ static bool32 HasGoodSubstituteMove(u32 battler)
 }
 
 //NOTE: Need to verify whether AiPartyMon indexes align with SetSwitchinAndSwitch indices
+//Follow-up to Note: Seems to be so, since testing seems to have succeeded, but try to confirm in the future.
 static bool32 FindHealAbsorbMonWithSwitches(u32 battler, u16 move, u32 numRequiredSwitches){
 
     u32 i, count;

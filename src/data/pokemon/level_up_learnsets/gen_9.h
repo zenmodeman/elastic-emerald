@@ -18515,7 +18515,7 @@ static const struct LevelUpMove sSobbleLevelUpLearnset[] = {
     LEVEL_UP_END};
 
 static const struct LevelUpMove sDrizzileLevelUpLearnset[] = {
-    LEVEL_UP_MOVE(0, MOVE_AQUA_JET),
+    LEVEL_UP_MOVE(0, MOVE_AQUA_JET), //Level-up move addition 
     LEVEL_UP_MOVE(1, MOVE_POUND),
     LEVEL_UP_MOVE(1, MOVE_GROWL),
     LEVEL_UP_MOVE(4, MOVE_WATER_GUN),
@@ -19129,7 +19129,7 @@ static const struct LevelUpMove sToxelLevelUpLearnset[] = {
     LEVEL_UP_MOVE(1, MOVE_TEARFUL_LOOK),
     LEVEL_UP_MOVE(10, MOVE_BELCH),
     LEVEL_UP_MOVE(18, MOVE_METAL_SOUND),
-
+    //WIP 3
     LEVEL_UP_END};
 
 static const struct LevelUpMove sToxtricityAmpedLevelUpLearnset[] = {

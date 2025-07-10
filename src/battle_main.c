@@ -1862,10 +1862,10 @@ static u32 GetNPCMonLevelIncrease(u16 opponent){
             {
                 u32 baseRate = 3;
                 //The expectation is that TRAINER_CINDY_2 will be used after badge 3, so only check badges 1 and 2
-                if (FLAG_BADGE02_GET){
+                if (FlagGet(FLAG_BADGE02_GET)){
                     return baseRate * 2;
                 }
-                else if (FLAG_BADGE01_GET){
+                else if (FlagGet(FLAG_BADGE01_GET)){
                     return baseRate;
                 }
                 break;
