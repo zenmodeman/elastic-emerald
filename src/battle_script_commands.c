@@ -1800,6 +1800,12 @@ static void Cmd_ppreduce(void)
         if (gCurrentMove != gLastResultingMoves[gBattlerAttacker] || WasUnableToUseMove(gBattlerAttacker))
             gBattleStruct->sameMoveTurns[gBattlerAttacker] = 0;
 
+        //Display that Echoed Voice was used by someone this tur
+        if (!gBattleStruct->echoedVoiceUsedThisTurn && gCurrentMove == MOVE_ECHOED_VOICE && !WasUnableToUseMove(gBattlerAttacker)){
+            DebugPrintf("From Cmd_ppreduce, Echoed Voice usage has been identified.");
+            gBattleStruct->echoedVoiceUsedThisTurn = TRUE; 
+        }
+
         if (gBattleMons[gBattlerAttacker].pp[gCurrMovePos] > ppToDeduct)
             gBattleMons[gBattlerAttacker].pp[gCurrMovePos] -= ppToDeduct;
         else

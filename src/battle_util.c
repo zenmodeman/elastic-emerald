@@ -9307,17 +9307,10 @@ static inline u32 CalcMoveBasePower(struct DamageCalculationData *damageCalcData
             basePower = 150;
         break;
     case EFFECT_ECHOED_VOICE:
-        // gBattleStruct->sameMoveTurns incremented in ppreduce
-        
-        //Added the second check because it seems it wasn't factoring whether the repeat moves were Echoed Voice.
-        //AI Damage calculations were really messed up as a result.
-        //But also, I think this isn't the true Echoed Voice since Echoed Voice factors any Pokemon using the move
-        if (gBattleStruct->sameMoveTurns[battlerAtk] != 0 && FindMoveUsedXTurnsAgo(battlerAtk, 1) == move)
-        {
-            basePower += (basePower * gBattleStruct->sameMoveTurns[battlerAtk]);
-            if (basePower > 200)
-                basePower = 200;
-        }
+            //echoedVoiceCounter is currently a custom implementation until expansion adds it.
+        basePower += (basePower * gBattleStruct->echoedVoiceCounter);
+        if (basePower > 200)
+            basePower = 200;
         break;
     case EFFECT_PAYBACK:
         if (GetBattlerTurnOrderNum(battlerAtk) > GetBattlerTurnOrderNum(battlerDef)

@@ -1873,6 +1873,7 @@ static u32 GetNPCMonLevelIncrease(u16 opponent){
         default: 
             return 0;
     }
+    return 0;
 }
 
 u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer *trainer, bool32 firstTrainer, u32 battleTypeFlags)
@@ -3001,6 +3002,9 @@ static void BattleStartClearSetData(void)
     memset(&gSideTimers, 0, sizeof(gSideTimers));
     memset(&gWishFutureKnock, 0, sizeof(gWishFutureKnock));
     memset(&gBattleResults, 0, sizeof(gBattleResults));
+
+    // Initialize Echoed Voice counter
+    gBattleStruct->echoedVoiceCounter = 0;
     ClearSetBScriptingStruct();
 
     for (i = 0; i < MAX_BATTLERS_COUNT; i++)
@@ -4024,6 +4028,32 @@ void BattleTurnPassed(void)
         if (gSideTimers[i].retaliateTimer > 0)
             gSideTimers[i].retaliateTimer--;
     }
+
+    //Echoed Voice depends on at least one use in a turn.
+    {
+        bool32 echoedVoiceUsedThisTurn = gBattleStruct->echoedVoiceUsedThisTurn;
+        u32 echoedVoiceIncrementLimit = 4; //40 power if no use; increments by 40 for each use; caps at 200 total power
+
+        if (echoedVoiceUsedThisTurn){
+           if (gBattleStruct->echoedVoiceCounter < echoedVoiceIncrementLimit){
+                    gBattleStruct->echoedVoiceCounter += 1;
+                    DebugPrintf("Echoed Voice increment is happening with new value %d", gBattleStruct->echoedVoiceCounter);                
+           }
+           else{
+            DebugPrintf("Echoed Voice was used, but the echoed voice cap has been reached.");
+           }
+        }
+
+        if (!echoedVoiceUsedThisTurn)
+        {
+            // Reset counter if no one successfully used Echoed Voice this turn
+            DebugPrintf("The call to reset Echoed Voice has occurred.");
+            gBattleStruct->echoedVoiceCounter = 0;
+        }
+        //After doing the potential incrementing, reset the struct tracking of the move
+        gBattleStruct->echoedVoiceUsedThisTurn = FALSE;
+    }
+
 
     BattlePutTextOnWindow(gText_EmptyString3, B_WIN_MSG);
     AssignUsableGimmicks();
