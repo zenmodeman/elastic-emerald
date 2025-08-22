@@ -3833,16 +3833,19 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
             {
                 u32 dmgGapThreshold = 120; //Percentage amount above which one move is prioritized over others, even for the same number of hits
 
-                //Keep going if current move is stronger than the other move by at least the threshold
-                if (AI_DATA->simulatedDmg[battlerAtk][battlerDef][currId].expected >= (AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected * dmgGapThreshold)/10){
-                    viableMoveScores[i] -= 1;
-                    continue;
+                if (leastHits != 1){ //Damage gap exceptions don't apply for OHKO scenarios
+                    //Keep going if current move is stronger than the other move by at least the threshold
+                    if (AI_DATA->simulatedDmg[battlerAtk][battlerDef][currId].expected >= (AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected * dmgGapThreshold)/10){
+                        viableMoveScores[i] -= 1;
+                        continue;
+                    }
+
+                    //Give up on getting best damaging move score if the other move hits harder by at least the threshold
+                    else if ((AI_DATA->simulatedDmg[battlerAtk][battlerDef][currId].expected * dmgGapThreshold)/100 <= AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected){
+                        return score;
+                    }
                 }
 
-                //Give up on getting best damaging move score if the other move hits harder by at least the threshold
-                else if ((AI_DATA->simulatedDmg[battlerAtk][battlerDef][currId].expected * dmgGapThreshold)/100 <= AI_DATA->simulatedDmg[battlerAtk][battlerDef][i].expected){
-                    return score;
-                }
 
                 multipleBestMoves = TRUE;
                 // We need to make sure it's the current move which is objectively better.
@@ -4494,34 +4497,42 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         //fallthrough
     case EFFECT_HIT_ESCAPE:
     case EFFECT_CHILLY_RECEPTION:
-            //Extra incentive if there's an opportunity for Damp healing.
-            if (GetBattlerAbility(battlerAtk) == ABILITY_DAMP && CountUsablePartyMons(battlerAtk) > 0
-            && (gStatuses4[battlerAtk] & STATUS4_WATER_SPORT)){
+    {
+        bool32 attackerIsSlower= !AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT);
+        bool32 attackerHasTakenEnoughDamage = gBattleMons[battlerAtk].hp <= ((gBattleMons[battlerAtk].maxHP * 3) / 4);
+        bool32 attackerHasMonsToSwitchTo = CountUsablePartyMons(battlerAtk) > 0;
+        
+        //Extra incentive if there's an opportunity for Damp healing.
+        if (GetBattlerAbility(battlerAtk) == ABILITY_DAMP && attackerHasMonsToSwitchTo
+        && (gStatuses4[battlerAtk] & STATUS4_WATER_SPORT)
+        && (attackerIsSlower || attackerHasTakenEnoughDamage)
+        ){
                 ADJUST_SCORE(WEAK_EFFECT);
-            }
-            if (!IsDoubleBattle())
+        }
+        if (!IsDoubleBattle())
+        {
+            switch (ShouldPivot(battlerAtk, battlerDef, aiData->abilities[battlerDef], move, movesetIndex))
             {
-                switch (ShouldPivot(battlerAtk, battlerDef, aiData->abilities[battlerDef], move, movesetIndex))
-                {
-                case DONT_PIVOT:
-                    // ADJUST_SCORE(-10);    // technically should go in CheckBadMove, but this is easier/less computationally demanding
-                    break;
-                case CAN_TRY_PIVOT:
-                    break;
-                case SHOULD_PIVOT:
-                    ADJUST_SCORE(BEST_EFFECT);
-                    break;
-                }
+            case DONT_PIVOT:
+                // ADJUST_SCORE(-10);    // technically should go in CheckBadMove, but this is easier/less computationally demanding
+                break;
+            case CAN_TRY_PIVOT:
+                break;
+            case SHOULD_PIVOT:
+                ADJUST_SCORE(BEST_EFFECT);
+                break;
             }
-            else //Double Battle
-            {
-                if (CountUsablePartyMons(battlerAtk) == 0)
-                    break; // Can't switch
+        }
+        else //Double Battle
+        {
+            if (CountUsablePartyMons(battlerAtk) == 0)
+                break; // Can't switch
 
-                //if (switchAbility == ABILITY_INTIMIDATE && PartyHasMoveCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
-                    //ADJUST_SCORE(7);
-            }
-            break;
+            //if (switchAbility == ABILITY_INTIMIDATE && PartyHasMoveCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+                //ADJUST_SCORE(7);
+        }
+        break;
+    }
     //Currently have Parting Shot and the others code duplicated from above apart from the lower checks, but this will need an eventual overhaul.
     case EFFECT_PARTING_SHOT:
         if (!IsDoubleBattle())
