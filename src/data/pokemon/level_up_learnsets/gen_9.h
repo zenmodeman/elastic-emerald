@@ -18676,6 +18676,7 @@ static const struct LevelUpMove sDottlerLevelUpLearnset[] = {
     LEVEL_UP_MOVE(21, MOVE_FUTURE_SIGHT), //Level-up addition
     LEVEL_UP_MOVE(25, MOVE_STICKY_WEB), //Level-up addition
     LEVEL_UP_MOVE(28, MOVE_BODY_PRESS), //Level-up addition
+    //WIP 3
     LEVEL_UP_END};
 
 static const struct LevelUpMove sOrbeetleLevelUpLearnset[] = {

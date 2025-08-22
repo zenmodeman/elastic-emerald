@@ -1957,6 +1957,12 @@ static void ItemMenu_Give(u8 taskId)
     {
         DisplayItemMessage(taskId, FONT_NORMAL, gText_CantWriteMail, HandleErrorMessage);
     }
+    //Rescinded the Mirror Herb check because the egg move variant also needs to be a held item
+    //But keeping this piece of logic in case I will use it for some other item down the line.
+    //Note that I haven't tested this.
+    // else if (FlagGet(FLAG_RESTRICTED_MODE) && gSpecialVar_ItemId == ITEM_MIRROR_HERB){
+    //     PrintItemCantBeHeld(taskId);
+    // }
     else if (!ItemId_GetImportance(gSpecialVar_ItemId))
     {
         if (CalculatePlayerPartyCount() == 0)
