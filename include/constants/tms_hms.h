@@ -12,9 +12,9 @@
     F(ROAR) \
     F(TOXIC) \
     F(HAIL) \
-    F(LOW_KICK) \ //Replaces Bulk Up
+    F(LOW_KICK) \
     F(HELPING_HAND) \
-    F(NATURE_POWER) \ //Replaces Hidden Power
+    F(NATURE_POWER) \
     F(SUNNY_DAY) \
     F(TAUNT) \
     F(ICE_BEAM) \
@@ -44,7 +44,7 @@
     F(SANDSTORM) \
     F(FIRE_BLAST) \
     F(ROCK_TOMB) \
-    F(ROOST) \ //Replaces Aerial Ace
+    F(ROOST) \
     F(TORMENT) \
     F(FACADE) \
     F(SECRET_POWER) \
