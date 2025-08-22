@@ -839,7 +839,12 @@ struct BattleStruct
     u16 savedMove; // backup current move for mid-turn switching, e.g. Red Card
     u16 opponentMonCanTera:6;
     u16 opponentMonCanDynamax:6;
-    u16 padding:4;
+
+    //Custom counter that may be removed if Expansion natively implements Echoed Voice
+    u16 echoedVoiceCounter:3;
+    u16 echoedVoiceUsedThisTurn:1;
+    // Took out some of the existing padding bits for the counter
+    // u16 padding:4;
 };
 
 // The palaceFlags member of struct BattleStruct contains 1 flag per move to indicate which moves the AI should consider,
