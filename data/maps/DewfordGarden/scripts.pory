@@ -7,5 +7,6 @@ script DewfordGarden_School_Kid{
     lock
     faceplayer
     msgbox(format("This place is so cool! Flowers, sand, and even a pond-it's got everything!"))
+    release
     end
 }

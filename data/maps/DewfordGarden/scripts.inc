@@ -12,6 +12,8 @@ DewfordGarden_School_Kid::
 	faceplayer
 # 9 "data/maps/DewfordGarden/scripts.pory"
 	msgbox DewfordGarden_School_Kid_Text_0
+# 10 "data/maps/DewfordGarden/scripts.pory"
+	release
 	end
 
 
