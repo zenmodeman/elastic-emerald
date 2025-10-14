@@ -3218,7 +3218,7 @@ static void CancellerAsleep(u32 *effect)
             if (gBattleMons[gBattlerAttacker].status1 & STATUS1_SLEEP)
             {
                 u32 moveEffect = GetMoveEffect(gChosenMove);
-                if (moveEffect != EFFECT_SNORE && moveEffect != EFFECT_SLEEP_TALK)
+                if (moveEffect != EFFECT_SNORE && moveEffect != EFFECT_SLEEP_TALK && moveEffect != EFFECT_REFRESH)
                 {
                     gBattlescriptCurrInstr = BattleScript_MoveUsedIsAsleep;
                     gHitMarker |= HITMARKER_UNABLE_TO_USE_MOVE;
@@ -3240,7 +3240,9 @@ static void CancellerAsleep(u32 *effect)
 
 static void CancellerFrozen(u32 *effect)
 {
-    if (gBattleMons[gBattlerAttacker].status1 & STATUS1_FREEZE && !MoveThawsUser(gCurrentMove))
+    u32 moveEffect = GetMoveEffect(gChosenMove);
+    if (gBattleMons[gBattlerAttacker].status1 & STATUS1_FREEZE && !MoveThawsUser(gCurrentMove) 
+    && !(moveEffect == EFFECT_REFRESH))
     {
         if (!RandomPercentage(RNG_FROZEN, 20))
         {
@@ -3482,9 +3484,12 @@ static void CancellerConfused(u32 *effect)
 
 static void CancellerParalysed(u32 *effect)
 {
+    u32 moveEffect = GetMoveEffect(gChosenMove);
+
     if (!gBattleStruct->isAtkCancelerForCalledMove
         && (gBattleMons[gBattlerAttacker].status1 & STATUS1_PARALYSIS)
         && !(B_MAGIC_GUARD == GEN_4 && GetBattlerAbility(gBattlerAttacker) == ABILITY_MAGIC_GUARD)
+        && !(moveEffect == EFFECT_REFRESH)
         && !RandomPercentage(RNG_PARALYSIS, 75))
     {
         gProtectStructs[gBattlerAttacker].prlzImmobility = TRUE;
@@ -3529,8 +3534,12 @@ static void CancellerBide(u32 *effect)
 static void CancellerThaw(u32 *effect)
 {
     if (gBattleMons[gBattlerAttacker].status1 & STATUS1_FREEZE)
-    {
-        if (!(IsMoveEffectRemoveSpeciesType(gCurrentMove, MOVE_EFFECT_REMOVE_ARG_TYPE, TYPE_FIRE) && !IS_BATTLER_OF_TYPE(gBattlerAttacker, TYPE_FIRE)))
+    {   
+        u32 moveEffect = GetMoveEffect(gChosenMove);
+        if (moveEffect == EFFECT_REFRESH){
+            ; //Attempt to do nothing for Refresh and see if this avoids thawing
+        }
+        else if (!(IsMoveEffectRemoveSpeciesType(gCurrentMove, MOVE_EFFECT_REMOVE_ARG_TYPE, TYPE_FIRE) && !IS_BATTLER_OF_TYPE(gBattlerAttacker, TYPE_FIRE)))
         {
             gBattleMons[gBattlerAttacker].status1 &= ~STATUS1_FREEZE;
             BattleScriptPushCursor();
@@ -12353,7 +12362,7 @@ bool32 DoesDestinyBondFail(u32 battler)
 // This check has always to be the last in a condtion statement because of the recording of AI data.
 bool32 IsMoveEffectBlockedByTarget(u32 ability)
 {
-    if (ability == ABILITY_SHIELD_DUST || ability == ABILITY_FUR_LAYER)
+    if (ability == ABILITY_SHIELD_DUST || ability == ABILITY_COVERED)
     {
         RecordAbilityBattle(gBattlerTarget, ability);
         return TRUE;

@@ -15057,7 +15057,9 @@ static void Cmd_curestatuswithmove(void)
     u32 shouldHeal;
 
     if (GetMoveEffect(gCurrentMove) == EFFECT_REFRESH)
-        shouldHeal = gBattleMons[gBattlerAttacker].status1 & STATUS1_REFRESH;
+        shouldHeal = gBattleMons[gBattlerAttacker].status1 
+        // & STATUS1_REFRESH;
+        & STATUS1_ANY; //Altering Refresh to work for any status
     else // Take Heart
         shouldHeal = gBattleMons[gBattlerAttacker].status1 & STATUS1_ANY;
 

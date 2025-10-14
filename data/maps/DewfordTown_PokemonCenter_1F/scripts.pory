@@ -44,6 +44,7 @@ DewfordTown_PokemonCenter_1F_Text_FaintedMonCanUseHM:
 
 script DewfordTown_PokemonCenter_1F_EventScript_Maniac{
     lock
+	faceplayer
     msgbox(format("Steel-types are finely tuned machines, and my mechanical skills help them stay in top form."))
     msgbox(format("But they have a rough time against Brawly's Fighting-types..."))
     msgbox(format("The first time I faced him, my meticulously optimized Steel squad got utterly dismantled. A total systems failure!"))
