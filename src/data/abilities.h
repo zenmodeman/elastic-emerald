@@ -2408,9 +2408,9 @@ const struct Ability gAbilitiesInfo[ABILITIES_COUNT] =
         .cantBeSwapped = TRUE,
         .cantBeTraced = TRUE,
     },
-    [ABILITY_FUR_LAYER] = 
+    [ABILITY_COVERED] = 
     {
-        .name = _("Fur Layer"),
+        .name = _("Covered"),
         .description = COMPOUND_STRING("Prevents added effects."),
         .aiRating = 5,
         .breakable = TRUE,
