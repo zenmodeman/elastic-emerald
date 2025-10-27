@@ -72,6 +72,12 @@ enum {
     OPTIONS_COUNT
 };
 
+
+const u32 tierPointCap = 20;
+//Global variable used to store excess Tier Points from a move or Withdraw operation
+u32 excessTierPoints = 0; 
+
+
 // IDs for messages to print with PrintMessage
 enum {
     MSG_EXIT_BOX,
@@ -105,6 +111,7 @@ enum {
     MSG_ITEM_IS_HELD,
     MSG_CHANGED_TO_ITEM,
     MSG_CANT_STORE_MAIL,
+    MSG_WOULD_EXCEED_POINTS
 };
 
 // IDs for how to resolve variables in the above messages
@@ -117,6 +124,7 @@ enum {
     MSG_VAR_RELEASE_MON_2, // Unused
     MSG_VAR_RELEASE_MON_3,
     MSG_VAR_ITEM_NAME,
+    MSG_VAR_EXCESS_POINTS,
 };
 
 // IDs for menu selection items. See SetMenuText, HandleMenuInput, etc
@@ -1073,6 +1081,7 @@ static const struct StorageMessage sMessages[] =
     [MSG_ITEM_IS_HELD]         = {COMPOUND_STRING("{DYNAMIC 0} is now held."),   MSG_VAR_ITEM_NAME},
     [MSG_CHANGED_TO_ITEM]      = {COMPOUND_STRING("Changed to {DYNAMIC 0}."),    MSG_VAR_ITEM_NAME},
     [MSG_CANT_STORE_MAIL]      = {COMPOUND_STRING("MAIL can't be stored!"),      MSG_VAR_NONE},
+    [MSG_WOULD_EXCEED_POINTS]  = {COMPOUND_STRING("{DYNAMIC 0} point(s) short!"), MSG_VAR_EXCESS_POINTS}
 };
 
 static const struct WindowTemplate sYesNoWindowTemplate =
@@ -1431,6 +1440,25 @@ u8 CountPartyAliveNonEggMonsExcept(u8 slotToIgnore)
     }
 
     return count;
+}
+
+//Get the points of the party other than the mon to replace.
+u32 CountPartyPointsExcept(u8 slotToIgnore){
+    u16 i = 0;
+    u32 tierPoints = 0;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (i != slotToIgnore
+            && GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE
+            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+            )
+        {
+            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES);
+            tierPoints += GetMonTierPoints(species);
+        }
+    }
+    return tierPoints;
 }
 
 u16 CountPartyAliveNonEggMons_IgnoreVar0x8004Slot(void)
@@ -2244,6 +2272,7 @@ enum {
     MSTATE_MULTIMOVE_RUN_MOVED,
     MSTATE_SCROLL_BOX_ITEM,
     MSTATE_WAIT_ITEM_ANIM,
+    MSTATE_POINTS_EXCEEDED,
 };
 
 static void Task_PokeStorageMain(u8 taskId)
@@ -2359,7 +2388,12 @@ static void Task_PokeStorageMain(u8 taskId)
         case INPUT_SHIFT_MON:
             if (!CanShiftMon())
             {
-                sStorage->state = MSTATE_ERROR_LAST_PARTY_MON;
+                DebugPrintf("Excess Tier Points is %d", excessTierPoints);
+                if (excessTierPoints > 0){
+                    sStorage->state = MSTATE_POINTS_EXCEEDED;
+                }else{
+                    sStorage->state = MSTATE_ERROR_LAST_PARTY_MON;
+                }
             }
             else
             {
@@ -2468,6 +2502,14 @@ static void Task_PokeStorageMain(u8 taskId)
         PrintMessage(MSG_LAST_POKE);
         sStorage->state = MSTATE_WAIT_ERROR_MSG;
         break;
+    case MSTATE_POINTS_EXCEEDED:
+    {
+        PlaySE(SE_FAILURE);
+        PrintMessage(MSG_WOULD_EXCEED_POINTS);
+        sStorage->state = MSTATE_WAIT_ERROR_MSG;
+        break;
+    }
+
     case MSTATE_ERROR_HAS_MAIL:
         PlaySE(SE_FAILURE);
         PrintMessage(MSG_PLEASE_REMOVE_MAIL);
@@ -2607,6 +2649,7 @@ static void Task_OnSelectedMon(u8 taskId)
         case MENU_SHIFT:
             if (!CanShiftMon())
             {
+
                 sStorage->state = 3;
             }
             else
@@ -2689,10 +2732,20 @@ static void Task_OnSelectedMon(u8 taskId)
         }
         break;
     case 3:
-        PlaySE(SE_FAILURE);
-        PrintMessage(MSG_LAST_POKE);
-        sStorage->state = 6;
+    {
+        if (excessTierPoints > 0){
+            PlaySE(SE_FAILURE);
+            PrintMessage(MSG_WOULD_EXCEED_POINTS);
+            sStorage->state = 6;
+        }
+        else{
+            PlaySE(SE_FAILURE);
+            PrintMessage(MSG_LAST_POKE);
+            sStorage->state = 6;
+        }
         break;
+    }
+
     case 5:
         PlaySE(SE_FAILURE);
         PrintMessage(MSG_CANT_RELEASE_EGG);
@@ -4285,6 +4338,12 @@ static void PrintMessage(u8 id)
     case MSG_VAR_MON_NAME_3:
         DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, sStorage->displayMonName);
         break;
+    case MSG_VAR_EXCESS_POINTS:
+        {
+            ConvertIntToDecimalStringN(gStringVar1, excessTierPoints, STR_CONV_MODE_LEFT_ALIGN, 1);
+            DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
+            break;
+        }
     case MSG_VAR_RELEASE_MON_1:
     case MSG_VAR_RELEASE_MON_2:
     case MSG_VAR_RELEASE_MON_3:
@@ -6840,12 +6899,20 @@ static bool8 CanPlaceMon(void)
 
 static bool8 CanShiftMon(void)
 {
+    excessTierPoints = 0; //Clean up this global before every shift check 
     if (sIsMonBeingMoved)
     {
         if (sCursorArea == CURSOR_AREA_IN_PARTY && CountPartyAliveNonEggMonsExcept(sCursorPosition) == 0)
         {
             if (sStorage->displayMonIsEgg || GetMonData(&sStorage->movingMon, MON_DATA_HP) == 0)
                 return FALSE;
+        }else if (FlagGet(FLAG_TIERED) && sCursorArea == CURSOR_AREA_IN_PARTY && !sStorage->displayMonIsEgg){
+            u32 otherTierPoints = CountPartyPointsExcept(sCursorPosition);
+            u32 movingMonTierPoints = GetMonTierPoints(GetMonData(&sStorage->movingMon, MON_DATA_SPECIES));
+            if (otherTierPoints + movingMonTierPoints > tierPointCap){
+                excessTierPoints = otherTierPoints + movingMonTierPoints - tierPointCap;
+                return FALSE;
+            }
         }
         return TRUE;
     }

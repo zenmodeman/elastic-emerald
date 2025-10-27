@@ -8107,11 +8107,11 @@ u8 GetMonTierPoints(u16 species){
     u8 defaultPointValue = 3;
 
     switch(species){
-        case SPECIES_DRAGAPULT:
+        case SPECIES_DRAGAPULT: case SPECIES_BLISSEY:
             return 6;
-        case SPECIES_EXCADRILL:
+        case SPECIES_EXCADRILL: case SPECIES_SNORLAX:
             return 5;
-        case SPECIES_INTELEON:
+        case SPECIES_INTELEON: case SPECIES_CHARIZARD:
             return 4;
         case SPECIES_HYPNO:
             return 2;
