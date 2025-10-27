@@ -266,6 +266,8 @@ static void BufferMonTrainerMemo(void);
 static void PrintMonTrainerMemo(void);
 static void BufferNatureString(void);
 static void GetMetLevelString(u8 *);
+static void GetTierPointsString(u8 *); //Custom Function
+
 static bool8 DoesMonOTMatchOwner(void);
 static bool8 DidMonComeFromGBAGames(void);
 static bool8 IsInGamePartnerMon(void);
@@ -3439,7 +3441,9 @@ static void BufferMonTrainerMemo(void)
     {
         u8 *metLevelString = Alloc(32);
         u8 *metLocationString = Alloc(32);
+        u8 *tierPointsString = Alloc(32);
         GetMetLevelString(metLevelString);
+        GetTierPointsString(tierPointsString);
 
         if (sum->metLocation < MAPSEC_NONE)
         {
@@ -3470,6 +3474,7 @@ static void BufferMonTrainerMemo(void)
         DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, text);
         Free(metLevelString);
         Free(metLocationString);
+        Free(tierPointsString);
     }
 }
 
@@ -3492,6 +3497,13 @@ static void GetMetLevelString(u8 *output)
         level = EGG_HATCH_LEVEL;
     ConvertIntToDecimalStringN(output, level, STR_CONV_MODE_LEFT_ALIGN, 3);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(3, output);
+}
+
+static void GetTierPointsString(u8 *output){
+    u8 tierPoints = GetMonTierPoints(sMonSummaryScreen->summary.species);
+    ConvertIntToDecimalStringN(output, tierPoints, STR_CONV_MODE_LEFT_ALIGN, 1);
+    DynamicPlaceholderTextUtil_SetPlaceholderPtr(6, output);
+
 }
 
 static bool8 DoesMonOTMatchOwner(void)

@@ -58,33 +58,17 @@ void ApplyBattlerVisualsForTeraAnim(u32 battler)
 bool32 IsRestrictedModeTeraBanned(u32 battler)
 {
     u16 species = gBattleMons[battler].species;
+    //Instead of handpicked filtering, using the tiering system to systematically decide on bans.
+    u32 bannedTierThreshold = 4;
 
-    switch (species)
-    {
-    case SPECIES_DRAGONITE:
-    // case SPECIES_TYRANITAR:
-    case SPECIES_SALAMENCE:
-    // case SPECIES_METAGROSS:
-    case SPECIES_GARCHOMP:
-    // case SPECIES_HYDREIGON:
-    // Note: Goodra-Hisui will probably be Rock, and Goodra-Unova Water
-    // case SPECIES_GOODRA:
-    // case SPECIES_GOODRA_HISUI:
-    // case SPECIES_KOMMO_O:
-    case SPECIES_DARMANITAN_GALAR:
-    case SPECIES_DARMANITAN_GALAR_ZEN:
-    case SPECIES_DRAGAPULT:
-    // case SPECIES_BAXCALIBUR:
-    case SPECIES_URSHIFU_SINGLE_STRIKE:
-    case SPECIES_URSHIFU_RAPID_STRIKE:
-    case SPECIES_PALAFIN:
-    case SPECIES_ARCHALUDON:
-    case SPECIES_OGERPON: case SPECIES_OGERPON_CORNERSTONE: case SPECIES_OGERPON_HEARTHFLAME: case SPECIES_OGERPON_WELLSPRING:
-    case SPECIES_TERAPAGOS:
-        return TRUE;    
-    default:
-        return FALSE;
+    if (GetMonTierPoints(species) >= bannedTierThreshold){
+        //Exception: even when Darmanitan exceeds the threshold, Zen Mode form is allowed to tera
+        if (species == SPECIES_DARMANITAN_ZEN){
+            return FALSE;
+        }
+        return TRUE;
     }
+    return FALSE;
 }
 
 // Returns whether a battler can Terastallize.

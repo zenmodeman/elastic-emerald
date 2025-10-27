@@ -53,7 +53,7 @@
 #define FLAG_AI_AI_BATTLE    0x27 //Flag to determine whether AI v.s. AI battle is done; formerly un used flag
 #define FLAG_DEMO_GUARD      0x28 //Flag to guard demo-gated content; formerly un used flag
 #define FLAG_RIVAL_112_DEFEATED   0x29 //Need a specific flag because there are multiple possible fights; formerly un used flag
-#define FLAG_UNUSED_0x02A    0x2A // Unused Flag
+#define FLAG_TIERED    0x2A // Flag to enable tiered functionality
 #define FLAG_UNUSED_0x02B    0x2B // Unused Flag
 #define FLAG_UNUSED_0x02C    0x2C // Unused Flag
 #define FLAG_UNUSED_0x02D    0x2D // Unused Flag
