@@ -7384,10 +7384,14 @@ static void Cmd_moveend(void)
                 }
             }
 
-        }
-            if (!effect)
-                gBattleScripting.moveendState++;
+            //Keeping the !effect check commented in case it was needed for something
+            //doing a non-conditional moveendState to prevent looping
+            gBattleScripting.moveendState++;
+            // if (!effect)
+            //     gBattleScripting.moveendState++;
             break;
+        }
+
         case MOVEEND_LIFEORB_SHELLBELL:
             if (ItemBattleEffects(ITEMEFFECT_LIFEORB_SHELLBELL, 0, FALSE))
                 effect = TRUE;
