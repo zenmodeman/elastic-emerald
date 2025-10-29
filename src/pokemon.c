@@ -69,6 +69,8 @@
 
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_8) ? 160 : 220)
 
+
+
 struct SpeciesItem
 {
     u16 species;
@@ -94,6 +96,8 @@ EWRAM_DATA static u8 sTriedEvolving = 0;
 EWRAM_DATA u16 gFollowerSteps = 0;
 
 #include "data/abilities.h"
+
+u32 gExcessTierPoints = 0; //Global to keep track of whether Tier Points have been exceeded
 
 // Used in an unreferenced function in RS.
 // Unreferenced here and in FRLG.
@@ -4153,6 +4157,17 @@ u8 GiveMonToPlayer(struct Pokemon *mon)
     if (i >= PARTY_SIZE)
         return CopyMonToPC(mon);
 
+    //Case for giving a mon when it exceeds points
+    if (i < PARTY_SIZE && FlagGet(FLAG_TIERED)){
+        gExcessTierPoints = 0; //Reset excess Tier Points before computing.
+        u32 tierPoints = CountPartyTierPoints();
+        tierPoints += GetMonTierPoints(GetMonData(mon, MON_DATA_SPECIES));
+        if (tierPoints > TIER_POINTS_CAP){
+            gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
+            return CopyMonToPC(mon);
+        }
+    }
+
     CopyMon(&gPlayerParty[i], mon, sizeof(*mon));
     gPlayerPartyCount = i + 1;
     return MON_GIVEN_TO_PARTY;
@@ -8122,5 +8137,22 @@ u8 GetMonTierPoints(u16 species){
         default:   
             return defaultPointValue;
     }
+}
 
+//Get the points of the party other than the mon to replace.
+u32 CountPartyTierPoints(){
+    u16 i = 0;
+    u32 tierPoints = 0;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE
+            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+            )
+        {
+            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES);
+            tierPoints += GetMonTierPoints(species);
+        }
+    }
+    return tierPoints;
 }

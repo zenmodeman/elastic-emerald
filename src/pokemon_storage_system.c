@@ -52,6 +52,8 @@
           types of functions are likely located.
 */
 
+extern  u32 gExcessTierPoints;
+
 // PC main menu options
 enum {
 #if OW_PC_MOVE_ORDER <= GEN_3
@@ -73,9 +75,7 @@ enum {
 };
 
 
-const u32 tierPointCap = 20;
-//Global variable used to store excess Tier Points from a move or Withdraw operation
-u32 excessTierPoints = 0; 
+
 
 
 // IDs for messages to print with PrintMessage
@@ -1081,7 +1081,7 @@ static const struct StorageMessage sMessages[] =
     [MSG_ITEM_IS_HELD]         = {COMPOUND_STRING("{DYNAMIC 0} is now held."),   MSG_VAR_ITEM_NAME},
     [MSG_CHANGED_TO_ITEM]      = {COMPOUND_STRING("Changed to {DYNAMIC 0}."),    MSG_VAR_ITEM_NAME},
     [MSG_CANT_STORE_MAIL]      = {COMPOUND_STRING("MAIL can't be stored!"),      MSG_VAR_NONE},
-    [MSG_WOULD_EXCEED_POINTS]  = {COMPOUND_STRING("{DYNAMIC 0} point(s) short!"), MSG_VAR_EXCESS_POINTS}
+    [MSG_WOULD_EXCEED_POINTS]  = {COMPOUND_STRING("Pts cap exceeded by {DYNAMIC 0}!"), MSG_VAR_EXCESS_POINTS}
 };
 
 static const struct WindowTemplate sYesNoWindowTemplate =
@@ -2388,8 +2388,8 @@ static void Task_PokeStorageMain(u8 taskId)
         case INPUT_SHIFT_MON:
             if (!CanShiftMon())
             {
-                DebugPrintf("Excess Tier Points is %d", excessTierPoints);
-                if (excessTierPoints > 0){
+                DebugPrintf("Excess Tier Points is %d", gExcessTierPoints);
+                if (gExcessTierPoints > 0){
                     sStorage->state = MSTATE_POINTS_EXCEEDED;
                 }else{
                     sStorage->state = MSTATE_ERROR_LAST_PARTY_MON;
@@ -2733,7 +2733,7 @@ static void Task_OnSelectedMon(u8 taskId)
         break;
     case 3:
     {
-        if (excessTierPoints > 0){
+        if (gExcessTierPoints > 0){
             PlaySE(SE_FAILURE);
             PrintMessage(MSG_WOULD_EXCEED_POINTS);
             sStorage->state = 6;
@@ -4337,10 +4337,10 @@ static void PrintMessage(u8 id)
     case MSG_VAR_MON_NAME_2:
     case MSG_VAR_MON_NAME_3:
         DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, sStorage->displayMonName);
-        break;
+    break;
     case MSG_VAR_EXCESS_POINTS:
         {
-            ConvertIntToDecimalStringN(gStringVar1, excessTierPoints, STR_CONV_MODE_LEFT_ALIGN, 1);
+            ConvertIntToDecimalStringN(gStringVar1, gExcessTierPoints, STR_CONV_MODE_LEFT_ALIGN, 1);
             DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, gStringVar1);
             break;
         }
@@ -6899,7 +6899,7 @@ static bool8 CanPlaceMon(void)
 
 static bool8 CanShiftMon(void)
 {
-    excessTierPoints = 0; //Clean up this global before every shift check 
+    gExcessTierPoints = 0; //Clean up this global before every shift check 
     if (sIsMonBeingMoved)
     {
         if (sCursorArea == CURSOR_AREA_IN_PARTY && CountPartyAliveNonEggMonsExcept(sCursorPosition) == 0)
@@ -6909,8 +6909,8 @@ static bool8 CanShiftMon(void)
         }else if (FlagGet(FLAG_TIERED) && sCursorArea == CURSOR_AREA_IN_PARTY && !sStorage->displayMonIsEgg){
             u32 otherTierPoints = CountPartyPointsExcept(sCursorPosition);
             u32 movingMonTierPoints = GetMonTierPoints(GetMonData(&sStorage->movingMon, MON_DATA_SPECIES));
-            if (otherTierPoints + movingMonTierPoints > tierPointCap){
-                excessTierPoints = otherTierPoints + movingMonTierPoints - tierPointCap;
+            if (otherTierPoints + movingMonTierPoints > TIER_POINTS_CAP){
+                gExcessTierPoints = otherTierPoints + movingMonTierPoints - TIER_POINTS_CAP;
                 return FALSE;
             }
         }

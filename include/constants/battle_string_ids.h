@@ -742,7 +742,8 @@
 #define STRINGID_ILLUMINATING                        EXPANSION_BATTLE_STRING_LATEST + 6
 #define STRINGID_DAMP_HEALING                        EXPANSION_BATTLE_STRING_LATEST + 7   
 #define STRINGID_MERRY                               EXPANSION_BATTLE_STRING_LATEST + 8
-#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRING_LATEST + 9
+#define STRINGID_CAUGHTMONEXCEEEDSPOINTS             EXPANSION_BATTLE_STRING_LATEST + 9
+#define BATTLESTRINGS_COUNT                          EXPANSION_BATTLE_STRING_LATEST + 10
 
 // This is the string id that gBattleStringsTable starts with.
 // String ids before this (e.g. STRINGID_INTROMSG) are not in the table,

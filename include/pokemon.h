@@ -10,6 +10,8 @@
 
 #define GET_BASE_SPECIES_ID(speciesId) (GetFormSpeciesId(speciesId, 0))
 #define FORM_SPECIES_END (0xffff)
+#define TIER_POINTS_CAP 20
+
 
 // Property labels for Get(Box)MonData / Set(Box)MonData
 enum {
@@ -823,5 +825,6 @@ bool32 IsSpeciesForeignRegionalForm(u32 species, u32 currentRegion);
 
 //Custom Additions
 u8 GetMonTierPoints(u16 species);
+u32 CountPartyTierPoints();
 
 #endif // GUARD_POKEMON_H

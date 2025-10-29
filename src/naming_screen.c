@@ -43,6 +43,8 @@ enum {
     INPUT_START,
 };
 
+extern u32 gExcessTierPoints; 
+
 #define KBROW_COUNT 4
 #define KBCOL_COUNT 8
 
@@ -690,7 +692,9 @@ static bool8 MainState_Exit(void)
         if (sNamingScreen->templateNum == NAMING_SCREEN_PLAYER)
             SeedRngAndSetTrainerId();
         if (sNamingScreen->templateNum == NAMING_SCREEN_CAUGHT_MON
-         && CalculatePlayerPartyCount() < PARTY_SIZE)
+         && (CalculatePlayerPartyCount() < PARTY_SIZE)
+         && (!FlagGet(FLAG_TIERED) || gExcessTierPoints == 0) 
+        )
             SetMainCallback2(BattleMainCB2);
         else
             SetMainCallback2(sNamingScreen->returnCallback);

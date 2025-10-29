@@ -71,10 +71,14 @@
 //My added static functions
 static u32 GetMonotypeCatchRate(u16 species);
 
+extern u32 gExcessTierPoints;
 
 // table to avoid ugly powing on gba (courtesy of doesnt)
 // this returns (i^2.5)/4
 // the quarters cancel so no need to re-quadruple them in actual calculation
+
+
+
 static const s32 sExperienceScalingFactors[] =
 {
     0,
@@ -16416,15 +16420,27 @@ static void Cmd_givecaughtmon(void)
     switch (state)
     {
     case GIVECAUGHTMON_CHECK_PARTY_SIZE:
-        if (CalculatePlayerPartyCount() == PARTY_SIZE && B_CATCH_SWAP_INTO_PARTY >= GEN_7)
+
+        //To simplify tiered functionality, will not permit immediate swaps on a full team when the Tiered setting is enabled
+        if (CalculatePlayerPartyCount() == PARTY_SIZE && B_CATCH_SWAP_INTO_PARTY >= GEN_7 && !FlagGet(FLAG_TIERED))
         {
             PrepareStringBattle(STRINGID_SENDCAUGHTMONPARTYORBOX, gBattlerAttacker);
             gBattleCommunication[MSG_DISPLAY] = 1;
             gBattleCommunication[MULTIUSE_STATE] = GIVECAUGHTMON_ASK_ADD_TO_PARTY;
         }
+
         else
         {
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_NO_MESSSAGE_SKIP;
+
+            //Because the FlagGet check was added to the above if statement, need to add the PartyCount check here
+            if (FlagGet(FLAG_TIERED) && CalculatePlayerPartyCount() < PARTY_SIZE){
+                u16 caughtSpecies = GetMonData(&gEnemyParty[gBattlerPartyIndexes[GetCatchingBattler()]], MON_DATA_SPECIES, NULL);
+                if ((CountPartyTierPoints() + GetMonTierPoints(caughtSpecies)) > TIER_POINTS_CAP){
+                    PrepareStringBattle(STRINGID_CAUGHTMONEXCEEEDSPOINTS, gBattlerAttacker);
+                    gBattleCommunication[MSG_DISPLAY] = 1;
+                }
+            }
             gBattleCommunication[MULTIUSE_STATE] = GIVECAUGHTMON_GIVE_AND_SHOW_MSG;
         }
         break;
@@ -16740,10 +16756,24 @@ static void Cmd_trygivecaughtmonnick(void)
     case 2:
         if (!gPaletteFade.active)
         {
+            u32 resultantTierPoints = 0;
+            if (FlagGet(FLAG_TIERED)){
+                gExcessTierPoints = 0; //Refresh points before computing
+                resultantTierPoints += CountPartyTierPoints();
+                resultantTierPoints += GetMonTierPoints(GetMonData(&gEnemyParty[gBattlerPartyIndexes[gBattlerTarget]], MON_DATA_SPECIES));
+                if (resultantTierPoints > TIER_POINTS_CAP){
+                    gExcessTierPoints = resultantTierPoints - TIER_POINTS_CAP;
+                }
+            }
+
+
+            
             GetMonData(&gEnemyParty[gBattlerPartyIndexes[gBattlerTarget]], MON_DATA_NICKNAME, gBattleStruct->caughtMonNick);
             FreeAllWindowBuffers();
-            MainCallback callback = CalculatePlayerPartyCount() == PARTY_SIZE ? ReshowBlankBattleScreenAfterMenu : BattleMainCB2;
-
+            MainCallback callback = ((CalculatePlayerPartyCount() == PARTY_SIZE)
+            ||(FlagGet(FLAG_TIERED) && gExcessTierPoints > 0)
+            ) ? ReshowBlankBattleScreenAfterMenu : BattleMainCB2;
+        
             DoNamingScreen(NAMING_SCREEN_CAUGHT_MON, gBattleStruct->caughtMonNick,
                            GetMonData(&gEnemyParty[gBattlerPartyIndexes[gBattlerTarget]], MON_DATA_SPECIES),
                            GetMonGender(&gEnemyParty[gBattlerPartyIndexes[gBattlerTarget]]),

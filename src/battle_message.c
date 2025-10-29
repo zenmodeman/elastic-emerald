@@ -901,7 +901,8 @@ const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
     [STRINGID_PKMNSENTTOPCAFTERCATCH]               = gText_PkmnSentToPCAfterCatch,
     [STRINGID_PLAYERWHITEOUT3]                      = COMPOUND_STRING("Challenger has lost the battle!{PAUSE_UNTIL_PRESS}"),
     [STRINGID_ILLUMINATING]                         = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} became the center of attention!"),
-    [STRINGID_MERRY]                                = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX}'s cheerfulness upped its \n power, accuracy, and speed!")
+    [STRINGID_MERRY]                                = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX}'s cheerfulness upped its \n power, accuracy, and speed!"),
+    [STRINGID_CAUGHTMONEXCEEEDSPOINTS]              = COMPOUND_STRING("{B_DEF_NAME} exceeds the team points cap.")
 };
 
 const u16 gTrainerUsedItemStringIds[] =
