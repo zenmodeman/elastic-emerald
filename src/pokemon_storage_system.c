@@ -2790,6 +2790,21 @@ static void Task_PlaceMon(u8 taskId)
     switch (sStorage->state)
     {
     case 0:
+        if (sInPartyMenu && FlagGet(FLAG_TIERED) && !GetMonData(&sStorage->movingMon, MON_DATA_IS_EGG))
+        {
+            gExcessTierPoints = 0;
+            u16 species = GetMonData(&sStorage->movingMon, MON_DATA_SPECIES);
+            u32 otherTierPoints = CountPartyPointsExcept(sCursorPosition);
+            u32 movingMonTierPoints = GetMonTierPoints(species);
+            if (otherTierPoints + movingMonTierPoints > TIER_POINTS_CAP)
+            {
+                gExcessTierPoints = otherTierPoints + movingMonTierPoints - TIER_POINTS_CAP;
+                sStorage->state = MSTATE_POINTS_EXCEEDED;
+                PrintMessage(MSG_WOULD_EXCEED_POINTS);                
+                sStorage->state = 2; // Go to error wait state                
+                break;
+            }
+        }
         InitMonPlaceChange(CHANGE_PLACE);
         sStorage->state++;
         break;
@@ -2802,7 +2817,16 @@ static void Task_PlaceMon(u8 taskId)
                 SetPokeStorageTask(Task_PokeStorageMain);
         }
         break;
+    case 2:
+        // Wait for error message acknowledgment
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            ClearBottomWindow();
+            SetPokeStorageTask(Task_PokeStorageMain);
+        }
+        break;
     }
+
 }
 
 static void Task_ShiftMon(u8 taskId)
