@@ -5,6 +5,7 @@
 #include "bg.h"
 #include "data.h"
 #include "decompress.h"
+#include "event_data.h"
 #include "evolution_scene.h"
 #include "evolution_graphics.h"
 #include "gpu_regs.h"
@@ -252,6 +253,8 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
 
     GetMonData(mon, MON_DATA_NICKNAME, name);
     StringCopy_Nickname(gStringVar1, name);
+    //Attempt to do a second copy of the nickname since gStringVar1 will get overwritten.
+    StringCopy_Nickname(gStringVar3, name);
     StringCopy(gStringVar2, GetSpeciesName(postEvoSpecies));
 
     // preEvo sprite
@@ -614,6 +617,8 @@ enum {
     EVOSTATE_LEARNED_MOVE,
     EVOSTATE_TRY_LEARN_ANOTHER_MOVE,
     EVOSTATE_REPLACE_MOVE,
+    EVOSTATE_TIERPOINTS_CHECK,
+    EVOSTATE_WAIT_TIERPOINTS_MSG
 };
 
 // States for the switch in EVOSTATE_REPLACE_MOVE
@@ -806,8 +811,14 @@ static void Task_EvolutionScene(u8 taskId)
             }
             else // no move to learn, or evolution was canceled
             {
-                BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
-                gTasks[taskId].tState++;
+                //Can go to end state unless tier logic is necessary
+                if(gTasks[taskId].tEvoWasStopped || !FlagGet(FLAG_TIERED)){
+                    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
+                    gTasks[taskId].tState++;
+                }else{
+                    gTasks[taskId].tState = EVOSTATE_TIERPOINTS_CHECK;
+                }
+                
             }
         }
         break;
@@ -1041,7 +1052,34 @@ static void Task_EvolutionScene(u8 taskId)
             break;
         }
         break;
+    case EVOSTATE_TIERPOINTS_CHECK:
+        {
+            if (!IsTextPrinterActive(0) && !IsSEPlaying()) {
+                if (FlagGet(FLAG_TIERED)) {
+                    u8 partyId = gTasks[taskId].tPartyId;        // already tracked in evo task
+                    u16 newSpecies = gTasks[taskId].tPostEvoSpecies;  // evo result species
+                    u32 points = CalcTierPointsAfterEvolution(partyId, newSpecies);
+
+                    if (points > TIER_POINTS_CAP) {
+                        if (DepositPartyMonToPC_Auto(partyId)) {
+                            StringExpandPlaceholders(gStringVar4, gText_PkmnExceedsTierPointsSentToPC);
+                            BattlePutTextOnWindow(gStringVar4, B_WIN_MSG);
+                            gTasks[taskId].tState = EVOSTATE_WAIT_TIERPOINTS_MSG;
+                            break;
+                        } 
+                    }
+                }
+                gTasks[taskId].tState = EVOSTATE_END;
+            }
+        }      
+    case EVOSTATE_WAIT_TIERPOINTS_MSG:
+        if (!IsTextPrinterActive(0) && JOY_NEW(A_BUTTON | B_BUTTON))
+        {
+            gTasks[taskId].tState = EVOSTATE_END;
+        }
+        break;  
     }
+
 }
 
 // States for the main switch in Task_TradeEvolutionScene

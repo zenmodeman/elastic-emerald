@@ -440,18 +440,24 @@ static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, u
     }
     else
     {
+        u32 partyTierPoints = 0;
+
+        if (FlagGet(FLAG_TIERED)){
+            partyTierPoints = CountPartyTierPoints() + GetMonTierPoints(species);
+        }
+
         // find empty party slot to decide whether the Pokémon goes to the Player's party or the storage system.
         for (i = 0; i < PARTY_SIZE; i++)
         {
             if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL) == SPECIES_NONE)
                 break;
         }
-        if (i >= PARTY_SIZE)
+        if (i >= PARTY_SIZE || (partyTierPoints > TIER_POINTS_CAP))
         {
             sentToPc = CopyMonToPC(&mon);
         }
         else
-        {
+        {   
             sentToPc = MON_GIVEN_TO_PARTY;
             CopyMon(&gPlayerParty[i], &mon, sizeof(mon));
             gPlayerPartyCount = i + 1;

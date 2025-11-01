@@ -826,5 +826,7 @@ bool32 IsSpeciesForeignRegionalForm(u32 species, u32 currentRegion);
 //Custom Additions
 u8 GetMonTierPoints(u16 species);
 u32 CountPartyTierPoints();
+bool8 DepositPartyMonToPC_Auto(u8 partyId);
+u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies);
 
 #endif // GUARD_POKEMON_H

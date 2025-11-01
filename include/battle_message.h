@@ -331,6 +331,8 @@ extern const u8 gText_RecordBattleToPass[];
 extern const u8 gText_BattleRecordedOnPass[];
 extern const u8 gText_BattleTourney[];
 
+extern const u8 gText_PkmnExceedsTierPointsSentToPC[];
+
 extern const u16 gMissStringIds[];
 extern const u16 gStatUpStringIds[];
 

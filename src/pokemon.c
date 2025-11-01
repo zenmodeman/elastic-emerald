@@ -4173,6 +4173,41 @@ u8 GiveMonToPlayer(struct Pokemon *mon)
     return MON_GIVEN_TO_PARTY;
 }
 
+bool8 DepositPartyMonToPC_Auto(u8 partyId)
+{
+    s32 boxNo, boxPos;
+
+    SetPCBoxToSendMon(VarGet(VAR_PC_BOX_TO_SEND_MON));
+    boxNo = StorageGetCurrentBox();
+
+    do {
+        for (boxPos = 0; boxPos < IN_BOX_COUNT; boxPos++) {
+            struct BoxPokemon *slot = GetBoxedMonPtr(boxNo, boxPos);
+            if (GetBoxMonData(slot, MON_DATA_SPECIES, NULL) == SPECIES_NONE) {
+                CopyMon(slot, &gPlayerParty[partyId].box, sizeof(gPlayerParty[partyId].box));
+
+                // Move all slots after the boxed mon back by 1 slot
+                for (u8 i = partyId; i + 1 < gPlayerPartyCount; i++)
+                    CopyMon(&gPlayerParty[i], &gPlayerParty[i + 1], sizeof(struct Pokemon));
+                ZeroMonData(&gPlayerParty[--gPlayerPartyCount]);
+
+                gSpecialVar_MonBoxId  = boxNo;
+                gSpecialVar_MonBoxPos = boxPos;
+
+                if (GetPCBoxToSendMon() != boxNo)
+                    FlagClear(FLAG_SHOWN_BOX_WAS_FULL_MESSAGE);
+                VarSet(VAR_PC_BOX_TO_SEND_MON, boxNo);
+                return TRUE;
+            }
+        }
+        boxNo++;
+        if (boxNo == TOTAL_BOXES_COUNT)
+            boxNo = 0;
+    } while (boxNo != StorageGetCurrentBox());
+
+    return FALSE;
+}
+
 u8 CopyMonToPC(struct Pokemon *mon)
 {
     s32 boxNo, boxPos;
@@ -8128,7 +8163,7 @@ u8 GetMonTierPoints(u16 species){
             return 5;
         case SPECIES_INTELEON: case SPECIES_CHARIZARD:
             return 4;
-        case SPECIES_HYPNO:
+        case SPECIES_HYPNO: case SPECIES_DRAKLOAK:
             return 2;
         case SPECIES_WATCHOG:
             return 1;
@@ -8155,4 +8190,19 @@ u32 CountPartyTierPoints(){
         }
     }
     return tierPoints;
+}
+
+u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies)
+{
+    u32 total = 0;
+    for (u8 i = 0; i < gPlayerPartyCount; i++) {
+        if (i == partyId) {
+            total += GetMonTierPoints(newSpecies);
+        } else {
+            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL);
+            if (species != SPECIES_NONE)
+                total += GetMonTierPoints(species);
+        }
+    }
+    return total;
 }
