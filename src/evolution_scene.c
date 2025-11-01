@@ -1062,7 +1062,7 @@ static void Task_EvolutionScene(u8 taskId)
 
                     if (points > TIER_POINTS_CAP) {
                         if (DepositPartyMonToPC_Auto(partyId)) {
-                            StringExpandPlaceholders(gStringVar4, gText_PkmnExceedsTierPointsSentToPC);
+                            StringExpandPlaceholders(gStringVar4, gText_EvolutionExceedsTierPointsSentToPC);
                             BattlePutTextOnWindow(gStringVar4, B_WIN_MSG);
                             gTasks[taskId].tState = EVOSTATE_WAIT_TIERPOINTS_MSG;
                             break;

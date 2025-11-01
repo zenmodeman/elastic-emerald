@@ -1461,7 +1461,8 @@ static const u8 sText_SpaceIs[] = _(" is");
 static const u8 sText_ApostropheS[] = _("'s");
 const u8 gText_BattleTourney[] = _("BATTLE TOURNEY");
 
-const u8 gText_PkmnExceedsTierPointsSentToPC[] = _("Evolution exceeds Tier Points cap:\nSending {STR_VAR_3} to the PC.");
+const u8 gText_EvolutionExceedsTierPointsSentToPC[] = _("Evolution exceeds Tier Points cap:\nSending {STR_VAR_3} to the PC.");
+const u8 gText_HatchedPkmnExceedsTierPointsSentToPC[] = _("Hatch exceeds Tier Points cap:\nWill send {STR_VAR_3} to the PC.");
 
 const u8 *const gRoundsStringTable[DOME_ROUNDS_COUNT] =
 {

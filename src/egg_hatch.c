@@ -66,6 +66,8 @@ struct EggHatchData
 extern const u32 gTradePlatform_Tilemap[];
 extern const u8 gText_HatchedFromEgg[];
 extern const u8 gText_NicknameHatchPrompt[];
+extern const u8 gText_HatchedPkmnExceedsTierPointsSentToPC[];
+extern u32 gExcessTierPoints;
 
 static void Task_EggHatch(u8);
 static void CB2_LoadEggHatch(void);
@@ -578,6 +580,13 @@ static void CB2_LoadEggHatch(void)
 static void EggHatchSetMonNickname(void)
 {
     SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_NICKNAME, gStringVar3);
+    //Using the global excess tier points value to avoid having to recompute tier points logic
+    if (gExcessTierPoints > 0){
+        DepositPartyMonToPC_Auto(sEggHatchData->eggPartyId);
+
+        //Now that the mon is deposited, reset gExcessTierPoints for safety
+        gExcessTierPoints = 0;
+    }
     FreeMonSpritesGfx();
     Free(sEggHatchData);
     SetMainCallback2(CB2_ReturnToField);
@@ -665,8 +674,27 @@ static void CB2_EggHatch(void)
             sEggHatchData->state++;
         break;
     case 7: // Twice?
-        if (IsFanfareTaskInactive())
+        if (IsFanfareTaskInactive()){
+            if (FlagGet(FLAG_TIERED)){
+                //Reset global excess tier points value before computing
+                gExcessTierPoints = 0;
+                u32 tierPoints = CountPartyTierPoints();
+                if (tierPoints > TIER_POINTS_CAP){
+                    gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
+                    species = GetMonData(&gPlayerParty[sEggHatchData->eggPartyId], MON_DATA_SPECIES);
+                    StringCopy(gStringVar3, GetSpeciesName(species));
+                    StringExpandPlaceholders(gStringVar4, gText_HatchedPkmnExceedsTierPointsSentToPC);
+                    EggHatchPrintMessage(sEggHatchData->windowId, gStringVar4, 0, 3, TEXT_SKIP_DRAW);
+                    PutWindowTilemap(sEggHatchData->windowId);
+                    CopyWindowToVram(sEggHatchData->windowId, COPYWIN_FULL);
+                    //Added state 13 for Tier Points waiting
+                    sEggHatchData->state = 13; 
+                    break;                                                
+                }
+            }    
             sEggHatchData->state++;
+        }
+
         break;
     case 8:
         // Ready the nickname prompt
@@ -702,12 +730,19 @@ static void CB2_EggHatch(void)
         }
         break;
     case 11:
+        //Do the original fade out behavior if no Tier Points condition is met    
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
         sEggHatchData->state++;
         break;
     case 12:
         if (!gPaletteFade.active)
         {
+            //Do the resetting here right before freeing hatching data
+            if (gExcessTierPoints > 0){
+                DepositPartyMonToPC_Auto(sEggHatchData->eggPartyId);
+                //Reset the global value for safety
+                gExcessTierPoints = 0;
+            }
             FreeMonSpritesGfx();
             RemoveWindow(sEggHatchData->windowId);
             UnsetBgTilemapBuffer(0);
@@ -716,8 +751,17 @@ static void CB2_EggHatch(void)
             SetMainCallback2(CB2_ReturnToField);
         }
         break;
-    }
+    case 13:
+        // Wait for tier points message, then continue to nickname prompt
+        if (!IsTextPrinterActive(sEggHatchData->windowId) && JOY_NEW(A_BUTTON | B_BUTTON))
+        {
 
+            sEggHatchData->state = 8; // Continue to nickname prompt
+
+        }
+        break;
+    }
+    
     RunTasks();
     RunTextPrinters();
     AnimateSprites();
