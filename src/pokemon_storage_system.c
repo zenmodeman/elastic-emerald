@@ -53,7 +53,7 @@
 */
 
 extern  u32 gExcessTierPoints;
-
+static u16 GetSpeciesAtCursorPosition(void);
 // PC main menu options
 enum {
 #if OW_PC_MOVE_ORDER <= GEN_3
@@ -1446,7 +1446,6 @@ u8 CountPartyAliveNonEggMonsExcept(u8 slotToIgnore)
 u32 CountPartyPointsExcept(u8 slotToIgnore){
     u16 i = 0;
     u32 tierPoints = 0;
-
     for (i = 0; i < PARTY_SIZE; i++)
     {
         if (i != slotToIgnore
@@ -2829,9 +2828,22 @@ static void Task_WithdrawMon(u8 taskId)
     switch (sStorage->state)
     {
     case 0:
+    {
+        gExcessTierPoints = 0;
+        if (FlagGet(FLAG_TIERED) && !GetCurrentBoxMonData(sCursorPosition, MON_DATA_IS_EGG)){
+            u32 tierPoints = CountPartyTierPoints();
+            tierPoints += GetMonTierPoints(GetSpeciesAtCursorPosition());
+            if (tierPoints > TIER_POINTS_CAP){
+                gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
+            }
+        }
+
         if (CalculatePlayerPartyCount() == PARTY_SIZE)
         {
             PrintMessage(MSG_PARTY_FULL);
+            sStorage->state = 1;
+        }else if (gExcessTierPoints > 0){
+            PrintMessage(MSG_WOULD_EXCEED_POINTS);
             sStorage->state = 1;
         }
         else
@@ -2841,6 +2853,9 @@ static void Task_WithdrawMon(u8 taskId)
             sStorage->state = 2;
         }
         break;
+    }
+
+
     case 1:
         if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
         {
