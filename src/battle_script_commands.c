@@ -12468,7 +12468,8 @@ static void Cmd_stockpiletohpheal(void)
         {
             if (gDisableStructs[gBattlerAttacker].stockpileCounter > 0)
             {
-                gBattleStruct->moveDamage[gBattlerAttacker] = GetNonDynamaxMaxHP(gBattlerAttacker) / (1 << (3 - gDisableStructs[gBattlerAttacker].stockpileCounter));
+                // gBattleStruct->moveDamage[gBattlerAttacker] = GetNonDynamaxMaxHP(gBattlerAttacker) / (1 << (3 - gDisableStructs[gBattlerAttacker].stockpileCounter));
+                gBattleStruct->moveDamage[gBattlerAttacker] = (GetNonDynamaxMaxHP(gBattlerAttacker) * gDisableStructs[gBattlerAttacker].stockpileCounter)/3;
                 gBattleScripting.animTurn = gDisableStructs[gBattlerAttacker].stockpileCounter;
                 gBattleStruct->moveEffect2 = MOVE_EFFECT_STOCKPILE_WORE_OFF;
             }

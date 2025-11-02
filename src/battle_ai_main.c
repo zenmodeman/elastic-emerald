@@ -1421,7 +1421,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);    
             if (aiData->abilities[battlerDef] == ABILITY_NO_GUARD || aiData->abilities[battlerDef] == ABILITY_KEEN_EYE || aiData->abilities[battlerDef] == ABILITY_LONG_REACH
             || aiData->abilities[battlerDef] == ABILITY_MINDS_EYE  || aiData->abilities[battlerDef] == ABILITY_ILLUMINATE
-              ||  gBattleMons[battlerDef].status2 & STATUS2_FORESIGHT){
+              ||  gBattleMons[battlerAtk].status2 & STATUS2_FORESIGHT){
                 ADJUST_SCORE(-10);
             }
             if (moveEffect == EFFECT_MINIMIZE && HasMinimizeDoubleMove(battlerDef)){
@@ -4094,13 +4094,11 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         if (HasMoveEffect(battlerAtk, EFFECT_STOCKPILE) && HasMoveEffect(battlerAtk, EFFECT_SWALLOW)){
             if (gBattleMons[battlerAtk].statStages[STAT_EVASION] < DEFAULT_STAT_STAGE +2 && !CanTargetFaintAiWithMod(battlerDef, battlerAtk, 0, 2)){
                 // DebugPrintf("The Stockpile Swallow logic is reached.");
-
-                //For double team, weighted less after +1.
-                if (moveEffect == EFFECT_EVASION_UP && gBattleMons[battlerAtk].statStages[STAT_EVASION] == DEFAULT_STAT_STAGE +1){
+                
+                if (gDisableStructs[battlerAtk].stockpileCounter > 0 && gBattleMons[battlerAtk].statStages[STAT_EVASION] == DEFAULT_STAT_STAGE){
                     ADJUST_SCORE(WEAK_EFFECT);
-                }else{
-                    ADJUST_SCORE(DECENT_EFFECT);
-
+                }else if (AI_RandLessThan(128)){
+                    ADJUST_SCORE(WEAK_EFFECT);
                 }
             }
         }
@@ -4283,11 +4281,12 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             u32 healPercent = 0;
             switch (gDisableStructs[battlerAtk].stockpileCounter)
             {
+                //Note that the values have been changed based on a change of the Swallow Formula.
             case 1:
-                healPercent = 25;
+                healPercent = 33;
                 break;
             case 2:
-                healPercent = 50;
+                healPercent = 67;
                 break;
             case 3:
                 healPercent = 100;
@@ -4853,16 +4852,22 @@ case EFFECT_DISABLE:
             ADJUST_SCORE(BEST_EFFECT);
         break;
     case EFFECT_STOCKPILE:
+    {
+        u32 defIncreaseScore = 0;
+
         if (aiData->abilities[battlerAtk] == ABILITY_CONTRARY)
             break;
+        defIncreaseScore = max(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF), IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF));
+        if (defIncreaseScore > 0){
+            ADJUST_SCORE(defIncreaseScore);
         if (HasMoveEffect(battlerAtk, EFFECT_SWALLOW) || HasMoveEffect(battlerAtk, EFFECT_SPIT_UP))
-            ADJUST_SCORE(WEAK_EFFECT);
-        if (IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF) > 0){
-            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF));
-        }else{
-            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF));
+            if (AI_RandLessThan(128)){
+                ADJUST_SCORE(WEAK_EFFECT);
+            }
         }
         break;
+    }
+
     case EFFECT_SWAGGER:
     case EFFECT_FLATTER:
         if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_MIRROR_HERB){

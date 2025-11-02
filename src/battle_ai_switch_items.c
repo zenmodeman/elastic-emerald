@@ -403,9 +403,11 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     bool32 hasRegenHP = (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4);
 
     if ((
-        // If the player OHKOs and outspeeds OR OHKOs, doesn't outspeed but isn't 4KO'd
+        // If the player OHKOs and outspeeds OR OHKOs
         (getsOneShot && opponentFaster)
-            || (getsOneShot && !opponentFaster && cantFourKO))
+            //doesn't outspeed but isn't 4KO'd: RemoCommenting this out  to reward slow mons KOing in general
+            // || (getsOneShot && !opponentFaster && cantFourKO)
+        )
         && (hasGoodHP || hasRegenHP)) // And the current mon has at least 3/4 their HP, or 1/4 HP and Regenerator
     {
         DEBUG_REASON("OHKO scenario - Opponent faster: %s, Can't 4KO: %s, Good HP: %s, Regen HP: %s",
@@ -424,37 +426,38 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         return SetSwitchinAndSwitch(battler, PARTY_SIZE);
     }
 
+    //Removing the type matchup check
     // General bad type matchups have more wiggle room
-    if (typeEffectiveness >= UQ_4_12(2.0)) // If the player has at least a 2x type advantage
-    {
-        DEBUG_REASON("Bad type matchup (2x+ effectiveness) - checking conditions");
-        bool32 hasGoodHPForType = (gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 2);
-        bool32 hasRegenHPForType = (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4);
+    // if (typeEffectiveness >= UQ_4_12(2.0)) // If the player has at least a 2x type advantage
+    // {
+    //     DEBUG_REASON("Bad type matchup (2x+ effectiveness) - checking conditions");
+    //     bool32 hasGoodHPForType = (gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 2);
+    //     bool32 hasRegenHPForType = (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4);
 
-        if (!hasSuperEffectiveMove && (hasGoodHPForType || hasRegenHPForType))
-        {
-            DEBUG_REASON("No SE move, good HP (%s) or regen HP (%s)",
-                         hasGoodHPForType ? "YES" : "NO", hasRegenHPForType ? "YES" : "NO");
+    //     if (!hasSuperEffectiveMove && (hasGoodHPForType || hasRegenHPForType))
+    //     {
+    //         DEBUG_REASON("No SE move, good HP (%s) or regen HP (%s)",
+    //                      hasGoodHPForType ? "YES" : "NO", hasRegenHPForType ? "YES" : "NO");
 
-            // Then check if they have an important status move, which is worth using even in a bad matchup
-            if (hasStatusMove)
-            {
-                DEBUG_REASON("Has important status move - staying in despite bad matchup");
-                return FALSE;
-            }
+    //         // Then check if they have an important status move, which is worth using even in a bad matchup
+    //         if (hasStatusMove)
+    //         {
+    //             DEBUG_REASON("Has important status move - staying in despite bad matchup");
+    //             return FALSE;
+    //         }
 
-            // 50% chance to stay in regardless
-            u32 switchChance = GetSwitchChance(SHOULD_SWITCH_HASBADODDS);
-            if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - switchChance)) && !AI_DATA->aiSwitchPredictionInProgress)
-            {
-                DEBUG_REASON("RNG check failed (%d%% chance) - staying in", switchChance);
-                return FALSE;
-            }
+    //         // 50% chance to stay in regardless
+    //         u32 switchChance = GetSwitchChance(SHOULD_SWITCH_HASBADODDS);
+    //         if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - switchChance)) && !AI_DATA->aiSwitchPredictionInProgress)
+    //         {
+    //             DEBUG_REASON("RNG check failed (%d%% chance) - staying in", switchChance);
+    //             return FALSE;
+    //         }
 
-            DEBUG_REASON("Switching due to bad type matchup");
-            return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-        }
-    }
+    //         DEBUG_REASON("Switching due to bad type matchup");
+    //         return SetSwitchinAndSwitch(battler, PARTY_SIZE);
+    //     }
+    // }
     DEBUG_REASON("No bad odds conditions met - staying in");
     return FALSE;
 }

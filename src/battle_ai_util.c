@@ -4417,7 +4417,7 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
             tempScore += WEAK_EFFECT;
         break;
     case STAT_CHANGE_DEF:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
+        if ((HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) || HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)) && shouldSetUp)
         {
             if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_STALL)
                 tempScore += DECENT_EFFECT;
@@ -4434,7 +4434,7 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
             tempScore += DECENT_EFFECT;
         break;
     case STAT_CHANGE_SPDEF:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+        if ((HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) || !HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)) && shouldSetUp)
         {
             if (AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_STALL)
                 tempScore += DECENT_EFFECT;
@@ -4478,13 +4478,11 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
         break;
     case STAT_CHANGE_EVASION:
         // DebugPrintf("STAT_CHANGE_EVASION case reached");
-        if (noOfHitsToFaint > 3 || noOfHitsToFaint == UNKNOWN_NO_OF_HITS){
-            // DebugPrintf("Reached +2 of stat change evasion"); 
-            tempScore += DECENT_EFFECT;
-        }
-
-        else
+        if (shouldSetUp){
             tempScore += WEAK_EFFECT;
+        }else if (noOfHitsToFaint >= 2 && AI_RandLessThan(128)){
+            tempScore += WEAK_EFFECT;
+        }
         break;
     }
 

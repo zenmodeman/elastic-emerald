@@ -6771,7 +6771,7 @@ F_TRAINER_FEMALE |
 #line 2792
             .iv = TRAINER_PARTY_IVS(10, 10, 10, 10, 10, 10),
 #line 2788
-            .ability = ABILITY_FRIEND_GUARD,
+            .ability = ABILITY_CUTE_CHARM,
 #line 2789
             .lvl = 13,
 #line 2791
@@ -6782,7 +6782,7 @@ F_TRAINER_FEMALE |
                 MOVE_STOCKPILE,
                 MOVE_SWALLOW,
                 MOVE_DOUBLE_TEAM,
-                MOVE_SKULL_BASH,
+                MOVE_SECRET_POWER,
             },
             },
         },
@@ -12385,7 +12385,7 @@ F_TRAINER_FEMALE |
 #line 5045
         .doubleBattle = FALSE,
 #line 5046
-        .aiFlags = AI_FLAG_SMART_TRAINER,
+        .aiFlags = AI_FLAG_SMART_TRAINER | AI_FLAG_FORCE_SETUP_FIRST_TURN,
         .partySize = 4,
         .party = (const struct TrainerMon[])
         {

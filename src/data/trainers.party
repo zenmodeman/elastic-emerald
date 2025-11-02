@@ -2774,7 +2774,7 @@ Music: Suspicious
 Double Battle: No
 AI: Smart Trainer
 
-Sandile @ Wide Lens  
+Sandile (M) @ Wise Glasses  
 Ability: Intimidate  
 Level: 12  
 EVs: 32 SpA  
@@ -2785,7 +2785,7 @@ IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Mud-Slap  
 
 Jigglypuff (M) @ Leftovers  
-Ability: Friend Guard  
+Ability: Friend Guard
 Level: 13  
 EVs: 28 HP / 12 SpD  
 Careful Nature  
@@ -2793,7 +2793,7 @@ IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - Stockpile  
 - Swallow  
 - Double Team  
-- Skull Bash
+- Secret Power
 
 
 === TRAINER_STEVE_1 ===
@@ -5043,7 +5043,7 @@ Pic: Leader Brawly
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Smart Trainer
+AI: Smart Trainer / Force Setup First Turn
 
 Meditite @ Coba Berry
 Ability: Pure Power  
@@ -16953,7 +16953,7 @@ Pic: Leader Brawly
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Smart Trainer
+AI: Smart Trainer 
 
 Meditite @ Coba Berry
 Ability: Pure Power  
