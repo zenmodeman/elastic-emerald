@@ -288,7 +288,6 @@ enum MoveEndEffects
     MOVEEND_SHEER_FORCE, // If move is Sheer Force affected, skip until Eject Pack
     MOVEEND_RED_CARD, // Red Card triggers before Eject Pack
     MOVEEND_EJECT_BUTTON,
-    MOVEEND_DRAIN_DOUSE,
     MOVEEND_LIFEORB_SHELLBELL, // Includes shell bell, throat spray, etc
     MOVEEND_EMERGENCY_EXIT,
     MOVEEND_EJECT_PACK,

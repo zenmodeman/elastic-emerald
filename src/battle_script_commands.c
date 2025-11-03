@@ -6467,18 +6467,33 @@ static void Cmd_moveend(void)
             gBattleScripting.moveendState++;
             break;
         case MOVEEND_ABSORB:
-            if (moveEffect == EFFECT_ABSORB
+            if ((moveEffect == EFFECT_ABSORB || gStatuses4[gBattlerAttacker] & STATUS4_DRAIN_DOUSE)
              && !(gHitMarker & HITMARKER_UNABLE_TO_USE_MOVE)
              && IsBattlerTurnDamaged(gBattlerTarget))
             {
-                if (gStatuses3[gBattlerAttacker] & STATUS3_HEAL_BLOCK && IsHealingMove(gCurrentMove))
+                if (gStatuses3[gBattlerAttacker] & STATUS3_HEAL_BLOCK && (IsHealingMove(gCurrentMove) || gStatuses4[gBattlerAttacker] & STATUS4_DRAIN_DOUSE))
                 {
                     gBattleScripting.moveendState++;
                     break;
                 }
                 else if (IsBattlerAlive(gBattlerAttacker) && !(gBattleStruct->moveResultFlags[gBattlerTarget] & MOVE_RESULT_NO_EFFECT))
                 {
-                    gBattleStruct->moveDamage[gBattlerAttacker] = max(1, (gBattleStruct->moveDamage[gBattlerTarget] * GetMoveAbsorbPercentage(gCurrentMove) / 100));
+                    u32 healingFactor = 0;
+                    if (moveEffect == EFFECT_ABSORB){
+                        healingFactor += GetMoveAbsorbPercentage(gCurrentMove);
+                    }
+                    if (gStatuses4[gBattlerAttacker] & STATUS4_DRAIN_DOUSE){
+                        if (BattlerHasType(gBattlerTarget, TYPE_POISON)){
+                            healingFactor += 67;
+                        }else if (BattlerHasType(gBattlerTarget, TYPE_WATER)){
+                            healingFactor += 50;
+                        }else{
+                            healingFactor += 33;
+                        }
+                    }
+
+                    // gBattleStruct->moveDamage[gBattlerAttacker] = max(1, (gBattleStruct->moveDamage[gBattlerTarget] * GetMoveAbsorbPercentage(gCurrentMove) / 100));
+                    gBattleStruct->moveDamage[gBattlerAttacker] = (gBattleStruct->moveDamage[gBattlerTarget] * healingFactor) / 100;
                     gBattleStruct->moveDamage[gBattlerAttacker] = GetDrainedBigRootHp(gBattlerAttacker, gBattleStruct->moveDamage[gBattlerAttacker]);
                     gHitMarker |= HITMARKER_IGNORE_SUBSTITUTE | HITMARKER_IGNORE_DISGUISE;
                     effect = TRUE;
@@ -7343,59 +7358,6 @@ static void Cmd_moveend(void)
             }
             gBattleScripting.moveendState++;
             break;
-        case MOVEEND_DRAIN_DOUSE:
-        {
-            //Use gBattleScripting.savedDmg per target as an idea.
-            s32 drainHealAmount = 0;
-            // DebugPrintf("The case for Drain Douse is being reached.");
-            if (gStatuses4[gBattlerAttacker] & STATUS4_DRAIN_DOUSE){
-                for (i = 0; i < gBattlersCount; i++)
-                {
-                    s32 currentDrainAmount = 0;
-                    if (i == gBattlerAttacker)
-                        continue;
-                    //The supposition is that savedDmg will give the amount after the most recent attack and nothing else.
-                    if (gBattleScripting.savedDmg > 0){
-                        currentDrainAmount = GetDrainedBigRootHp(gBattlerAttacker, gBattleScripting.savedDmg/2);
-                    }
-                    if (currentDrainAmount != 0 && GetBattlerAbility(i) == ABILITY_LIQUID_OOZE){
-                        currentDrainAmount *= -1;
-                    }
-                    drainHealAmount += currentDrainAmount;
-                    // DebugPrintf("i: %d, currentDrainAmount: %d, savedDmg: %d, drainHealAmount: %d", i, currentDrainAmount, gBattleScripting.savedDmg, drainHealAmount);
-                }
-
-                // DebugPrintf("Checking whether the variables for states are applicable --");
-                // DebugPrintf("damagedMons: %d, drainHealAmount: %d, gBattlerAttacker: %d, gBattlerTarget: %d", 
-                // gSpecialStatuses[gBattlerAttacker].damagedMons, drainHealAmount, gBattlerAttacker, gBattlerTarget);
-
-                if (gBattleScripting.savedDmg > 0  // Need to have done damage
-                && drainHealAmount != 0
-                && gBattlerAttacker != gBattlerTarget
-                && (gBattleMons[gBattlerAttacker].hp != gBattleMons[gBattlerAttacker].maxHP || drainHealAmount > 0)
-                && IsBattlerAlive(gBattlerAttacker)
-                && (B_HEAL_BLOCKING < GEN_5 || !(gStatuses3[gBattlerAttacker] & STATUS3_HEAL_BLOCK)))
-                {
-                    gBattleStruct->moveDamage[gBattlerAttacker] = drainHealAmount;
-                    // DebugPrintf("Right below setting gBattleMoveDamage");
-                    BattleScriptPushCursor();
-                    if (drainHealAmount < 0){
-                        gBattlescriptCurrInstr = BattleScript_DrainDouseHeal;
-                    }else{
-                        gBattlescriptCurrInstr = BattleScript__DrainDouseOoze;
-                    }
-                    effect = TRUE;
-                }
-            }
-
-            //Keeping the !effect check commented in case it was needed for something
-            //doing a non-conditional moveendState to prevent looping
-            gBattleScripting.moveendState++;
-            // if (!effect)
-            //     gBattleScripting.moveendState++;
-            break;
-        }
-
         case MOVEEND_LIFEORB_SHELLBELL:
             if (ItemBattleEffects(ITEMEFFECT_LIFEORB_SHELLBELL, 0, FALSE))
                 effect = TRUE;

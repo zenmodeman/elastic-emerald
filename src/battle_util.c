@@ -12196,6 +12196,16 @@ u32 GetBattlerType(u32 battler, u32 typeIndex, bool32 ignoreTera)
     return types[typeIndex];
 }
 
+//Checks that at least one of the battler's types is the specified type
+bool32 BattlerHasType(u32 battler, u32 type){
+    u32 types[3];
+    GetBattlerTypes(battler, FALSE, types);
+    if (types[0] == type || types[1] == type || types[2] == type){
+        return TRUE;
+    }
+    return FALSE;
+}
+
 void RemoveBattlerType(u32 battler, u8 type)
 {
     u32 i;

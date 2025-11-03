@@ -354,4 +354,7 @@ bool32 IsMovePowderBlocked(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 EmergencyExitCanBeTriggered(u32 battler);
 u32 RestoreWhiteHerbStats(u32 battler);
 
+//Custom Functions
+bool32 BattlerHasType(u32 battler, u32 type);
+
 #endif // GUARD_BATTLE_UTIL_H
