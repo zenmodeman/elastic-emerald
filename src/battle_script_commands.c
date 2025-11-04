@@ -68,8 +68,9 @@
 #include "data/battle_move_effects.h"
 
 
-//My added static functions
+//My added static additions
 static u32 GetMonotypeCatchRate(u16 species);
+static u32 gStockpilesToUse = 0;
 
 extern u32 gExcessTierPoints;
 
@@ -613,6 +614,9 @@ static void Cmd_unused(void);
 static void Cmd_tryworryseed(void);
 static void Cmd_callnative(void);
 
+//Custom Static Function
+static u8 GetStockpilesToUseForBattler(u8 battler);
+static s32 GetStockpileHPStep(u8 battler);
 
 void (* const gBattleScriptingCommandsTable[])(void) =
 {
@@ -6726,7 +6730,17 @@ static void Cmd_moveend(void)
             case MOVE_EFFECT_STOCKPILE_WORE_OFF:
                 if (gDisableStructs[gBattlerAttacker].stockpileCounter != 0)
                 {
-                    gDisableStructs[gBattlerAttacker].stockpileCounter = 0;
+                    DebugPrintf("In the Stockpile Wore Off case Before mutations, gStockpilesTouse is %d and stockpileCounter is %d.",
+                         gStockpilesToUse, gDisableStructs[gBattlerAttacker].stockpileCounter);
+                    
+                    //Safety check in case gStockpilesTouse gets weird values
+                    if (gStockpilesToUse == 0 || gStockpilesToUse > gDisableStructs[gBattlerAttacker].stockpileCounter){
+                        gDisableStructs[gBattlerAttacker].stockpileCounter = 0;
+                    }else{
+                        gDisableStructs[gBattlerAttacker].stockpileCounter -= gStockpilesToUse;
+                    }
+                    DebugPrintf("In the Stockpile Wore Off case Before mutations, gStockpilesToUse is %d and stockpileCounter is %d.",
+                         gStockpilesToUse, gDisableStructs[gBattlerAttacker].stockpileCounter);
                     effect = TRUE;
                     BattleScriptPush(gBattlescriptCurrInstr);
                     gBattlescriptCurrInstr = BattleScript_MoveEffectStockpileWoreOff;
@@ -12395,7 +12409,7 @@ static void Cmd_stockpiletobasedamage(void)
     }
     else
     {
-        if (gBattleCommunication[MISS_TYPE] != B_MSG_PROTECTED)
+        if (gBattleCommunication[MISS_TYPE] != B_MSG_PROTECTED)            
             gBattleScripting.animTurn = gDisableStructs[gBattlerAttacker].stockpileCounter;
 
         if (!(gSpecialStatuses[gBattlerAttacker].parentalBondState == PARENTAL_BOND_1ST_HIT && IsBattlerAlive(gBattlerTarget)))
@@ -12406,12 +12420,40 @@ static void Cmd_stockpiletobasedamage(void)
     }
 }
 
+
+static s32 GetStockpileHPStep(u8 battler){
+    s32 stockpileHPStep = GetNonDynamaxMaxHP(battler) / 3;
+    if (GetBattlerAbility(battler) == ABILITY_GLUTTONY){
+        stockpileHPStep *= 2;
+    }
+    return stockpileHPStep;
+}
+
+static u8 GetStockpilesToUseForBattler(u8 battler){
+    s32 hpDiff = gBattleMons[battler].maxHP - gBattleMons[battler].hp; 
+    s32 stockpileHPStep = GetStockpileHPStep(battler);
+    u8 stockpilesToUse = gDisableStructs[battler].stockpileCounter;
+    u8 i;
+
+    //Find the minimum number of stockpiles necessary to heal
+    for (i = 1; i < gDisableStructs[battler].stockpileCounter; i++){
+        if (hpDiff <= (stockpileHPStep * i)){
+            stockpilesToUse = i;
+            break;
+        }
+    }
+    return stockpilesToUse;
+
+}
+
 static void Cmd_stockpiletohpheal(void)
 {
     CMD_ARGS(const u8 *failInstr);
 
     const u8 *failInstr = cmd->failInstr;
 
+    //Clear out the global variable
+    gStockpilesToUse = 0;
     if (gDisableStructs[gBattlerAttacker].stockpileCounter == 0 && !gBattleStruct->snatchedMoveIsUsed)
     {
         gBattlescriptCurrInstr = failInstr;
@@ -12421,7 +12463,8 @@ static void Cmd_stockpiletohpheal(void)
     {
         if (gBattleMons[gBattlerAttacker].maxHP == gBattleMons[gBattlerAttacker].hp)
         {
-            gDisableStructs[gBattlerAttacker].stockpileCounter = 0;
+            //Commenting this out to prevent losing the stockpile counter while at full HP
+            // gDisableStructs[gBattlerAttacker].stockpileCounter = 0;
             gBattlescriptCurrInstr = failInstr;
             gBattlerTarget = gBattlerAttacker;
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SWALLOW_FULL_HP;
@@ -12430,9 +12473,16 @@ static void Cmd_stockpiletohpheal(void)
         {
             if (gDisableStructs[gBattlerAttacker].stockpileCounter > 0)
             {
-                // gBattleStruct->moveDamage[gBattlerAttacker] = GetNonDynamaxMaxHP(gBattlerAttacker) / (1 << (3 - gDisableStructs[gBattlerAttacker].stockpileCounter));
-                gBattleStruct->moveDamage[gBattlerAttacker] = (GetNonDynamaxMaxHP(gBattlerAttacker) * gDisableStructs[gBattlerAttacker].stockpileCounter)/3;
+                s32 hpDiff = gBattleMons[gBattlerAttacker].maxHP - gBattleMons[gBattlerAttacker].hp; 
+                s32 stockpileHPStep = GetStockpileHPStep(gBattlerAttacker);
+                //Default to the maximum number of stockpiles but use fewer if it's acceptable
+                u8 stockpilesToUse = GetStockpilesToUseForBattler(gBattlerAttacker);
+
+                gBattleStruct->moveDamage[gBattlerAttacker] = stockpileHPStep * stockpilesToUse;
+                gStockpilesToUse = stockpilesToUse;
                 gBattleScripting.animTurn = gDisableStructs[gBattlerAttacker].stockpileCounter;
+                DebugPrintf("HEAL: hpDiff=%d, stockpileHPStep=%d, stockpileCounter=%d, stockpilesToUse=%d, gStockpilestoUse=%d", 
+                    hpDiff, stockpileHPStep, gDisableStructs[gBattlerAttacker].stockpileCounter, stockpilesToUse, gStockpilesToUse);
                 gBattleStruct->moveEffect2 = MOVE_EFFECT_STOCKPILE_WORE_OFF;
             }
             else // Snatched move
@@ -17058,23 +17108,43 @@ void BS_DoStockpileStatChangesWearOff(void)
 {
     NATIVE_ARGS(u8 battler, const u8 *statChangeInstr);
 
+    //Using a static variable to keep track of state throughout the function, since each of the three states should only be called once each
+    const u32 DEF_STATE = 0;
+    const u32 SPDEF_STATE = 1;
+    const u32 DONE_STATE = 2;
+    static u32 stockpileReductionState = DEF_STATE;
+
     u32 battler = GetBattlerForBattleScript(cmd->battler);
-    if (gDisableStructs[battler].stockpileDef != 0)
+    if (stockpileReductionState == DEF_STATE)
     {
-        SET_STATCHANGER(STAT_DEF, abs(gDisableStructs[battler].stockpileDef), TRUE);
-        gDisableStructs[battler].stockpileDef = 0;
+
+        //Using min in the case that the stockpileDef is less than stockpiles to use due to the stat already being maxed out
+        s8 defToChange = min(abs(gDisableStructs[battler].stockpileDef), gStockpilesToUse);
+        DebugPrintf("STAT_WEAR_OFF DEF: gStockpilesToUse=%d, stockpileDef=%d, defToChange=%d", 
+            gStockpilesToUse, gDisableStructs[battler].stockpileDef, defToChange);
+        SET_STATCHANGER(STAT_DEF, defToChange, TRUE);
+        // SET_STATCHANGER(STAT_DEF, abs(gDisableStructs[battler].stockpileDef), TRUE);
+        gDisableStructs[battler].stockpileDef -= defToChange;
+        stockpileReductionState = SPDEF_STATE;
         BattleScriptPushCursor();
         gBattlescriptCurrInstr = cmd->statChangeInstr;
     }
-    else if (gDisableStructs[battler].stockpileSpDef)
+    else if (stockpileReductionState == SPDEF_STATE)
     {
-        SET_STATCHANGER(STAT_SPDEF, abs(gDisableStructs[battler].stockpileSpDef), TRUE);
-        gDisableStructs[battler].stockpileSpDef = 0;
+        s8 spdefToChange = min(abs(gDisableStructs[battler].stockpileSpDef), gStockpilesToUse);
+        DebugPrintf("STAT_WEAR_OFF DEF: gStockpilesToUse=%d, stockpileSpDef=%d, SpdefToChange=%d", 
+            gStockpilesToUse, gDisableStructs[battler].stockpileSpDef, spdefToChange);
+        SET_STATCHANGER(STAT_SPDEF, spdefToChange, TRUE);
+        gDisableStructs[battler].stockpileSpDef -= spdefToChange;
+        stockpileReductionState = DONE_STATE;
         BattleScriptPushCursor();
         gBattlescriptCurrInstr = cmd->statChangeInstr;
     }
     else
     {
+        stockpileReductionState = DEF_STATE;
+        //Reset stockpiles to use for cases like Snatch
+        gStockpilesToUse = 0;
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
 }
@@ -19091,3 +19161,7 @@ void BS_RestoreSavedMove(void)
     gBattleStruct->savedMove = MOVE_NONE;
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
+
+
+
+
