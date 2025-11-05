@@ -26,7 +26,7 @@ Route104_OnTransition:
 
 Route104_EventScript_ShowOrHideWhiteHerbFlorist::
 	goto_if_unset FLAG_MET_PRETTY_PETAL_SHOP_OWNER, Route104_EventScript_HideWhiteHerbFlorist
-	goto_if_unset FLAG_BADGE03_GET, Route104_EventScript_HideWhiteHerbFlorist
+	goto_if_unset FLAG_BADGE01_GET, Route104_EventScript_HideWhiteHerbFlorist
 	clearflag FLAG_HIDE_ROUTE_104_WHITE_HERB_FLORIST
 	return
 
@@ -282,16 +282,7 @@ Route104_EventScript_ReceivedBerry::
 	release
 	end
 
-Route104_EventScript_WhiteHerbFlorist::
-	lock
-	faceplayer
-	goto_if_set FLAG_RECEIVED_WHITE_HERB, Route104_EventScript_ReceivedWhiteHerb
-	msgbox Route104_Text_DontNeedThisTakeIt, MSGBOX_DEFAULT
-	giveitem ITEM_WHITE_HERB
-	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-	setflag FLAG_RECEIVED_WHITE_HERB
-	release
-	end
+
 
 Route104_EventScript_ReceivedWhiteHerb::
 	msgbox Route104_Text_FlowerShopSellingSaplings, MSGBOX_DEFAULT
@@ -1030,7 +1021,7 @@ Route104_Text_DontNeedThisTakeIt:
 	.string "saplings recently.\p"
 	.string "It made me so happy, I went overboard\n"
 	.string "shopping.\p"
-	.string "I don't need this WHITE HERB anymore.\n"
+	.string "I don't need WHITE HERBS anymore.\n"
 	.string "Would you take it, please?$"
 
 Route104_Text_FlowerShopSellingSaplings:
@@ -1271,7 +1262,7 @@ script Route104_EventScript_Boy2{
     			call(Common_EventScript_ShowBagIsFull)
     		}	
 		}else{
-			giveItem(ITEM_TM_HELPING_HAND)
+			giveitem(ITEM_TM_HELPING_HAND)
 			if (var(VAR_RESULT) == FALSE){
     			call(Common_EventScript_ShowBagIsFull)
     		}
@@ -1282,4 +1273,26 @@ script Route104_EventScript_Boy2{
 	release
 	end
 }
+
+script Route104_EventScript_WhiteHerbFlorist{
+	lock
+	faceplayer
+	goto_if_set(FLAG_RECEIVED_WHITE_HERB, Route104_EventScript_ReceivedWhiteHerb)
+	msgbox(Route104_Text_DontNeedThisTakeIt, MSGBOX_DEFAULT)
+	if (flag(FLAG_RESOURCE_MODE)){
+		giveitem(ITEM_WHITE_HERB, 3)
+		if (var(VAR_RESULT) == FALSE){
+			call(Common_EventScript_ShowBagIsFull)
+		}	
+	}else{
+		giveItem(ITEM_WHITE_HERB)
+		if (var(VAR_RESULT) == FALSE){
+			call(Common_EventScript_ShowBagIsFull)
+		}	
+	}
+	setflag(FLAG_RECEIVED_WHITE_HERB)
+	release
+	end
+}
+
 
