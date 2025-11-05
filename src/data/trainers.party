@@ -4755,50 +4755,70 @@ Class: Elite Four
 Pic: Elite Four Sidney
 Gender: Male
 Music: Elite Four
-Items: Full Restore / Full Restore
 Double Battle: No
-AI: Smart Trainer / Force Setup First Turn
+AI: Smart Trainer 
 Mugshot: Purple
 
-Mightyena
-Level: 46
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Roar
-- Double Edge
-- Sand Attack
-- Crunch
+Sharpedo @ Focus Sash  
+Ability: Speed Boost  
+Level: 62  
+EVs: 168 Atk / 88 SpA / 252 Spe  
+Naughty Nature  
+- Waterfall
+- Taunt  
+- Dark Pulse  
+- Destiny Bond
 
-Shiftry
-Level: 48
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Torment
-- Double Team
-- Swagger
-- Extrasensory
+Mandibuzz @ Rocky Helmet  
+Ability: Overcoat  
+Level: 62  
+EVs: 252 HP / 128 Def / 52 SpD / 76 Spe  
+Impish Nature  
+- Brave Bird  
+- Foul Play  
+- Toxic  
+- Roost  
 
-Cacturne
-Level: 46
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Leech Seed
-- Feint Attack
-- Needle Arm
-- Cotton Spore
+Grimmsnarl @ Lum Berry  
+Ability: Prankster  
+Level: 62  
+EVs: 168 HP / 252 Atk / 80 Def  
+Adamant Nature  
+- Sucker Punch  
+- Thunder Wave  
+- Spirit Break  
+- Parting Shot  
 
-Crawdaunt
-Level: 48
-IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
-- Surf
-- Swords Dance
-- Strength
-- Facade
+Drapion @ Shuca Berry  
+Ability: Sniper  
+Level: 63  
+EVs: 4 HP / 252 Atk / 252 Spe  
+Jolly Nature  
+- Night Slash  
+- Cross Poison
+- Bug Buzz 
+- Acupressure
 
-Absol @ Sitrus Berry
-Level: 49
-IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-- Aerial Ace
-- Rock Slide
-- Swords Dance
-- Slash
+Arcanine @ Sitrus Berry  
+Ability: Intimidate  
+Level: 63  
+Tera Type: Dark  
+EVs: 140 HP / 116 SpA / 252 Spe  
+Modest Nature  
+- Extreme Speed  
+- Snarl
+- Reflect  
+- Flamethrower  
+
+Absol @ Absolite  
+Ability: Justified  
+Level: 64    
+EVs: 252 Atk / 4 Def / 252 Spe  
+Naive Nature  
+- Knock Off  
+- Close Combat  
+- Zen Headbutt
+- Fire Blast  
 
 === TRAINER_PHOEBE ===
 Name: PHOEBE
@@ -6659,13 +6679,16 @@ Double Battle: No
 AI: Smart Trainer
 Mugshot: Yellow
 
-Wailord
-Level: 57
-IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
-- Rain Dance
-- Water Spout
-- Double Edge
-- Blizzard
+Manaphy @ Assault Vest  
+Ability: Hydration  
+Level: 68  
+EVs: 4 HP / 252 SpA / 252 Spe  
+Modest Nature  
+IVs: 0 Atk  
+- Surf  
+- Alluring Voice  
+- Energy Ball  
+- Ice Beam
 
 Tentacruel
 Level: 55

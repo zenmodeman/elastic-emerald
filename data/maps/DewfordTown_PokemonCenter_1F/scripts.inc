@@ -83,53 +83,55 @@ DewfordTown_PokemonCenter_1F_EventScript_Maniac::
 # 46 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	lock
 # 47 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
-	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_0
+	faceplayer
 # 48 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
-	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_1
+	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_0
 # 49 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
-	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_2
+	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_1
 # 50 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
-	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_3
+	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_2
 # 51 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
-	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_4
+	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_3
 # 52 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
-	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_5
+	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_4
 # 53 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
+	msgbox DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_5
+# 54 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	release
 	return
 
 
 DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_0:
-# 47 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
+# 48 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	.string "Steel-types are finely tuned machines,\n"
 	.string "and my mechanical skills help them stay\l"
 	.string "in top form.$"
 
 DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_1:
-# 48 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
+# 49 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	.string "But they have a rough time against\n"
 	.string "Brawly's Fighting-types...$"
 
 DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_2:
-# 49 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
+# 50 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	.string "The first time I faced him, my\n"
 	.string "meticulously optimized Steel squad got\l"
 	.string "utterly dismantled. A total systems\l"
 	.string "failure!$"
 
 DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_3:
-# 50 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
+# 51 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	.string "Brawly's all about leveraging mass\n"
 	.string "against his foes with Low Kick, and,\l"
 	.string "well…$"
 
 DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_4:
-# 51 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
+# 52 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	.string "my Pokemon are polished, sturdy, and\n"
 	.string "unfortunately weighty.$"
 
 DewfordTown_PokemonCenter_1F_EventScript_Maniac_Text_5:
-# 52 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
+# 53 "data/maps/DewfordTown_PokemonCenter_1F/scripts.pory"
 	.string "But this was no problem I couldn't\n"
 	.string "optimize. When I unearthed a Float\l"
 	.string "Stone in Granite Cave, I made Low Kick\l"

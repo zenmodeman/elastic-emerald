@@ -18494,6 +18494,7 @@ static const u16 sBeautiflyTeachableLearnset[] = {
     MOVE_LASER_FOCUS,
     MOVE_MEGA_DRAIN,
     MOVE_MIMIC,
+    MOVE_MUD_SLAP,
     MOVE_OMINOUS_WIND,
     MOVE_ROUND,
     MOVE_SAFEGUARD,

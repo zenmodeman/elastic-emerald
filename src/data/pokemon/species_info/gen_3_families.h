@@ -6172,10 +6172,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 
     [SPECIES_SWALOT] =
     {
-        .baseHP        = 100,
+        .baseHP        = 113,
         .baseAttack    = 73,
         .baseDefense   = 83,
-        .baseSpeed     = 55,
+        .baseSpeed     = 53,
         .baseSpAttack  = 73,
         .baseSpDefense = 83,
         .types = MON_TYPES(TYPE_POISON),

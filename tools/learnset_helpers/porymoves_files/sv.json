@@ -8524,7 +8524,7 @@
       "MOVE_METAL_SOUND",
       "MOVE_RECYCLE"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_FLASH_CANNON"]
   },
   "EXEGGCUTE": {
     "LevelMoves": [
@@ -14370,7 +14370,7 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_DAZZLING_GLEAM"]
   },
   "SPINARAK": {
     "LevelMoves": [
@@ -24518,7 +24518,7 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": ["MOVE_CAMOUFLAGE"]
+    "TutorMoves": ["MOVE_CAMOUFLAGE", "MOVE_MUD_SLAP"]
   },
   "CASCOON": {
     "LevelMoves": [],
