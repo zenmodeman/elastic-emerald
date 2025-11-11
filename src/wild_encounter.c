@@ -504,7 +504,7 @@ void CreateWildMon(u16 species, u8 level)
 {
     u8 gender;
     bool32 checkCuteCharm = TRUE;
-    u8 monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
+    u8 monotype = GetMonoType();
 
     ZeroEnemyPartyMons();
 
@@ -665,7 +665,7 @@ static u16 GenerateFishingWildMon(const struct WildPokemonInfo *wildMonInfo, u8 
     u8 level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, WILD_AREA_FISHING);
     
     //Add monotype logic, currently hacky and using a magikarp fallback
-    u8 monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
+    u8 monotype = GetMonoType();
 
     if (monotype != TYPE_NONE){
         
@@ -1352,7 +1352,7 @@ static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildM
 
 static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 *monIndex, u8 numMon)
 {
-    u8 type = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
+    u8 type = GetMonoType();
     if (type == TYPE_NONE){
         return FALSE;
     }

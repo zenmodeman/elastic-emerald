@@ -1065,7 +1065,8 @@ void ZeroBoxMonData(struct BoxPokemon *boxMon)
         raw[i] = 0;
 }
 
-u8 GetTypeFromVarValue(u8 varValue){
+u8 GetMonoType(){
+    u8 varValue = VarGet(VAR_MONOTYPE);
     if (varValue == 0 || varValue >= NUMBER_OF_MON_TYPES){
         return TYPE_NONE;
     }else if (varValue >= 10){
@@ -2551,7 +2552,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GRASS; //Thick Fat and Seed Bomb
         case SPECIES_SENTRET: case SPECIES_FURRET:
             return TYPE_FAIRY;
-        case SPECIES_STANTLER: case SPECIES_WYRDEER:
+        case SPECIES_STANTLER:
             return TYPE_GRASS; //Sap Sipper and Energy Ball + Trailblaze
         case SPECIES_DUNSPARCE: case SPECIES_DUDUNSPARCE:
             return TYPE_DRAGON; //Scale Shot, Dragon Tail, e.t.c.
@@ -2562,7 +2563,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FIGHTING;
 
         case SPECIES_AIPOM: case SPECIES_AMBIPOM:
-            return TYPE_DRAGON; //Dual Chop
+            return TYPE_DARK; //Technician Beat Up; may swap to Dragon for Technician Dual Chop if Fezandipiti ever goes down to 3 points
         case SPECIES_SMEARGLE:
             return TYPE_GHOST; //Immunity for frailness
         case SPECIES_MILTANK:
@@ -2614,7 +2615,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_LECHONK:  case SPECIES_OINKOLOGNE: case SPECIES_OINKOLOGNE_F:
             return TYPE_GROUND; //High Horsepower and Dig
         case SPECIES_TANDEMAUS:  case SPECIES_MAUSHOLD:
-            return TYPE_DARK; //Technican Bite and Beat Up        
+            return TYPE_GRASS; //Technican Bullet Seed        
 
         //Pure Grass
         case SPECIES_TANGELA: case SPECIES_TANGROWTH:
@@ -3030,8 +3031,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ROCK;
         case SPECIES_CORSOLA_GALAR: case SPECIES_CURSOLA:
             return TYPE_WATER; //Learns Water moves
-        case SPECIES_SINISTEA: case SPECIES_SINISTEA_ANTIQUE: case SPECIES_SINISTCHA_UNREMARKABLE: case SPECIES_POLTEAGEIST:
-        case SPECIES_POLTEAGEIST_ANTIQUE:
+        case SPECIES_SINISTEA: case SPECIES_SINISTEA_ANTIQUE: case SPECIES_POLTEAGEIST: case SPECIES_POLTEAGEIST_ANTIQUE:
             return TYPE_GRASS; //Giga Drain
         case SPECIES_GREAVARD: case SPECIES_HOUNDSTONE:
             return TYPE_GROUND; //Sand Rush basis
@@ -3134,7 +3134,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_PERRSERKER:
             return TYPE_DARK; //Foul Play and Knock Off
         case SPECIES_ORTHWORM:
-            return TYPE_ROCK; //Still gets the Earth Eater immunity
+            return TYPE_ROCK; //Still gets the Earth Eater immunity to an otherwise weakness
 
         //Bug/Poison
         case SPECIES_WEEDLE: case SPECIES_KAKUNA:
@@ -3166,89 +3166,329 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ICE; //Ice Spinner
 
         //Ghost/Grass
+        case SPECIES_PHANTUMP: case SPECIES_TREVENANT:
+            return TYPE_GROUND; //Earthquake
+        case SPECIES_PUMPKABOO: case SPECIES_PUMPKABOO_LARGE: case SPECIES_PUMPKABOO_SMALL: case SPECIES_PUMPKABOO_SUPER:
+        case SPECIES_GOURGEIST: case SPECIES_GOURGEIST_LARGE: case SPECIES_GOURGEIST_SMALL: case SPECIES_GOURGEIST_SUPER:
+            return TYPE_FIRE; //Flamethrower, Flame Charge
+        case SPECIES_DECIDUEYE:
+            return TYPE_FLYING; //Mimic former flying type
+        case SPECIES_DHELMISE:
+            return TYPE_WATER; //Liquidation
+        case SPECIES_BRAMBLIN: case SPECIES_BRAMBLEGHAST:
+            return TYPE_BUG; //Pounce and Skitter Smack
+        case SPECIES_POLTCHAGEIST: case SPECIES_POLTCHAGEIST_ARTISAN: 
+        case SPECIES_SINISTCHA: case SPECIES_SINISTCHA_MASTERPIECE:
+            return TYPE_PSYCHIC; //Filler type
 
+        //Rock/Ground
+        case SPECIES_GEODUDE: case SPECIES_GRAVELER: case SPECIES_GOLEM:
+            return TYPE_DARK; //Sucker Punch
+        case SPECIES_ONIX:
+            return TYPE_DRAGON; //Dragon Breath; could also be Steel depending on overlap factors
+        case SPECIES_RHYHORN: case SPECIES_RHYDON: case SPECIES_RHYPERIOR:
+            return TYPE_NORMAL; //Rock Head Double-Edge
+        case SPECIES_LARVITAR: case SPECIES_PUPITAR:
+            return TYPE_DARK; //Evo basis
+
+        //Steel/Psychic
+        case SPECIES_BELDUM: case SPECIES_METANG: case SPECIES_METAGROSS:
+            return TYPE_NORMAL; //Take Down for Beldum; Explosion for Metang
+        case SPECIES_JIRACHI:
+            return TYPE_FAIRY; //Moonblast
+        case SPECIES_BRONZOR: case SPECIES_BRONZONG:
+            return TYPE_GRASS; //Heatproof synergy
+        case SPECIES_IRON_CROWN:
+            return TYPE_FIGHTING; //Filler type
         
+        //Water/Ground
+        case SPECIES_WOOPER: case SPECIES_QUAGSIRE:
+            return TYPE_ICE; //Avalanche
+        case SPECIES_MARSHTOMP: case SPECIES_SWAMPERT:
+            return TYPE_ROCK; //Rock Slide and such
+        case SPECIES_GASTRODON:
+            return TYPE_BUG; //Infestation and Skitter Smack
+        case SPECIES_PALPITOAD: case SPECIES_SEISMITOAD:
+            return TYPE_FIGHTING; //Drain Punch
+        case SPECIES_BARBOACH: case SPECIES_WHISCASH:
+            return TYPE_STELLAR; //Additional Power boost
 
-        //Fire/Rock
-        case SPECIES_MAGCARGO:
-            return TYPE_GRASS; //Defensive type, though there's also Solarbeam
-        case SPECIES_CARKOL: case SPECIES_COALOSSAL:
-            return TYPE_WATER;
-        case SPECIES_GROWLITHE_HISUI: case SPECIES_ARCANINE_HISUI:
-            return TYPE_STEEL;
-
-        //Fire/Flying
-        case SPECIES_CHARIZARD:
-            return TYPE_DRAGON;
-        case SPECIES_ORICORIO_BAILE:
-            return TYPE_ICE; //Icy Wind
-        
-        //Fire/Fighting
-        case SPECIES_MONFERNO: case SPECIES_INFERNAPE: 
-            return TYPE_POISON; //Gunk Shot
-        //Fire/Psychic
-        case SPECIES_DARMANITAN_ZEN:
-            return TYPE_PSYCHIC; //Gets an extra power boost
-        case SPECIES_DELPHOX:
-            return TYPE_DARK; //Foul Play
-        
-        //Normal/Ground
-        case SPECIES_URSALUNA: case SPECIES_URSALUNA_BLOODMOON:
-            return TYPE_ROCK; //To give it a new STAB while keeping many of the existing weaknesses (Fighting, Grass, Water)
-        //Normal/Dark
-        case SPECIES_ZIGZAGOON_GALAR: case SPECIES_LINOONE_GALAR: case SPECIES_OBSTAGOON:
-            return TYPE_POISON; //Gunk Shot and Cross Poison 
-        //Fire Dual Types
-        case SPECIES_INCINEROAR:
-            return TYPE_BUG; //U-Turn and Leech Life
-
-        //Grass/Electric
-        case SPECIES_VOLTORB_HISUI: case SPECIES_ELECTRODE_HISUI:
-            return TYPE_BUG; //Signal Beam
-        //Grass/Dark
-        case SPECIES_NUZLEAF: case SPECIES_SHIFTRY:
-            return TYPE_FLYING;
-        case SPECIES_CACTURNE:
-            return TYPE_POISON;
-        case SPECIES_MEOWSCARADA:
-            return TYPE_PSYCHIC;
-
-        //Grass/Fighting
-        case SPECIES_BRELOOM:
-            return TYPE_BUG;
-        case SPECIES_LILLIGANT_HISUI:
-            return TYPE_FLYING; //Acrobatics
-        case SPECIES_CHESNAUGHT:
-            return TYPE_ROCK;
-
-
-        //Grass/Ground
-        case SPECIES_TORTERRA:
-            return TYPE_DARK;
-
-        //Grass/Fire
-        case SPECIES_SCOVILLAIN:
-            return TYPE_GROUND;
-        
-        //Grass
-        case SPECIES_APPLIN: case SPECIES_FLAPPLE: case SPECIES_APPLETUN: case SPECIES_DIPPLIN: case SPECIES_HYDRAPPLE:
-            return TYPE_BUG;
-        case SPECIES_SNOVER:
-            return TYPE_STELLAR;
+        //Psychic/Flying
+        case SPECIES_NATU: case SPECIES_XATU:
+            return TYPE_DARK; //Sucker Punch and Foul Play
+        case SPECIES_WOOBAT: case SPECIES_SWOOBAT:
+            return TYPE_PSYCHIC; //Extra damage
+        case SPECIES_SIGILYPH:
+            return TYPE_FIRE; //Heat Wave
+        case SPECIES_ORICORIO_PAU:
+            return TYPE_FAIRY; //Make all Oricorios Fairy type since forms can be swapped
+        case SPECIES_ARTICUNO_GALAR:
+            return TYPE_ICE;
+        case SPECIES_BRAVIARY_HISUI:
+            return TYPE_NORMAL; //Regular Braviary homage
         
         //Psychic/Fairy
+        case SPECIES_MIME_JR:  case SPECIES_MR_MIME:
+            return TYPE_ELECTRIC; //Thunderbolt, Technician Charge Beam
+        case SPECIES_RALTS: case SPECIES_KIRLIA: case SPECIES_GARDEVOIR:
+            return TYPE_GRASS; //Energy Ball
         case SPECIES_HATTERENE:
-            return TYPE_DARK;
-        //Poison/Fairy
-        case SPECIES_FEZANDIPITI:
-            return TYPE_DARK; //Technician Beat Up
+            return TYPE_DARK; //newly gained Payback
         case SPECIES_RAPIDASH_GALAR:
+            return TYPE_STEEL; //Iron Tail and Smart Strike
+        case SPECIES_TAPU_LELE:
+            return TYPE_GHOST; //Filler type since it's excluded by Tier Points
+        case SPECIES_SCREAM_TAIL:
+            return TYPE_NORMAL; //Jigglypuff basis
+
+        //Ghost/Fire
+        case SPECIES_LITWICK: case SPECIES_LAMPENT: case SPECIES_CHANDELURE:
+            return TYPE_DARK; //Dark Pulse
+
+        //The below is whatever since these are all restricted mode banned.
+        case SPECIES_MAROWAK_ALOLA:
+            return TYPE_DRAGON; //Outrage
+        case SPECIES_TYPHLOSION_HISUI:
+            return TYPE_GROUND;
+        case SPECIES_SKELEDIRGE:
+            return TYPE_FAIRY; 
+        case SPECIES_CERULEDGE:
+            return TYPE_FIGHTING;
+        //Not bothering with Blacephalon since it's probably not available
+        
+        //Water/Flying
+        case SPECIES_GYARADOS:
+            return TYPE_DARK; //Mega basis
+        case SPECIES_MANTYKE: case SPECIES_MANTINE: 
+            return TYPE_ICE; //Blizzard
+        case SPECIES_DUCKLETT: case SPECIES_SWANNA:
+            return TYPE_FAIRY; //Alluring Voice
+        case SPECIES_CRAMORANT:
+            return TYPE_POISON; //Belch        
+
+        //Water/Ice
+        case SPECIES_DEWGONG:
+            return TYPE_BUG; //Megahorn
+        case SPECIES_CLOYSTER:
+            return TYPE_NORMAL; //Spike Cannon; potential Tier Points 4+ mon, but currently not yet
+        case SPECIES_LAPRAS:
+            return TYPE_PSYCHIC; //Psychic Noise
+        case SPECIES_SPHEAL: case SPECIES_SEALEO: case SPECIES_WALREIN:
+            return TYPE_GROUND; //Earthquake/Stomping Tantrum
+        case SPECIES_ARCTOVISH:
+            return TYPE_ROCK; //Rock Blast
+        
+        //Dark/Flying
+        case SPECIES_MURKROW: case SPECIES_HONCHKROW:
+            return TYPE_FIGHTING; //Superpower
+        case SPECIES_VULLABY: case SPECIES_MANDIBUZZ:
+            return TYPE_FLYING; //More power in Monotype
+        case SPECIES_MOLTRES_GALAR:
+            return TYPE_FIRE; //Moltres basis
+        case SPECIES_BOMBIRDIER:
+            return TYPE_ROCK; //Rocky Payload
+        case SPECIES_IRON_JUGULIS:
+            return TYPE_DRAGON; //Hydreigon basis
+        //Not including Yveltal
+        
+        //Poison/Dark
+        case SPECIES_STUNKY: case SPECIES_SKUNTANK:
+            return TYPE_FIRE; //Temper Flare, Fire Blast
+        case SPECIES_DRAPION:
+            return TYPE_BUG; //pre-evo basis
+        case SPECIES_MUK_ALOLA:
+            return TYPE_ROCK; //Rock Slide
+        case SPECIES_QWILFISH_HISUI: case SPECIES_OVERQWIL:
+            return TYPE_GHOST; //Somewhat neutral type that fits the vibe
+        
+        //Steel/Rock
+        case SPECIES_ARON: case SPECIES_LAIRON: case SPECIES_AGGRON:
+            return TYPE_ICE; //Ice Punch and preserving not the best Tera Type
+        case SPECIES_SHIELDON: case SPECIES_BASTIODON:
+            return TYPE_DARK; //Foul Play boost
+        case SPECIES_PROBOPASS:
+            return TYPE_ELECTRIC; //A lot of electric moves
+        
+        //Steel/Fairy
+        case SPECIES_MAWILE:
+            return TYPE_DARK; //Sucker Punch    
+        case SPECIES_KLEFKI:
+            return TYPE_ELECTRIC;
+        case SPECIES_MAGEARNA:
+            return TYPE_PSYCHIC; 
+        case SPECIES_TINKATON:
+            return TYPE_ROCK;
+        
+        //Fire/Fighting
+        case SPECIES_COMBUSKEN:  case SPECIES_BLAZIKEN:
+            return TYPE_FLYING; //Brave Bird
+        case SPECIES_MONFERNO: case SPECIES_INFERNAPE: 
+            return TYPE_POISON; //Gunk Shot
+        case SPECIES_EMBOAR:
+            return TYPE_ELECTRIC; //Reckless Wild Charge
+        case SPECIES_TAUROS_PALDEA_BLAZE:
+            return TYPE_NORMAL; //Regular Tauros basis
+        
+        //Grass/Flying
+        case SPECIES_HOPPIP: case SPECIES_SKIPLOOM: case SPECIES_JUMPLUFF:
+            return TYPE_FLYING; //More power
+        case SPECIES_TROPIUS:
+            return TYPE_FIRE; //Sun Weather Ball
+        case SPECIES_SHAYMIN_SKY:
             return TYPE_BUG;
+        case SPECIES_ROWLET: case SPECIES_DARTRIX:
+            return TYPE_GHOST; // Evo basis
+        
+        //Grass/Dragon
+        case SPECIES_EXEGGUTOR_ALOLA:
+            return TYPE_PSYCHIC; //Exeggcute basis
+        case SPECIES_FLAPPLE:
+            return TYPE_FLYING; //Acrobatics and Fly
+        case SPECIES_APPLIN: case SPECIES_DIPPLIN: case SPECIES_HYDRAPPLE:
+            return TYPE_BUG;
+        case SPECIES_APPLETUN:
+            return TYPE_FIGHTING; //Body Press and Superpower
+        
+        //Grass/Dark
+        case SPECIES_CACTURNE:
+            return TYPE_DARK; //Boosted Payback and Sucker Punch
+            //Water Absorb + Shedding the Grass Type makes it quite good against Water types with Ice moves
+        case SPECIES_NUZLEAF:
+            return TYPE_FIGHTING; 
+        case SPECIES_SHIFTRY:
+            return TYPE_FLYING; //Air Slash and Hurricane Shiftry
+        case SPECIES_ZARUDE:
+            return TYPE_NORMAL; //Filler type
+        case SPECIES_MEOWSCARADA:
+            return TYPE_ELECTRIC; //Not much thought put into it since it can't tera in restricted mode
+        case SPECIES_BRUTE_BONNET:
+            return TYPE_FIGHTING;
+        case SPECIES_WO_CHIEN:
+            return TYPE_POISON; 
+        
+        //Electric/Flying
+        case SPECIES_ZAPDOS:
+            return TYPE_FIRE;
+        case SPECIES_ROTOM_FAN:
+            return TYPE_GHOST;
+        case SPECIES_EMOLGA:
+            return TYPE_STEEL; //Resists both of the types SE against it
+        case SPECIES_THUNDURUS_INCARNATE: case SPECIES_THUNDURUS_THERIAN:
+            return TYPE_DARK;
+        case SPECIES_ORICORIO_POM_POM:
+            return TYPE_FAIRY; //ALl Oricorios will have the same type
+        case SPECIES_WATTREL: case SPECIES_KILOWATTREL:
+            return TYPE_WATER; //Rain Dance synergy
+    
+        //Normal/Psychic
+        case SPECIES_GIRAFARIG: case SPECIES_FARIGIRAF:
+            return TYPE_WATER;
+        case SPECIES_MELOETTA: 
+            return TYPE_GHOST;
+        case SPECIES_ORANGURU:
+            return TYPE_GRASS; //Energy Ball
+        case SPECIES_WYRDEER:
+            return TYPE_GROUND; //Sap Sipper synergy
+        case SPECIES_INDEEDEE_F: case SPECIES_INDEEDEE_M:
+            return TYPE_FIGHTING;
+
+        //Ghost/Ground
+        case SPECIES_GOLETT: case SPECIES_GOLURK:
+            return TYPE_FIGHTING; //Iron Fist
+        case SPECIES_SANDYGAST: case SPECIES_PALOSSAND:
+            return TYPE_GRASS; //Giga Drain and Water Compaction synergy
+        case SPECIES_YAMASK_GALAR: case SPECIES_RUNERIGUS:
+            return TYPE_ROCK; 
+        
+        //Ground/Dragon
+        case SPECIES_VIBRAVA: case SPECIES_FLYGON:
+            return TYPE_BUG; //Based on all of Flygon's bug moves
+        case SPECIES_GIBLE: case SPECIES_GABITE: case SPECIES_GARCHOMP:
+            return TYPE_FIRE;
+        case SPECIES_ZYGARDE_10: case SPECIES_ZYGARDE: 
+            return TYPE_DARK; //Crunch
+        
+        //Bug/Rock
+        case SPECIES_SHUCKLE:
+            return TYPE_BUG; //Choosing to not give Shuckle a new defensive type
+        case SPECIES_ANORITH: case SPECIES_ARMALDO:
+            return TYPE_WATER; //Liquidation
+        case SPECIES_DWEBBLE: case SPECIES_CRUSTLE:
+            return TYPE_GROUND;
+        case SPECIES_KLEAVOR:
+            return TYPE_FLYING; //Scyther basis
+        
+        
+        
+        //     //Fire/Rock
+        // case SPECIES_MAGCARGO:
+        //     return TYPE_GRASS; //Defensive type, though there's also Solarbeam
+        // case SPECIES_CARKOL: case SPECIES_COALOSSAL:
+        //     return TYPE_WATER;
+        // case SPECIES_GROWLITHE_HISUI: case SPECIES_ARCANINE_HISUI:
+        //     return TYPE_STEEL;
+
+        // //Fire/Flying
+        // case SPECIES_CHARIZARD:
+        //     return TYPE_DRAGON;
+        // case SPECIES_ORICORIO_BAILE:
+        //     return TYPE_ICE; //Icy Wind
+        
+
+        // //Fire/Psychic
+        // case SPECIES_DARMANITAN_ZEN:
+        //     return TYPE_PSYCHIC; //Gets an extra power boost
+        // case SPECIES_DELPHOX:
+        //     return TYPE_DARK; //Foul Play
+        
+        // //Normal/Ground
+        // case SPECIES_URSALUNA: case SPECIES_URSALUNA_BLOODMOON:
+        //     return TYPE_ROCK; //To give it a new STAB while keeping many of the existing weaknesses (Fighting, Grass, Water)
+        // //Normal/Dark
+        // case SPECIES_ZIGZAGOON_GALAR: case SPECIES_LINOONE_GALAR: case SPECIES_OBSTAGOON:
+        //     return TYPE_POISON; //Gunk Shot and Cross Poison 
+        // //Fire Dual Types
+        // case SPECIES_INCINEROAR:
+        //     return TYPE_BUG; //U-Turn and Leech Life
+
+        // //Grass/Electric
+        // case SPECIES_VOLTORB_HISUI: case SPECIES_ELECTRODE_HISUI:
+        //     return TYPE_BUG; //Signal Beam
+        // //Grass/Dark
+        // case SPECIES_NUZLEAF: case SPECIES_SHIFTRY:
+        //     return TYPE_FLYING;
+        // case SPECIES_CACTURNE:
+        //     return TYPE_POISON;
+        // case SPECIES_MEOWSCARADA:
+        //     return TYPE_PSYCHIC;
+
+        // //Grass/Fighting
+        // case SPECIES_BRELOOM:
+        //     return TYPE_BUG;
+        // case SPECIES_LILLIGANT_HISUI:
+        //     return TYPE_FLYING; //Acrobatics
+        // case SPECIES_CHESNAUGHT:
+        //     return TYPE_ROCK;
+
+
+        // //Grass/Ground
+        // case SPECIES_TORTERRA:
+        //     return TYPE_DARK;
+
+        // //Grass/Fire
+        // case SPECIES_SCOVILLAIN:
+        //     return TYPE_GROUND;
+        
+        // case SPECIES_SNOVER:
+        //     return TYPE_STELLAR;
+        
+
     
         default:
             return randomTeraType;
     }
 }
+
 /* GameFreak called GetBoxMonData with either 2 or 3 arguments, for type
  * safety we have a GetBoxMonData macro (in include/pokemon.h) which
  * dispatches to either GetBoxMonData2 or GetBoxMonData3 based on the
@@ -5512,8 +5752,8 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL:
-                if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))!= TYPE_NONE){
-                    u8 monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
+                if (GetMonoType()!= TYPE_NONE){
+                    u8 monotype = GetMonoType();
                     //Since currently Magikarp is the fishing placeholder when monotype encounters are incompatible, prevent it from evolving
                     if (species == SPECIES_MAGIKARP && monotype != TYPE_FLYING && monotype != TYPE_WATER){
                         break;
@@ -5551,9 +5791,9 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                         targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_SILCOON:
-                if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))== TYPE_POISON){
+                if (GetMonoType()== TYPE_POISON){
                     break;
-                }else if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE)) == TYPE_FLYING){
+                }else if (GetMonoType() == TYPE_FLYING){
                     targetSpecies = evolutions[i].targetSpecies;
                     break;
                 }
@@ -5561,9 +5801,9 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_CASCOON:
-                if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))== TYPE_FLYING){
+                if (GetMonoType()== TYPE_FLYING){
                     break;
-                }else if (GetTypeFromVarValue(VarGet(VAR_MONOTYPE))== TYPE_POISON){
+                }else if (GetMonoType()== TYPE_POISON){
                     targetSpecies = evolutions[i].targetSpecies;
                     break;
                 }
@@ -5571,9 +5811,24 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_NINJASK:
-                if (evolutions[i].param <= level)
+                if (evolutions[i].param <= level){
+                    if (GetMonoType() == TYPE_GHOST){
+                        //Do not do the Ninjask check in Mono Ghost, since the Shedinja check will be done
+                        break;
+                    }
                     targetSpecies = evolutions[i].targetSpecies;
+                }
                 break;
+            case EVO_LEVEL_SHEDINJA:
+                if (evolutions[i].param <= level){
+                    if (GetMonoType() != TYPE_GHOST){
+                        //Only do the Shedinja check in Mono Ghost
+                        break;
+                    }
+                    targetSpecies = evolutions[i].targetSpecies;
+                }
+                break;
+                
             case EVO_LEVEL_FAMILY_OF_FOUR:
                 if (mode == EVO_MODE_BATTLE_ONLY && evolutions[i].param <= level && (personality % 100) != 0)
                     targetSpecies = evolutions[i].targetSpecies;
@@ -6713,9 +6968,9 @@ static u8 AddTutorMoves(u16 species, u16 *applicable_moves, const u16 *tutorMove
     int i;
 
     for (i=0; i < numTutorMoves; i++){
-        if (species == SPECIES_SHINX && tutorMoves[i] == MOVE_MUD_SLAP){
-            DebugPrintf("Mud Slap Shinx case reached. The bool result is %d", CanLearnTeachableMove(species, tutorMoves[i]));
-        }
+        // if (species == SPECIES_SHINX && tutorMoves[i] == MOVE_MUD_SLAP){
+        //     DebugPrintf("Mud Slap Shinx case reached. The bool result is %d", CanLearnTeachableMove(species, tutorMoves[i]));
+        // }
         if (CanLearnTeachableMove(species, tutorMoves[i])){
             applicable_moves[currentNumMoves + addedMoves++] = tutorMoves[i];
         }
@@ -6737,20 +6992,26 @@ static u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
     //If acquired one badge
     if (FlagGet(FLAG_BADGE01_GET)){
         numMoves += AddTutorMoves(species, applicable_moves, gPreGym2Tutor, ARRAY_COUNT(gPreGym2Tutor), numMoves);
+        //There are currently no moves but still including the check anyway
         if (!FlagGet(FLAG_RESTRICTED_MODE)){
             numMoves += AddTutorMoves(species, applicable_moves, gPreGym2TutorSetup, ARRAY_COUNT(gPreGym2TutorSetup), numMoves);   
         }
     }
-
+    if (FlagGet(FLAG_BADGE02_GET)){
+        numMoves += AddTutorMoves(species, applicable_moves, gPreGym3Tutor, ARRAY_COUNT(gPreGym3Tutor), numMoves);
+        if (!FlagGet(FLAG_RESTRICTED_MODE)){
+            numMoves += AddTutorMoves(species, applicable_moves, gPreGym3TutorSetup, ARRAY_COUNT(gPreGym3TutorSetup), numMoves);   
+        }        
+    }
     return numMoves;    
 }
 
 static u8 GetTechTutorMoveList(u16 species, u16 *applicable_moves){
     u8 numMoves = 0;
 
+    // DebugPrintf("GetTechTutorMoveList is called");
+
     //pre-badge one, always applies
-    DebugPrintf("GetTechTutorMoveList is called");
-    
     numMoves += AddTutorMoves(species, applicable_moves, gTechTutorAlways, ARRAY_COUNT(gTechTutorAlways), numMoves);
 
     //If acquired one badge 
@@ -8232,7 +8493,8 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_SHARPEDO_MEGA: case SPECIES_SABLEYE_MEGA: case SPECIES_GARDEVOIR_MEGA:
 
         //5 Points Sinnoh
-        case SPECIES_INFERNAPE: case SPECIES_GARCHOMP: case SPECIES_TANGROWTH: case SPECIES_TOGEKISS: case SPECIES_AZELF: case SPECIES_HEATRAN: case SPECIES_MANAPHY:
+        case SPECIES_INFERNAPE: case SPECIES_GARCHOMP: case SPECIES_TANGROWTH: case SPECIES_TOGEKISS: case SPECIES_AZELF: case SPECIES_HEATRAN: 
+        case SPECIES_MANAPHY: case SPECIES_SHAYMIN_SKY:
 
         //5 Points Sinnoh Megas
         case SPECIES_GARCHOMP_MEGA: case SPECIES_LOPUNNY_MEGA: case SPECIES_GALLADE_MEGA:
@@ -8245,6 +8507,7 @@ u8 GetMonTierPoints(u16 species){
         //5 Points Kalos / Regionals
         case SPECIES_GRENINJA: case SPECIES_HAWLUCHA:
         case SPECIES_FLORGES: case SPECIES_FLORGES_BLUE: case SPECIES_FLORGES_ORANGE: case SPECIES_FLORGES_WHITE: case SPECIES_FLORGES_YELLOW:
+        case SPECIES_ZYGARDE:
         
         //5 Points Kalos Megas
         case SPECIES_DIANCIE_MEGA:
@@ -8267,11 +8530,12 @@ u8 GetMonTierPoints(u16 species){
             return 5;
         
         //4 Points Kanto/Regionals
-        case SPECIES_VENUSAUR: case SPECIES_CHARIZARD: case SPECIES_ARCANINE: case SPECIES_SLOWBRO_GALAR: case SPECIES_CLEFABLE: case SPECIES_DUGTRIO_ALOLA: case SPECIES_ALAKAZAM:
-        case SPECIES_MAROWAK_ALOLA: case SPECIES_NIDOKING: case SPECIES_MUK_ALOLA: case SPECIES_GENGAR: case SPECIES_TAUROS: case SPECIES_TAUROS_PALDEA_AQUA: case SPECIES_TAUROS_PALDEA_BLAZE: case SPECIES_TAUROS_PALDEA_COMBAT:
-        case SPECIES_SCYTHER: case SPECIES_GYARADOS: case SPECIES_LAPRAS: case SPECIES_VAPOREON: case SPECIES_AERODACTYL: 
-        case SPECIES_ARTICUNO_GALAR: case SPECIES_ZAPDOS_GALAR: case SPECIES_MOLTRES_GALAR: case SPECIES_MOLTRES:
-        case SPECIES_STARMIE: case SPECIES_MEW:
+        case SPECIES_VENUSAUR: case SPECIES_CHARIZARD: case SPECIES_ARCANINE: case SPECIES_SLOWBRO_GALAR: case SPECIES_CLEFABLE: 
+        case SPECIES_DUGTRIO_ALOLA: case SPECIES_ALAKAZAM: case SPECIES_MAROWAK: case SPECIES_MAROWAK_ALOLA: case SPECIES_NIDOKING: 
+        case SPECIES_MUK_ALOLA: case SPECIES_GENGAR: case SPECIES_TAUROS: case SPECIES_TAUROS_PALDEA_AQUA: case SPECIES_TAUROS_PALDEA_BLAZE: 
+        case SPECIES_TAUROS_PALDEA_COMBAT: case SPECIES_SCYTHER: case SPECIES_GYARADOS: case SPECIES_LAPRAS: case SPECIES_VAPOREON: 
+        case SPECIES_OMASTAR: case SPECIES_KABUTOPS: case SPECIES_AERODACTYL: case SPECIES_ARTICUNO_GALAR: case SPECIES_ZAPDOS_GALAR: 
+        case SPECIES_MOLTRES_GALAR: case SPECIES_MOLTRES: case SPECIES_STARMIE: case SPECIES_MEW:
 
         //4 Points Kanto Megas
         case SPECIES_BLASTOISE_MEGA: case SPECIES_PIDGEOT_MEGA:
@@ -8284,8 +8548,8 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_AMPHAROS_MEGA: case SPECIES_HERACROSS_MEGA:
         
         //4 Points Hoenn
-        case SPECIES_SWAMPERT: case SPECIES_SWELLOW: case SPECIES_GARDEVOIR: case SPECIES_SLAKING: case SPECIES_SHARPEDO: case SPECIES_ZANGOOSE: case SPECIES_METAGROSS:
-        case SPECIES_REGISTEEL: case SPECIES_JIRACHI:
+        case SPECIES_SWAMPERT: case SPECIES_SWELLOW: case SPECIES_GARDEVOIR: case SPECIES_SLAKING: case SPECIES_AGGRON: case SPECIES_SHARPEDO: 
+        case SPECIES_ZANGOOSE: case SPECIES_ARMALDO: case SPECIES_METAGROSS: case SPECIES_REGISTEEL: case SPECIES_JIRACHI:
 
         //4 Points Hoenn Megas
         case SPECIES_GLALIE_MEGA: case SPECIES_BANETTE_MEGA: case SPECIES_ABSOL_MEGA: case SPECIES_MANECTRIC_MEGA: case SPECIES_CAMERUPT_MEGA: case SPECIES_ALTARIA_MEGA:
@@ -8293,7 +8557,7 @@ u8 GetMonTierPoints(u16 species){
         //4 Points Sinnoh
         case SPECIES_TORTERRA: case SPECIES_EMPOLEON: case SPECIES_STARAPTOR: case SPECIES_ROSERADE: case SPECIES_BRONZONG: case SPECIES_LUCARIO: case SPECIES_HIPPOWDON:
         case SPECIES_DRAPION: case SPECIES_WEAVILE: case SPECIES_MAGNEZONE: case SPECIES_RHYPERIOR: case SPECIES_GLISCOR: case SPECIES_MAMOSWINE: case SPECIES_GALLADE:
-        case SPECIES_PORYGON_Z: case SPECIES_ROTOM_WASH: case SPECIES_CRESSELIA: case SPECIES_SHAYMIN_SKY:
+        case SPECIES_PORYGON_Z: case SPECIES_ROTOM_WASH: case SPECIES_CRESSELIA: case SPECIES_SHAYMIN:
 
         //4 Points Sinnoh Megas
         case SPECIES_ABOMASNOW_MEGA:
@@ -8309,15 +8573,16 @@ u8 GetMonTierPoints(u16 species){
 
         //4 Points Kalos
         case SPECIES_CHESNAUGHT: case SPECIES_DELPHOX: case SPECIES_DIGGERSBY: case SPECIES_TALONFLAME: case SPECIES_SYLVEON: case SPECIES_GOODRA: case SPECIES_KLEFKI:
-        case SPECIES_AVALUGG: case SPECIES_AVALUGG_HISUI: case SPECIES_NOIVERN: case SPECIES_ZYGARDE: case SPECIES_DIANCIE: case SPECIES_HOOPA: case SPECIES_VOLCANION:
+        case SPECIES_AVALUGG: case SPECIES_AVALUGG_HISUI: case SPECIES_NOIVERN: case SPECIES_DIANCIE: case SPECIES_HOOPA: case SPECIES_VOLCANION:
 
         //4 Points Alola
         case SPECIES_INCINEROAR: case SPECIES_MUDSDALE: case SPECIES_ARAQUANID: case SPECIES_SALAZZLE: case SPECIES_TOGEDEMARU: case SPECIES_TAPU_BULU: case SPECIES_KOMMO_O:
         case SPECIES_XURKITREE: case SPECIES_STAKATAKA:
 
         //4 Points Galar
-        case SPECIES_INTELEON: case SPECIES_ELDEGOSS: case SPECIES_BARRASKEWDA: case SPECIES_HATTERENE: case SPECIES_GRIMMSNARL: case SPECIES_PERRSERKER: case SPECIES_EISCUE:
-        case SPECIES_INDEEDEE_F: case SPECIES_INDEEDEE_M: case SPECIES_DRACOZOLT: case SPECIES_GLASTRIER: case SPECIES_ZARUDE: case SPECIES_REGIELEKI: case SPECIES_REGIDRAGO: 
+        case SPECIES_INTELEON: case SPECIES_ELDEGOSS: case SPECIES_DREDNAW: case SPECIES_BARRASKEWDA: case SPECIES_COALOSSAL: case SPECIES_HATTERENE: case SPECIES_GRIMMSNARL: 
+        case SPECIES_PERRSERKER: case SPECIES_EISCUE: case SPECIES_INDEEDEE_F: case SPECIES_INDEEDEE_M: case SPECIES_FALINKS:
+        case SPECIES_DRACOZOLT: case SPECIES_GLASTRIER: case SPECIES_ZARUDE: case SPECIES_REGIELEKI: case SPECIES_REGIDRAGO: 
         
         //4 Points Hisui
         case SPECIES_KLEAVOR: case SPECIES_ENAMORUS_THERIAN:

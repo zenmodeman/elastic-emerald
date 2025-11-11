@@ -549,12 +549,18 @@ static void CreateShedinja(u16 preEvoSpecies, struct Pokemon *mon)
 {
     u32 data = 0;
     u16 ball = ITEM_POKE_BALL;
+    u32 resultantTierPoints = CountPartyTierPoints() + GetMonTierPoints(SPECIES_SHEDINJA);
+
     const struct Evolution *evolutions = GetSpeciesEvolutions(preEvoSpecies);
 
     if (evolutions == NULL)
         return;
 
-    if (evolutions[0].method == EVO_LEVEL_NINJASK && gPlayerPartyCount < PARTY_SIZE && (P_SHEDINJA_BALL < GEN_4 || CheckBagHasItem(ball, 1)))
+    if (evolutions[0].method == EVO_LEVEL_NINJASK && gPlayerPartyCount < PARTY_SIZE && (P_SHEDINJA_BALL < GEN_4 || CheckBagHasItem(ball, 1))
+    //Attempt to only permit the Shedinja evolution if the Tier Points are applicable
+    && (!FlagGet(FLAG_TIERED) || resultantTierPoints <= TIER_POINTS_CAP)
+    && (GetMonoType() != TYPE_GHOST)
+    )
     {
         s32 i;
         struct Pokemon *shedinja = &gPlayerParty[gPlayerPartyCount];

@@ -117,7 +117,7 @@ bool32 CanTerastallize(u32 battler)
     // for AI battles
     else if (VarGet(VAR_MONOTYPE) != 0 && !(FlagGet(B_FLAG_AI_VS_AI_BATTLE)))
     {
-        monotype = GetTypeFromVarValue(VarGet(VAR_MONOTYPE));
+        monotype = GetMonoType();
         if (teraType != monotype && teraType != TYPE_STELLAR)
         {
             return FALSE;
