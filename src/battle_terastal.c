@@ -65,6 +65,12 @@ bool32 IsRestrictedModeTeraBanned(u32 battler)
         //Exception: even when Darmanitan exceeds the threshold, Zen Mode form is allowed to tera
         if (species == SPECIES_DARMANITAN_ZEN){
             return FALSE;
+        }else if (species == SPECIES_AZUMARILL && GetBattlerAbility(battler) == ABILITY_THICK_FAT){
+            return FALSE;
+        }else if (species == SPECIES_DIGGERSBY && GetBattlerAbility(battler) != ABILITY_HUGE_POWER){
+            return FALSE;
+        }else if (species == SPECIES_MEDICHAM && GetBattlerAbility(battler) != ABILITY_PURE_POWER){
+            return FALSE;
         }
         return TRUE;
     }
@@ -88,7 +94,8 @@ bool32 CanTerastallize(u32 battler)
         // Skip all other checks in this block, go to HasTrainerUsedGimmick
     }
 
-    else if (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeTeraBanned(battler))
+    else if (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeTeraBanned(battler)
+    && VarGet(VAR_MONOTYPE) == 0) //Additional check because curated tera restrictions don't apply to Monotype mode.
     {
         return FALSE;
     }

@@ -112,7 +112,9 @@ script InsideOfTruck_EventScript_SetIntroFlags{
         }
         elif (var(VAR_RESULT) ==2){
             msgbox(format("This mode prevents you from exceeding certain levels based on progression."))
-            msgbox(format("Most of the time, the level cap for experience gain is 1 higher than the cap for rare candies or exp. candies"))
+            msgbox(format("Most of the time, the level cap for experience gain is 1 higher than the cap for rare candies or exp. candies,"))
+            msgbox(format("so that experience management is possible for nuzlockers."))
+            msgbox(format("However, casual players can just not worry about it and play under the experience cap."))
         }
     }while (var(VAR_RESULT) ==2)
 
@@ -123,9 +125,10 @@ script InsideOfTruck_EventScript_SetIntroFlags{
             setflag(FLAG_CURATED_TERA)
         }
         elif (var(VAR_RESULT) ==2){
-            msgbox(format("Curated teras means each pokemon with have a pre-determined tera type."))
+            msgbox(format("Curated teras means most  pokemon with have a pre-determined tera type."))
             msgbox(format("This adds another layer to balancing and niches for different Pokemon."))
             msgbox(format("If you do not choose curated teras, a Pokemon's tera type will be random."))
+            msgbox(format("If restricted mode in enabled, several stronger Pokemon will be unable to Tera."))
         }
     }while (var(VAR_RESULT) ==2)   
 
@@ -143,10 +146,31 @@ script InsideOfTruck_EventScript_SetIntroFlags{
         }
         if (var(VAR_RESULT) ==2){
             msgbox(format("For monotype runs, each monotype has custom wild encounters and gifts."))
-            msgbox(format("Split Evolutions are constrained: a Wurmple in Mono Poison will always evolve into a Cascoon."))    
+            msgbox(format("Split Evolutions are constrained: a Wurmple in Mono Poison will always evolve into a Cascoon.")) 
+            msgbox(format("Some battles also change depending on the monotype, for balancing."))
+            msgbox(format("NPC gifts and dialogue can also differ between monotypes."))
+            msgbox(format("The monotype setting is mutually exclusive with the Tier Points setting."))   
         }
     }while (var(VAR_RESULT) ==2)
 
+    if (var(VAR_MONOTYPE) == 0){
+        do{
+            msgbox("Will you choose to play with tier points?")
+            dynmultichoice(7, 100, TRUE, 3, 2, DYN_MULTICHOICE_CB_NONE, "Yes", "No", "Info")
+            if (var(VAR_RESULT) == 0){
+                setflag(FLAG_TIERED)
+            }
+            if (var(VAR_RESULT) ==2){
+                msgbox(format("The Tier Points system assigns points values to every Pokemon."))
+                msgbox(format("The average points value for a Pokemon is 3, and 6 is the maximum an individual Pokemon can have."))
+                msgbox(format("Your team is forbidden from exceeding a points cap of 20.")) 
+                msgbox(format("Some Pokemon, such as early fully evolved mons, reduce points with progression."))
+                msgbox(format("A Pokemon can increase points values when it evolves."))
+                msgbox(format("In the event that a Pokemon capture or evolution violates the Tier Points cap, that Pokemon is automatically boxed."))
+            }
+        }while (var(VAR_RESULT) ==2)
+    }
+    msgbox(format("All your settings have been set. Enjoy the game!"))
     checkplayergender 
     if (var(VAR_RESULT) == MALE){
         goto(InsideOfTruck_EventScript_SetIntroFlagsMale)
