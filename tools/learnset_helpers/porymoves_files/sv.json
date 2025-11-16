@@ -30906,7 +30906,7 @@
       "MOVE_TAKE_DOWN",
       "MOVE_THRASH"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_DRAGON_PULSE"]
   },
   "CORPHISH": {
     "LevelMoves": [

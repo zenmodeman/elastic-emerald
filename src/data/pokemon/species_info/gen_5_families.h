@@ -11091,12 +11091,12 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_RUFFLET
     [SPECIES_RUFFLET] =
     {
-        .baseHP        = 70,
-        .baseAttack    = 83,
-        .baseDefense   = 50,
+        .baseHP        = 80, //+10
+        .baseAttack    = 93, //+10
+        .baseDefense   = 65, //+15
         .baseSpeed     = 60,
         .baseSpAttack  = 37,
-        .baseSpDefense = 50,
+        .baseSpDefense = 65, //+15
         .types = MON_TYPES(TYPE_NORMAL, TYPE_FLYING),
         .catchRate = 190,
         .expYield = 70,
@@ -11297,12 +11297,12 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_VULLABY
     [SPECIES_VULLABY] =
     {
-        .baseHP        = 70,
+        .baseHP        = 80, //+10
         .baseAttack    = 55,
-        .baseDefense   = 75,
+        .baseDefense   = 85, //+10
         .baseSpeed     = 60,
         .baseSpAttack  = 45,
-        .baseSpDefense = 65,
+        .baseSpDefense = 75, //+10
         .types = MON_TYPES(TYPE_DARK, TYPE_FLYING),
         .catchRate = 190,
         .expYield = 74,

@@ -19261,6 +19261,7 @@ static const struct LevelUpMove sGrapploctLevelUpLearnset[] = {
     LEVEL_UP_MOVE(40, MOVE_REVERSAL),
     LEVEL_UP_MOVE(45, MOVE_SUPERPOWER),
     LEVEL_UP_MOVE(50, MOVE_TOPSY_TURVY),
+    //Add Beat Up as a Level-up move somewhere
     LEVEL_UP_END};
 #endif // P_FAMILY_CLOBBOPUS
 
@@ -19331,6 +19332,8 @@ static const struct LevelUpMove sHattremLevelUpLearnset[] = {
     LEVEL_UP_MOVE(37, MOVE_CALM_MIND),
     LEVEL_UP_MOVE(44, MOVE_PSYCHIC),
     LEVEL_UP_MOVE(51, MOVE_HEALING_WISH),
+
+    //Need to add Superpower and Payback somewhere
     LEVEL_UP_END};
 
 static const struct LevelUpMove sHattereneLevelUpLearnset[] = {

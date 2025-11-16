@@ -201,7 +201,6 @@
 // - MOVE_VENOM_DRENCH                                                                        //
 // - MOVE_WATER_SPORT                                                                         //
 // - MOVE_WHIRLPOOL                                                                           //
-// - MOVE_WHIRLWIND, //Whirlwind is here, but Roar is a TM                                    //
 // - MOVE_WITHDRAW                                                                            //
 // - MOVE_WONDER_ROOM                                                                         //
 // - MOVE_WORRY_SEED                                                                          //

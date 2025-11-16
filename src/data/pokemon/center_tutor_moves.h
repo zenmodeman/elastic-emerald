@@ -35,7 +35,9 @@ const u16 gPreGym2Tutor[] = {
     MOVE_SWIFT,
 };
 
-const u16 gPreGym2TutorSetup[] = {
+const u16 gPreGym2TutorSetup[] = {};
+
+const u16 gPreGym3TutorSetup[] = {
     MOVE_STOCKPILE,
     MOVE_TRAILBLAZE,
     MOVE_FLAME_CHARGE,
@@ -137,9 +139,8 @@ MOVE_SWALLOW,
 MOVE_SWEET_SCENT,
 MOVE_TELEKINESIS,
 MOVE_TORMENT,
-MOVE_TWISTER,
 MOVE_VENOM_DRENCH,
-MOVE_WHIRLWIND, //Whirlwind is here, but Roar is a TM
+// MOVE_WHIRLWIND, /To Do to make Whirlwind a TM
 MOVE_WONDER_ROOM,
 MOVE_WORRY_SEED,
 MOVE_HOLD_BACK,
@@ -151,13 +152,14 @@ MOVE_COPYCAT,
 MOVE_GROWL,
 MOVE_LEER,
 MOVE_TAIL_WHIP,
-MOVE_LIFE_DEW,
 MOVE_UPPER_HAND,
+MOVE_TWISTER,
 };
 
 const u16 gTechTutor2Badge[] = {
     MOVE_SWITCHEROO, //Trick is a TM, but Switcheroo being less common gets to be Tech Tutor
     MOVE_SAFEGUARD,
+    MOVE_LIFE_DEW,
     MOVE_POWER_SHIFT,
     MOVE_POWER_TRICK,
 };
