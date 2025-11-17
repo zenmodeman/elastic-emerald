@@ -40,6 +40,7 @@ u32 GetCurrentLevelCap(bool32 isHardCap)
             candyCap = sLevelCapFlagMap[i][1];
             if (isHardCap){
                 if (sLevelCapFlagMap[i][0] == FLAG_IS_CHAMPION){
+                    //To DO: make this + 0 outside the Pokemon League map areas and make it +3 inside the map areas
                     return candyCap + 3;
                 }
                 return candyCap + 1;

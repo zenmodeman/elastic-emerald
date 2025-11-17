@@ -304,10 +304,10 @@ Route101_Text_RouteSign:
 
 `
 script Route101_EventScript_BugCatcher{
-    lockall
+    lock
     faceplayer
-    msgbox(format("I'm looking for a Scatterbug."))
+    msgbox(format("I'm looking for a Wurmple."))
     msgbox(format("Many Bug and Bird Pokemon are only found in trees. If you're interested in bugs too, try shaking the braches of a tree to stir them up!"))
-    releaseall
+    release
     end
 }

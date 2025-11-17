@@ -245,105 +245,113 @@ Rustburo_MartItemsResourceEVless:
 # 114 "data/maps/RustboroCity_Mart/scripts.pory"
 	.2byte ITEM_EXP_CANDY_XS
 # 115 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_HONDEW_BERRY
+	.2byte ITEM_EXP_CANDY_S
 # 116 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_X_ACCURACY
+	.2byte ITEM_HONDEW_BERRY
 # 117 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_X_ACCURACY
+# 118 "data/maps/RustboroCity_Mart/scripts.pory"
 	.2byte ITEM_REPEL
 	.2byte ITEM_NONE
 
 	.align 2
-# 120 "data/maps/RustboroCity_Mart/scripts.pory"
-Rustburo_MartItemsResourceEVs:
 # 121 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
+Rustburo_MartItemsResourceEVs:
 # 122 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_GREAT_BALL
+	.2byte ITEM_POKE_BALL
 # 123 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_GREAT_BALL
 # 124 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_POTION
 # 125 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_SUPER_POTION
 # 126 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ANTIDOTE
 # 127 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_PARALYZE_HEAL
 # 128 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_ESCAPE_ROPE
 # 129 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_AWAKENING
 # 130 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_HONDEW_BERRY
+	.2byte ITEM_EXP_CANDY_XS
 # 131 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_X_ACCURACY
+	.2byte ITEM_EXP_CANDY_S
 # 132 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_HONDEW_BERRY
 # 133 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_X_ACCURACY
+# 134 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_REPEL
+# 135 "data/maps/RustboroCity_Mart/scripts.pory"
 	.2byte ITEM_MUSCLE_FEATHER
 	.2byte ITEM_NONE
 
 	.align 2
-# 136 "data/maps/RustboroCity_Mart/scripts.pory"
-Rustburo_MartItemsResourcefulEVless:
-# 137 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
 # 138 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_GREAT_BALL
+Rustburo_MartItemsResourcefulEVless:
 # 139 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_POTION
+	.2byte ITEM_POKE_BALL
 # 140 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_GREAT_BALL
 # 141 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POTION
 # 142 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_SUPER_POTION
 # 143 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_ANTIDOTE
 # 144 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_PARALYZE_HEAL
 # 145 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_ESCAPE_ROPE
 # 146 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_HONDEW_BERRY
+	.2byte ITEM_AWAKENING
 # 147 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_X_ACCURACY
+	.2byte ITEM_EXP_CANDY_XS
 # 148 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_EXP_CANDY_S
 # 149 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_HONDEW_BERRY
+# 150 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_X_ACCURACY
+# 151 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_REPEL
+# 152 "data/maps/RustboroCity_Mart/scripts.pory"
 	.2byte ITEM_GENTLE_MINT
 	.2byte ITEM_NONE
 
 	.align 2
-# 152 "data/maps/RustboroCity_Mart/scripts.pory"
-Rustburo_MartItemsResourcefulEVs:
-# 153 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
-# 154 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_GREAT_BALL
 # 155 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_POTION
+Rustburo_MartItemsResourcefulEVs:
 # 156 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_POKE_BALL
 # 157 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_GREAT_BALL
 # 158 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_POTION
 # 159 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_SUPER_POTION
 # 160 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_ANTIDOTE
 # 161 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_PARALYZE_HEAL
 # 162 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_HONDEW_BERRY
+	.2byte ITEM_ESCAPE_ROPE
 # 163 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_X_ACCURACY
+	.2byte ITEM_AWAKENING
 # 164 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_EXP_CANDY_XS
 # 165 "data/maps/RustboroCity_Mart/scripts.pory"
-	.2byte ITEM_GENTLE_MINT
+	.2byte ITEM_EXP_CANDY_S
 # 166 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_HONDEW_BERRY
+# 167 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_X_ACCURACY
+# 168 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_REPEL
+# 169 "data/maps/RustboroCity_Mart/scripts.pory"
+	.2byte ITEM_GENTLE_MINT
+# 170 "data/maps/RustboroCity_Mart/scripts.pory"
 	.2byte ITEM_MUSCLE_FEATHER
 	.2byte ITEM_NONE
 

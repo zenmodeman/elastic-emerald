@@ -2428,7 +2428,7 @@ union EvolutionTracker
 
 static u32 getCuratedOrRandomTeraType(u16 species, u32 personality){
 
-    
+    u32 monotype = GetMonoType();
     //Get a value of 0 to TYPE_FAIRY - 1; add 1 since 0 is TYPE_NONE, to get values between TYPE_NORMAL and TYPE_FAIRY
     u32 randomTeraType = (personality % TYPE_FAIRY) + 1;
 
@@ -2441,6 +2441,13 @@ static u32 getCuratedOrRandomTeraType(u16 species, u32 personality){
         return randomTeraType;
     }
 
+    //In monotype mode, bypass curated tera considerations if the random type is Monotype compatible
+    //Note that because of a different check in `CanTerastallize`, this will only apply to Pokemon that don't exceed the Tier Points cap
+    if (monotype != TYPE_NONE){
+        if (randomTeraType == TYPE_STELLAR || randomTeraType == monotype){
+            return randomTeraType;
+        }
+    }
 /*
 List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground Flying Psychic Bug Rock Ghost Dragon Dark Steel Fairy Stellar
 */
@@ -6352,6 +6359,10 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                         targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_SILCOON:
+                //Avoid all checks if the level isn't met
+                if (evolutions[i].param > level){
+                    break;
+                }
                 if (GetMonoType()== TYPE_POISON){
                     break;
                 }else if (GetMonoType() == TYPE_FLYING){
@@ -6362,6 +6373,10 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
                     targetSpecies = evolutions[i].targetSpecies;
                 break;
             case EVO_LEVEL_CASCOON:
+                //Avoid all checks if the level isn't met
+                if (evolutions[i].param > level){
+                    break;
+                }                
                 if (GetMonoType()== TYPE_FLYING){
                     break;
                 }else if (GetMonoType()== TYPE_POISON){

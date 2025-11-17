@@ -94,8 +94,7 @@ bool32 CanTerastallize(u32 battler)
         // Skip all other checks in this block, go to HasTrainerUsedGimmick
     }
 
-    else if (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeTeraBanned(battler)
-    && VarGet(VAR_MONOTYPE) == 0) //Additional check because curated tera restrictions don't apply to Monotype mode.
+    else if (FlagGet(FLAG_RESTRICTED_MODE) && IsRestrictedModeTeraBanned(battler)) 
     {
         return FALSE;
     }

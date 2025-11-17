@@ -143,8 +143,9 @@ script InsideOfTruck_EventScript_SetIntroFlags{
             addvar(VAR_MONOTYPE, 1)
             addvar(VAR_REMAINING_RELEARNER, 2)
             addvar(VAR_REMAINING_TUTOR, 2)
+            setvar(VAR_RESULT, 0)
         }
-        if (var(VAR_RESULT) ==2){
+        elif (var(VAR_RESULT) ==2){
             msgbox(format("For monotype runs, each monotype has custom wild encounters and gifts."))
             msgbox(format("Split Evolutions are constrained: a Wurmple in Mono Poison will always evolve into a Cascoon.")) 
             msgbox(format("Some battles also change depending on the monotype, for balancing."))

@@ -5092,6 +5092,7 @@ Ability: Inner Focus
 Level: 18  
 Tera Type: Fighting  
 EVs: 28 HP / 48 Atk / 28 Def  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
 Impish Nature  
 - Low Kick  
 - Metal Claw  
@@ -5102,6 +5103,7 @@ Makuhita @ Eviolite
 Ability: Sheer Force  
 Level: 19  
 EVs: 4 HP / 48 Atk / 48 Def  
+IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
@@ -16901,6 +16903,7 @@ Ability: Inner Focus
 Level: 18  
 Tera Type: Fighting  
 EVs: 28 HP / 48 Atk / 28 Def  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
 Impish Nature  
 - Low Kick  
 - Metal Claw  
@@ -16911,6 +16914,7 @@ Makuhita @ Eviolite
 Ability: Sheer Force  
 Level: 19  
 EVs: 4 HP / 48 Atk / 48 Def  
+IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
@@ -16953,6 +16957,7 @@ Ability: Inner Focus
 Level: 18  
 Tera Type: Fighting  
 EVs: 28 HP / 48 Atk / 28 Def  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
 Impish Nature  
 - Low Kick  
 - Metal Claw  
@@ -16963,6 +16968,7 @@ Makuhita @ Eviolite
 Ability: Sheer Force  
 Level: 19  
 EVs: 4 HP / 48 Atk / 48 Def  
+IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
@@ -16976,7 +16982,7 @@ Pic: Leader Brawly
 Gender: Male
 Music: Male
 Double Battle: No
-AI: Smart Trainer 
+AI: Smart Trainer / Force Setup First Turn
 
 Meditite @ Coba Berry
 Ability: Pure Power  
@@ -16994,6 +17000,7 @@ Ability: Inner Focus
 Level: 18  
 Tera Type: Fighting  
 EVs: 28 HP / 48 Atk / 28 Def  
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
 Impish Nature  
 - Low Kick  
 - Metal Claw  
@@ -17004,6 +17011,7 @@ Makuhita @ Eviolite
 Ability: Sheer Force  
 Level: 19  
 EVs: 4 HP / 48 Atk / 48 Def  
+IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  

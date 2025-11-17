@@ -607,7 +607,7 @@ Route101_Text_RouteSign:
 
 Route101_EventScript_BugCatcher::
 # 307 "data/maps/Route101/scripts.pory"
-	lockall
+	lock
 # 308 "data/maps/Route101/scripts.pory"
 	faceplayer
 # 309 "data/maps/Route101/scripts.pory"
@@ -615,13 +615,13 @@ Route101_EventScript_BugCatcher::
 # 310 "data/maps/Route101/scripts.pory"
 	msgbox Route101_EventScript_BugCatcher_Text_1
 # 311 "data/maps/Route101/scripts.pory"
-	releaseall
+	release
 	end
 
 
 Route101_EventScript_BugCatcher_Text_0:
 # 309 "data/maps/Route101/scripts.pory"
-	.string "I'm looking for a Scatterbug.$"
+	.string "I'm looking for a Wurmple.$"
 
 Route101_EventScript_BugCatcher_Text_1:
 # 310 "data/maps/Route101/scripts.pory"

@@ -75,6 +75,7 @@ static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef);
 static bool32 ShouldUseSpeedControl(u32 battlerAtk, u32 battlerDef, u32 move, s8 speedChange, bool32 boostAffectsSelf);
 static bool32 OppositeSideHas2Mons(u32 battler);
 static bool32 IsBattleMovePreferableOnCurrentTarget(u32 battlerAtk, u32 battlerDef, u32 move);
+static bool32 BattlerHasSlowKill(u32 battlerAtk, u32 battlerDef);
 
 static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
 {
@@ -1135,8 +1136,13 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_FINAL_GAMBIT:
         case EFFECT_GUARDIAN_OF_ALOLA:
             break;
+        case EFFECT_HIT:
+            if (move == MOVE_NUZZLE){
+                break;
+            }
         default:
-            RETURN_SCORE_MINUS(10);
+            //Small disincentive for now
+            RETURN_SCORE_MINUS(2);
         }
     }
 
@@ -3015,6 +3021,17 @@ static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef){
     return FALSE;
 }
 
+static bool32 BattlerHasSlowKill(u32 battlerAtk, u32 battlerDef){
+    //The IsBattlerAlive check is mainly to simplify double battle inputs
+    if (IsBattlerAlive(battlerAtk) && CanTargetFaintAi(battlerAtk, battlerDef)
+        && !AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT))
+        {
+            return TRUE;
+
+        }
+    return FALSE;
+}
+
 //Simple function to check if there are two battlers on the opposing side, for various doubles checks
 //This is a more restricted form of `IsValidDoubleBattle`
 static bool32 OppositeSideHas2Mons(u32 battler){
@@ -3455,12 +3472,17 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     //     gBattleMons[battlerPartner].statStages[STAT_DEF] += 1; 
                     //     statShifted = TRUE;
                     // }
-                    if(BattlerHasFastKill(playerOpposite, battlerPartner)){
-                    ADJUST_SCORE(-5);
-                    }if(BattlerHasFastKill(playerPartner, battlerPartner)){
-                    ADJUST_SCORE(-5);
-                    }
 
+                    //Kill checks after applying Coaching changes
+                    if(BattlerHasFastKill(playerOpposite, battlerPartner) || BattlerHasFastKill(playerPartner, battlerPartner)){
+                        ADJUST_SCORE(-10);
+                    }
+                    //For slow kills, only disincentivize if the partner does not have physical moves
+                    if (BattlerHasSlowKill(playerOpposite, battlerPartner) || BattlerHasSlowKill(playerPartner, battlerPartner)){
+                        if (!HasMoveWithCategory(battlerPartner, DAMAGE_CATEGORY_PHYSICAL)){
+                            ADJUST_SCORE(-5);
+                        }
+                    }
                     //Reverse temporary Coaching buff
 
                     ReverseSimulatedStatChanges(battlerDef, changesToReverse);
