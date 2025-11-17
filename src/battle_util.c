@@ -4135,6 +4135,8 @@ static void ForewarnChooseMove(u32 battler)
     }
 
     gBattlerTarget = data[bestId].battler;
+    //Set the value of the forewarn move. 
+    gDisableStructs[battler].forewarnMove = data[bestId].moveId;
     PREPARE_MOVE_BUFFER(gBattleTextBuff1, data[bestId].moveId)
     RecordKnownMove(gBattlerTarget, data[bestId].moveId);
 
@@ -10420,6 +10422,10 @@ static inline uq4_12_t GetDefenderAbilitiesModifier(u32 move, u32 moveType, u32 
             }
         }
         break;
+    case ABILITY_FOREWARN:
+        if (move == gDisableStructs[battlerDef].forewarnMove){
+            return UQ_4_12(0.5);
+        }
     case ABILITY_FLUFFY:
         if (!IsMoveMakingContact(move, battlerAtk) && moveType == TYPE_FIRE)
             return UQ_4_12(2.0);
