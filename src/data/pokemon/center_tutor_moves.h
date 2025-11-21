@@ -158,7 +158,6 @@ MOVE_TWISTER,
 
 const u16 gTechTutor2Badge[] = {
     MOVE_SWITCHEROO, //Trick is a TM, but Switcheroo being less common gets to be Tech Tutor
-    MOVE_SAFEGUARD,
     MOVE_LIFE_DEW,
     MOVE_POWER_SHIFT,
     MOVE_POWER_TRICK,
