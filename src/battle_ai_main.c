@@ -2107,12 +2107,23 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             }
             break;
         case EFFECT_TRICK:
+        {
+            if (aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD){
+                ADJUST_SCORE(-10);                
+            }
+            else if (aiData->items[battlerDef] == ITEM_NONE && aiData->items[battlerAtk] == ITEM_NONE){
+                ADJUST_SCORE(-10);
+            }
+            break;
+        }    
         //Don't disincentivize Knock Off if it still does more damage
         // case EFFECT_KNOCK_OFF:
         case EFFECT_CORROSIVE_GAS:
             if (aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
                 ADJUST_SCORE(-10);
-            else if (aiData->items[battlerDef] == ITEM_NONE || ItemId_GetType(aiData->items[battlerDef]) == ITEM_USE_MAIL){
+            else if (
+                aiData->items[battlerDef] == ITEM_NONE || 
+                ItemId_GetType(aiData->items[battlerDef]) == ITEM_USE_MAIL){
                 ADJUST_SCORE(-10);
             }
             break;
@@ -4924,6 +4935,16 @@ case EFFECT_DISABLE:
         else
             ADJUST_SCORE(DECENT_EFFECT);
         break;
+    case EFFECT_ECHOED_VOICE:
+    {
+        //A little incentive to use Echoed Voice if not putting up too much pressure and is not tormented
+        if (!CanAIFaintTarget(battlerAtk, battlerDef, 2) 
+            && !(GetBestDmgMoveFromBattler(battlerAtk, battlerDef) == move)
+            && !(gBattleMons[battlerAtk].status2 & STATUS2_TORMENT)){
+            ADJUST_SCORE(WEAK_EFFECT); 
+        }
+        break;
+    }
     case EFFECT_SAFEGUARD:
         if (!IsBattlerTerrainAffected(battlerAtk, STATUS_FIELD_MISTY_TERRAIN) || !IsBattlerGrounded(battlerAtk))
             ADJUST_SCORE(DECENT_EFFECT); // TODO: check if opp has status move?
@@ -5035,15 +5056,31 @@ case EFFECT_DISABLE:
             }
             break;
         case HOLD_EFFECT_STICKY_BARB:
+        {
+            bool32 accountsForContactMove = FALSE;
+            bool32 noRevealedDamagingMovesButPossibleHiddenDamagingMoves = !HasDamagingMove(battlerDef) && !HasAllKnownMoves(battlerDef);
+            bool32 hasEnoughBaseAtkToExpectHiddenContactMove = UQ_4_12_TO_INT(gBattleMons[battlerDef].attack * GetAtkSpAtkGapThreshold(battlerDef)) >= gBattleMons[battlerDef].spAttack;
+
+            if (HasContactMove(battlerDef)){
+                accountsForContactMove = TRUE;
+            }else if (noRevealedDamagingMovesButPossibleHiddenDamagingMoves && hasEnoughBaseAtkToExpectHiddenContactMove && AI_RandLessThan(127)){
+                accountsForContactMove =TRUE;
+            }
+
             //If expects the opponent to outspeed and steal the sticky barb with a contact move, have a chance to not Trick
-            if (aiData->items[battlerDef] == ITEM_NONE && GetWhichBattlerFaster(battlerAtk, battlerDef, TRUE) == AI_IS_SLOWER && gMovesInfo[predictedMove].makesContact) {
-                if (AI_RandLessThan(127)){
+            if (aiData->items[battlerDef] == ITEM_NONE && GetWhichBattlerFaster(battlerAtk, battlerDef, TRUE) == AI_IS_SLOWER 
+            && accountsForContactMove) {
+                if (AI_RandLessThan(200)){
                     ADJUST_SCORE(WEAK_EFFECT);
+                }else{
+                    ADJUST_SCORE(-2);
                 }        
             }else{
                 ADJUST_SCORE(DECENT_EFFECT);
             }
             break;
+        }
+
         case HOLD_EFFECT_UTILITY_UMBRELLA:
             //May need to rework these negation checks.
             if (aiData->abilities[battlerAtk] != ABILITY_SOLAR_POWER && aiData->abilities[battlerAtk] != ABILITY_DRY_SKIN)
@@ -5069,11 +5106,11 @@ case EFFECT_DISABLE:
                 ADJUST_SCORE(DECENT_EFFECT); // Force 'em out next turn
             break;
         default:
-            if (GetMoveEffect(move) != EFFECT_BESTOW 
+            if (
             //Let Ring target function as if the holder has no held item
             //If I later want to give Ring Target specific logic, I may want to turn the below item checks into a function so that it can be reused,
             //for both the no held item case and for select held items. 
-            && (aiData->items[battlerAtk] == ITEM_NONE || aiData->items[battlerAtk] == ITEM_RING_TARGET)
+            (aiData->items[battlerAtk] == ITEM_NONE || aiData->items[battlerAtk] == ITEM_RING_TARGET)
             && aiData->items[battlerDef] != ITEM_NONE)
             {
                 switch (aiData->holdEffects[battlerDef])
@@ -5104,6 +5141,11 @@ case EFFECT_DISABLE:
                     ADJUST_SCORE(WEAK_EFFECT);    //other hold effects generally universally good
                     break;
                 }
+            }
+            //The default case entails that all the items worth tricking have already be accounted for, so disincentivize tricking a useful item for nothing
+            else if (aiData->items[battlerAtk] != ITEM_NONE && aiData->items[battlerDef] == ITEM_NONE){
+                ADJUST_SCORE(-2);
+                break;
             }
         }
         break;

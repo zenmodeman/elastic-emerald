@@ -962,6 +962,9 @@ TrainerSchool_Breeder::
 # 490 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_PSYCHIC - 1
 	goto_if_eq TrainerSchool_Breeder_5
+# 490 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_FLYING
+	goto_if_eq TrainerSchool_Breeder_5
 # 507 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_Breeder_Text_1
 # 508 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -987,26 +990,26 @@ TrainerSchool_Breeder_5:
 	dynmultichoice 0, 100, FALSE, 5, 0, DYN_MULTICHOICE_CB_NONE, TrainerSchool_Breeder_Text_4, TrainerSchool_Breeder_Text_5, TrainerSchool_Breeder_Text_6, TrainerSchool_Breeder_Text_7, TrainerSchool_Breeder_Text_8
 # 495 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 0
-	goto_if_eq TrainerSchool_Breeder_20
+	goto_if_eq TrainerSchool_Breeder_22
 # 495 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 2
-	goto_if_eq TrainerSchool_Breeder_20
+	goto_if_eq TrainerSchool_Breeder_22
 # 497 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 1
-	goto_if_eq TrainerSchool_Breeder_21
+	goto_if_eq TrainerSchool_Breeder_23
 # 497 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 3
-	goto_if_eq TrainerSchool_Breeder_21
+	goto_if_eq TrainerSchool_Breeder_23
 # 504 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_Breeder_Text_12
 	goto TrainerSchool_Breeder_1
 
-TrainerSchool_Breeder_20:
+TrainerSchool_Breeder_22:
 # 496 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_Breeder_Text_9
 	goto TrainerSchool_Breeder_1
 
-TrainerSchool_Breeder_21:
+TrainerSchool_Breeder_23:
 # 498 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_Breeder_Text_10
 # 499 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -1022,24 +1025,27 @@ TrainerSchool_GiveEgg::
 # 516 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_NONE
 	goto_if_eq TrainerSchool_GiveEgg_1
-# 528 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 529 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_NORMAL
 	goto_if_eq TrainerSchool_GiveEgg_2
-# 528 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 529 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_FAIRY - 1
 	goto_if_eq TrainerSchool_GiveEgg_2
-# 531 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 532 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_ELECTRIC - 1
 	goto_if_eq TrainerSchool_GiveEgg_3
-# 531 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 532 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_POISON
 	goto_if_eq TrainerSchool_GiveEgg_3
-# 534 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 535 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_ICE - 1
 	goto_if_eq TrainerSchool_GiveEgg_4
-# 534 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 535 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_PSYCHIC - 1
 	goto_if_eq TrainerSchool_GiveEgg_4
+# 538 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_FLYING
+	goto_if_eq TrainerSchool_GiveEgg_5
 	return
 
 TrainerSchool_GiveEgg_1:
@@ -1047,51 +1053,58 @@ TrainerSchool_GiveEgg_1:
 	random 3
 # 518 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 0
-	goto_if_eq TrainerSchool_GiveEgg_15
+	goto_if_eq TrainerSchool_GiveEgg_17
 # 521 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 1
-	goto_if_eq TrainerSchool_GiveEgg_16
+	goto_if_eq TrainerSchool_GiveEgg_18
 # 524 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, 2
-	goto_if_eq TrainerSchool_GiveEgg_17
+	goto_if_eq TrainerSchool_GiveEgg_19
 	return
 
 TrainerSchool_GiveEgg_2:
-# 529 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	giveegg SPECIES_IGGLYBUFF
 # 530 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	giveegg SPECIES_IGGLYBUFF
+# 531 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	call TrainerSchool_ProcessEgg
 	return
 
 TrainerSchool_GiveEgg_3:
-# 532 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	giveegg SPECIES_TOXEL
 # 533 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	giveegg SPECIES_TOXEL
+# 534 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	call TrainerSchool_ProcessEgg
 	return
 
 TrainerSchool_GiveEgg_4:
-# 535 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	giveegg SPECIES_SMOOCHUM
 # 536 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	giveegg SPECIES_SMOOCHUM
+# 537 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	call TrainerSchool_ProcessEgg
 	return
 
-TrainerSchool_GiveEgg_15:
+TrainerSchool_GiveEgg_5:
+# 539 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	giveegg SPECIES_GLIGAR
+# 540 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call TrainerSchool_ProcessEgg
+	return
+
+TrainerSchool_GiveEgg_17:
 # 519 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	giveegg SPECIES_IGGLYBUFF
 # 520 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	call TrainerSchool_ProcessEgg
 	return
 
-TrainerSchool_GiveEgg_16:
+TrainerSchool_GiveEgg_18:
 # 522 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	giveegg SPECIES_TOXEL
 # 523 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	call TrainerSchool_ProcessEgg
 	return
 
-TrainerSchool_GiveEgg_17:
+TrainerSchool_GiveEgg_19:
 # 525 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	giveegg SPECIES_SMOOCHUM
 # 526 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -1100,147 +1113,139 @@ TrainerSchool_GiveEgg_17:
 
 
 TrainerSchool_ProcessEgg::
-# 541 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 545 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PARTY
 	goto_if_eq TrainerSchool_ProcessEgg_1
-# 545 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 549 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	compare VAR_RESULT, MON_GIVEN_TO_PC
 	goto_if_eq TrainerSchool_ProcessEgg_2
-# 550 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 554 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	msgbox TrainerSchool_ProcessEgg_Text_2
 	return
 
 TrainerSchool_ProcessEgg_1:
-# 542 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	playfanfare MUS_OBTAIN_ITEM
-# 543 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox TrainerSchool_ProcessEgg_Text_0
-# 544 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	setflag FLAG_RECEIVED_TRAINER_SCHOOL_EGG
-	return
-
-TrainerSchool_ProcessEgg_2:
 # 546 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	playfanfare MUS_OBTAIN_ITEM
 # 547 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox TrainerSchool_ProcessEgg_Text_1
+	msgbox TrainerSchool_ProcessEgg_Text_0
 # 548 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	setflag FLAG_RECEIVED_TRAINER_SCHOOL_EGG
 	return
 
+TrainerSchool_ProcessEgg_2:
+# 550 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	playfanfare MUS_OBTAIN_ITEM
+# 551 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox TrainerSchool_ProcessEgg_Text_1
+# 552 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	setflag FLAG_RECEIVED_TRAINER_SCHOOL_EGG
+	return
 
-# 555 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-RivalLecture_MoveTowardsRoxanne:
-# 556 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_left
-# 557 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 558 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
+
 # 559 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_left
+RivalLecture_MoveTowardsRoxanne:
 # 560 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_left
 # 561 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_left
+	walk_up
 # 562 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_left
+	walk_up
 # 563 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_down
+	walk_left
 # 564 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_left
+	walk_left
 # 565 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	step_end
-
+	walk_left
+# 566 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_left
 # 567 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-RoxanneLecture_MoveTowardsClass:
+	walk_down
 # 568 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	face_left
 # 569 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_down
-# 570 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_down
+	step_end
+
 # 571 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_left
+RoxanneLecture_MoveTowardsClass:
 # 572 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_down
+	walk_right
 # 573 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	step_end
-
+	walk_down
+# 574 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_down
+# 575 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_left
 # 576 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-TeacherLecture_Right_And_Face_Down:
+	face_down
 # 577 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
-# 578 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_down
-# 579 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
+# 580 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+TeacherLecture_Right_And_Face_Down:
+# 581 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
 # 582 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-TeacherLecture_Left_And_Face_Down:
+	face_down
 # 583 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_left
-# 584 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_down
-# 585 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
+# 586 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+TeacherLecture_Left_And_Face_Down:
+# 587 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_left
 # 588 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-TeacherLecture_MovesTowardsClass:
-# 589 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_left
-# 590 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_down
-# 591 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_down
-# 592 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
-# 593 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	face_down
-# 594 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 589 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
-# 597 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-TeacherLecture_MovesAwayFromClass:
-# 598 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 592 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+TeacherLecture_MovesTowardsClass:
+# 593 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_left
-# 599 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 600 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 601 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 594 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_down
+# 595 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_down
+# 596 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_right
-# 602 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 597 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	face_down
+# 598 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	step_end
+
+# 601 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+TeacherLecture_MovesAwayFromClass:
+# 602 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_left
 # 603 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_up
+# 604 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_up
+# 605 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 606 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	face_down
+# 607 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
 TrainerSchool_TriggerLeft::
-# 609 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	lockall
-# 610 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox ClassStartsMessage
-# 611 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	applymovement OBJ_EVENT_ID_PLAYER, LeftTriggerMovement
-# 612 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	waitmovement OBJ_EVENT_ID_PLAYER
 # 613 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	call TrainerSchool_Lecture
+	lockall
 # 614 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox ClassStartsMessage
+# 615 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	applymovement OBJ_EVENT_ID_PLAYER, LeftTriggerMovement
+# 616 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitmovement OBJ_EVENT_ID_PLAYER
+# 617 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call TrainerSchool_Lecture
+# 618 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	releaseall
 	end
 
 
-# 619 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-LeftTriggerMovement:
-# 620 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 621 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 622 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
 # 623 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
+LeftTriggerMovement:
 # 624 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 625 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -1250,44 +1255,44 @@ LeftTriggerMovement:
 # 627 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 628 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 629 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 630 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 631 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 632 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_up
+	walk_right
 # 633 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 634 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 635 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 636 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	face_up
+# 637 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
 TrainerSchool_TriggerUp::
-# 637 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	lockall
-# 638 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox ClassStartsMessage
-# 639 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	applymovement OBJ_EVENT_ID_PLAYER, UpTriggerMovement
-# 640 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	waitmovement OBJ_EVENT_ID_PLAYER
 # 641 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	call TrainerSchool_Lecture
+	lockall
 # 642 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox ClassStartsMessage
+# 643 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	applymovement OBJ_EVENT_ID_PLAYER, UpTriggerMovement
+# 644 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitmovement OBJ_EVENT_ID_PLAYER
+# 645 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call TrainerSchool_Lecture
+# 646 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	releaseall
 	end
 
 
-# 646 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-UpTriggerMovement:
-# 647 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 648 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 649 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
 # 650 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
+UpTriggerMovement:
 # 651 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 652 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -1295,42 +1300,42 @@ UpTriggerMovement:
 # 653 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 654 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 655 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 656 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 657 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_up
+	walk_up
 # 658 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 659 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 660 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 661 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	face_up
+# 662 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
 TrainerSchool_TriggerUpRight::
-# 662 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	lockall
-# 663 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox ClassStartsMessage
-# 664 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	applymovement OBJ_EVENT_ID_PLAYER, UpRightTriggerMovement
-# 665 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	waitmovement OBJ_EVENT_ID_PLAYER
 # 666 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	call TrainerSchool_Lecture
+	lockall
 # 667 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox ClassStartsMessage
+# 668 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	applymovement OBJ_EVENT_ID_PLAYER, UpRightTriggerMovement
+# 669 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitmovement OBJ_EVENT_ID_PLAYER
+# 670 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call TrainerSchool_Lecture
+# 671 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	releaseall
 	end
 
 
-# 671 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-UpRightTriggerMovement:
-# 672 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 673 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 674 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
 # 675 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
+UpRightTriggerMovement:
 # 676 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 677 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -1338,42 +1343,42 @@ UpRightTriggerMovement:
 # 678 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 679 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 680 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 681 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_up
+	walk_up
 # 682 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_up
+# 683 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 684 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 685 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	face_up
+# 686 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
 TrainerSchool_TriggerRight::
-# 687 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	lockall
-# 688 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_up
-# 689 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	msgbox ClassStartsMessage
-# 690 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	applymovement OBJ_EVENT_ID_PLAYER, RightTriggerMovement
 # 691 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	waitmovement OBJ_EVENT_ID_PLAYER
+	lockall
 # 692 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	call TrainerSchool_Lecture
+	face_up
 # 693 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	msgbox ClassStartsMessage
+# 694 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	applymovement OBJ_EVENT_ID_PLAYER, RightTriggerMovement
+# 695 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	waitmovement OBJ_EVENT_ID_PLAYER
+# 696 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	call TrainerSchool_Lecture
+# 697 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	releaseall
 	end
 
 
-# 697 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-RightTriggerMovement:
-# 698 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 699 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
-# 700 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
 # 701 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_up
+RightTriggerMovement:
 # 702 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 703 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
@@ -1383,10 +1388,18 @@ RightTriggerMovement:
 # 705 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	walk_up
 # 706 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	walk_right
+	walk_up
 # 707 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
-	face_up
+	walk_up
 # 708 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_up
+# 709 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_up
+# 710 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	walk_right
+# 711 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+	face_up
+# 712 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	step_end
 
 TrainerSchool_TeacherIntro_Text_0:
@@ -1715,19 +1728,19 @@ TrainerSchool_Breeder_Text_13:
 	.string "them faster.$"
 
 TrainerSchool_ProcessEgg_Text_0:
-# 543 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 547 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "The egg was added to your party!$"
 
 TrainerSchool_ProcessEgg_Text_1:
-# 547 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 551 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "The egg was added to your PC!$"
 
 TrainerSchool_ProcessEgg_Text_2:
-# 550 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 554 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "Sorry, you didn't have space for the\n"
 	.string "egg.$"
 
 ClassStartsMessage::
-# 605 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
+# 609 "data/maps/RustboroCity_PokemonSchool/scripts.pory"
 	.string "Get seated everybody. Class is in\n"
 	.string "session.$"

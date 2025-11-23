@@ -1874,6 +1874,16 @@ static u32 GetNPCMonLevelIncrease(u16 opponent){
                 }
                 break;
             }
+        case TRAINER_JAMES_1: 
+        case TRAINER_LYLE:
+        case TRAINER_AURELIO:
+            {
+                //For Restricted Mode Aurelio purposes, raise his level by 2 to accomodate the Roxanne cap, if fought post-Darren
+                if (FlagGet(TRAINER_FLAGS_START + TRAINER_JAMES_1)){
+                    return 2;
+                }
+                break;
+            }
         default: 
             return 0;
     }

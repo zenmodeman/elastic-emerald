@@ -205,54 +205,62 @@ Oldale_StockedMartItemsResourceEVs:
 	.2byte ITEM_REPEL
 # 93 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_HEALTH_FEATHER
+# 94 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_CLEVER_FEATHER
+# 95 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_GREPA_BERRY
 	.2byte ITEM_NONE
 
 	.align 2
-# 96 "data/maps/OldaleTown_Mart/scripts.pory"
-Oldale_StockedMartItemsResourcefulEVless:
-# 97 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
 # 98 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POTION
+Oldale_StockedMartItemsResourcefulEVless:
 # 99 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POKE_BALL
 # 100 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_POTION
 # 101 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_ANTIDOTE
 # 102 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_PARALYZE_HEAL
 # 103 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POMEG_BERRY
+	.2byte ITEM_AWAKENING
 # 104 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_EXP_CANDY_XS
 # 105 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_POMEG_BERRY
+# 106 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_REPEL
+# 107 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_SERIOUS_MINT
 	.2byte ITEM_NONE
 
 	.align 2
-# 108 "data/maps/OldaleTown_Mart/scripts.pory"
-Oldale_StockedMartItemsResourcefulEVs:
-# 109 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POKE_BALL
 # 110 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POTION
+Oldale_StockedMartItemsResourcefulEVs:
 # 111 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_POKE_BALL
 # 112 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_POTION
 # 113 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_AWAKENING
+	.2byte ITEM_ANTIDOTE
 # 114 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_EXP_CANDY_XS
+	.2byte ITEM_PARALYZE_HEAL
 # 115 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_POMEG_BERRY
+	.2byte ITEM_AWAKENING
 # 116 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_REPEL
+	.2byte ITEM_EXP_CANDY_XS
 # 117 "data/maps/OldaleTown_Mart/scripts.pory"
-	.2byte ITEM_SERIOUS_MINT
+	.2byte ITEM_POMEG_BERRY
 # 118 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_REPEL
+# 119 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_SERIOUS_MINT
+# 120 "data/maps/OldaleTown_Mart/scripts.pory"
 	.2byte ITEM_HEALTH_FEATHER
+# 121 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_CLEVER_FEATHER
+# 122 "data/maps/OldaleTown_Mart/scripts.pory"
+	.2byte ITEM_GREPA_BERRY
 	.2byte ITEM_NONE
 
 OldaleTown_Mart_EventScript_Clerk_Text_0:

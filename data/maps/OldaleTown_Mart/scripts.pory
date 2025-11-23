@@ -91,6 +91,8 @@ mart Oldale_StockedMartItemsResourceEVs{
     ITEM_POMEG_BERRY
     ITEM_REPEL
     ITEM_HEALTH_FEATHER
+    ITEM_CLEVER_FEATHER
+    ITEM_GREPA_BERRY
 }
 
 mart Oldale_StockedMartItemsResourcefulEVless{
@@ -116,4 +118,6 @@ mart Oldale_StockedMartItemsResourcefulEVs{
     ITEM_REPEL
     ITEM_SERIOUS_MINT
     ITEM_HEALTH_FEATHER
+    ITEM_CLEVER_FEATHER
+    ITEM_GREPA_BERRY
 }

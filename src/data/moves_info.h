@@ -2219,7 +2219,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Traps the foe in a ring of\n"
             "fire for "BINDING_TURNS" turns."),
         .effect = EFFECT_HIT,
-        .power = 25,
+        .power = 35,
         .type = TYPE_FIRE,
         .accuracy = 100,
         .pp = 15,
@@ -6561,7 +6561,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Traps and hurts the foe in\n"
             "a whirlpool for "BINDING_TURNS" turns."),
         .effect = EFFECT_HIT,
-        .power = 25,
+        .power = 35,
         .type = TYPE_WATER,
         .accuracy = 100,
         .pp = 15,
@@ -8586,7 +8586,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Traps and hurts the foe in\n"
             "quicksand for "BINDING_TURNS" turns."),
         .effect = EFFECT_HIT,
-        .power = 25,
+        .power = 35,
         .type = TYPE_GROUND,
         .accuracy = 100,
         .pp = 15,

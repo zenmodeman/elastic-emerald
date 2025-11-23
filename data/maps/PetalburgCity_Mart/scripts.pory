@@ -108,7 +108,7 @@ mart Petalburg_MartItemsResourceEVless{
 	ITEM_REPEL
 	ITEM_X_DEFENSE
 	ITEM_ORANGE_MAIL
-	ITEM_KELPSY_BERRY
+	ITEM_QUALOT_BERRY
 }
 
 mart Petalburg_MartItemsResourceEVs{
@@ -123,7 +123,9 @@ mart Petalburg_MartItemsResourceEVs{
 	ITEM_X_DEFENSE
 	ITEM_ORANGE_MAIL
     ITEM_RESIST_FEATHER
-	ITEM_KELPSY_BERRY
+	ITEM_QUALOT_BERRY
+	ITEM_SWIFT_FEATHER
+	ITEM_TAMATO_BERRY
 }
 
 mart Petalburg_MartItemsResourcefulEVless{
@@ -138,7 +140,7 @@ mart Petalburg_MartItemsResourcefulEVless{
 	ITEM_X_DEFENSE
 	ITEM_ORANGE_MAIL
     ITEM_LAX_MINT
-	ITEM_KELPSY_BERRY
+	ITEM_QUALOT_BERRY
 }
 
 mart Petalburg_MartItemsResourcefulEVs{
@@ -154,7 +156,9 @@ mart Petalburg_MartItemsResourcefulEVs{
 	ITEM_ORANGE_MAIL
     ITEM_LAX_MINT
     ITEM_RESIST_FEATHER
-	ITEM_KELPSY_BERRY
+	ITEM_QUALOT_BERRY
+	ITEM_SWIFT_FEATHER
+	ITEM_TAMATO_BERRY
 }
 
 

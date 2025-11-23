@@ -133,6 +133,8 @@ mart Rustburo_MartItemsResourceEVs{
 	ITEM_X_ACCURACY
     ITEM_REPEL
 	ITEM_MUSCLE_FEATHER
+	ITEM_GENIUS_FEATHER
+	ITEM_KELPSY_BERRY
 }
 
 mart Rustburo_MartItemsResourcefulEVless{
@@ -168,4 +170,6 @@ mart Rustburo_MartItemsResourcefulEVs{
     ITEM_REPEL
 	ITEM_GENTLE_MINT
 	ITEM_MUSCLE_FEATHER
+	ITEM_GENIUS_FEATHER
+	ITEM_KELPSY_BERRY
 }

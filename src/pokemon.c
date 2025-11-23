@@ -2477,7 +2477,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_PSYDUCK:
             return TYPE_PSYCHIC;
         case SPECIES_GOLDUCK:
-            return TYPE_ROCK;
+            return TYPE_GHOST;
         case SPECIES_POLIWAG: case SPECIES_POLIWHIRL:
             return TYPE_NORMAL;
         case SPECIES_POLITOED: 
@@ -2677,7 +2677,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         Not given a Tera Type because of points: Alakazam, Mew, Espeon, Azelf, Cresselia, Reuniclus, Necrozma
         */
         case SPECIES_ABRA: case SPECIES_KADABRA:
-            return TYPE_GRASS; //Energy Ball
+            return TYPE_GHOST; //Shadow Ball
         case SPECIES_DROWZEE: case SPECIES_HYPNO:
             return TYPE_FIGHTING;
         case SPECIES_UNOWN:
@@ -2693,9 +2693,9 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_MESPRIT: 
             return TYPE_FIGHTING; //Drain Punch and newly gained Revenge
         case SPECIES_MUNNA: case SPECIES_MUSHARNA:
-            return TYPE_FAIRY;
+            return TYPE_ROCK;
         case SPECIES_GOTHITA: case SPECIES_GOTHORITA: case SPECIES_GOTHITELLE:
-            return TYPE_DARK;
+            return TYPE_BUG; //type distribution coverage
         case SPECIES_SOLOSIS: case SPECIES_DUOSION: 
             return TYPE_WATER;
         case SPECIES_ELGYEM: case SPECIES_BEHEEYEM:
@@ -2707,7 +2707,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_MEOWSTIC_F:
             return TYPE_PSYCHIC; //Extra damage
         case SPECIES_PONYTA_GALAR:
-            return TYPE_BUG; //Megahorn
+            return TYPE_DRAGON;
         case SPECIES_SLOWPOKE_GALAR:
             return TYPE_POISON; //Because of evos
         case SPECIES_HATENNA: case SPECIES_HATTREM:
@@ -2804,7 +2804,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_MACHOP: case SPECIES_MACHOKE: case SPECIES_MACHAMP:
             return TYPE_STELLAR; //Ideally I'd want to do Fighting, but that seems too insane with Machamp's stats, so opting for Stellar instead
         case SPECIES_HITMONLEE: 
-            return TYPE_NORMAL; //Reckless Double-Edge; can swap with Mienshao if needed
+            return TYPE_NORMAL; //Reckless Double-Edge
         case SPECIES_HITMONCHAN:
             return TYPE_STEEL; //Good Defensive typing; Bullet Punch Iron Fist; also pairs nicely with the Meteor Mash addition
         case SPECIES_HITMONTOP:
@@ -2970,13 +2970,13 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         
         //Pure Ground
         case SPECIES_SANDSHREW: case SPECIES_SANDSLASH:
-            return TYPE_BUG;
+            return TYPE_FAIRY;
         case SPECIES_DIGLETT: case SPECIES_DUGTRIO:
-            return TYPE_DARK; //Foul Play, Night Slash
+            return TYPE_FLYING; //Aerial Ace
         case SPECIES_CUBONE: case SPECIES_MAROWAK:
             return TYPE_FIGHTING; //Low Kick, Brick Break
         case SPECIES_PHANPY: case SPECIES_DONPHAN:
-            return TYPE_STEEL; //Gyro Ball, Iron Head
+            return TYPE_FIRE; 
         case SPECIES_TRAPINCH:
             return TYPE_BUG; 
         case SPECIES_HIPPOPOTAS: case SPECIES_HIPPOWDON:
@@ -3002,11 +3002,11 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_ROCKRUFF: case SPECIES_ROCKRUFF_OWN_TEMPO: 
             return TYPE_NORMAL;
         case SPECIES_LYCANROC_MIDDAY:
-            return TYPE_FIRE; //Fire Fang
+            return TYPE_FLYING;
         case SPECIES_LYCANROC_DUSK:
             return TYPE_DRAGON; //Outrage
         case SPECIES_LYCANROC_MIDNIGHT:
-            return TYPE_FIGHTING; //Revenge, Close Combat, e.t.c.
+            return TYPE_GHOST; //Shadow Claw
         case SPECIES_ROLYCOLY:
             return TYPE_FIRE; //Evo Type
         case SPECIES_STONJOURNER:
@@ -3044,8 +3044,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GRASS; //Giga Drain
         case SPECIES_SEVIPER:
             return TYPE_STELLAR;
-        case SPECIES_GARBODOR:
-            return TYPE_FIGHTING; //Drain Punch
+        case SPECIES_GARBODOR: case SPECIES_TRUBBISH:
+            return TYPE_STEEL; //Also give it Hard Press
 
         //Pure Dark
         case SPECIES_UMBREON:
@@ -3122,7 +3122,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_REGISTEEL:
             return TYPE_ICE; //Ice Punch and Ice Spinner
         case SPECIES_KLINK: case SPECIES_KLANG: case SPECIES_KLINKLANG:
-            return TYPE_ELECTRIC; //A bunch of Electric moves
+            return TYPE_FLYING; //Type inversion
         case SPECIES_MELMETAL:
             return TYPE_NORMAL;
         case SPECIES_CUFANT: case SPECIES_COPPERAJAH:
@@ -3147,15 +3147,15 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GROUND; //Stomping Tantrum and EQ
         //Rock/Water
         case SPECIES_OMANYTE: case SPECIES_OMASTAR:
-            return TYPE_GROUND; // Mud Shot, Earth Power
+            return TYPE_ELECTRIC;
         case SPECIES_KABUTO: case SPECIES_KABUTOPS:
             return TYPE_BUG; //Leech Life
         case SPECIES_CORSOLA:
             return TYPE_GRASS; //dodge quad resistance
         case SPECIES_RELICANTH:
-            return TYPE_PSYCHIC; //Zen Headbutt
+            return TYPE_NORMAL; //Double-Edge
         case SPECIES_TIRTOUGA: case SPECIES_CARRACOSTA:
-            return TYPE_DARK; //Crunch and Knock Off
+            return TYPE_DRAGON; 
         case SPECIES_BINACLE: case SPECIES_BARBARACLE:
             return TYPE_FIGHTING; //Mega basis
         case SPECIES_DREDNAW:
@@ -3179,7 +3179,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
 
         //Rock/Ground
         case SPECIES_GEODUDE: case SPECIES_GRAVELER: case SPECIES_GOLEM:
-            return TYPE_DARK; //Sucker Punch
+            return TYPE_STEEL;
         case SPECIES_ONIX:
             return TYPE_DRAGON; //Dragon Breath; could also be Steel depending on overlap factors
         case SPECIES_RHYHORN: case SPECIES_RHYDON: case SPECIES_RHYPERIOR:
@@ -3203,7 +3203,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_MARSHTOMP: case SPECIES_SWAMPERT:
             return TYPE_ROCK; //Rock Slide and such
         case SPECIES_GASTRODON:
-            return TYPE_BUG; //Infestation and Skitter Smack
+            return TYPE_PSYCHIC;
         case SPECIES_PALPITOAD: case SPECIES_SEISMITOAD:
             return TYPE_FIGHTING; //Drain Punch
         case SPECIES_BARBOACH: case SPECIES_WHISCASH:
@@ -3215,7 +3215,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_WOOBAT: case SPECIES_SWOOBAT:
             return TYPE_PSYCHIC; //Extra damage
         case SPECIES_SIGILYPH:
-            return TYPE_FIRE; //Heat Wave
+            return TYPE_POISON; 
         case SPECIES_ORICORIO_PAU:
             return TYPE_FAIRY; //Make all Oricorios Fairy type since forms can be swapped
         case SPECIES_ARTICUNO_GALAR:
@@ -3404,7 +3404,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_SHUCKLE:
             return TYPE_BUG; //Choosing to not give Shuckle a new defensive type
         case SPECIES_ANORITH: case SPECIES_ARMALDO:
-            return TYPE_WATER; //Liquidation
+            return TYPE_NORMAL;
         case SPECIES_DWEBBLE: case SPECIES_CRUSTLE:
             return TYPE_GROUND;
         case SPECIES_KLEAVOR:
@@ -3438,7 +3438,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_DIGLETT_ALOLA:
             return TYPE_WATER; //Relation to Wugtrio
         case SPECIES_STUNFISK_GALAR:
-            return TYPE_DARK; //Payback and Crunch
+            return TYPE_GHOST; //Payback and Crunch
         
         //Fire/Flying
         /*Not included because of Tier Points: Charizard, Moltres, Talonflame
@@ -3477,9 +3477,9 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ICE; //boosted Icy Wind
         
         //Water/Dark
-        /*Not included because of Tier Points: Sharpedo, Greninja, Samurott-Hisui
+        /*Not included because of Tier Points: Greninja, Samurott-Hisui
         */                         
-        case SPECIES_CARVANHA: 
+        case SPECIES_CARVANHA: case SPECIES_SHARPEDO:
             return TYPE_PSYCHIC; //Zen Headbutt
         case SPECIES_CRAWDAUNT:
             return TYPE_POISON; //Increase the incentive to use Sludge Bomb or Sludge Wave
@@ -9113,7 +9113,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_TAUROS_PALDEA_COMBAT: case SPECIES_SCYTHER: case SPECIES_GYARADOS: case SPECIES_LAPRAS: case SPECIES_VAPOREON: 
         case SPECIES_OMASTAR: case SPECIES_KABUTOPS: case SPECIES_AERODACTYL: case SPECIES_ARTICUNO_GALAR: case SPECIES_ZAPDOS_GALAR: 
         case SPECIES_MOLTRES_GALAR: case SPECIES_MOLTRES: case SPECIES_STARMIE: case SPECIES_MEW: case SPECIES_CLOYSTER:
-        case SPECIES_PRIMEAPE: case SPECIES_MAGNETON: //Rationale of Eviolite
+        case SPECIES_PRIMEAPE: case SPECIES_MAGNETON: case SPECIES_RHYDON: //Rationale of Eviolite
 
         //4 Points Kanto Megas
         case SPECIES_BLASTOISE_MEGA: case SPECIES_PIDGEOT_MEGA:
@@ -9174,7 +9174,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_ARBOLIVA: case SPECIES_TINKATON: case SPECIES_ARMAROUGE: case SPECIES_CERULEDGE: case SPECIES_CYCLIZAR: case SPECIES_ORTHWORM: case SPECIES_FLAMIGO:
         case SPECIES_FARIGIRAF: case SPECIES_CLODSIRE: case SPECIES_WO_CHIEN: case SPECIES_BRUTE_BONNET: case SPECIES_SCREAM_TAIL: case SPECIES_SANDY_SHOCKS: case SPECIES_IRON_TREADS:
         case SPECIES_IRON_JUGULIS: case SPECIES_IRON_THORNS: case SPECIES_SLITHER_WING: case SPECIES_TERAPAGOS: case SPECIES_IRON_LEAVES: 
-        case SPECIES_FEZANDIPITI: case SPECIES_MUNKIDORI: case SPECIES_OKIDOGI:
+        case SPECIES_FEZANDIPITI: case SPECIES_MUNKIDORI: case SPECIES_OKIDOGI: case SPECIES_ESPATHRA: case SPECIES_KLAWF:
             return 4;
         //Note: Reducing Sinistcha to 3 points
         case SPECIES_HYPNO: case SPECIES_DRAKLOAK:

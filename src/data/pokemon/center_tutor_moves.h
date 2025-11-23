@@ -163,4 +163,8 @@ const u16 gTechTutor2Badge[] = {
     MOVE_POWER_TRICK,
 };
 
+const u16 gTechTutor3Badge[] = {
+    MOVE_CONFIDE,
+};
+
 

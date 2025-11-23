@@ -12133,8 +12133,8 @@ EVs: 32 Spe
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 12 Spe  
 - Flatter  
 - Punishment  
-- Draining Kiss  
-- Round  
+- Confusion  
+- Round 
 
 
 
@@ -12205,7 +12205,7 @@ EVs: 32 HP / 8 Def / 32 SpA
 Bold Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 - Trick  
-- Charge Beam  
+- Echoed Voice  
 - Charm  
 - Disarming Voice  
 

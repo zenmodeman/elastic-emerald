@@ -4409,7 +4409,7 @@ u8 TrainMaxIV(void){
 static bool32 IsAbilityTutorViable(u16 ability){
     switch (ability){
         case ABILITY_KEEN_EYE:
-        case ABILITY_DAMP:
+        case ABILITY_BIG_PECKS:
         case ABILITY_LONG_REACH:
         case ABILITY_ILLUMINATE:
         case ABILITY_STALWART:

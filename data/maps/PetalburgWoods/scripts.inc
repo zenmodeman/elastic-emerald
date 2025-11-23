@@ -970,15 +970,18 @@ PetalburgWoods_EventScript_Aurelio::
 	faceplayer
 # 490 "data/maps/PetalburgWoods/scripts.pory"
 	goto_if_set TRAINER_FLAGS_START + TRAINER_AURELIO, PetalburgWoods_EventScript_Aurelio_2
-# 495 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_1
-# 496 "data/maps/PetalburgWoods/scripts.pory"
-	goto_if_set TRAINER_FLAGS_START + TRAINER_JAMES_1, PetalburgWoods_EventScript_Aurelio_7
-PetalburgWoods_EventScript_Aurelio_6:
-# 520 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_11
-PetalburgWoods_EventScript_Aurelio_4:
-# 522 "data/maps/PetalburgWoods/scripts.pory"
+# 494 "data/maps/PetalburgWoods/scripts.pory"
+	goto_if_set FLAG_BADGE01_GET, PetalburgWoods_EventScript_Aurelio_4
+PetalburgWoods_EventScript_Aurelio_1:
+# 499 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_4
+# 500 "data/maps/PetalburgWoods/scripts.pory"
+	goto_if_set TRAINER_FLAGS_START + TRAINER_JAMES_1, PetalburgWoods_EventScript_Aurelio_11
+PetalburgWoods_EventScript_Aurelio_10:
+# 529 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_14
+PetalburgWoods_EventScript_Aurelio_8:
+# 531 "data/maps/PetalburgWoods/scripts.pory"
 	release
 	return
 
@@ -989,99 +992,139 @@ PetalburgWoods_EventScript_Aurelio_2:
 	releaseall
 	return
 
-PetalburgWoods_EventScript_Aurelio_5:
-# 497 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_2
-# 498 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_3
-# 499 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_4
-# 500 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_5, MSGBOX_YESNO
-# 501 "data/maps/PetalburgWoods/scripts.pory"
-	compare VAR_RESULT, 1
-	goto_if_eq PetalburgWoods_EventScript_Aurelio_10
-# 516 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_10
-	goto PetalburgWoods_EventScript_Aurelio_4
-
-PetalburgWoods_EventScript_Aurelio_7:
+PetalburgWoods_EventScript_Aurelio_3:
+# 495 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_1
 # 496 "data/maps/PetalburgWoods/scripts.pory"
-	goto_if_set TRAINER_FLAGS_START + TRAINER_LYLE, PetalburgWoods_EventScript_Aurelio_5
-	goto PetalburgWoods_EventScript_Aurelio_6
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_2
+# 497 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_3
+	goto PetalburgWoods_EventScript_Aurelio_1
 
-PetalburgWoods_EventScript_Aurelio_10:
+PetalburgWoods_EventScript_Aurelio_4:
+# 494 "data/maps/PetalburgWoods/scripts.pory"
+	goto_if_set FLAG_RESTRICTED_MODE, PetalburgWoods_EventScript_Aurelio_3
+	goto PetalburgWoods_EventScript_Aurelio_1
+
+PetalburgWoods_EventScript_Aurelio_9:
+# 501 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_5
 # 502 "data/maps/PetalburgWoods/scripts.pory"
 	msgbox PetalburgWoods_EventScript_Aurelio_Text_6
-# 503 "data/maps/PetalburgWoods/scripts.pory"
-	playse SE_USE_ITEM
 # 504 "data/maps/PetalburgWoods/scripts.pory"
-	special HealPlayerParty
+	specialvar VAR_RESULT, DoesPlayerFollowItemClause
 # 505 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_7
-# 506 "data/maps/PetalburgWoods/scripts.pory"
-	trainerbattle_no_intro TRAINER_AURELIO, Aurelio_Defeat
-# 507 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_8
-# 508 "data/maps/PetalburgWoods/scripts.pory"
-	goto_if_set FLAG_RESOURCE_MODE, PetalburgWoods_EventScript_Aurelio_14
-# 511 "data/maps/PetalburgWoods/scripts.pory"
-	call ResourcefulModeAurelioBerries
-PetalburgWoods_EventScript_Aurelio_13:
-# 513 "data/maps/PetalburgWoods/scripts.pory"
-	msgbox PetalburgWoods_EventScript_Aurelio_Text_9
-	goto PetalburgWoods_EventScript_Aurelio_4
-
+	compare VAR_RESULT, FALSE
+	goto_if_eq PetalburgWoods_EventScript_Aurelio_16
 PetalburgWoods_EventScript_Aurelio_14:
+# 508 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_7
 # 509 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_8, MSGBOX_YESNO
+# 510 "data/maps/PetalburgWoods/scripts.pory"
+	compare VAR_RESULT, 1
+	goto_if_eq PetalburgWoods_EventScript_Aurelio_19
+# 525 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_13
+	goto PetalburgWoods_EventScript_Aurelio_8
+
+PetalburgWoods_EventScript_Aurelio_11:
+# 500 "data/maps/PetalburgWoods/scripts.pory"
+	goto_if_set TRAINER_FLAGS_START + TRAINER_LYLE, PetalburgWoods_EventScript_Aurelio_9
+	goto PetalburgWoods_EventScript_Aurelio_10
+
+PetalburgWoods_EventScript_Aurelio_15:
+# 506 "data/maps/PetalburgWoods/scripts.pory"
+	goto Aurelio_Restrict_Item_Clause
+	goto PetalburgWoods_EventScript_Aurelio_14
+
+PetalburgWoods_EventScript_Aurelio_16:
+# 505 "data/maps/PetalburgWoods/scripts.pory"
+	goto_if_set FLAG_RESTRICTED_MODE, PetalburgWoods_EventScript_Aurelio_15
+	goto PetalburgWoods_EventScript_Aurelio_14
+
+PetalburgWoods_EventScript_Aurelio_19:
+# 511 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_9
+# 512 "data/maps/PetalburgWoods/scripts.pory"
+	playse SE_USE_ITEM
+# 513 "data/maps/PetalburgWoods/scripts.pory"
+	special HealPlayerParty
+# 514 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_10
+# 515 "data/maps/PetalburgWoods/scripts.pory"
+	trainerbattle_no_intro TRAINER_AURELIO, Aurelio_Defeat
+# 516 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_11
+# 517 "data/maps/PetalburgWoods/scripts.pory"
+	goto_if_set FLAG_RESOURCE_MODE, PetalburgWoods_EventScript_Aurelio_23
+# 520 "data/maps/PetalburgWoods/scripts.pory"
+	call ResourcefulModeAurelioBerries
+PetalburgWoods_EventScript_Aurelio_22:
+# 522 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox PetalburgWoods_EventScript_Aurelio_Text_12
+	goto PetalburgWoods_EventScript_Aurelio_8
+
+PetalburgWoods_EventScript_Aurelio_23:
+# 518 "data/maps/PetalburgWoods/scripts.pory"
 	call ResourceModeAurelioBerries
-	goto PetalburgWoods_EventScript_Aurelio_13
+	goto PetalburgWoods_EventScript_Aurelio_22
+
+
+Aurelio_Restrict_Item_Clause::
+# 535 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox Aurelio_Restrict_Item_Clause_Text_0
+# 536 "data/maps/PetalburgWoods/scripts.pory"
+	msgbox Aurelio_Restrict_Item_Clause_Text_1
+# 537 "data/maps/PetalburgWoods/scripts.pory"
+	release
+	end
 
 
 ResourceModeAurelioBerries::
-# 526 "data/maps/PetalburgWoods/scripts.pory"
+# 541 "data/maps/PetalburgWoods/scripts.pory"
 	giveItem ITEM_JABOCA_BERRY, 3
-# 527 "data/maps/PetalburgWoods/scripts.pory"
+# 542 "data/maps/PetalburgWoods/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq ResourceModeAurelioBerries_1
-# 530 "data/maps/PetalburgWoods/scripts.pory"
+# 545 "data/maps/PetalburgWoods/scripts.pory"
 	giveItem ITEM_ROWAP_BERRY, 3
-# 531 "data/maps/PetalburgWoods/scripts.pory"
+# 546 "data/maps/PetalburgWoods/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq ResourceModeAurelioBerries_4
 	return
 
 ResourceModeAurelioBerries_1:
-# 528 "data/maps/PetalburgWoods/scripts.pory"
+# 543 "data/maps/PetalburgWoods/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	return
 
 ResourceModeAurelioBerries_4:
-# 532 "data/maps/PetalburgWoods/scripts.pory"
+# 547 "data/maps/PetalburgWoods/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	return
 
 
 ResourcefulModeAurelioBerries::
-# 538 "data/maps/PetalburgWoods/scripts.pory"
+# 553 "data/maps/PetalburgWoods/scripts.pory"
 	giveItem ITEM_JABOCA_BERRY
-# 539 "data/maps/PetalburgWoods/scripts.pory"
+# 554 "data/maps/PetalburgWoods/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq ResourcefulModeAurelioBerries_1
-# 542 "data/maps/PetalburgWoods/scripts.pory"
+# 557 "data/maps/PetalburgWoods/scripts.pory"
 	giveItem ITEM_ROWAP_BERRY
-# 543 "data/maps/PetalburgWoods/scripts.pory"
+# 558 "data/maps/PetalburgWoods/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq ResourcefulModeAurelioBerries_4
 	return
 
 ResourcefulModeAurelioBerries_1:
-# 540 "data/maps/PetalburgWoods/scripts.pory"
+# 555 "data/maps/PetalburgWoods/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	return
 
 ResourcefulModeAurelioBerries_4:
-# 544 "data/maps/PetalburgWoods/scripts.pory"
+# 559 "data/maps/PetalburgWoods/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	return
 
@@ -1094,53 +1137,78 @@ PetalburgWoods_EventScript_Aurelio_Text_0:
 
 PetalburgWoods_EventScript_Aurelio_Text_1:
 # 495 "data/maps/PetalburgWoods/scripts.pory"
-	.string "I've always been fond of these woods.$"
+	.string "These woods are a joy. Almost as much\n"
+	.string "as studying at the Rustoboro trainer\l"
+	.string "school alongside Roxanne.$"
 
 PetalburgWoods_EventScript_Aurelio_Text_2:
-# 497 "data/maps/PetalburgWoods/scripts.pory"
-	.string "I see that you've beaten the other \n trainers in this area.\n$"
+# 496 "data/maps/PetalburgWoods/scripts.pory"
+	.string "What's that, you beat Roxanne? You\n"
+	.string "must be above my league!$"
 
 PetalburgWoods_EventScript_Aurelio_Text_3:
-# 498 "data/maps/PetalburgWoods/scripts.pory"
-	.string "I'm interested in seeing how you battle. \n$"
+# 497 "data/maps/PetalburgWoods/scripts.pory"
+	.string "I hope to battle her again sometime.$"
 
 PetalburgWoods_EventScript_Aurelio_Text_4:
 # 499 "data/maps/PetalburgWoods/scripts.pory"
-	.string "If you win, I'll give you some berries. \n$"
+	.string "I've always been fond of these woods.$"
 
 PetalburgWoods_EventScript_Aurelio_Text_5:
-# 500 "data/maps/PetalburgWoods/scripts.pory"
-	.string "How about it? \n$"
+# 501 "data/maps/PetalburgWoods/scripts.pory"
+	.string "I see that you've beaten the other \n trainers in this area.\n$"
 
 PetalburgWoods_EventScript_Aurelio_Text_6:
 # 502 "data/maps/PetalburgWoods/scripts.pory"
-	.string "Let me heal your Pokemon for you.$"
+	.string "I'm interested in seeing how you battle. \n$"
 
 PetalburgWoods_EventScript_Aurelio_Text_7:
-# 505 "data/maps/PetalburgWoods/scripts.pory"
-	.string "Alright let's get started! \n$"
+# 508 "data/maps/PetalburgWoods/scripts.pory"
+	.string "If you win, I'll give you some berries. \n$"
 
 PetalburgWoods_EventScript_Aurelio_Text_8:
-# 507 "data/maps/PetalburgWoods/scripts.pory"
-	.string "Here you go, as promised!$"
+# 509 "data/maps/PetalburgWoods/scripts.pory"
+	.string "How about it? \n$"
 
 PetalburgWoods_EventScript_Aurelio_Text_9:
-# 513 "data/maps/PetalburgWoods/scripts.pory"
+# 511 "data/maps/PetalburgWoods/scripts.pory"
+	.string "Let me heal your Pokemon for you.$"
+
+PetalburgWoods_EventScript_Aurelio_Text_10:
+# 514 "data/maps/PetalburgWoods/scripts.pory"
+	.string "Alright let's get started! \n$"
+
+PetalburgWoods_EventScript_Aurelio_Text_11:
+# 516 "data/maps/PetalburgWoods/scripts.pory"
+	.string "Here you go, as promised!$"
+
+PetalburgWoods_EventScript_Aurelio_Text_12:
+# 522 "data/maps/PetalburgWoods/scripts.pory"
 	.string "I hope you can use those berries well.\n"
 	.string "When you take damage while holding\l"
 	.string "them, so does your opponent!$"
 
-PetalburgWoods_EventScript_Aurelio_Text_10:
-# 516 "data/maps/PetalburgWoods/scripts.pory"
+PetalburgWoods_EventScript_Aurelio_Text_13:
+# 525 "data/maps/PetalburgWoods/scripts.pory"
 	.string "Oh, too bad.$"
 
-PetalburgWoods_EventScript_Aurelio_Text_11:
-# 520 "data/maps/PetalburgWoods/scripts.pory"
+PetalburgWoods_EventScript_Aurelio_Text_14:
+# 529 "data/maps/PetalburgWoods/scripts.pory"
 	.string "I've gotten quite accustomed with the\n"
 	.string "regulars here. If you fight all the\l"
 	.string "trainers here, I'd be willing to see how\l"
 	.string "you battle.$"
 
+Aurelio_Restrict_Item_Clause_Text_0:
+# 535 "data/maps/PetalburgWoods/scripts.pory"
+	.string "However, I like restricting Item Clause\n"
+	.string "as per League rules.$"
+
+Aurelio_Restrict_Item_Clause_Text_1:
+# 536 "data/maps/PetalburgWoods/scripts.pory"
+	.string "Could you please follow Item Clause if\n"
+	.string "you'd like a battle?$"
+
 Aurelio_Defeat::
-# 548 "data/maps/PetalburgWoods/scripts.pory"
+# 563 "data/maps/PetalburgWoods/scripts.pory"
 	.string "Impressive work.$"

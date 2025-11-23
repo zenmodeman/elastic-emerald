@@ -5847,6 +5847,7 @@ static const u16 sHatennaEggMoveLearnset[] = {
 #if P_FAMILY_IMPIDIMP
 static const u16 sImpidimpEggMoveLearnset[] = {
     MOVE_PARTING_SHOT,
+    MOVE_CONFUSION,
     MOVE_UNAVAILABLE,
 };
 #endif //P_FAMILY_IMPIDIMP

@@ -71,10 +71,17 @@ bool32 IsRestrictedModeTeraBanned(u32 battler)
             return FALSE;
         }else if (species == SPECIES_MEDICHAM && GetBattlerAbility(battler) != ABILITY_PURE_POWER){
             return FALSE;
-        }else if ((species == SPECIES_YANMEGA || species == SPECIES_SHARPEDO || species == SPECIES_BLAZIKEN || species == SPECIES_SCOLIPEDE)
+        }else if ((species == SPECIES_YANMEGA || species == SPECIES_SHARPEDO || species == SPECIES_BLAZIKEN || species == SPECIES_SCOLIPEDE
+        || species == SPECIES_ESPATHRA)
          && GetBattlerAbility(battler) != ABILITY_SPEED_BOOST){
             return FALSE;
-         }else if ((species == SPECIES_POLTEAGEIST) && GetBattlerAbility(battler) != ABILITY_WEAK_ARMOR){
+         }else if ((species == SPECIES_OMASTAR || species == SPECIES_KLAWF || species == SPECIES_CRUSTLE) && GetBattlerAbility(battler) != ABILITY_SHELL_ARMOR){
+            return FALSE;
+         }
+         else if ((species == SPECIES_KABUTOPS || species == SPECIES_ARMALDO) && GetBattlerAbility(battler) != ABILITY_BATTLE_ARMOR){
+            return FALSE;
+         }
+         else if ((species == SPECIES_POLTEAGEIST) && GetBattlerAbility(battler) != ABILITY_WEAK_ARMOR){
             return FALSE;
          }
         return TRUE;

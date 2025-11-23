@@ -487,7 +487,7 @@ script TrainerSchool_Breeder{
 		msgbox(format("Please take good care of the egg!"))
 	}else{
 		if (var(VAR_MONOTYPE) == TYPE_NONE || var(VAR_MONOTYPE) == TYPE_NORMAL || var(VAR_MONOTYPE) == TYPE_FAIRY - 1 || var(VAR_MONOTYPE) == TYPE_ELECTRIC - 1
-		|| var(VAR_MONOTYPE) == TYPE_POISON || var(VAR_MONOTYPE) == TYPE_ICE - 1 || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1){
+		|| var(VAR_MONOTYPE) == TYPE_POISON || var(VAR_MONOTYPE) == TYPE_ICE - 1 || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1 || var(VAR_MONOTYPE) == TYPE_FLYING){
 			msgbox(format("I love breeding Pokemon, but hatching eggs can be so time-consuming."))
 			msgbox(format("I wonder if there are any ways to help hatch them faster."))
 			msgbox(format("Do you have any ideas?"))
@@ -525,6 +525,7 @@ script TrainerSchool_GiveEgg{
 			giveegg(SPECIES_SMOOCHUM)
 			call(TrainerSchool_ProcessEgg)
 		}
+	//Special types need a -1 because of TYPE_MYSTERY getting in the way
 	}elif(var(VAR_MONOTYPE) == TYPE_NORMAL || var(VAR_MONOTYPE) == TYPE_FAIRY - 1){
 		giveegg(SPECIES_IGGLYBUFF)
 		call(TrainerSchool_ProcessEgg)
@@ -533,6 +534,9 @@ script TrainerSchool_GiveEgg{
 		call(TrainerSchool_ProcessEgg)
 	}elif(var(VAR_MONOTYPE) == TYPE_ICE - 1 || var(VAR_MONOTYPE) == TYPE_PSYCHIC - 1){
 		giveegg(SPECIES_SMOOCHUM)
+		call(TrainerSchool_ProcessEgg)
+	}elif (var(VAR_MONOTYPE) == TYPE_FLYING){
+		giveegg(SPECIES_GLIGAR)
 		call(TrainerSchool_ProcessEgg)
 	}
 }

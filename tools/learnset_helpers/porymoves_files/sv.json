@@ -1045,7 +1045,7 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": ["MOVE_CAMOUFLAGE"]
+    "TutorMoves": ["MOVE_CAMOUFLAGE", "MOVE_HEAL_BLOCK"]
   },
   "WEEDLE": {
     "LevelMoves": [],
@@ -37868,7 +37868,7 @@
       "MOVE_HYPNOSIS",
       "MOVE_MEMENTO"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_BLOCK"]
   },
   "DRIFBLIM": {
     "LevelMoves": [
@@ -38001,7 +38001,7 @@
       "MOVE_HYPNOSIS",
       "MOVE_MEMENTO"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_BLOCK"]
   },
   "BUNEARY": {
     "LevelMoves": [],
@@ -68669,7 +68669,7 @@
       "MOVE_SPITE",
       "MOVE_TAILWIND"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "CORVISQUIRE": {
     "LevelMoves": [
@@ -68757,7 +68757,7 @@
       "MOVE_SPITE",
       "MOVE_TAILWIND"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "CORVIKNIGHT": {
     "LevelMoves": [
@@ -68878,7 +68878,7 @@
       "MOVE_SPITE",
       "MOVE_TAILWIND"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_TORMENT"]
   },
   "BLIPBUG": {
     "LevelMoves": [],

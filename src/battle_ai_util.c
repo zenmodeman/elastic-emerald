@@ -2444,6 +2444,20 @@ bool32 HasMoveWithType(u32 battler, u32 type)
     return FALSE;
 }
 
+bool32 HasContactMove(u32 battlerId){
+    s32 i;
+    u16 *moves = GetMovesArray(battlerId);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
+            && MoveMakesContact(moves[i]))
+            return TRUE;
+    }
+
+    return FALSE;   
+}
+
 bool32 HasMoveEffect(u32 battlerId, u32 effect)
 {
     s32 i;

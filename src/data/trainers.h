@@ -30110,7 +30110,7 @@ F_TRAINER_FEMALE |
 #line 12134
                 MOVE_FLATTER,
                 MOVE_PUNISHMENT,
-                MOVE_DRAINING_KISS,
+                MOVE_CONFUSION,
                 MOVE_ROUND,
             },
             },
@@ -30285,7 +30285,7 @@ F_TRAINER_FEMALE |
             .moves = {
 #line 12207
                 MOVE_TRICK,
-                MOVE_CHARGE_BEAM,
+                MOVE_ECHOED_VOICE,
                 MOVE_CHARM,
                 MOVE_DISARMING_VOICE,
             },

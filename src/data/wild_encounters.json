@@ -796,7 +796,7 @@
               {
                 "min_level": 3,
                 "max_level": 5,
-                "species": "SPECIES_WOOBAT"
+                "species": "SPECIES_ESPURR"
               },
               {
                 "min_level": 3,
@@ -804,9 +804,9 @@
                 "species": "SPECIES_RATTATA_ALOLA"
               },
               {
-                "min_level": 5,
+                "min_level": 3,
                 "max_level": 5,
-                "species": "SPECIES_NONE"
+                "species": "SPECIES_DUCKLETT"
               },
               {
                 "min_level": 5,
@@ -1120,7 +1120,7 @@
               {
                 "min_level": 4,
                 "max_level": 6,
-                "species": "SPECIES_ESPURR"
+                "species": "SPECIES_WOOBAT"
               },
               {
                 "min_level": 4,
@@ -1140,7 +1140,7 @@
               {
                 "min_level": 4,
                 "max_level": 6,
-                "species": "SPECIES_NONE"
+                "species": "SPECIES_DUCKLETT"
               },
               {
                 "min_level": 4,
@@ -2841,8 +2841,8 @@
                 "species": "SPECIES_TAILLOW"
               },
               {
-                "min_level": 6,
-                "max_level": 8,
+                "min_level": 7,
+                "max_level": 9,
                 "species": "SPECIES_DRIFLOON"
               },
               {

@@ -490,12 +490,21 @@ script PetalburgWoods_EventScript_Aurelio{
 	if (flag(TRAINER_FLAGS_START + TRAINER_AURELIO)){
 		msgbox(format("You put up a good fight! Keep it up, and make sure to use those berries skillfully."))
 		releaseall
-		return
+		return 
+	}elif (flag(FLAG_BADGE01_GET) && flag(FLAG_RESTRICTED_MODE)){
+		msgbox(format("These woods are a joy. Almost as much as studying at the Rustoboro trainer school alongside Roxanne."))
+		msgbox(format("What's that, you beat Roxanne? You must be above my league!"))
+		msgbox(format("I hope to battle her again sometime."))
 	}
     msgbox(format("I've always been fond of these woods."))
 	if(flag(TRAINER_FLAGS_START + TRAINER_JAMES_1) && flag(TRAINER_FLAGS_START + TRAINER_LYLE)){
 		msgbox("I see that you've beaten the other \n trainers in this area.\n")
 		msgbox("I'm interested in seeing how you battle. \n")
+
+		specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
+        if (var(VAR_RESULT) == FALSE && flag(FLAG_RESTRICTED_MODE)) {
+            goto(Aurelio_Restrict_Item_Clause)
+        }
 		msgbox("If you win, I'll give you some berries. \n")
 		msgbox("How about it? \n", MSGBOX_YESNO)
         if (var(VAR_RESULT) == 1){
@@ -522,6 +531,12 @@ script PetalburgWoods_EventScript_Aurelio{
     release
 }
 
+script Aurelio_Restrict_Item_Clause{
+	msgbox(format("However, I like restricting Item Clause as per League rules."))
+	msgbox(format("Could you please follow Item Clause if you'd like a battle?"))
+	release
+	end
+}
 script ResourceModeAurelioBerries{
  	giveItem(ITEM_JABOCA_BERRY, 3)
 	if (var(VAR_RESULT) == FALSE){

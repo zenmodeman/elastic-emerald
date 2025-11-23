@@ -805,6 +805,7 @@ static const u16 sButterfreeTeachableLearnset[] = {
     MOVE_ENDURE,
     MOVE_HARDEN,
     MOVE_HEADBUTT,
+    MOVE_HEAL_BLOCK,
     MOVE_INFESTATION,
     MOVE_MEGA_DRAIN,
     MOVE_MIMIC,
@@ -27178,6 +27179,7 @@ static const u16 sDrifloonTeachableLearnset[] = {
     MOVE_AERIAL_ACE,
     MOVE_AIR_CUTTER,
     MOVE_BIND,
+    MOVE_BLOCK,
     MOVE_BODY_SLAM,
     MOVE_BRUTAL_SWING,
     MOVE_CONFIDE,
@@ -27234,6 +27236,7 @@ static const u16 sDrifblimTeachableLearnset[] = {
     MOVE_AERIAL_ACE,
     MOVE_AIR_CUTTER,
     MOVE_BIND,
+    MOVE_BLOCK,
     MOVE_BODY_SLAM,
     MOVE_BRUTAL_SWING,
     MOVE_CONFIDE,
@@ -44176,6 +44179,7 @@ static const u16 sRookideeTeachableLearnset[] = {
     MOVE_ROOST,
     MOVE_TAUNT,
     MOVE_THIEF,
+    MOVE_TORMENT,
     MOVE_AERIAL_ACE,
     MOVE_AIR_CUTTER,
     MOVE_ENDURE,
@@ -44190,6 +44194,7 @@ static const u16 sRookideeTeachableLearnset[] = {
     MOVE_SWAGGER,
     MOVE_SWIFT,
     MOVE_TAKE_DOWN,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 
@@ -44204,6 +44209,7 @@ static const u16 sCorvisquireTeachableLearnset[] = {
     MOVE_SUNNY_DAY,
     MOVE_TAUNT,
     MOVE_THIEF,
+    MOVE_TORMENT,
     MOVE_AERIAL_ACE,
     MOVE_AIR_CUTTER,
     MOVE_ENDURE,
@@ -44218,6 +44224,7 @@ static const u16 sCorvisquireTeachableLearnset[] = {
     MOVE_SWAGGER,
     MOVE_SWIFT,
     MOVE_TAKE_DOWN,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 
@@ -44237,6 +44244,7 @@ static const u16 sCorviknightTeachableLearnset[] = {
     MOVE_SUNNY_DAY,
     MOVE_TAUNT,
     MOVE_THIEF,
+    MOVE_TORMENT,
     MOVE_AERIAL_ACE,
     MOVE_AIR_CUTTER,
     MOVE_BODY_SLAM,
@@ -44254,6 +44262,7 @@ static const u16 sCorviknightTeachableLearnset[] = {
     MOVE_SWAGGER,
     MOVE_SWIFT,
     MOVE_TAKE_DOWN,
+    MOVE_TORMENT,
     MOVE_UNAVAILABLE,
 };
 #endif //P_FAMILY_ROOKIDEE
