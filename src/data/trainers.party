@@ -6804,17 +6804,6 @@ Music: Hiker
 Double Battle: No
 AI: Smart Trainer
 
-Remoraid @ Sea Incense  
-Ability: Hustle  
-Level: 14  
-EVs: 4 HP / 20 Atk / 4 Def / 20 SpA / 4 SpD / 20 Spe  
-Quirky Nature  
-IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
-- Screech  
-- Secret Power  
-- Psybeam  
-- Brine  
-
 Poliwag @ Damp Rock  
 Ability: Damp  
 Level: 14  
@@ -6825,6 +6814,17 @@ IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - Flip Turn  
 - Hypnosis  
 - Round  
+
+Remoraid @ Sea Incense  
+Ability: Hustle  
+Level: 14  
+EVs: 4 HP / 20 Atk / 4 Def / 20 SpA / 4 SpD / 20 Spe  
+Quirky Nature  
+IVs: 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe  
+- Screech  
+- Secret Power  
+- Psybeam  
+- Brine  
 
 Magikarp @ Adrenaline Orb  
 Ability: Rattled  

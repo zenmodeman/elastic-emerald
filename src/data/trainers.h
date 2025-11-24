@@ -16681,52 +16681,52 @@ F_TRAINER_FEMALE |
         {
             {
 #line 6807
-            .species = SPECIES_REMORAID,
+            .species = SPECIES_POLIWAG,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 6807
-            .heldItem = ITEM_SEA_INCENSE,
+            .heldItem = ITEM_DAMP_ROCK,
 #line 6810
-            .ev = TRAINER_PARTY_EVS(4, 20, 4, 20, 20, 4),
+            .ev = TRAINER_PARTY_EVS(0, 28, 0, 20, 20, 20),
 #line 6812
             .iv = TRAINER_PARTY_IVS(15, 31, 15, 15, 15, 15),
 #line 6808
-            .ability = ABILITY_HUSTLE,
+            .ability = ABILITY_DAMP,
 #line 6809
             .lvl = 14,
 #line 6811
-            .nature = NATURE_QUIRKY,
-            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
-            .moves = {
-#line 6813
-                MOVE_SCREECH,
-                MOVE_SECRET_POWER,
-                MOVE_PSYBEAM,
-                MOVE_BRINE,
-            },
-            },
-            {
-#line 6818
-            .species = SPECIES_POLIWAG,
-            .gender = TRAINER_MON_RANDOM_GENDER,
-#line 6818
-            .heldItem = ITEM_DAMP_ROCK,
-#line 6821
-            .ev = TRAINER_PARTY_EVS(0, 28, 0, 20, 20, 20),
-#line 6823
-            .iv = TRAINER_PARTY_IVS(15, 31, 15, 15, 15, 15),
-#line 6819
-            .ability = ABILITY_DAMP,
-#line 6820
-            .lvl = 14,
-#line 6822
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
-#line 6824
+#line 6813
                 MOVE_WATER_SPORT,
                 MOVE_FLIP_TURN,
                 MOVE_HYPNOSIS,
                 MOVE_ROUND,
+            },
+            },
+            {
+#line 6818
+            .species = SPECIES_REMORAID,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 6818
+            .heldItem = ITEM_SEA_INCENSE,
+#line 6821
+            .ev = TRAINER_PARTY_EVS(4, 20, 4, 20, 20, 4),
+#line 6823
+            .iv = TRAINER_PARTY_IVS(15, 31, 15, 15, 15, 15),
+#line 6819
+            .ability = ABILITY_HUSTLE,
+#line 6820
+            .lvl = 14,
+#line 6822
+            .nature = NATURE_QUIRKY,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 6824
+                MOVE_SCREECH,
+                MOVE_SECRET_POWER,
+                MOVE_PSYBEAM,
+                MOVE_BRINE,
             },
             },
             {
