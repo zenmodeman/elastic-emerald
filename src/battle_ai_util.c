@@ -1342,6 +1342,30 @@ u32 GetBestDmgFromBattler(u32 battler, u32 battlerTarget)
     return bestDmg;
 }
 
+//This is a damage calculation that involves recomputing damage, to take into account mid-battle stat projections.
+s32 GetBestRecomputedDmgFromBattler(u32 battler, u32 battlerTarget){
+    u16 battlerMoves[MAX_MON_MOVES];
+    s32 bestDmg = 0;
+    u32 i;
+    uq4_12_t effectiveness;
+
+    u32 weather = AI_GetWeather();
+    GetMovesArrayWithHiddenSTAB(battler, battlerMoves);
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        s32 dmgCalculated = 0;
+        u32 battlerMove = battlerMoves[i];
+        if (battlerMove != MOVE_NONE && battlerMove != MOVE_UNAVAILABLE && !IsBattleMoveStatus(battlerMove))
+        {
+            dmgCalculated = AI_CalcDamage(battlerMove, battler, battlerTarget, &effectiveness, FALSE, weather, DMG_ROLL_HIGHEST).expected;
+            if (dmgCalculated > bestDmg)
+            {
+                bestDmg = dmgCalculated;
+            }
+        }
+    }
+    return bestDmg;
+}
 
 
 // Check if AI mon has the means to faint the target with any of its moves.

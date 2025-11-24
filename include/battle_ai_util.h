@@ -56,6 +56,7 @@ void ReverseSimulatedStatChanges(u32 battler, struct StatsDelta statChangesMade)
 bool32 HasIneffectiveDamagingMove(u32 battlerAtk, u32 battlerDef);
 u32 FindMoveIndex(u32 battler, u32 move);
 bool32 HasContactMove(u32 battlerId);
+s32 GetBestRecomputedDmgFromBattler(u32 battler, u32 battlerTarget);
 
 //Formerly static
 u32 FindMoveUsedXTurnsAgo(u32 battlerId, u32 x);

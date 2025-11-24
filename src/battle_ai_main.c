@@ -3449,20 +3449,28 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 }
                 break;
             case EFFECT_COACHING:
-                {
+                {   
+                    bool32 playerOppositeHasRecomputedPartnerKill = FALSE;
+                    bool32 playerPartnerHasRecomputedParterKill = FALSE;
+                    bool32 playerOppositeOutspeedsPartner = FALSE;
+                    bool32 playerPartnerOutspeedsPartner = FALSE; 
+
                     u32 battlerPartner = BATTLE_PARTNER(battlerAtk);
+                    u32 playerOpposite = BATTLE_OPPOSITE(battlerAtk);
+                    u32 playerPartner = BATTLE_PARTNER(playerOpposite);
+                    struct StatsDelta coachingStatChanges = {.atk = 1,.def = 1};
+                    struct  StatsDelta changesToReverse = {};
+
+                    playerOppositeOutspeedsPartner = !AI_IsFaster(battlerPartner, playerOpposite, MOVE_IRRELEVANT);
+                    playerPartnerOutspeedsPartner = !AI_IsFaster(battlerPartner, playerPartner, MOVE_IRRELEVANT);
+
+                    // DebugPrintf("Coaching Atk, Def, Speed: %d, %d, %d", coachingStatChanges.atk, coachingStatChanges.def, coachingStatChanges.speed);
+
                     if (GetBattlerAbility(battlerPartner) == ABILITY_CONTRARY && 
                     !DoesBattlerIgnoreAbilityChecks(battlerAtk, GetBattlerAbility(battlerAtk), MOVE_IRRELEVANT)){
                         ADJUST_SCORE(-10);
                         break;
                     }
-                    u32 playerOpposite = BATTLE_OPPOSITE(battlerAtk);
-                    u32 playerPartner = BATTLE_PARTNER(playerOpposite);
-                    // bool32 statShifted = FALSE;
-
-                    struct StatsDelta coachingStatChanges = {.atk = 1,.def = 1};
-                    // DebugPrintf("Coaching Atk, Def, Speed: %d, %d, %d", coachingStatChanges.atk, coachingStatChanges.def, coachingStatChanges.speed);
-                    struct  StatsDelta changesToReverse = {};
 
                     //If an opposing Pokemon can land a KO on the partner before the coaching mon can move,
                     //No need to calculate Coaching boosts
@@ -3476,29 +3484,38 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     }
                     //Temporarily apply Coaching buff
                     changesToReverse = ApplySimulatedStatChanges(battlerAtk, battlerPartner, coachingStatChanges);
-                    // DebugPrintf("Temporary Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
-                    //     gBattleMons[battlerDef].statStages[STAT_SPEED]);
+                    DebugPrintf("Temporary Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
+                        gBattleMons[battlerDef].statStages[STAT_SPEED]);
         
-                    // if (gBattleMons[battlerPartner].statStages[STAT_DEF] <= MAX_STAT_STAGE){
-                    //     gBattleMons[battlerPartner].statStages[STAT_DEF] += 1; 
-                    //     statShifted = TRUE;
-                    // }
 
                     //Kill checks after applying Coaching changes
-                    if(BattlerHasFastKill(playerOpposite, battlerPartner) || BattlerHasFastKill(playerPartner, battlerPartner)){
+                    //Need to recompute dmg after the status change
+                    if (IsBattlerAlive(playerOpposite)){
+                        if (GetBestRecomputedDmgFromBattler(playerOpposite, battlerPartner) >= gBattleMons[battlerPartner].hp){
+                            playerOppositeHasRecomputedPartnerKill = TRUE;
+                        }
+                    }
+                    if (IsBattlerAlive(playerPartner)){
+                         if (GetBestRecomputedDmgFromBattler(playerPartner, battlerPartner) >= gBattleMons[battlerPartner].hp){
+                            playerPartnerHasRecomputedParterKill = TRUE;
+                        }                       
+                    }
+
+                    if ((playerOppositeHasRecomputedPartnerKill && playerOppositeOutspeedsPartner) || (playerPartnerHasRecomputedParterKill && playerPartnerOutspeedsPartner)){
                         ADJUST_SCORE(-10);
                     }
                     //For slow kills, only disincentivize if the partner does not have physical moves
-                    if (BattlerHasSlowKill(playerOpposite, battlerPartner) || BattlerHasSlowKill(playerPartner, battlerPartner)){
+                    else if  (playerOppositeHasRecomputedPartnerKill || playerPartnerHasRecomputedParterKill){
                         if (!HasMoveWithCategory(battlerPartner, DAMAGE_CATEGORY_PHYSICAL)){
                             ADJUST_SCORE(-5);
                         }
                     }
+
                     //Reverse temporary Coaching buff
 
                     ReverseSimulatedStatChanges(battlerDef, changesToReverse);
-                    // DebugPrintf("Reversed Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
-                        // gBattleMons[battlerDef].statStages[STAT_SPEED]);
+                    DebugPrintf("Reversed Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
+                        gBattleMons[battlerDef].statStages[STAT_SPEED]);
                     // if (statShifted){
                     //     gBattleMons[battlerPartner].statStages[STAT_DEF] -=1;
                     // }
