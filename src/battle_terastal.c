@@ -121,6 +121,19 @@ bool32 CanTerastallize(u32 battler)
     {
         return FALSE;
     }
+    // Note depending on what AI battles are going to be incorporated,
+    // May have to add additional logic to not require the tera orb checks
+    // for AI battles
+    else if (VarGet(VAR_MONOTYPE) != 0 && !(FlagGet(B_FLAG_AI_VS_AI_BATTLE)))
+    {
+        monotype = GetMonoType();
+        DebugPrintf("The monotype value is %d; and the teraType value is %d", monotype, teraType);
+        if (teraType != monotype && teraType != TYPE_STELLAR)
+        {
+            return FALSE;
+        }
+    }
+    
     else if (FlagGet(B_FLAG_TERA_ORB_NO_COST))
     {
         // Tera Orb is not depleted, go to HasTrainerUsedGimmick
@@ -130,17 +143,7 @@ bool32 CanTerastallize(u32 battler)
         return FALSE;
     }
 
-    // Note depending on what AI battles are going to be incorporated,
-    // May have to add additional logic to not require the tera orb checks
-    // for AI battles
-    else if (VarGet(VAR_MONOTYPE) != 0 && !(FlagGet(B_FLAG_AI_VS_AI_BATTLE)))
-    {
-        monotype = GetMonoType();
-        if (teraType != monotype && teraType != TYPE_STELLAR)
-        {
-            return FALSE;
-        }
-    }
+
 
     // Check if Trainer has already Terastallized.
     if (HasTrainerUsedGimmick(battler, GIMMICK_TERA))
