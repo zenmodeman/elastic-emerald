@@ -398,22 +398,19 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
 
     // Jump straight to switching out in cases where mon gets OHKO'd
     bool32 opponentFaster = (gBattleMons[opposingBattler].speed > gBattleMons[battler].speed);
-    bool32 cantFourKO = (maxDamageDealt < gBattleMons[opposingBattler].hp / 4);
+    
+    bool32 cantSixKO = (maxDamageDealt < gBattleMons[opposingBattler].hp / 6);
     bool32 hasGoodHP = (gBattleMons[battler].hp >= ((gBattleMons[battler].maxHP * 3) / 4));
     bool32 hasRegenHP = (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4);
 
     if ((
-        // If the player OHKOs and outspeeds OR OHKOs
-        (getsOneShot && opponentFaster)
-            //doesn't outspeed but isn't 4KO'd: RemoCommenting this out  to reward slow mons KOing in general
-            // || (getsOneShot && !opponentFaster && cantFourKO)
+        //Only apply the OHKO check on the first turn
+        (getsOneShot && gDisableStructs[opposingBattler].isFirstTurn)  
+        //If the opponent isn't faster, only have the potential to switch if the progress potential is extremely low.
+        && (opponentFaster || cantSixKO)
         )
         && (hasGoodHP || hasRegenHP)) // And the current mon has at least 3/4 their HP, or 1/4 HP and Regenerator
     {
-        DEBUG_REASON("OHKO scenario - Opponent faster: %s, Can't 4KO: %s, Good HP: %s, Regen HP: %s",
-                     opponentFaster ? "YES" : "NO", cantFourKO ? "YES" : "NO",
-                     hasGoodHP ? "YES" : "NO", hasRegenHP ? "YES" : "NO");
-
         // 50% chance to stay in regardless
         u32 switchChance = GetSwitchChance(SHOULD_SWITCH_HASBADODDS);
         if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - switchChance)) && !AI_DATA->aiSwitchPredictionInProgress)
