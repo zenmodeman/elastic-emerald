@@ -6087,10 +6087,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 #if P_FAMILY_GULPIN
     [SPECIES_GULPIN] =
     {
-        .baseHP        = 73,
+        .baseHP        = 73, //+3
         .baseAttack    = 43,
         .baseDefense   = 53,
-        .baseSpeed     = 43,
+        .baseSpeed     = 43, //+3
         .baseSpAttack  = 43,
         .baseSpDefense = 53,
         .types = MON_TYPES(TYPE_POISON),
@@ -6172,10 +6172,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 
     [SPECIES_SWALOT] =
     {
-        .baseHP        = 113,
+        .baseHP        = 113, //+13
         .baseAttack    = 73,
         .baseDefense   = 83,
-        .baseSpeed     = 53,
+        .baseSpeed     = 53, //-2
         .baseSpAttack  = 73,
         .baseSpDefense = 83,
         .types = MON_TYPES(TYPE_POISON),
@@ -6481,10 +6481,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
     {
         .baseHP        = 130,
         .baseAttack    = 70,
-        .baseDefense   = 35,
+        .baseDefense   = 45, //+10
         .baseSpeed     = 60,
         .baseSpAttack  = 70,
-        .baseSpDefense = 35,
+        .baseSpDefense = 45, //+10
         .types = MON_TYPES(TYPE_WATER),
         .catchRate = 125,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 80 : 137,
@@ -6553,10 +6553,10 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
     {
         .baseHP        = 170,
         .baseAttack    = 90,
-        .baseDefense   = 45,
+        .baseDefense   = 55, //+10
         .baseSpeed     = 60,
         .baseSpAttack  = 90,
-        .baseSpDefense = 45,
+        .baseSpDefense = 55, //+10
         .types = MON_TYPES(TYPE_WATER),
         .catchRate = 60,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 175 : 206,
@@ -7563,12 +7563,12 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
 #if P_FAMILY_SWABLU
     [SPECIES_SWABLU] =
     {
-        .baseHP        = 45,
-        .baseAttack    = 40,
-        .baseDefense   = 60,
+        .baseHP        = 55, //+10
+        .baseAttack    = 45, //+5
+        .baseDefense   = 65, //+5
         .baseSpeed     = 50,
-        .baseSpAttack  = 40,
-        .baseSpDefense = 75,
+        .baseSpAttack  = 45, //+5
+        .baseSpDefense = 80, //+5
         .types = MON_TYPES(TYPE_NORMAL, TYPE_FLYING),
         .catchRate = 255,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_5) ? 62 : 74,
@@ -7578,7 +7578,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .friendship = STANDARD_FRIENDSHIP,
         .growthRate = GROWTH_ERRATIC,
         .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FLYING, EGG_GROUP_DRAGON),
-        .abilities = { ABILITY_NATURAL_CURE, ABILITY_NONE, ABILITY_CLOUD_NINE },
+        .abilities = { ABILITY_NATURAL_CURE, ABILITY_CLOUD_NINE, ABILITY_FRIEND_GUARD },
         .bodyColor = BODY_COLOR_BLUE,
         .speciesName = _("Swablu"),
         .cryId = CRY_SWABLU,
@@ -7631,7 +7631,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sSwabluLevelUpLearnset,
         .teachableLearnset = sSwabluTeachableLearnset,
         .eggMoveLearnset = sSwabluEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 35, SPECIES_ALTARIA}),
+        .evolutions = EVOLUTION({EVO_LEVEL, 32, SPECIES_ALTARIA}),
     },
 
     [SPECIES_ALTARIA] =

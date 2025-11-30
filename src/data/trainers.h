@@ -12470,7 +12470,7 @@ F_TRAINER_FEMALE |
                 MOVE_LOW_KICK,
                 MOVE_PSYCHIC,
                 MOVE_LIGHT_SCREEN,
-                MOVE_ROCK_TOMB,
+                MOVE_AERIAL_ACE,
             },
             },
             {
@@ -12546,7 +12546,7 @@ F_TRAINER_FEMALE |
 #line 5108
                 MOVE_BULK_UP,
                 MOVE_FORCE_PALM,
-                MOVE_BULLDOZE,
+                MOVE_ROCK_TOMB,
                 MOVE_BODY_SLAM,
             },
             },
@@ -41725,7 +41725,7 @@ F_TRAINER_FEMALE |
                 MOVE_LOW_KICK,
                 MOVE_PSYCHIC,
                 MOVE_LIGHT_SCREEN,
-                MOVE_ROCK_TOMB,
+                MOVE_AERIAL_ACE,
             },
             },
             {
@@ -41776,7 +41776,7 @@ F_TRAINER_FEMALE |
 #line 16919
                 MOVE_BULK_UP,
                 MOVE_FORCE_PALM,
-                MOVE_BULLDOZE,
+                MOVE_ROCK_TOMB,
                 MOVE_BODY_SLAM,
             },
             },
@@ -41823,7 +41823,7 @@ F_TRAINER_FEMALE |
                 MOVE_LOW_KICK,
                 MOVE_PSYCHIC,
                 MOVE_LIGHT_SCREEN,
-                MOVE_ROCK_TOMB,
+                MOVE_AERIAL_ACE,
             },
             },
             {
@@ -41899,7 +41899,7 @@ F_TRAINER_FEMALE |
 #line 16973
                 MOVE_BULK_UP,
                 MOVE_FORCE_PALM,
-                MOVE_BULLDOZE,
+                MOVE_ROCK_TOMB,
                 MOVE_BODY_SLAM,
             },
             },
@@ -41946,7 +41946,7 @@ F_TRAINER_FEMALE |
                 MOVE_LOW_KICK,
                 MOVE_PSYCHIC,
                 MOVE_LIGHT_SCREEN,
-                MOVE_ROCK_TOMB,
+                MOVE_AERIAL_ACE,
             },
             },
             {
@@ -41997,7 +41997,7 @@ F_TRAINER_FEMALE |
 #line 17016
                 MOVE_BULK_UP,
                 MOVE_FORCE_PALM,
-                MOVE_BULLDOZE,
+                MOVE_ROCK_TOMB,
                 MOVE_BODY_SLAM,
             },
             },

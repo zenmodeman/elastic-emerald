@@ -8295,12 +8295,12 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_FOONGUS
     [SPECIES_FOONGUS] =
     {
-        .baseHP        = 69,
-        .baseAttack    = 55,
-        .baseDefense   = 45,
+        .baseHP        = 74, //+5
+        .baseAttack    = 65, //+10
+        .baseDefense   = 55, //+10
         .baseSpeed     = 15,
-        .baseSpAttack  = 55,
-        .baseSpDefense = 55,
+        .baseSpAttack  = 65, //+10
+        .baseSpDefense = 60, //+10
         .types = MON_TYPES(TYPE_GRASS, TYPE_POISON),
         .catchRate = 190,
         .expYield = 59,
@@ -11792,12 +11792,12 @@ const struct SpeciesInfo gSpeciesInfoGen5[] =
 #if P_FAMILY_LARVESTA
     [SPECIES_LARVESTA] =
     {
-        .baseHP        = 55,
-        .baseAttack    = 85,
-        .baseDefense   = 55,
+        .baseHP        = 75, //+20
+        .baseAttack    = 85, //+10
+        .baseDefense   = 65, //+10
         .baseSpeed     = 60,
         .baseSpAttack  = 50,
-        .baseSpDefense = 55,
+        .baseSpDefense = 75, //+20
         .types = MON_TYPES(TYPE_BUG, TYPE_FIRE),
         .catchRate = 45,
         .expYield = 72,

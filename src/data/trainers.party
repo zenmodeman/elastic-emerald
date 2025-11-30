@@ -5074,7 +5074,7 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Low Kick  
 - Psychic  
 - Light Screen  
-- Rock Tomb  
+- Aerial Ace  
 
 Pignite @ Expert Belt  
 Ability: Blaze  
@@ -5107,7 +5107,7 @@ IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
-- Bulldoze 
+- Rock Tomb 
 - Body Slam  
 
 === TRAINER_WATTSON_1 ===
@@ -16896,7 +16896,7 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Low Kick  
 - Psychic  
 - Light Screen  
-- Rock Tomb  
+- Aerial Ace  
 
 Pawniard @ Protective Pads  
 Ability: Inner Focus  
@@ -16918,7 +16918,7 @@ IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
-- Bulldoze 
+- Rock Tomb
 - Body Slam  
 
 === TRAINER_BRAWLY_1_DOUBLES ===
@@ -16939,7 +16939,7 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Low Kick  
 - Psychic  
 - Light Screen  
-- Rock Tomb  
+- Aerial Ace  
 
 Pignite @ Expert Belt  
 Ability: Blaze  
@@ -16972,7 +16972,7 @@ IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
-- Bulldoze 
+- Rock Tomb 
 - Body Slam  
 
 === TRAINER_BRAWLY_1_3MON ===
@@ -16993,7 +16993,7 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Low Kick  
 - Psychic  
 - Light Screen  
-- Rock Tomb  
+- Aerial Ace  
 
 Pawniard @ Protective Pads  
 Ability: Inner Focus  
@@ -17015,7 +17015,7 @@ IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
-- Bulldoze 
+- Rock Tomb 
 - Body Slam  
 
 === TRAINER_CORY_2 ===
