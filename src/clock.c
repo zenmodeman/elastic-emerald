@@ -1,4 +1,5 @@
 #include "global.h"
+#include "clock.h"
 #include "event_data.h"
 #include "rtc.h"
 #include "time_events.h"
@@ -17,7 +18,6 @@
 
 static void UpdatePerDay(struct Time *localTime);
 static void UpdatePerMinute(struct Time *localTime);
-static void FormChangeTimeUpdate();
 
 void InitTimeBasedEvents(void)
 {
@@ -40,17 +40,11 @@ void DoTimeBasedEvents(void)
 
 static void UpdatePerDay(struct Time *localTime)
 {
-    struct Time* fakeRtcTime = FakeRtc_GetCurrentTime();
 
     // DebugPrintf("At the start of UpdatePerDay");
 
     u16 *days = GetVarPointer(VAR_DAYS);
     u16 daysSince;
-
-    //This is to correct potential issues with swithcing from rtc to fake rtc.
-    #if OW_USE_FAKE_RTC
-        localTime->days = fakeRtcTime->days;
-    #endif
 
     // DebugPrintf("days: %d; localDays: %d", *days, localTime->days);
     if (*days != localTime->days && *days <= localTime->days)
@@ -76,7 +70,7 @@ static void UpdatePerDay(struct Time *localTime)
 
 //Advances time by 8 hours to represent rest
 void NpcAdvanceTime(void){
-    FakeRtc_AdvanceTimeBy(8, 0, 0);
+    FakeRtc_AdvanceTimeBy(0, 8, 0, 0);
 }
 
 
@@ -98,12 +92,11 @@ static void UpdatePerMinute(struct Time *localTime)
         {
             BerryTreeTimeUpdate(minutes);
             gSaveBlock2Ptr->lastBerryTreeUpdate = *localTime;
-            FormChangeTimeUpdate();
         }
     }
 }
 
-static void FormChangeTimeUpdate()
+void FormChangeTimeUpdate()
 {
     s32 i;
     for (i = 0; i < PARTY_SIZE; i++)

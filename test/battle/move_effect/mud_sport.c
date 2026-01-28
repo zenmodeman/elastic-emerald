@@ -1,6 +1,10 @@
 #include "global.h"
 #include "test/battle.h"
 
+TO_DO_BATTLE_TEST("TODO: Write Mud Sport (Move Effect) test titles")
+#include "global.h"
+#include "test/battle.h"
+
 ASSUMPTIONS {
     ASSUME(GetMoveEffect(MOVE_MUD_SPORT) == EFFECT_MUD_SPORT);
 }

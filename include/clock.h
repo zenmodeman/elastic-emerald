@@ -5,6 +5,7 @@
 
 void InitTimeBasedEvents(void);
 void DoTimeBasedEvents(void);
+void FormChangeTimeUpdate();
 
 void NpcAdvanceTime(void);
 

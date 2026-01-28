@@ -1,6 +1,10 @@
 #include "global.h"
 #include "test/battle.h"
 
+TO_DO_BATTLE_TEST("TODO: Write Water Sport (Move Effect) test titles")
+#include "global.h"
+#include "test/battle.h"
+
 ASSUMPTIONS{
     ASSUME(GetMoveEffect(MOVE_WATER_SPORT) == EFFECT_WATER_SPORT);
 }
