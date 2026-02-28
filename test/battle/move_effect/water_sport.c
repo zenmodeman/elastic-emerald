@@ -11,7 +11,7 @@ ASSUMPTIONS{
 SINGLE_BATTLE_TEST("Zenmodeman: Water Sport prevents burn from Will-o-Wisp")
 {
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_WILL_O_WISP) == EFFECT_WILL_O_WISP);
+        // ASSUME(GetMoveEffect(MOVE_WILL_O_WISP) == EFFECT_WILL_O_WISP); No longer valid after change to the effect
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {

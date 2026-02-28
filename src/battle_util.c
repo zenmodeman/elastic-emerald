@@ -9403,6 +9403,13 @@ static inline uq4_12_t GetOtherModifiers(struct DamageCalculationData *damageCal
     DAMAGE_MULTIPLY_MODIFIER(GetUndergroundModifier(move, battlerDef));
     DAMAGE_MULTIPLY_MODIFIER(GetDiveModifier(move, battlerDef));
     DAMAGE_MULTIPLY_MODIFIER(GetAirborneModifier(move, battlerDef));
+    if (move == MOVE_SNORE && gBattleMons[battlerAtk].species == SPECIES_SNORLAX){
+        DAMAGE_MULTIPLY_MODIFIER(UQ_4_12(1.5));
+    }
+    if (move == MOVE_BOUNCE && (gBattleMons[battlerAtk].species == SPECIES_SPOINK || gBattleMons[battlerAtk].species == SPECIES_GRUMPIG)){
+        DAMAGE_MULTIPLY_MODIFIER(UQ_4_12(2.0));
+    }
+    
     DAMAGE_MULTIPLY_MODIFIER(GetScreensModifier(move, battlerAtk, battlerDef, isCrit, abilityAtk));
     DAMAGE_MULTIPLY_MODIFIER(GetCollisionCourseElectroDriftModifier(move, typeEffectivenessModifier));
 

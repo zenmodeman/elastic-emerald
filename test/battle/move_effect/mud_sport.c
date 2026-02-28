@@ -11,8 +11,8 @@ ASSUMPTIONS {
 
 SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport prevents paralysis from Thunder Wave")
 {
-    GIVEN {
-        ASSUME(GetMoveEffect(MOVE_THUNDER_WAVE) == EFFECT_PARALYZE);
+GIVEN {
+        // ASSUME(GetMoveEffect(MOVE_THUNDER_WAVE) == EFFECT_PARALYZE); No longer holds after change to the effect
         ASSUME(GetMoveEffect(MOVE_SWORDS_DANCE) == EFFECT_ATTACK_UP_2);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
