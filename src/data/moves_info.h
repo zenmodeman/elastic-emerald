@@ -4617,7 +4617,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Snore"),
         .description = COMPOUND_STRING(
             "Used asleep; may flinch.\n"
-            "1.5x Dmg on Snorlax."),
+            "1.5x Dmg with Snorlax."),
         .effect = EFFECT_SNORE,
         .power = 80,
         .type = TYPE_NORMAL,
@@ -8970,8 +8970,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Bounce"),
         .description = COMPOUND_STRING(
-            "Up T1, down T2, may PLRZ.\n"
-            "2x dmg on Spoink line."),
+            "Up T1, down T2, may PRLZ.\n"
+            "2x Dmg with Spoink line."),
         .effect = EFFECT_SEMI_INVULNERABLE,
         .power = 85,
         .type = TYPE_FLYING,
@@ -9992,7 +9992,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .accuracy = 0,
         .pp = 30,
         .target = MOVE_TARGET_USER,
-        .priority = 1,
+        .priority = 0,
         .category = DAMAGE_CATEGORY_STATUS,
         .zMove = { .effect = Z_EFFECT_EVSN_UP_1 },
         .snatchAffected = B_UPDATED_MOVE_FLAGS >= GEN_5,

@@ -10829,8 +10829,33 @@ static void Cmd_various(void)
         VARIOUS_ARGS(const u8 *failInstr);
         if (!(gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_LUCKY_CHANT))
         {
+            u16 luckyChantIncrement = 0;
+            if (GetBattlerAbility(battler) == ABILITY_DEDICATED){
+                luckyChantIncrement += 3;
+            }
+
+            //Start of logic to increase the counter by one if the user has acted after all other opponents
+            //Can skip the loop entirely if the battler is the first to move
+            if (GetBattlerTurnOrderNum(battler) != 0){
+                u32 i;
+                bool32 allOpponentsActed = TRUE;
+
+                for (i = 0; i < gBattlersCount; i++){
+                    //Only look at opponent mons
+                    if (IsBattlerAlive(i) && GetBattlerSide(i) != GetBattlerSide(battler)){
+                        if (GetBattlerTurnOrderNum(i) > GetBattlerTurnOrderNum(battler)){
+                            allOpponentsActed = FALSE;
+                            break;
+                        }
+                    }
+                }
+                if (allOpponentsActed){
+                    luckyChantIncrement += 1;
+                }
+            }
+
             gSideStatuses[GetBattlerSide(battler)] |= SIDE_STATUS_LUCKY_CHANT;
-            gSideTimers[GetBattlerSide(battler)].luckyChantTimer = gBattleTurnCounter + 5 + (GetBattlerAbility(battler) == ABILITY_DEDICATED ? 3 : 0);
+            gSideTimers[GetBattlerSide(battler)].luckyChantTimer = gBattleTurnCounter + 5 + luckyChantIncrement;
             gBattlescriptCurrInstr = cmd->nextInstr;
         }
         else
