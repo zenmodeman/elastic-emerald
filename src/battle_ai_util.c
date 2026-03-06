@@ -1291,6 +1291,41 @@ static bool32 CanEndureHit(u32 battler, u32 battlerTarget, u32 move)
     return FALSE;
 }
 
+/*
+Check a certain minimum effectiveness, e.g. UQ_4_12(4.0) for quad effectiveness
+*/
+bool32 HasSTABTypeWithMinEffectiveness(u32 battler, u32 target, uq4_12_t minEffectiveness)
+{
+    u32 battlerTypes[3];
+    u32 targetTypes[3];
+    u32 i;
+
+    
+    GetBattlerTypes(battler, FALSE, battlerTypes);
+    GetBattlerTypes(target, FALSE, targetTypes);
+    
+    // Check each STAB type against target
+    for (i = 0; i < 2; i++)
+    {
+        uq4_12_t effectiveness = UQ_4_12(1.0);        
+        if (battlerTypes[i] == TYPE_MYSTERY || battlerTypes[i] == TYPE_NONE)
+            continue;
+
+        effectiveness = uq4_12_multiply(effectiveness, GetTypeModifier(battlerTypes[i], targetTypes[0]));
+        if (targetTypes[1] != targetTypes[0])
+            effectiveness = uq4_12_multiply(effectiveness, GetTypeModifier(battlerTypes[i], targetTypes[1]));
+        
+        if (targetTypes[2] != TYPE_MYSTERY && targetTypes[2] != TYPE_NONE 
+            && targetTypes[2] != targetTypes[0] && targetTypes[2] != targetTypes[1]){
+                effectiveness = uq4_12_multiply(effectiveness, GetTypeModifier(battlerTypes[i], targetTypes[2]));
+            }
+        if (effectiveness >= minEffectiveness)
+            return TRUE;
+    }
+    
+    return FALSE;
+}
+
 // Check if target has means to faint ai mon.
 bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
 {

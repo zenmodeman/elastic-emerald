@@ -12,7 +12,7 @@
 #define STAY_IN_STATS_RAISED                                    2  // Number of stat stages that must be raised across any stats before the AI won't switch mon out in certain cases
 
 // AI smart switching chances; if you want more complex behaviour, modify GetSwitchChance
-#define SHOULD_SWITCH_ABSORBS_MOVE_PERCENTAGE                       100
+#define SHOULD_SWITCH_ABSORBS_MOVE_PERCENTAGE                       50 //Prevent the absorbing percentage from being guarenteed
 #define SHOULD_SWITCH_TRAPPER_PERCENTAGE                            100
 #define SHOULD_SWITCH_FREE_TURN_PERCENTAGE                          100
 #define STAY_IN_ABSORBING_PERCENTAGE                                66  // Chance to stay in if outgoing mon has super effective move against player, will prevent switching out for an absorber with this likelihood

@@ -249,6 +249,8 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     s32 i, damageDealt = 0, maxDamageDealt = 0, damageTaken = 0, maxSurmisedDamageTaken = 0, maxRevealedDamageTaken = 0;
     u32 aiMove, playerMove, aiBestMove = MOVE_NONE, aiAbility = gAiLogicData->abilities[battler], opposingBattler;
     bool32 getsSurmisedOneShot = FALSE,  getsRevealedOneShot = FALSE, hasStatusMove = FALSE, hasSuperEffectiveMove = FALSE;
+    bool32 getsOneShot_Switching_Value = FALSE; //Will take the value of either SurmisedOneShot or RevealedOneShot, depending on conditions
+
     u16 typeEffectiveness = UQ_4_12(1.0); //baseline typing damage
     enum BattleMoveEffects aiMoveEffect;
     u32 hitsToKoPlayer = 0, hitsToKoAI = 0;
@@ -387,9 +389,23 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         getsRevealedOneShot = TRUE;
     }
 
-    if (getsSurmisedOneShot){
+    //Use unrevealed STAB estimates for either quad effective possibilities or when the AI mon has led
+
+    if (gDisableStructs[battler].isFirstTurn || HasSTABTypeWithMinEffectiveness(opposingBattler, battler, UQ_4_12(4.0))){
+        //The First turn check is to better preserve leads that could otherwise be trivially OHKO'd
+        //Note that later logic also checks that the player's battler is also in its first turn
+        getsOneShot_Switching_Value = getsSurmisedOneShot;
+    }else{
+        //For more conservative cases, only use explicit information
+        //Justification logic: non-quad effective KOs are less certain with imperfect information, so the opponent won't make that assumption
+        //Justification logic: A Pokemon hasn't gotten any value on its first turn, compared to other turns
+        getsOneShot_Switching_Value = getsRevealedOneShot;
+    }
+
+    if (getsSurmisedOneShot && (gBattleMons[battler].hp >= ((gBattleMons[battler].maxHP * 4) / 5))){
         DebugPrintf("getsRevealedOneShot is %d", getsRevealedOneShot);
         DebugPrintf("GetsSurmisedOneShot is %d", getsSurmisedOneShot);
+        DebugPrintf("Effective One Shot value for switching is %d", getsOneShot_Switching_Value);
     }
 
     // Check if current mon can 1v1 in spite of bad matchup, and don't switch out if it can
@@ -411,8 +427,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
 
     if ((
         //Only apply the OHKO check on the first turn
-        //Switched to using getsRevealedOneShot instead of getsSurmisedOneShot to require explicitly revealed moves
-        (getsRevealedOneShot && gDisableStructs[opposingBattler].isFirstTurn)  
+        (getsOneShot_Switching_Value && gDisableStructs[opposingBattler].isFirstTurn)  
         //If the opponent isn't faster, only have the potential to switch if the progress potential is extremely low.
         && (opponentFaster || cantSixKO)
         )
@@ -607,10 +622,13 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
             return FALSE;
         if (CanUseSuperEffectiveMoveAgainstOpponents(battler) && (RandomPercentage(RNG_AI_SWITCH_ABSORBING_STAY_IN, STAY_IN_ABSORBING_PERCENTAGE) || gAiLogicData->aiPredictionInProgress))
             return FALSE;
-        if (AreStatsRaised(battler))
+        if (GetBattlerSide(battler) == B_SIDE_OPPONENT){
+            if (AreStatsRaised(battler))
+                return FALSE;
+        }
+
+        if (IsMoldBreakerTypeAbility(opposingBattler, gAiLogicData->abilities[opposingBattler]))
             return FALSE;
-    if (IsMoldBreakerTypeAbility(opposingBattler, gAiLogicData->abilities[opposingBattler]))
-        return FALSE;
         // Don't switch if mon could outspeed and OHKO 
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
@@ -766,16 +784,18 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
 
 static bool32 ShouldSwitchIfOpponentChargingOrInvulnerable(u32 battler)
 {
-    u32 opposingBattler = GetOppositeBattler(battler);
-    u32 incomingMove = GetIncomingMove(battler, opposingBattler, gAiLogicData);
+    //For now, avoid all of this logic, though it's worth noting that absorbing ability logic still applies
 
-    bool32 isOpposingBattlerChargingOrInvulnerable = (IsSemiInvulnerable(opposingBattler, incomingMove) || IsTwoTurnNotSemiInvulnerableMove(opposingBattler, incomingMove));
+    // u32 opposingBattler = GetOppositeBattler(battler);
+    // u32 incomingMove = GetIncomingMove(battler, opposingBattler, gAiLogicData);
 
-    if (IsDoubleBattle() || !(gAiThinkingStruct->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING))
-        return FALSE;
+    // bool32 isOpposingBattlerChargingOrInvulnerable = (IsSemiInvulnerable(opposingBattler, incomingMove) || IsTwoTurnNotSemiInvulnerableMove(opposingBattler, incomingMove));
 
-    if (isOpposingBattlerChargingOrInvulnerable && gAiLogicData->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_FREE_TURN, GetSwitchChance(SHOULD_SWITCH_FREE_TURN)))
-        return SetSwitchinAndSwitch(battler, PARTY_SIZE);
+    // if (IsDoubleBattle() || !(gAiThinkingStruct->aiFlags[GetThinkingBattler(battler)] & AI_FLAG_SMART_SWITCHING))
+    //     return FALSE;
+
+    // if (isOpposingBattlerChargingOrInvulnerable && gAiLogicData->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_FREE_TURN, GetSwitchChance(SHOULD_SWITCH_FREE_TURN)))
+    //     return SetSwitchinAndSwitch(battler, PARTY_SIZE);
 
     return FALSE;
 }
@@ -1016,6 +1036,8 @@ static bool32 CanUseSuperEffectiveMoveAgainstOpponents(u32 battler)
     return FALSE;
 }
 
+//Note that this function is used hackily for predicting player switch logic, which does not use SE checks for the switch-in
+//It may make sense in the future to split out the functionality specifically for the player
 static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 percentChance)
 {
     u32 battlerIn1, battlerIn2;
@@ -1088,11 +1110,13 @@ static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 perc
         if (moveFlags & flags)
         {
             if (GetBattlerSide(battler) == B_SIDE_PLAYER){
+                //Note that in addition to percentChance here, there's also the percentage value of gAiLogicData->predictingSwitch, with PREDICT_SWITCH_CHANCE (e.g. 75%)
                 if (RandomPercentage(RNG_AI_SWITCH_SE_DEFENSIVE, percentChance)){
                     DEBUG_PREDICT("The custom Player Side call occurred, species is %d, and i is %d.", species, i);
                     return SetSwitchinAndSwitch(battler, i);
                 }else{
                     DEBUG_PREDICT("Reached the immunity check, but RNG call did not go through.");
+                    return FALSE;
                 }
             }
             battlerIn1 = gLastHitBy[battler];
@@ -1307,6 +1331,7 @@ static bool32 FindHealAbsorbMonWithSwitches(u32 battler, u16 move, u32 numRequir
         else if (aiMons[i].switchInCount < numRequiredSwitches) continue;
 
         //Perform a switch with an absorbing mon that doesn't violate the above conditions
+        //Note that in addition to the 50% here, there's also the percentage value of gAiLogicData->predictingSwitch, with PREDICT_SWITCH_CHANCE (e.g. 75%)
         if (RandomPercentage(RNG_AI_SWITCH_ABSORBING_STAY_IN, 50)){
             DebugPrintf("HealAbsorb check was passed, but RNG check failed.");
             return FALSE;
@@ -1416,6 +1441,7 @@ bool32 ShouldSwitch(u32 battler)
         storedMove = gLastLandedMoves[aiBattler];
         gLastLandedMoves[battler] = aiBestDmgMove;
         DEBUG_PREDICT("Testing immunity logic - injected move: %d (stored: %d)", aiBestDmgMove, storedMove);
+        //Note that in addition to the 50% here, there's also the percentage value of gAiLogicData->predictingSwitch, with PREDICT_SWITCH_CHANCE (e.g. 75%)
         immuneMonFound = FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_DOESNT_AFFECT_FOE, 50);
         gLastLandedMoves[battler] = storedMove;
         DEBUG_PREDICT("Immune mon found: %s", immuneMonFound ? "YES" : "NO");
