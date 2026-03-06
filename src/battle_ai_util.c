@@ -2511,12 +2511,23 @@ u16 *GetMovesArrayWithHiddenSTAB(u32 battler, u16 *moves){
             moves[i] = gBattleMons[battler].moves[i];
         }
         else{
+            u16 bufferedMove = bufferPoke->moves[i];
             moves[i] = gBattleHistory->usedMoves[battler][i];
-            if (moves[i] == 0 && DoesBattlerTypeMatchMove(battler, bufferPoke->moves[i])){
+            if (moves[i] == 0 && DoesBattlerTypeMatchMove(battler, bufferedMove)){
+                //In the future, I may also add cases for moves such as Last Resort and Belch which should not be generally predicted.
+
+                //Don't count unrevealed recharge moves since these are not sensible predictions
+                if (MoveHasAdditionalEffect(bufferedMove, MOVE_EFFECT_RECHARGE)){
+                    continue;
+                }
+                //Don't count 2-turn moves unless the conditions are such that they can land in one turn
+                else if (IsTwoTurnNotSemiInvulnerableMove(battler, bufferedMove)){
+                    continue;
+                }
                 moves[i] = gBattleMons[battler].moves[i];
                 //Use bufferPoke in the case that gBattleMons hasn't yet been filled.
                 if (moves[i] == 0){
-                    moves[i] = bufferPoke->moves[i];
+                    moves[i] = bufferedMove;
                 }
                 
             }

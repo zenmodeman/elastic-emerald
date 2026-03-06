@@ -246,9 +246,9 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
 {
     //Variable initialization
     u8 opposingPosition, atkType1, atkType2, defType1, defType2;
-    s32 i, damageDealt = 0, maxDamageDealt = 0, damageTaken = 0, maxDamageTaken = 0;
+    s32 i, damageDealt = 0, maxDamageDealt = 0, damageTaken = 0, maxSurmisedDamageTaken = 0, maxRevealedDamageTaken = 0;
     u32 aiMove, playerMove, aiBestMove = MOVE_NONE, aiAbility = gAiLogicData->abilities[battler], opposingBattler;
-    bool32 getsOneShot = FALSE, hasStatusMove = FALSE, hasSuperEffectiveMove = FALSE;
+    bool32 getsSurmisedOneShot = FALSE,  getsRevealedOneShot = FALSE, hasStatusMove = FALSE, hasSuperEffectiveMove = FALSE;
     u16 typeEffectiveness = UQ_4_12(1.0); //baseline typing damage
     enum BattleMoveEffects aiMoveEffect;
     u32 hitsToKoPlayer = 0, hitsToKoAI = 0;
@@ -339,25 +339,31 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     DEBUG_TYPE("Final type effectiveness: %d (1.0 = %d)", typeEffectiveness, UQ_4_12(1.0));
 
     // Get max damage mon could take
-    DEBUG_DAMAGE("Analyzing opponent's moves (revealed + STAB only):");
-    u16 opponentMoves[MAX_MON_MOVES];
-    GetMovesArrayWithHiddenSTAB(opposingBattler, opponentMoves);
-
+    u16 opponentSurmisedMoves[MAX_MON_MOVES];
+    u16 *opponentRevealedMoves;
+    GetMovesArrayWithHiddenSTAB(opposingBattler, opponentSurmisedMoves);
+    opponentRevealedMoves = GetMovesArray(opposingBattler);
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        playerMove = opponentMoves[i];
+        playerMove = opponentSurmisedMoves[i];
         if (playerMove != MOVE_NONE && playerMove != MOVE_UNAVAILABLE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH)
         {
             damageTaken = AI_GetDamage(opposingBattler, battler, i, AI_DEFENDING, gAiLogicData);
             if (playerMove == gBattleStruct->choicedMove[opposingBattler]) // If player is choiced, only care about the choice locked move
             {
-                return maxDamageTaken = damageTaken;
+                maxSurmisedDamageTaken = damageTaken;
                 break;
             }
-            if (damageTaken > maxDamageTaken)
+            if (damageTaken > maxSurmisedDamageTaken)
             {
-                maxDamageTaken = damageTaken;
-                DEBUG_DAMAGE("New max damage taken: %d", maxDamageTaken);
+                maxSurmisedDamageTaken = damageTaken;
+                // DEBUG_DAMAGE("New max damage taken: %d", maxSurmisedDamageTaken);
+            }
+            if (damageTaken > maxRevealedDamageTaken){
+                u16 revealedMove = opponentRevealedMoves[i];
+                if (revealedMove != MOVE_NONE && revealedMove != MOVE_UNAVAILABLE && !IsBattleMoveStatus(revealedMove) && GetMoveEffect(revealedMove) != EFFECT_FOCUS_PUNCH){
+                    maxRevealedDamageTaken = damageTaken;
+                }
             }
         }
         else if (playerMove != MOVE_NONE && playerMove != MOVE_UNAVAILABLE)
@@ -366,16 +372,24 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         }
     }
 
-    hitsToKoAI = GetNoOfHitsToKOBattlerDmg(maxDamageTaken, battler);
+    hitsToKoAI = GetNoOfHitsToKOBattlerDmg(maxSurmisedDamageTaken, battler);
 
     // Check if mon gets one shot
     bool32 hasFocusSash = (gItemsInfo[gBattleMons[battler].item].holdEffect == HOLD_EFFECT_FOCUS_SASH);
     bool32 hasSturdy = (!IsMoldBreakerTypeAbility(opposingBattler, gBattleMons[opposingBattler].ability) && B_STURDY >= GEN_5 && aiAbility == ABILITY_STURDY);
-    if(maxDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy))
+    if(maxSurmisedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy))
     {
-        getsOneShot = TRUE;
-        DEBUG_REASON("AI mon gets OHKO'd (damage: %d, HP: %d, Focus Sash: %s, Sturdy: %s)",
-                     maxDamageTaken, gBattleMons[battler].hp, hasFocusSash ? "YES" : "NO", hasSturdy ? "YES" : "NO");
+        getsSurmisedOneShot = TRUE;
+        // DEBUG_REASON("AI mon gets OHKO'd (damage: %d, HP: %d, Focus Sash: %s, Sturdy: %s)",
+        //              maxSurmisedDamageTaken, gBattleMons[battler].hp, hasFocusSash ? "YES" : "NO", hasSturdy ? "YES" : "NO");
+    }
+    if (maxRevealedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy)){
+        getsRevealedOneShot = TRUE;
+    }
+
+    if (getsSurmisedOneShot){
+        DebugPrintf("getsRevealedOneShot is %d", getsRevealedOneShot);
+        DebugPrintf("GetsSurmisedOneShot is %d", getsSurmisedOneShot);
     }
 
     // Check if current mon can 1v1 in spite of bad matchup, and don't switch out if it can
@@ -392,12 +406,13 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     bool32 opponentFaster = (gBattleMons[opposingBattler].speed > gBattleMons[battler].speed);
     
     bool32 cantSixKO = (maxDamageDealt < gBattleMons[opposingBattler].hp / 6);
-    bool32 hasGoodHP = (gBattleMons[battler].hp >= ((gBattleMons[battler].maxHP * 3) / 4));
+    bool32 hasGoodHP = (gBattleMons[battler].hp >= ((gBattleMons[battler].maxHP * 4) / 5));
     bool32 hasRegenHP = (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4);
 
     if ((
         //Only apply the OHKO check on the first turn
-        (getsOneShot && gDisableStructs[opposingBattler].isFirstTurn)  
+        //Switched to using getsRevealedOneShot instead of getsSurmisedOneShot to require explicitly revealed moves
+        (getsRevealedOneShot && gDisableStructs[opposingBattler].isFirstTurn)  
         //If the opponent isn't faster, only have the potential to switch if the progress potential is extremely low.
         && (opponentFaster || cantSixKO)
         )
