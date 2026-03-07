@@ -16708,7 +16708,7 @@
       "MOVE_SLAM",
       "MOVE_SWITCHEROO"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_FORESIGHT"]
   },
   "SUNKERN": {
     "LevelMoves": [
@@ -37748,7 +37748,7 @@
       "MOVE_SLAM",
       "MOVE_SWITCHEROO"
     ],
-    "TutorMoves": []
+    "TutorMoves": ["MOVE_FORESIGHT"]
   },
   "DRIFLOON": {
     "LevelMoves": [

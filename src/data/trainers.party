@@ -5076,16 +5076,16 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Light Screen  
 - Aerial Ace  
 
-Pignite @ Expert Belt  
-Ability: Blaze  
+Combusken @ Expert Belt  
+Ability: Speed Boost  
 Level: 17  
 EVs: 8 HP / 48 Atk / 32 Def  
 Naughty Nature  
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
-- Grass Knot  
-- Low Kick  
-- Flame Charge  
 - Work Up  
+- Flame Burst  
+- Low Kick  
+- Rock Tomb
 
 Pawniard @ Protective Pads  
 Ability: Inner Focus  
@@ -5107,7 +5107,7 @@ IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
 - Force Palm  
-- Rock Tomb 
+- Bulldoze
 - Body Slam  
 
 === TRAINER_WATTSON_1 ===
@@ -16939,17 +16939,17 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Low Kick  
 - Psychic  
 - Light Screen  
-- Aerial Ace  
+- Signal Beam
 
-Pignite @ Expert Belt  
-Ability: Blaze  
+Combusken @ Expert Belt  
+Ability: Speed Boost  
 Level: 17  
 EVs: 8 HP / 48 Atk / 32 Def  
 Naughty Nature  
 IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
-- Grass Knot  
+- Aerial Ace  
 - Low Kick  
-- Flame Charge  
+- Flame Burst 
 - Helping Hand
 
 Pawniard @ Protective Pads  

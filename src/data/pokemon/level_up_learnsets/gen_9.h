@@ -4999,6 +4999,8 @@ static const struct LevelUpMove sFurretLevelUpLearnset[] = {
     LEVEL_UP_MOVE(22, MOVE_BATON_PASS),
     LEVEL_UP_MOVE(25, MOVE_BABY_DOLL_EYES),
     LEVEL_UP_MOVE(28, MOVE_SUCKER_PUNCH),
+
+    //Give Furret Endure at some point
     // WIP 2
 
     LEVEL_UP_MOVE(32, MOVE_REST),
@@ -11916,10 +11918,10 @@ static const struct LevelUpMove sWatchogLevelUpLearnset[] = {
     LEVEL_UP_MOVE(30, MOVE_AFTER_YOU),
     LEVEL_UP_MOVE(32, MOVE_PSYCH_UP),
     LEVEL_UP_MOVE(36, MOVE_HYPER_FANG),
-    LEVEL_UP_MOVE(39, MOVE_NASTY_PLOT),
+    LEVEL_UP_MOVE(39, MOVE_BATON_PASS),
     LEVEL_UP_MOVE(43, MOVE_MEAN_LOOK),
     // Add the custom Special Normal move when it's added later.
-    LEVEL_UP_MOVE(72, MOVE_BATON_PASS),
+    LEVEL_UP_MOVE(72, MOVE_NASTY_PLOT),
 
     LEVEL_UP_END};
 #endif // P_FAMILY_PATRAT
