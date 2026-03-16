@@ -63,23 +63,14 @@ bool32 IsRestrictedModeTeraBanned(u32 battler)
     u32 bannedTierThreshold = 4;
 
     if (GetMonTierPoints(species) >= bannedTierThreshold){
-        //Exception: even when Darmanitan exceeds the threshold, Zen Mode form is allowed to tera
-        if (species == SPECIES_DARMANITAN_ZEN){
-            return FALSE;
-        }else if (species == SPECIES_AZUMARILL && GetBattlerAbility(battler) == ABILITY_THICK_FAT){
+        if (species == SPECIES_AZUMARILL && GetBattlerAbility(battler) == ABILITY_THICK_FAT){
             return FALSE;
         }else if (species == SPECIES_DIGGERSBY && GetBattlerAbility(battler) != ABILITY_HUGE_POWER){
             return FALSE;
         }else if (species == SPECIES_MEDICHAM && GetBattlerAbility(battler) != ABILITY_PURE_POWER){
             return FALSE;
-        }else if ((species == SPECIES_YANMEGA || species == SPECIES_SHARPEDO || species == SPECIES_BLAZIKEN || species == SPECIES_SCOLIPEDE
-        || species == SPECIES_ESPATHRA)
+        }else if ((species == SPECIES_BLAZIKEN)
          && GetBattlerAbility(battler) != ABILITY_SPEED_BOOST){
-            return FALSE;
-         }else if ((species == SPECIES_OMASTAR || species == SPECIES_KLAWF || species == SPECIES_CRUSTLE) && GetBattlerAbility(battler) != ABILITY_SHELL_ARMOR){
-            return FALSE;
-         }
-         else if ((species == SPECIES_KABUTOPS || species == SPECIES_ARMALDO) && GetBattlerAbility(battler) != ABILITY_BATTLE_ARMOR){
             return FALSE;
          }
          else if ((species == SPECIES_POLTEAGEIST) && GetBattlerAbility(battler) != ABILITY_WEAK_ARMOR){
