@@ -16394,8 +16394,9 @@ static void Cmd_givecaughtmon(void)
 
             //Because the FlagGet check was added to the above if statement, need to add the PartyCount check here
             if (FlagGet(FLAG_TIERED) && CalculatePlayerPartyCount() < PARTY_SIZE){
-                u16 caughtSpecies = GetMonData(&gEnemyParty[gBattlerPartyIndexes[GetCatchingBattler()]], MON_DATA_SPECIES, NULL);
-                if ((CountPartyTierPoints() + GetMonTierPoints(caughtSpecies)) > TIER_POINTS_CAP){
+                u32 resultantTierPoints = CountPartyTierPoints();
+                resultantTierPoints += GetMonTierPoints(GetBattlerMon(GetCatchingBattler()));
+                if (resultantTierPoints > TIER_POINTS_CAP){
                     PrepareStringBattle(STRINGID_CAUGHTMONEXCEEEDSPOINTS, gBattlerAttacker);
                     gBattleCommunication[MSG_DISPLAY] = 1;
                 }
@@ -16723,13 +16724,11 @@ static void Cmd_trygivecaughtmonnick(void)
             if (FlagGet(FLAG_TIERED)){
                 gExcessTierPoints = 0; //Refresh points before computing
                 resultantTierPoints += CountPartyTierPoints();
-                resultantTierPoints += GetMonTierPoints(GetMonData(&gEnemyParty[gBattlerPartyIndexes[gBattlerTarget]], MON_DATA_SPECIES));
+                resultantTierPoints += GetMonTierPoints(GetBattlerMon(gBattlerTarget));
                 if (resultantTierPoints > TIER_POINTS_CAP){
                     gExcessTierPoints = resultantTierPoints - TIER_POINTS_CAP;
                 }
             }
-
-
             
             GetMonData(GetBattlerMon(gBattlerTarget), MON_DATA_NICKNAME, gBattleStruct->caughtMonNick);
             FreeAllWindowBuffers();

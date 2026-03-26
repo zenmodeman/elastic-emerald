@@ -845,7 +845,7 @@ u32 GetTeraTypeFromPersonality(struct Pokemon *mon);
 
 
 //Custom Additions
-u8 GetMonTierPoints(u16 species);
+u8 GetMonTierPoints(struct Pokemon *mon);
 u32 CountPartyTierPoints();
 bool8 DepositPartyMonToPC_Auto(u8 partyId);
 u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies);

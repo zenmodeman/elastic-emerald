@@ -2787,7 +2787,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_JOLTEON:
             return TYPE_FIGHTING;
         case SPECIES_ELEKID: case SPECIES_ELECTABUZZ: case SPECIES_ELECTIVIRE:
-            return TYPE_GROUND; //Earthquake
+            return TYPE_DARK; //Darkest Lariat
         case SPECIES_MAREEP: case SPECIES_FLAAFFY: case SPECIES_AMPHAROS:
             return TYPE_DRAGON; //Dragon Pulse, Mega
         case SPECIES_ELECTRIKE: case SPECIES_MANECTRIC:
@@ -2797,7 +2797,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_MINUN:
             return TYPE_GRASS; //Grass Knot
         case SPECIES_SHINX: case SPECIES_LUXIO: case SPECIES_LUXRAY:
-            return TYPE_DARK; //Crunch
+            return TYPE_FIGHTING; //Superpower
         case SPECIES_PACHIRISU:
             return TYPE_FAIRY; //Mainly defensive
         case SPECIES_BLITZLE: case SPECIES_ZEBSTRIKA:
@@ -3171,7 +3171,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_CORSOLA:
             return TYPE_GRASS; //dodge quad resistance
         case SPECIES_RELICANTH:
-            return TYPE_NORMAL; //Double-Edge
+            return TYPE_ROCK; //Power Boost and for Rock Head Head Smash
         case SPECIES_TIRTOUGA: case SPECIES_CARRACOSTA:
             return TYPE_DRAGON; 
         case SPECIES_BINACLE: case SPECIES_BARBARACLE:
@@ -3311,7 +3311,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         
         //Steel/Rock
         case SPECIES_ARON: case SPECIES_LAIRON: case SPECIES_AGGRON:
-            return TYPE_ICE; //Ice Punch and preserving not the best Tera Type
+            return TYPE_NORMAL; //Rock Head
         case SPECIES_SHIELDON: case SPECIES_BASTIODON:
             return TYPE_DARK; //Foul Play boost
         case SPECIES_PROBOPASS:
@@ -3434,7 +3434,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_SCIZOR:
             return TYPE_ROCK; //Kleavor basis
         case SPECIES_WORMADAM_TRASH:
-            return TYPE_GRASS; //Retains the fire weakness
+            return TYPE_ICE; //Retains the fire weakness
         case SPECIES_ESCAVALIER:
             return TYPE_WATER; //Razor Shell
         case SPECIES_DURANT:
@@ -3946,7 +3946,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         /*Not included because of Tier Points: Diancie
         */
         case SPECIES_CARBINK:
-            return TYPE_FAIRY; //Power Boost
+            return TYPE_GHOST; 
 
         //Bug/Ground
         case SPECIES_NINCADA:
@@ -3998,7 +3998,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         /*Not included because of Tier Points: Tapu Koko
         */
         case SPECIES_DEDENNE:
-            return TYPE_GHOST;
+            return TYPE_GROUND;
         
         //Ice/Flying
         case SPECIES_ARTICUNO:
@@ -5007,7 +5007,7 @@ u8 GiveMonToPlayer(struct Pokemon *mon)
     if (i < PARTY_SIZE && FlagGet(FLAG_TIERED)){
         gExcessTierPoints = 0; //Reset excess Tier Points before computing.
         u32 tierPoints = CountPartyTierPoints();
-        tierPoints += GetMonTierPoints(GetMonData(mon, MON_DATA_SPECIES));
+        tierPoints += GetMonTierPoints(mon);
         if (tierPoints > TIER_POINTS_CAP){
             gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
             return CopyMonToPC(mon);
@@ -9069,20 +9069,37 @@ u32 GetTeraTypeFromPersonality(struct Pokemon *mon)
 u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies)
 {
     u32 total = 0;
+    struct Pokemon tempMon;
     for (u8 i = 0; i < gPlayerPartyCount; i++) {
         if (i == partyId) {
-            total += GetMonTierPoints(newSpecies);
+            // Create temporary mon with new species to calculate points
+            tempMon = gPlayerParty[i];
+            SetMonData(&tempMon, MON_DATA_SPECIES, &newSpecies);
+            total += GetMonTierPoints(&tempMon);
         } else {
-            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL);
-            if (species != SPECIES_NONE)
-                total += GetMonTierPoints(species);
+            total += GetMonTierPoints(&gPlayerParty[i]);
         }
     }
     return total;
 }
 
 
-u8 GetMonTierPoints(u16 species){
+u8 GetMonTierPoints(struct Pokemon *mon){
+    u16 species;
+    u8 abilityNum;
+    u32 ability; 
+
+    if (mon == NULL){
+        return 3; //Default
+    }    
+    //Treating eggs as 0 until they hatch
+    if (GetMonData(mon, MON_DATA_IS_EGG)){
+        return 0;
+    }
+    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
+    ability =  GetAbilityBySpecies(species, abilityNum);
+
     //Start with default point value
     u8 defaultPointValue = 3;
     //species simplification
@@ -9121,7 +9138,47 @@ u8 GetMonTierPoints(u16 species){
         species = SPECIES_FLORGES;
     }
 
+
     switch(species){
+        //Special Ability Logic: Drizzle
+        case SPECIES_POLITOED:
+            if (ability == ABILITY_DRIZZLE){
+                return 6;
+            }else{
+                return 3;
+            }
+        case SPECIES_PELIPPER:
+            if (ability == ABILITY_DRIZZLE){
+                return 6;
+            }else{
+                if (FlagGet(FLAG_BADGE05_GET)){
+                return 2;
+                }else{
+                return 3;
+                }
+            }
+        
+        //Special Ability Logic: Drought
+        case SPECIES_VULPIX:
+            if (ability == ABILITY_DROUGHT){
+                return 6;
+            }else{
+                if (FlagGet(FLAG_BADGE04_GET)){
+                    return 1;
+                }else if (FlagGet(FLAG_BADGE03_GET)){
+                    return 2;
+                }else{
+                    return 3;
+                }
+            }
+        case SPECIES_NINETALES:
+            if (ability == ABILITY_DROUGHT){
+                return 6;
+            }else{
+                return 3;
+            }
+        
+            
         //6 Points Kanto
         case SPECIES_SLOWBRO_MEGA: case SPECIES_KANGASKHAN_MEGA:
         case SPECIES_CHARIZARD_MEGA_Y: //Inaccessible in Restricted Mode
@@ -9238,7 +9295,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_AMPHAROS_MEGA: case SPECIES_HERACROSS_MEGA:
         
         //4 Points Hoenn
-        case SPECIES_SWAMPERT: case SPECIES_SWELLOW: case SPECIES_GARDEVOIR: case SPECIES_SLAKING: case SPECIES_SHARPEDO: 
+        case SPECIES_SWAMPERT: case SPECIES_SWELLOW: case SPECIES_GARDEVOIR: case SPECIES_SLAKING:
         case SPECIES_ZANGOOSE: case SPECIES_METAGROSS: case SPECIES_REGISTEEL: case SPECIES_JIRACHI:
         case SPECIES_MEDICHAM:
 
@@ -9273,7 +9330,7 @@ u8 GetMonTierPoints(u16 species){
 
         //4 Points Alola
         case SPECIES_INCINEROAR: case SPECIES_MUDSDALE: case SPECIES_ARAQUANID: case SPECIES_SALAZZLE: case SPECIES_TOGEDEMARU: case SPECIES_TAPU_BULU: case SPECIES_KOMMO_O:
-        case SPECIES_XURKITREE: case SPECIES_STAKATAKA: case SPECIES_NECROZMA:
+        case SPECIES_XURKITREE: case SPECIES_STAKATAKA: case SPECIES_NECROZMA: case SPECIES_SILVALLY:
 
         //4 Points Galar
         case SPECIES_INTELEON: case SPECIES_ELDEGOSS: case SPECIES_DREDNAW: case SPECIES_BARRASKEWDA: case SPECIES_COALOSSAL: case SPECIES_HATTERENE: case SPECIES_GRIMMSNARL: 
@@ -9292,10 +9349,10 @@ u8 GetMonTierPoints(u16 species){
             return 4;
         
         //3 Points Kanto/Regionals
-        case SPECIES_BLASTOISE: case SPECIES_RATICATE: case SPECIES_RAICHU: case SPECIES_RAICHU_ALOLA: case SPECIES_SANDSLASH: case SPECIES_NIDOQUEEN:  case SPECIES_NINETALES: 
+        case SPECIES_BLASTOISE: case SPECIES_RATICATE: case SPECIES_RAICHU: case SPECIES_RAICHU_ALOLA: case SPECIES_SANDSLASH: case SPECIES_NIDOQUEEN:
         case SPECIES_NINETALES_ALOLA: case SPECIES_VILEPLUME: case SPECIES_PERSIAN_ALOLA: case SPECIES_DUGTRIO: case SPECIES_POLIWRATH: case SPECIES_MACHAMP: 
         case SPECIES_TENTACRUEL: case SPECIES_GOLEM: case SPECIES_GOLEM_ALOLA: case SPECIES_MUK: case SPECIES_ELECTRODE_HISUI: case SPECIES_KINGLER:
-        case SPECIES_DODRIO: case SPECIES_EXEGGUTOR: case SPECIES_EXEGGUTOR_ALOLA: case SPECIES_HITMONLEE:
+        case SPECIES_DODRIO: case SPECIES_EXEGGUTOR: case SPECIES_EXEGGUTOR_ALOLA: case SPECIES_HITMONLEE: case SPECIES_HITMONCHAN: 
         case SPECIES_WEEZING: case SPECIES_WEEZING_GALAR: case SPECIES_KANGASKHAN: case SPECIES_JYNX: case SPECIES_PINSIR: case SPECIES_MR_MIME: case SPECIES_MR_MIME_GALAR:
         case SPECIES_JOLTEON: case SPECIES_ARTICUNO: case SPECIES_RAPIDASH: case SPECIES_RAPIDASH_GALAR: case SPECIES_WIGGLYTUFF:
         
@@ -9306,7 +9363,7 @@ u8 GetMonTierPoints(u16 species){
 
         //3 Points Johto/Regionals
         case SPECIES_MEGANIUM: case SPECIES_LANTURN: case SPECIES_FERALIGATR: case SPECIES_AMPHAROS: case SPECIES_BELLOSSOM: case SPECIES_SUDOWOODO:
-        case SPECIES_POLITOED: case SPECIES_WOBBUFFET: case SPECIES_SHUCKLE: case SPECIES_MANTINE: case SPECIES_HOUNDOOM: case SPECIES_DONPHAN:
+        case SPECIES_WOBBUFFET: case SPECIES_SHUCKLE: case SPECIES_MANTINE: case SPECIES_HOUNDOOM: case SPECIES_DONPHAN:
         case SPECIES_SMEARGLE: case SPECIES_HITMONTOP: case SPECIES_MILTANK:
         //3 Points Johto/Regionals Eviolite
         case SPECIES_GLIGAR: case SPECIES_PUPITAR: case SPECIES_SNEASEL: case SPECIES_SNEASEL_HISUI:
@@ -9327,6 +9384,8 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_DRIFBLIM: case SPECIES_TOXICROAK: case SPECIES_LICKILICKY: case SPECIES_ELECTIVIRE: case SPECIES_MAGMORTAR:
         case SPECIES_DUSKNOIR: case SPECIES_PROBOPASS: case SPECIES_FROSLASS: case SPECIES_ROTOM_HEAT: case SPECIES_ROTOM_FAN:
         case SPECIES_ROTOM_MOW:  case SPECIES_ROTOM: case SPECIES_MESPRIT: case SPECIES_UXIE: case SPECIES_REGIGIGAS: 
+        case SPECIES_WORMADAM_TRASH: case SPECIES_SPIRITOMB:
+
         //3 Points Sinnoh Eviolite
         case SPECIES_MUNCHLAX: case SPECIES_GABITE:
             return 3;
@@ -9359,7 +9418,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_RIBOMBEE: case SPECIES_LYCANROC_DUSK: case SPECIES_LYCANROC_MIDDAY:
         case SPECIES_WISHIWASHI: case SPECIES_WISHIWASHI_SCHOOL: case SPECIES_SHIINOTIC: case SPECIES_BEWEAR:
         case SPECIES_TSAREENA: case SPECIES_COMFEY: case SPECIES_PASSIMIAN: case SPECIES_PALOSSAND: case SPECIES_PYUKUMUKU:
-        case SPECIES_SILVALLY: case SPECIES_MINIOR: case SPECIES_KOMALA: case SPECIES_TURTONATOR: case SPECIES_DRAMPA:
+        case SPECIES_MINIOR: case SPECIES_KOMALA: case SPECIES_TURTONATOR: case SPECIES_DRAMPA:
         case SPECIES_BRUXISH: case SPECIES_GUZZLORD: 
         //4 Points Alola Eviolite Mons
         case SPECIES_HAKAMO_O: case SPECIES_MAREANIE: case SPECIES_WIMPOD: case SPECIES_TYPE_NULL:
@@ -9393,7 +9452,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_YANMEGA: case SPECIES_CRUSTLE: case SPECIES_ARMALDO: case SPECIES_SHARPEDO: case SPECIES_ESPATHRA:
         case SPECIES_KABUTOPS: case SPECIES_OMASTAR: case SPECIES_SCOLIPEDE: case SPECIES_NIDOKING:
         {
-            if (FlagGet(FLAG_BADGE_08_GET)){
+            if (FlagGet(FLAG_BADGE08_GET)){
                 return 3;
             }else{
                 return 4;
@@ -9403,7 +9462,7 @@ u8 GetMonTierPoints(u16 species){
         //Terminal 3 points after 7 badges; starting 4 points
         case SPECIES_AGGRON: case SPECIES_KLAWF: case SPECIES_DUGTRIO_ALOLA:
         {
-            if (FlagGet(FLAG_BADGE_07_GET)){
+            if (FlagGet(FLAG_BADGE07_GET)){
                 return 3;
             }else{
                 return 4;
@@ -9469,7 +9528,7 @@ u8 GetMonTierPoints(u16 species){
         }
         //Terminal 2 Points after 5 Badges; starting 3 Points
         case SPECIES_SWALOT: case SPECIES_CAMERUPT: case SPECIES_ALTARIA: case SPECIES_RAMPARDOS:
-        case SPECIES_WORMADAM_TRASH: case SPECIES_SPIRITOMB: case SPECIES_ABOMASNOW: case SPECIES_LEAFEON:
+        case SPECIES_ABOMASNOW: case SPECIES_LEAFEON:
         case SPECIES_ROTOM_FROST: case SPECIES_SCRAFTY: case SPECIES_GARBODOR: case SPECIES_VANILLUXE: 
         case SPECIES_BEHEEYEM: case SPECIES_BEARTIC: case SPECIES_DRUDDIGON: case SPECIES_BOUFFALANT:
         case SPECIES_STANTLER: case SPECIES_WYRDEER: case SPECIES_CLAWITZER: case SPECIES_DEDENNE:
@@ -9495,6 +9554,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_STARYU: case SPECIES_ROSELIA: case SPECIES_MISDREAVUS: case SPECIES_CETODDLE:
         case SPECIES_SHELMET: case SPECIES_PHANTUMP: case SPECIES_LICKITUNG: case SPECIES_AIPOM:
         case SPECIES_YANMA: case SPECIES_DUNSPARCE: 
+        case SPECIES_WORMADAM_SANDY:
         {
             if (FlagGet(FLAG_BADGE05_GET)){
                 return 2;
@@ -9508,8 +9568,8 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_WEEPINBELL: case SPECIES_VICTREEBEL:
         case SPECIES_FEAROW: case SPECIES_ARBOK: case SPECIES_SANDSLASH_ALOLA:
         case SPECIES_VENOMOTH: case SPECIES_DEWGONG: case SPECIES_ELECTRODE:
-        case SPECIES_HITMONCHAN: case SPECIES_FLAREON: case SPECIES_NOCTOWL: case SPECIES_XATU: case SPECIES_GRANBULL:
-        case SPECIES_OCTILLERY: case SPECIES_PELIPPER: case SPECIES_MASQUERAIN:
+        case SPECIES_FLAREON: case SPECIES_NOCTOWL: case SPECIES_XATU: case SPECIES_GRANBULL:
+        case SPECIES_OCTILLERY: case SPECIES_MASQUERAIN:
         case SPECIES_SABLEYE: case SPECIES_MAWILE: case SPECIES_VOLBEAT: case SPECIES_ILLUMISE:
         case SPECIES_CACTURNE: case SPECIES_SOLROCK: case SPECIES_LUNATONE: case SPECIES_WHISCASH:
         case SPECIES_ABSOL: case SPECIES_TROPIUS: case SPECIES_CHIMECHO: case SPECIES_HUNTAIL:
@@ -9614,7 +9674,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_CORSOLA: case SPECIES_MAGCARGO: case SPECIES_DELIBIRD:
         case SPECIES_MIGHTYENA: case SPECIES_LINOONE: case SPECIES_DELCATTY: case SPECIES_PLUSLE:
         case SPECIES_MINUN: case SPECIES_SPINDA: case SPECIES_SEVIPER: case SPECIES_CASTFORM:
-        case SPECIES_BANETTE: case SPECIES_LUVDISC: case SPECIES_WORMADAM_PLANT: case SPECIES_WORMADAM_SANDY:
+        case SPECIES_BANETTE: case SPECIES_LUVDISC: case SPECIES_WORMADAM_PLANT:
         case SPECIES_MOTHIM: case SPECIES_PACHIRISU: case SPECIES_CHATOT: case SPECIES_CARNIVINE:
         case SPECIES_LUMINEON: case SPECIES_PHIONE: case SPECIES_SWOOBAT: case SPECIES_WATCHOG:
         case SPECIES_UNOWN: case SPECIES_TRAPINCH: case SPECIES_SWABLU: case SPECIES_LITLEO:
@@ -9654,7 +9714,7 @@ u8 GetMonTierPoints(u16 species){
         case SPECIES_SALANDIT: case SPECIES_SEEL: case SPECIES_STUNKY: case SPECIES_YAMASK: case SPECIES_YAMASK_GALAR:
         case SPECIES_DEERLING: case SPECIES_CUFANT: case SPECIES_FLITTLE: case SPECIES_SLUGMA: case SPECIES_GLAMEOW: case SPECIES_CHARCADET: 
         case SPECIES_SINISTEA_PHONY: case SPECIES_SINISTEA_ANTIQUE: case SPECIES_POLTCHAGEIST_ARTISAN: case SPECIES_POLTCHAGEIST_COUNTERFEIT:
-        case SPECIES_VULPIX: case SPECIES_VULPIX_ALOLA: case SPECIES_EEVEE: case SPECIES_PANSEAR: case SPECIES_SHELLDER: case SPECIES_PANPOUR:
+        case SPECIES_VULPIX_ALOLA: case SPECIES_EEVEE: case SPECIES_PANSEAR: case SPECIES_SHELLDER: case SPECIES_PANPOUR:
         case SPECIES_PANSAGE: case SPECIES_TADBULB: case SPECIES_JIGGLYPUFF: case SPECIES_MUNNA: case SPECIES_PETILIL: case SPECIES_HELIOPTILE:  case SPECIES_SNORUNT:
         case SPECIES_KARRABLAST: case SPECIES_CLOBBOPUS:
         {
@@ -9772,8 +9832,7 @@ u32 CountPartyTierPoints(){
             && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
             )
         {
-            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES);
-            tierPoints += GetMonTierPoints(species);
+            tierPoints += GetMonTierPoints(&gPlayerParty[i]);
         }
     }
     return tierPoints;

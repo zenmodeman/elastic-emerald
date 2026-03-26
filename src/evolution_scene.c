@@ -549,12 +549,16 @@ static void CreateShedinja(u32 preEvoSpecies, u32 postEvoSpecies, struct Pokemon
 {
     u32 data = 0;
     u16 ball = ITEM_POKE_BALL;
-    u32 resultantTierPoints = CountPartyTierPoints() + GetMonTierPoints(SPECIES_SHEDINJA);
+    struct Pokemon tempShedinja;
+    u32 resultantTierPoints;
 
     const struct Evolution *evolutions = GetSpeciesEvolutions(preEvoSpecies);
 
     if (evolutions == NULL)
         return;
+
+    CreateMon(&tempShedinja, SPECIES_SHEDINJA, GetMonData(mon, MON_DATA_LEVEL, NULL), USE_RANDOM_IVS, FALSE, 0, OT_ID_PLAYER_ID, 0);
+    resultantTierPoints = CountPartyTierPoints() + GetMonTierPoints(&tempShedinja);
 
     for (u32 i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
     {

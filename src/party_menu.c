@@ -4983,44 +4983,116 @@ static bool32 IsRestrictedModeAbilityPatchForbidden(u16 species)
     case SPECIES_HONCHKROW:
     case SPECIES_PINSIR:
     case SPECIES_HERACROSS:
+        return TRUE;
+    
     // Contrary
     case SPECIES_SNIVY:
     case SPECIES_SERVINE:
     case SPECIES_SERPERIOR:
-    // Drizzle
+        return TRUE;
+    
+        // Drizzle
     case SPECIES_WINGULL:
     case SPECIES_PELIPPER:
     case SPECIES_POLIWAG:
     case SPECIES_POLIWHIRL:
     case SPECIES_POLITOED:
+        if(GetMonoType() == TYPE_NONE){
+            return TRUE;
+        }
+        //Some Leniency in Monotype mode
+        else if (FlagGet(FLAG_BADGE07_GET)){
+            return FALSE;
+        }
+        return TRUE;
+    
     // Drought
     case SPECIES_TORKOAL:
     case SPECIES_VULPIX:
     case SPECIES_NINETALES:
-    // Select Snow Warning
-    case SPECIES_VULPIX_ALOLA:
-    case SPECIES_NINETALES_ALOLA:
-        return TRUE;
-    // Gym 8 progression related
-    case SPECIES_FOMANTIS:
-    case SPECIES_LURANTIS:
-    case SPECIES_MUDBRAY:
-    case SPECIES_MUDSDALE:
-    case SPECIES_SNORUNT:
-    case SPECIES_GLALIE:
-        if (FlagGet(FLAG_BADGE08_GET))
-        {
-            return FALSE;
-        }
-        else
-        {
+        if(GetMonoType() == TYPE_NONE){
             return TRUE;
         }
+        //Some Leniency in Monotype mode
+        else if (FlagGet(FLAG_BADGE07_GET)){
+            return FALSE;
+        }
+        return TRUE;
+    
+    //Snow Warning
+    case SPECIES_VULPIX_ALOLA: case SPECIES_NINETALES_ALOLA:
+    case SPECIES_AMAURA: case SPECIES_AURORUS:
+    case SPECIES_VANILLITE: case SPECIES_VANILLISH: case SPECIES_VANILLUXE:
+        if(GetMonoType() == TYPE_NONE){
+            return TRUE;
+        }
+        //Some Leniency in Monotype mode
+        else if (FlagGet(FLAG_BADGE07_GET)){
+            return FALSE;
+        }
+        return TRUE;
 
+    //Sand Stream
+    case SPECIES_LARVITAR: case SPECIES_PUPITAR: case SPECIES_TYRANITAR:
+    case SPECIES_ROGGENROLA: case SPECIES_BOLDORE: case SPECIES_GIGALITH:
+        if(GetMonoType() == TYPE_NONE){
+            return TRUE;
+        }
+        //Some Leniency in Monotype mode
+        else if (FlagGet(FLAG_BADGE07_GET)){
+            return FALSE;
+        }
+        return TRUE;
+    
+    //Sand Spit and Weezing-galar aren't Monotype bounded like the other Terrain mons, but still has the same progression restriction
+    case SPECIES_KOFFING: case SPECIES_WEEZING_GALAR:
+    case SPECIES_SILICOBRA: case SPECIES_SANDACONDA:
+        if (FlagGet(FLAG_BADGE07_GET)){
+            return FALSE;
+        }else{
+            return TRUE;
+        }
+    
+    //Other Non-Tapu Terrain 
+    case SPECIES_GROOKEY: case SPECIES_THWACKEY: case SPECIES_RILLABOOM:
+    case SPECIES_SMOLIV: case SPECIES_DOLLIV: case SPECIES_ARBOLIVA:
+    case SPECIES_PINCURCHIN:
+    case SPECIES_INDEEDEE_F: case SPECIES_INDEEDEE_M:
+        if(GetMonoType() == TYPE_NONE){
+            return TRUE;
+        }
+        //Some Leniency in Monotype mode
+        else if (FlagGet(FLAG_BADGE07_GET)){
+            return FALSE;
+        }
+        return TRUE;
+
+    //Toxic Debris
+    case SPECIES_GLIMMET: case SPECIES_GLIMMORA:
+        if(GetMonoType() == TYPE_NONE){
+            return TRUE;
+        }
+        //Some Leniency in Monotype mode
+        else if (FlagGet(FLAG_BADGE07_GET)){
+            return FALSE;
+        }
+        return TRUE;
+        
+    
+    //Tapus
+    case SPECIES_TAPU_BULU: case SPECIES_TAPU_LELE: case SPECIES_TAPU_FINI: case SPECIES_TAPU_KOKO:
+        if(GetMonoType() == TYPE_NONE){
+            return TRUE;
+        }
+        //Freed in Monotype mode
+        else{
+            return FALSE;
+        }
+    
     default:
         return FALSE;
-        return FALSE;
     }
+    return FALSE;
 }
 void Task_AbilityPatch(u8 taskId)
 {

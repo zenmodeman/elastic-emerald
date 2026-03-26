@@ -1452,8 +1452,7 @@ u32 CountPartyPointsExcept(u8 slotToIgnore){
             && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
             )
         {
-            u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES);
-            tierPoints += GetMonTierPoints(species);
+            tierPoints += GetMonTierPoints(&gPlayerParty[i]);
         }
     }
     return tierPoints;
@@ -2792,9 +2791,9 @@ static void Task_PlaceMon(u8 taskId)
         if (sInPartyMenu && FlagGet(FLAG_TIERED) && !GetMonData(&sStorage->movingMon, MON_DATA_IS_EGG))
         {
             gExcessTierPoints = 0;
-            u16 species = GetMonData(&sStorage->movingMon, MON_DATA_SPECIES);
+            // u16 species = GetMonData(&sStorage->movingMon, MON_DATA_SPECIES);
             u32 otherTierPoints = CountPartyPointsExcept(sCursorPosition);
-            u32 movingMonTierPoints = GetMonTierPoints(species);
+            u32 movingMonTierPoints = GetMonTierPoints(&sStorage->movingMon);
             if (otherTierPoints + movingMonTierPoints > TIER_POINTS_CAP)
             {
                 gExcessTierPoints = otherTierPoints + movingMonTierPoints - TIER_POINTS_CAP;
@@ -2855,7 +2854,11 @@ static void Task_WithdrawMon(u8 taskId)
         gExcessTierPoints = 0;
         if (FlagGet(FLAG_TIERED) && !GetCurrentBoxMonData(sCursorPosition, MON_DATA_IS_EGG)){
             u32 tierPoints = CountPartyTierPoints();
-            tierPoints += GetMonTierPoints(GetSpeciesAtCursorPosition());
+            struct BoxPokemon *boxMon = GetBoxedMonPtr(StorageGetCurrentBox(), sCursorPosition);
+            struct Pokemon tempMon;
+
+            BoxMonToMon(boxMon, &tempMon);
+            tierPoints += GetMonTierPoints(&tempMon);
             if (tierPoints > TIER_POINTS_CAP){
                 gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
             }
@@ -6943,7 +6946,7 @@ static bool8 CanShiftMon(void)
                 return FALSE;
         }else if (FlagGet(FLAG_TIERED) && sCursorArea == CURSOR_AREA_IN_PARTY && !sStorage->displayMonIsEgg){
             u32 otherTierPoints = CountPartyPointsExcept(sCursorPosition);
-            u32 movingMonTierPoints = GetMonTierPoints(GetMonData(&sStorage->movingMon, MON_DATA_SPECIES));
+            u32 movingMonTierPoints = GetMonTierPoints(&sStorage->movingMon);
             if (otherTierPoints + movingMonTierPoints > TIER_POINTS_CAP){
                 gExcessTierPoints = otherTierPoints + movingMonTierPoints - TIER_POINTS_CAP;
                 return FALSE;

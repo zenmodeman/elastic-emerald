@@ -12475,7 +12475,7 @@ F_TRAINER_FEMALE |
             },
             {
 #line 5079
-            .species = SPECIES_PIGNITE,
+            .species = SPECIES_COMBUSKEN,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 5079
             .heldItem = ITEM_EXPERT_BELT,
@@ -12484,7 +12484,7 @@ F_TRAINER_FEMALE |
 #line 5084
             .iv = TRAINER_PARTY_IVS(18, 18, 18, 18, 18, 18),
 #line 5080
-            .ability = ABILITY_BLAZE,
+            .ability = ABILITY_SPEED_BOOST,
 #line 5081
             .lvl = 17,
 #line 5083
@@ -12492,10 +12492,10 @@ F_TRAINER_FEMALE |
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 5085
-                MOVE_GRASS_KNOT,
-                MOVE_LOW_KICK,
-                MOVE_FLAME_CHARGE,
                 MOVE_WORK_UP,
+                MOVE_INCINERATE,
+                MOVE_LOW_KICK,
+                MOVE_ROCK_TOMB,
             },
             },
             {
@@ -12546,7 +12546,7 @@ F_TRAINER_FEMALE |
 #line 5108
                 MOVE_BULK_UP,
                 MOVE_FORCE_PALM,
-                MOVE_ROCK_TOMB,
+                MOVE_BULLDOZE,
                 MOVE_BODY_SLAM,
             },
             },
@@ -41823,12 +41823,12 @@ F_TRAINER_FEMALE |
                 MOVE_LOW_KICK,
                 MOVE_PSYCHIC,
                 MOVE_LIGHT_SCREEN,
-                MOVE_AERIAL_ACE,
+                MOVE_SIGNAL_BEAM,
             },
             },
             {
 #line 16944
-            .species = SPECIES_PIGNITE,
+            .species = SPECIES_COMBUSKEN,
             .gender = TRAINER_MON_RANDOM_GENDER,
 #line 16944
             .heldItem = ITEM_EXPERT_BELT,
@@ -41837,7 +41837,7 @@ F_TRAINER_FEMALE |
 #line 16949
             .iv = TRAINER_PARTY_IVS(18, 18, 18, 18, 18, 18),
 #line 16945
-            .ability = ABILITY_BLAZE,
+            .ability = ABILITY_SPEED_BOOST,
 #line 16946
             .lvl = 17,
 #line 16948
@@ -41845,9 +41845,9 @@ F_TRAINER_FEMALE |
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 16950
-                MOVE_GRASS_KNOT,
+                MOVE_AERIAL_ACE,
                 MOVE_LOW_KICK,
-                MOVE_FLAME_CHARGE,
+                MOVE_INCINERATE,
                 MOVE_HELPING_HAND,
             },
             },

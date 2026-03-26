@@ -3500,7 +3500,7 @@ static void GetMetLevelString(u8 *output)
 }
 
 static void GetTierPointsString(u8 *output){
-    u8 tierPoints = GetMonTierPoints(sMonSummaryScreen->summary.species);
+    u8 tierPoints = GetMonTierPoints(&sMonSummaryScreen->currentMon);
     ConvertIntToDecimalStringN(output, tierPoints, STR_CONV_MODE_LEFT_ALIGN, 1);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(6, output);
 

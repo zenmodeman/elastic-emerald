@@ -62,14 +62,17 @@ bool32 IsRestrictedModeTeraBanned(u32 battler)
     //Instead of handpicked filtering, using the tiering system to systematically decide on bans.
     u32 bannedTierThreshold = 4;
 
-    if (GetMonTierPoints(species) >= bannedTierThreshold){
+    if (GetMonTierPoints(GetBattlerMon(battler)) >= bannedTierThreshold){
         if (species == SPECIES_AZUMARILL && GetBattlerAbility(battler) == ABILITY_THICK_FAT){
             return FALSE;
         }else if (species == SPECIES_DIGGERSBY && GetBattlerAbility(battler) != ABILITY_HUGE_POWER){
             return FALSE;
         }else if (species == SPECIES_MEDICHAM && GetBattlerAbility(battler) != ABILITY_PURE_POWER){
             return FALSE;
-        }else if ((species == SPECIES_BLAZIKEN)
+        }else if (species == SPECIES_GIGALITH && GetBattlerAbility(battler) != ABILITY_SAND_STREAM){
+            return FALSE;
+        }
+        else if ((species == SPECIES_BLAZIKEN)
          && GetBattlerAbility(battler) != ABILITY_SPEED_BOOST){
             return FALSE;
          }
