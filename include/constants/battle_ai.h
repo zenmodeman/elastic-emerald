@@ -42,7 +42,8 @@
 // The following options are enough to have a basic/smart trainer. Any other addtion could make the trainer worse/better depending on the flag
 #define AI_FLAG_BASIC_TRAINER         (AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY)
 //My Smart Trainer adds Predict Incoming Mon but removes Omniscient 
-#define AI_FLAG_SMART_TRAINER         (AI_FLAG_BASIC_TRAINER | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_WEIGH_ABILITY_PREDICTION | AI_FLAG_PREDICT_INCOMING_MON)
+//I'm also opting to not use AI_FLAG_PP_STALL_PREVENTION for now based on my alternative approachto switch prediction
+#define AI_FLAG_SMART_TRAINER         (AI_FLAG_BASIC_TRAINER | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_PREDICT_INCOMING_MON)
 #define AI_FLAG_PREDICTION            (AI_FLAG_PREDICT_SWITCH | AI_FLAG_PREDICT_INCOMING_MON | AI_FLAG_PREDICT_MOVE)
 
 // 'other' ai logic flags

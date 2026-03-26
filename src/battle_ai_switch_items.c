@@ -315,7 +315,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
 
                 // Get maximum damage mon can deal
                 damageDealt = AI_GetDamage(battler, opposingBattler, i, AI_ATTACKING, gAiLogicData);
-                if(damageDealt > maxDamageDealt && !AI_DoesChoiceItemBlockMove(battler, aiMove))
+                if (damageDealt > maxDamageDealt && !AI_DoesChoiceItemBlockMove(battler, aiMove))
                 {
                     maxDamageDealt = damageDealt;
                     aiBestMove = aiMove;
@@ -382,8 +382,6 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     if(maxSurmisedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy))
     {
         getsSurmisedOneShot = TRUE;
-        // DEBUG_REASON("AI mon gets OHKO'd (damage: %d, HP: %d, Focus Sash: %s, Sturdy: %s)",
-        //              maxSurmisedDamageTaken, gBattleMons[battler].hp, hasFocusSash ? "YES" : "NO", hasSturdy ? "YES" : "NO");
     }
     if (maxRevealedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy)){
         getsRevealedOneShot = TRUE;
@@ -409,7 +407,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     }
 
     // Check if current mon can 1v1 in spite of bad matchup, and don't switch out if it can
-    if(hitsToKoPlayer < hitsToKoAI || (hitsToKoPlayer == hitsToKoAI && AI_IsFaster(battler, opposingBattler, aiBestMove)))
+    if (hitsToKoPlayer < hitsToKoAI || (hitsToKoPlayer == hitsToKoAI && AI_IsFaster(battler, opposingBattler, aiBestMove)))
         return FALSE;
 
     // If we don't have any other viable options, don't switch out
@@ -2164,7 +2162,7 @@ static u32 GetSwitchinStatusDamage(u32 battler)
                 statusDamage = maxHP / 16;
             else
                 statusDamage = maxHP / 8;
-            if(ability == ABILITY_HEATPROOF)
+            if (ability == ABILITY_HEATPROOF)
                 statusDamage = statusDamage / 2;
             if (statusDamage == 0)
                 statusDamage = 1;
@@ -2551,10 +2549,10 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
             }
 
             // Track max hits to KO and set defensive mon
-            if(hitsToKOAI > maxHitsToKO && (canSwitchinWin1v1 || gAiThinkingStruct->aiFlags[battler] & AI_FLAG_STALL))
+            if (hitsToKOAI > maxHitsToKO && (canSwitchinWin1v1 || gAiThinkingStruct->aiFlags[battler] & AI_FLAG_STALL))
             {
                 maxHitsToKO = hitsToKOAI;
-                if(maxHitsToKO > defensiveMonHitKOThreshold)
+                if (maxHitsToKO > defensiveMonHitKOThreshold)
                     defensiveMonId = i;
             }
 
@@ -2580,7 +2578,7 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
                 // Check that mon isn't one shot and set best damage mon
                 if (damageDealt > maxDamageDealt)
                 {
-                    if((isFreeSwitch && hitsToKOAI > 1) || hitsToKOAI > 2) // This is a "default", we have uniquely low standards
+                    if ((isFreeSwitch && hitsToKOAI > 1) || hitsToKOAI > 2) // This is a "default", we have uniquely low standards
                     {
                         maxDamageDealt = damageDealt;
                         damageMonId = i;
