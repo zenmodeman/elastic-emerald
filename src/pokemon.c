@@ -2785,7 +2785,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_VOLTORB: case SPECIES_ELECTRODE:
             return TYPE_STEEL; //Gains Flash Cannon; doesn't invert the weakness, but enables lead Volt Switch Tera into later pivoting
         case SPECIES_JOLTEON:
-            return TYPE_FIGHTING;
+            return TYPE_FIRE;
         case SPECIES_ELEKID: case SPECIES_ELECTABUZZ: case SPECIES_ELECTIVIRE:
             return TYPE_DARK; //Darkest Lariat
         case SPECIES_MAREEP: case SPECIES_FLAAFFY: case SPECIES_AMPHAROS:
@@ -3670,7 +3670,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_JOLTIK: case SPECIES_GALVANTULA:
             return TYPE_POISON;
         case SPECIES_CHARJABUG: case SPECIES_VIKAVOLT:
-            return TYPE_STEEL; //Flash Cannon
+            return TYPE_GRASS; //Energy Ball
         
         //Ghost/Poison
         /*Not included because of Tier Points: Gengar and Pecharunt
@@ -4052,7 +4052,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         
         //Electric/Psychic
         case SPECIES_RAICHU_ALOLA:
-            return TYPE_FAIRY; 
+            return TYPE_NORMAL; //Fake Out and Extreme Speed 
         
         //Electric/Dark
         case SPECIES_MORPEKO: case SPECIES_MORPEKO_HANGRY:
@@ -9161,7 +9161,12 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         //Special Ability Logic: Drought
         case SPECIES_VULPIX:
             if (ability == ABILITY_DROUGHT){
-                return 6;
+                if (FlagGet(FLAG_BADGE08_GET)){
+                    return 5;
+                }else{
+                    return 6;
+                }
+                
             }else{
                 if (FlagGet(FLAG_BADGE04_GET)){
                     return 1;
