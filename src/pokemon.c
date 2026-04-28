@@ -9161,7 +9161,12 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         //Special Ability Logic: Drought
         case SPECIES_VULPIX:
             if (ability == ABILITY_DROUGHT){
-                return 6;
+                if (FlagGet(FLAG_BADGE08_GET)){
+                    return 5;
+                }else{
+                    return 6;
+                }
+                
             }else{
                 if (FlagGet(FLAG_BADGE04_GET)){
                     return 1;
