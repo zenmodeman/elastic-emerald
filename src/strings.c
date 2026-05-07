@@ -240,6 +240,7 @@ const u8 gText_HP3[] = _("HP");
 const u8 gText_SpAtk3[] = _("SP. ATK");
 const u8 gText_SpDef3[] = _("SP. DEF");
 const u8 gText_WontHaveEffect[] = _("It won't have any effect.{PAUSE_UNTIL_PRESS}");
+const u8 gText_AbilityChangeExceedsTierPoints[] = _("Ability change exceeds\nTier Points cap!{PAUSE_UNTIL_PRESS}");
 const u8 gText_NextFusionMon[] = _("Choose {PKMN} to fuse with.");
 const u8 gText_CantBeUsedOnPkmn[] = _("This can't be used on\nthat POKéMON.{PAUSE_UNTIL_PRESS}");
 const u8 gText_PkmnCantSwitchOut[] = _("{STR_VAR_1} can't be switched\nout!{PAUSE_UNTIL_PRESS}");

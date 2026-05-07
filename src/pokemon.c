@@ -9083,6 +9083,21 @@ u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies)
     return total;
 }
 
+u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum)
+{
+    u32 total = 0;
+    struct Pokemon tempMon;
+    for (u8 i = 0; i < gPlayerPartyCount; i++) {
+        if (i == partyId) {
+            tempMon = gPlayerParty[i];
+            SetMonData(&tempMon, MON_DATA_ABILITY_NUM, &newAbilityNum);
+            total += GetMonTierPoints(&tempMon);
+        } else {
+            total += GetMonTierPoints(&gPlayerParty[i]);
+        }
+    }
+    return total;
+}
 
 u8 GetMonTierPoints(struct Pokemon *mon){
     u16 species;
