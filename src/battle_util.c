@@ -8139,6 +8139,9 @@ static inline u32 CalcMoveBasePower(struct DamageCalculationData *damageCalcData
         break;
     case EFFECT_SPIT_UP:
         basePower = 100 * gDisableStructs[battlerAtk].stockpileCounter;
+        if (GetBattlerAbility(gBattlerAttacker) == ABILITY_GLUTTONY){
+            basePower *= 2;
+        }
         break;
     case EFFECT_REVENGE:
         if ((gProtectStructs[battlerAtk].physicalDmg

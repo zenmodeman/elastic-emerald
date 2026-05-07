@@ -4795,7 +4795,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 healPercent = 33;
                 break;
             case 2:
-                healPercent = 67;
+                healPercent = 66;
                 break;
             case 3:
                 healPercent = 100;

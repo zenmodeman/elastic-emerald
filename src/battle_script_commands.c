@@ -12424,7 +12424,15 @@ void BS_RemoveStockpileCounters(void)
     }
     else
     {
-        gDisableStructs[gBattlerAttacker].stockpileCounter = 0;
+        if (GetMoveEffect(gCurrentMove) == EFFECT_SWALLOW && gStockpilesToUse > 0
+        && gStockpilesToUse <= gDisableStructs[gBattlerAttacker].stockpileCounter){
+            gDisableStructs[gBattlerAttacker].stockpileCounter -= gStockpilesToUse;
+        }else{
+            // Spit Up / snatched / fallback: consume everything, and tell the
+            // wear-off step how many stat stages to revert.
+            gStockpilesToUse = gDisableStructs[gBattlerAttacker].stockpileCounter;
+            gDisableStructs[gBattlerAttacker].stockpileCounter = 0;                        
+        }
         BattleScriptPush(cmd->nextInstr);
         gBattlescriptCurrInstr = BattleScript_MoveEffectStockpileWoreOff;
     }

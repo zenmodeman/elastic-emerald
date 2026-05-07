@@ -110,7 +110,7 @@ SINGLE_BATTLE_TEST("Swallow heals HP depending on Stockpile's count", s16 hpHeal
     PARAMETRIZE { count = 2; }
     PARAMETRIZE { count = 3; }
     GIVEN {
-        PLAYER(SPECIES_WOBBUFFET) { HP(1), MaxHP(400); }
+        PLAYER(SPECIES_WOBBUFFET) { HP(1), MaxHP(600); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
         TURN { MOVE(player, MOVE_STOCKPILE); }
@@ -135,9 +135,9 @@ SINGLE_BATTLE_TEST("Swallow heals HP depending on Stockpile's count", s16 hpHeal
         ANIMATION(ANIM_TYPE_MOVE, MOVE_SWALLOW, player);
         HP_BAR(player, captureDamage: &results[i].hpHeal);
     } FINALLY {
-        EXPECT_EQ(results[0].hpHeal, -100);
-        EXPECT_EQ(results[1].hpHeal, -200);
-        EXPECT_EQ(results[2].hpHeal, -399); // 400 - 1.
+        EXPECT_EQ(results[0].hpHeal, -200);
+        EXPECT_EQ(results[1].hpHeal, -400);
+        EXPECT_EQ(results[2].hpHeal, -599); // 400 - 1.
     }
 }
 
