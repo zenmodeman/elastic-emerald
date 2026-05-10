@@ -82,6 +82,7 @@ enum DebugMenu
     DEBUG_MENU_ITEM_SCRIPTS,
     DEBUG_MENU_ITEM_FLAGVAR,
     //DEBUG_MENU_ITEM_BATTLE,
+    DEBUG_MENU_ITEM_BATTLE_BY_ID,
     DEBUG_MENU_ITEM_SOUND,
     DEBUG_MENU_ITEM_ROMINFO,
     DEBUG_MENU_ITEM_CANCEL,
@@ -379,6 +380,8 @@ static void DebugAction_OpenGiveMenu(u8 taskId);
 static void DebugAction_OpenSoundMenu(u8 taskId);
 static void DebugAction_OpenPlayerMenu(u8 taskId);
 static void DebugAction_OpenROMInfoMenu(u8 taskId);
+static void DebugAction_BattleById(u8 taskId);
+static void DebugAction_BattleById_SelectId(u8 taskId);
 
 static void DebugTask_HandleMenuInput_Main(u8 taskId);
 static void DebugTask_HandleMenuInput_Utilities(u8 taskId);
@@ -559,6 +562,7 @@ static const u8 sDebugText_Util_WarpToMap_SelectMap[] =      _("Map: {STR_VAR_1}
 static const u8 sDebugText_Util_WarpToMap_SelectWarp[] =     _("Warp:{CLEAR_TO 90}\n{STR_VAR_1}{CLEAR_TO 90}\n{CLEAR_TO 90}\n{STR_VAR_3}{CLEAR_TO 90}");
 static const u8 sDebugText_Util_WarpToMap_SelMax[] =         _("{STR_VAR_1} / {STR_VAR_2}");
 static const u8 sDebugText_Util_Weather_ID[] =               _("Weather ID: {STR_VAR_3}\n{STR_VAR_1}\n{STR_VAR_2}");
+static const u8 sDebugText_BattleById_ID[] =                 _("Trainer ID: {STR_VAR_3}{CLEAR_TO 90}\nMax: {STR_VAR_1}{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}");
 
 //Time Menu
 
@@ -638,6 +642,7 @@ static const struct ListMenuItem sDebugMenu_Items_Main[] =
     [DEBUG_MENU_ITEM_SCRIPTS]       = {COMPOUND_STRING("Scripts…{CLEAR_TO 110}{RIGHT_ARROW}"),      DEBUG_MENU_ITEM_SCRIPTS},
     [DEBUG_MENU_ITEM_FLAGVAR]       = {COMPOUND_STRING("Flags & Vars…{CLEAR_TO 110}{RIGHT_ARROW}"), DEBUG_MENU_ITEM_FLAGVAR},
     //[DEBUG_MENU_ITEM_BATTLE]        = {COMPOUND_STRING("Battle Test{CLEAR_TO 110}{RIGHT_ARROW}"),   DEBUG_MENU_ITEM_BATTLE},
+    [DEBUG_MENU_ITEM_BATTLE_BY_ID]  = {COMPOUND_STRING("Battle by ID…{CLEAR_TO 110}{RIGHT_ARROW}"), DEBUG_MENU_ITEM_BATTLE_BY_ID},
     [DEBUG_MENU_ITEM_SOUND]         = {COMPOUND_STRING("Sound…{CLEAR_TO 110}{RIGHT_ARROW}"),        DEBUG_MENU_ITEM_SOUND},
     [DEBUG_MENU_ITEM_ROMINFO]       = {COMPOUND_STRING("ROM Info…{CLEAR_TO 110}{RIGHT_ARROW}"),     DEBUG_MENU_ITEM_ROMINFO},
     [DEBUG_MENU_ITEM_CANCEL]        = {COMPOUND_STRING("Cancel"),                                   DEBUG_MENU_ITEM_CANCEL},
@@ -849,6 +854,7 @@ static void (*const sDebugMenu_Actions_Main[])(u8) =
     [DEBUG_MENU_ITEM_SCRIPTS]       = DebugAction_OpenScriptsMenu,
     [DEBUG_MENU_ITEM_FLAGVAR]       = DebugAction_OpenFlagsVarsMenu,
     //[DEBUG_MENU_ITEM_BATTLE]        = DebugAction_OpenBattleMenu,
+    [DEBUG_MENU_ITEM_BATTLE_BY_ID]  = DebugAction_BattleById,
     [DEBUG_MENU_ITEM_SOUND]         = DebugAction_OpenSoundMenu,
     [DEBUG_MENU_ITEM_ROMINFO]       = DebugAction_OpenROMInfoMenu,
     [DEBUG_MENU_ITEM_CANCEL]        = DebugAction_Cancel
@@ -1836,6 +1842,66 @@ static void Debug_InitializeBattle(u8 taskId)
 
 
     Debug_DestroyMenu_Full(taskId);
+}
+
+static void DebugAction_BattleById(u8 taskId)
+{
+    u8 windowId;
+
+    ClearStdWindowAndFrame(gTasks[taskId].tWindowId, TRUE);
+    RemoveWindow(gTasks[taskId].tWindowId);
+
+    HideMapNamePopUpWindow();
+    LoadMessageBoxAndBorderGfx();
+    windowId = AddWindow(&sDebugMenuWindowTemplateExtra);
+    DrawStdWindowFrame(windowId, FALSE);
+    CopyWindowToVram(windowId, COPYWIN_FULL);
+
+    StringCopy(gStringVar2, gText_DigitIndicator[0]);
+    ConvertIntToDecimalStringN(gStringVar3, 1, STR_CONV_MODE_LEADING_ZEROS, 4);
+    ConvertIntToDecimalStringN(gStringVar1, TRAINERS_COUNT - 1, STR_CONV_MODE_LEADING_ZEROS, 4);
+    StringExpandPlaceholders(gStringVar4, sDebugText_BattleById_ID);
+    AddTextPrinterParameterized(windowId, DEBUG_MENU_FONT, gStringVar4, 0, 0, 0, NULL);
+
+    gTasks[taskId].func = DebugAction_BattleById_SelectId;
+    gTasks[taskId].tSubWindowId = windowId;
+    gTasks[taskId].tInput = 1;
+    gTasks[taskId].tDigit = 0;
+}
+
+static void DebugAction_BattleById_SelectId(u8 taskId)
+{
+    if (JOY_NEW(DPAD_ANY))
+    {
+        PlaySE(SE_SELECT);
+        Debug_HandleInput_Numeric(taskId, 1, TRAINERS_COUNT - 1, 4);
+
+        StringCopy(gStringVar2, gText_DigitIndicator[gTasks[taskId].tDigit]);
+        ConvertIntToDecimalStringN(gStringVar3, gTasks[taskId].tInput, STR_CONV_MODE_LEADING_ZEROS, 4);
+        ConvertIntToDecimalStringN(gStringVar1, TRAINERS_COUNT - 1, STR_CONV_MODE_LEADING_ZEROS, 4);
+        StringExpandPlaceholders(gStringVar4, sDebugText_BattleById_ID);
+        AddTextPrinterParameterized(gTasks[taskId].tSubWindowId, DEBUG_MENU_FONT, gStringVar4, 0, 0, 0, NULL);
+    }
+
+    if (JOY_NEW(A_BUTTON))
+    {
+        u16 trainerId = gTasks[taskId].tInput;
+
+        PlaySE(SE_SELECT);
+        Debug_DestroyMenu_Full(taskId);
+
+        memset(gTrainerBattleParameter.data, 0, sizeof(TrainerBattleParameter));
+        TRAINER_BATTLE_PARAM.opponentA = trainerId;
+        gBattleTypeFlags = BATTLE_TYPE_TRAINER;
+        gIsDebugBattle = FALSE;
+
+        BattleSetup_StartTrainerBattle_Debug();
+    }
+    else if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        DebugAction_DestroyExtraWindow(taskId);
+    }
 }
 
 static void DebugTask_HandleMenuInput_Give(u8 taskId)

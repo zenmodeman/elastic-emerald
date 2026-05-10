@@ -845,6 +845,8 @@ Music: Female
 Battle Type: Doubles
 AI: Smart Trainer
 
+/*Note: want to make sure that the faster Pokemon is first for better lead index logic*/
+
 Yamask-Galar (F) @ Berry Juice  
 Ability: Wandering Spirit  
 Level: 14
