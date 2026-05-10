@@ -67,6 +67,7 @@ static bool8 TryGetMonotypeVarInfluencedWildMonIndex(const struct WildPokemon *w
 
 EWRAM_DATA static u8 sWildEncountersDisabled = 0;
 EWRAM_DATA static u32 sFeebasRngValue = 0;
+EWRAM_DATA static u8 sSweetScentDoubleChance = 0;
 EWRAM_DATA bool8 gIsFishingEncounter = 0;
 EWRAM_DATA bool8 gIsSurfingEncounter = 0;
 EWRAM_DATA u8 gChainFishingDexNavStreak = 0;
@@ -1073,7 +1074,17 @@ bool8 SweetScentWildEncounter(void)
             else
                 TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[timeOfDay].landMonsInfo, WILD_AREA_LAND, 0);
 
-            BattleSetup_StartWildBattle();
+            if (TryDoDoubleWildBattle())
+            {
+                struct Pokemon mon1 = gEnemyParty[0];
+                TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[timeOfDay].landMonsInfo, WILD_AREA_LAND, 0);
+                gEnemyParty[1] = mon1;
+                BattleSetup_StartDoubleWildBattle();
+            }
+            else
+            {
+                BattleSetup_StartWildBattle();
+            }
             return TRUE;
         }
         else if (MetatileBehavior_IsWaterWildEncounter(MapGridGetMetatileBehaviorAt(x, y)) == TRUE)
@@ -1092,7 +1103,18 @@ bool8 SweetScentWildEncounter(void)
             }
 
             TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[timeOfDay].waterMonsInfo, WILD_AREA_WATER, 0);
-            BattleSetup_StartWildBattle();
+            gIsSurfingEncounter = TRUE;
+            if (TryDoDoubleWildBattle())
+            {
+                struct Pokemon mon1 = gEnemyParty[0];
+                TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[timeOfDay].waterMonsInfo, WILD_AREA_WATER, 0);
+                gEnemyParty[1] = mon1;
+                BattleSetup_StartDoubleWildBattle();
+            }
+            else
+            {
+                BattleSetup_StartWildBattle();
+            }
             return TRUE;
         }
     }
@@ -1460,10 +1482,15 @@ static void ApplyCleanseTagEncounterRateMod(u32 *encRate)
         *encRate = *encRate * 2 / 3;
 }
 
+void SetSweetScentDoubleBattleChance(u8 chance)
+{
+    sSweetScentDoubleChance = chance;
+}
+
 bool8 TryDoDoubleWildBattle(void)
 {
     u16 randResult;
-    u16 sweetScentVarOdds;
+    u16 sweetScentOdds;
     if (GetSafariZoneFlag()
       || (B_DOUBLE_WILD_REQUIRE_2_MONS == TRUE && GetMonsStateToDoubles() != PLAYER_HAS_TWO_USABLE_MONS))
         return FALSE;
@@ -1473,10 +1500,13 @@ bool8 TryDoDoubleWildBattle(void)
     else if (B_FLAG_FORCE_DOUBLE_WILD != 0 && FlagGet(B_FLAG_FORCE_DOUBLE_WILD))
         return TRUE;
     randResult = Random() % 100 + 1;
-    sweetScentVarOdds = VarGet(VAR_TEMP_F);
+    sweetScentOdds = sSweetScentDoubleChance;
+
+    //Clear this value afterwards so it has to be applied by Sweet Scent again 
+    sSweetScentDoubleChance = 0;
 
     if ((B_DOUBLE_WILD_CHANCE != 0 && (randResult <= B_DOUBLE_WILD_CHANCE))
-    || (sweetScentVarOdds != 0 && (randResult <= sweetScentVarOdds))
+    || (sweetScentOdds != 0 && (randResult <= sweetScentOdds))
     )
         return TRUE;
     return FALSE;

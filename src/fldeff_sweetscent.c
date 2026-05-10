@@ -63,6 +63,8 @@ void StartSweetScentFieldEffect(void)
     CpuFastCopy(gPlttBufferUnfaded, palBuffer, PLTT_SIZE);
     CpuFastCopy(gPlttBufferFaded, gPlttBufferUnfaded, PLTT_SIZE);
     BeginNormalPaletteFade(palettes, 4, 0, 8, RGB_RED);
+    // 50% chance for the upcoming Sweet Scent encounter to be a double battle.
+    SetSweetScentDoubleBattleChance(50);
     taskId = CreateTask(TrySweetScentEncounter, 0);
     gTasks[taskId].data[0] = 0;
     StoreWordInTwoHalfwords((u16 *)&gTasks[taskId].tPalBuffer1, (u32) palBuffer);
@@ -85,9 +87,6 @@ static void FreeDestroyTask(u32 taskId)
 
 static void TrySweetScentEncounter(u8 taskId)
 {
-    //Try to give 50% chance of getting a double battle for the rest of the map. Leveraging the fact that VAR_TEMP_F is only used in specific buildings.
-    VarSet(VAR_TEMP_F, 50);
-
     if (!gPaletteFade.active)
     {
         ClearMirageTowerPulseBlendEffect();
