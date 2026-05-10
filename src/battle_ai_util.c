@@ -1357,37 +1357,103 @@ static s8 GetStatStageDifference(s8 statDelta, s8 monStatStage){
     return statDelta;
 }
 
+static bool32 IsSimulatedTargetAbilityIgnored(u32 battlerAtk, u32 battlerDef)
+{
+    if (GetBattlerSide(battlerAtk) == GetBattlerSide(battlerDef))
+        return FALSE;
+
+    return DoesBattlerIgnoreAbilityChecks(battlerAtk, GetBattlerAbility(battlerAtk), MOVE_IRRELEVANT);
+}
+
+static bool32 IsSimulatedStatDropBlockedByAbility(u32 battlerDef, u32 targetAbility, u32 stat)
+{
+    switch (targetAbility)
+    {
+    case ABILITY_CLEAR_BODY:
+    case ABILITY_WHITE_SMOKE:
+    case ABILITY_FULL_METAL_BODY:
+    case ABILITY_MIRROR_ARMOR:
+        return TRUE;
+    case ABILITY_LIMBER:
+        return (stat == STAT_SPEED);
+    case ABILITY_HYPER_CUTTER:
+        return (stat == STAT_ATK);
+    case ABILITY_BIG_PECKS:
+        return (stat == STAT_DEF);
+    case ABILITY_KEEN_EYE:
+    case ABILITY_MINDS_EYE:
+        return (stat == STAT_ACC);
+    case ABILITY_FLOWER_VEIL:
+        return IS_BATTLER_OF_TYPE(battlerDef, TYPE_GRASS);
+    default:
+        return FALSE;
+    }
+}
+
+static bool32 IsSimulatedStatDropBlocked(u32 battlerAtk, u32 battlerDef, u32 targetAbility, u32 stat, bool32 targetAbilityIgnored)
+{
+    if (battlerAtk == battlerDef)
+        return FALSE;
+
+    if (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_CLEAR_AMULET)
+        return TRUE;
+
+    if (GetBattlerSide(battlerAtk) != GetBattlerSide(battlerDef)
+      && (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST))
+        return TRUE;
+
+    if (!targetAbilityIgnored && IsSimulatedStatDropBlockedByAbility(battlerDef, targetAbility, stat))
+        return TRUE;
+
+    return FALSE;
+}
+
+static s8 GetAppliedSimulatedStatDelta(u32 battlerAtk, u32 battlerDef, u32 stat, s8 statDelta, u32 targetAbility, bool32 targetAbilityIgnored)
+{
+    if (statDelta == 0)
+        return 0;
+
+    if (!targetAbilityIgnored)
+    {
+        if (targetAbility == ABILITY_CONTRARY)
+            statDelta *= -1;
+        if (targetAbility == ABILITY_SIMPLE)
+            statDelta *= 2;
+    }
+
+    if (statDelta < 0 && IsSimulatedStatDropBlocked(battlerAtk, battlerDef, targetAbility, stat, targetAbilityIgnored))
+        return 0;
+
+    return GetStatStageDifference(statDelta, gBattleMons[battlerDef].statStages[stat]);
+}
+
 //Applies simulated that changes that SHOULD be later reversed by ReverseSimulatedStatChanges
 struct StatsDelta ApplySimulatedStatChanges(u32 battlerAtk, u32 battlerDef, struct StatsDelta requestedStatChanges){
     struct StatsDelta workingStatChanges = requestedStatChanges;
     u32 targetAbility = GetBattlerAbility(battlerDef);
-    u32 mulValue = 1;
-
-    if (targetAbility == ABILITY_SIMPLE && !DoesBattlerIgnoreAbilityChecks(battlerAtk, GetBattlerAbility(battlerAtk), MOVE_IRRELEVANT)){
-        mulValue = 2;
-    }
+    bool32 targetAbilityIgnored = IsSimulatedTargetAbilityIgnored(battlerAtk, battlerDef);
 
     //Modifying Working Stat Changes so that it can be passed for reversal sake
-
-    workingStatChanges.atk      = GetStatStageDifference(workingStatChanges.atk * mulValue, gBattleMons[battlerDef].statStages[STAT_ATK]);
+    //The GetAppliedSimulated function passes on stat based on workingstatchanges and checks whether it's ability blocked
+    workingStatChanges.atk = GetAppliedSimulatedStatDelta(battlerAtk, battlerDef, STAT_ATK, workingStatChanges.atk, targetAbility, targetAbilityIgnored);
     gBattleMons[battlerDef].statStages[STAT_ATK] += workingStatChanges.atk;
 
-    workingStatChanges.def      = GetStatStageDifference(workingStatChanges.def * mulValue, gBattleMons[battlerDef].statStages[STAT_DEF]);
+    workingStatChanges.def = GetAppliedSimulatedStatDelta(battlerAtk, battlerDef, STAT_DEF, workingStatChanges.def, targetAbility, targetAbilityIgnored);
     gBattleMons[battlerDef].statStages[STAT_DEF] += workingStatChanges.def;
 
-    workingStatChanges.speed      = GetStatStageDifference(workingStatChanges.speed * mulValue, gBattleMons[battlerDef].statStages[STAT_SPEED]);
+    workingStatChanges.speed = GetAppliedSimulatedStatDelta(battlerAtk, battlerDef, STAT_SPEED, workingStatChanges.speed, targetAbility, targetAbilityIgnored);
     gBattleMons[battlerDef].statStages[STAT_SPEED] += workingStatChanges.speed;    
 
-    workingStatChanges.spAtk      = GetStatStageDifference(workingStatChanges.spAtk * mulValue, gBattleMons[battlerDef].statStages[STAT_SPATK]);
+    workingStatChanges.spAtk = GetAppliedSimulatedStatDelta(battlerAtk, battlerDef, STAT_SPATK, workingStatChanges.spAtk, targetAbility, targetAbilityIgnored);
     gBattleMons[battlerDef].statStages[STAT_SPATK] += workingStatChanges.spAtk;   
 
-    workingStatChanges.spDef      = GetStatStageDifference(workingStatChanges.spDef * mulValue, gBattleMons[battlerDef].statStages[STAT_SPDEF]);
+    workingStatChanges.spDef = GetAppliedSimulatedStatDelta(battlerAtk, battlerDef, STAT_SPDEF, workingStatChanges.spDef, targetAbility, targetAbilityIgnored);
     gBattleMons[battlerDef].statStages[STAT_SPDEF] += workingStatChanges.spDef;
 
-    workingStatChanges.accuracy      = GetStatStageDifference(workingStatChanges.accuracy * mulValue, gBattleMons[battlerDef].statStages[STAT_ACC]);
+    workingStatChanges.accuracy = GetAppliedSimulatedStatDelta(battlerAtk, battlerDef, STAT_ACC, workingStatChanges.accuracy, targetAbility, targetAbilityIgnored);
     gBattleMons[battlerDef].statStages[STAT_ACC] += workingStatChanges.accuracy; 
 
-    workingStatChanges.evasion      = GetStatStageDifference(workingStatChanges.evasion * mulValue, gBattleMons[battlerDef].statStages[STAT_EVASION]);
+    workingStatChanges.evasion = GetAppliedSimulatedStatDelta(battlerAtk, battlerDef, STAT_EVASION, workingStatChanges.evasion, targetAbility, targetAbilityIgnored);
     gBattleMons[battlerDef].statStages[STAT_EVASION] += workingStatChanges.evasion;    
 
     return workingStatChanges;

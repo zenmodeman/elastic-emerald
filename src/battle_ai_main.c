@@ -3940,7 +3940,7 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 
                     //Reverse temporary Coaching buff
 
-                    ReverseSimulatedStatChanges(battlerDef, changesToReverse);
+                    ReverseSimulatedStatChanges(battlerPartner, changesToReverse);
                     DebugPrintf("Reversed Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
                         gBattleMons[battlerDef].statStages[STAT_SPEED]);
                     // if (statShifted){
