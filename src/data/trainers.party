@@ -5490,9 +5490,9 @@ AI: Smart Trainer
 Dwebble (F) @ Berry Juice  
 Ability: Sturdy  
 Level: 13  
-EVs: 16 HP / 12 Def / 12 SpD / 36 Spe  
+EVs: 32 HP / 28 SpD  
 Impish Nature  
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+IVs: 16 HP / 12 Atk / 25 Def / 10 SpA / 21 SpD / 5 Spe  
 - Rock Tomb  
 - Withdraw  
 - Rock Smash  
@@ -5501,9 +5501,9 @@ IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 Lileep (F) @ Kee Berry  
 Ability: Storm Drain  
 Level: 13  
-EVs: 12 HP / 16 Def / 28 SpD / 16 Spe  
-Serious Nature  
-IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
+EVs: 12 HP / 16 Def / 36 Spe  
+Jolly Nature  
+IVs: 24 HP / 12 Atk / 19 Def / 17 SpA / 21 SpD / 30 Spe  
 - Mega Drain  
 - Wrap  
 - Rock Tomb  

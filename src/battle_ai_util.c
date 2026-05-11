@@ -4331,7 +4331,7 @@ bool32 OnlyOnePlayerDoublesMon(){
 
 u32 GetAllyChosenMove(u32 battlerId)
 {
-    u32 partnerBattler = BATTLE_PARTNER(battlerId);
+    u32 partnerBattler = GetPartnerBattler(battlerId);
 
     if (!IsBattlerAlive(partnerBattler) || !IsAiBattlerAware(partnerBattler))
         return MOVE_NONE;
@@ -4341,8 +4341,19 @@ u32 GetAllyChosenMove(u32 battlerId)
     //But there may be considerations based on what moves the ally has.      
     // return gLastMoves[partnerBattler];
         return MOVE_NONE;
+    else if (BattlerHasAi(partnerBattler))
+        return gBattleMons[partnerBattler].moves[gAiBattleData->chosenMoveIndex[partnerBattler]];
     else
         return gBattleMons[partnerBattler].moves[gBattleStruct->chosenMovePositions[partnerBattler]];
+}
+
+static u32 GetAllyChosenTarget(u32 battlerId)
+{
+    // aiCalcInProgress can be toggled by nested damage simulation, so use the
+    // stored AI decision directly for AI-controlled allies.
+    if (BattlerHasAi(battlerId))
+        return gAiBattleData->chosenTarget[battlerId];
+    return gBattleStruct->moveTarget[battlerId];
 }
 
 //PARTNER_MOVE_EFFECT_IS_SAME
@@ -4353,7 +4364,7 @@ bool32 DoesPartnerHaveSameMoveEffect(u32 battlerAtkPartner, u32 battlerDef, u32 
 
     if (GetMoveEffect(move) == GetMoveEffect(partnerMove)
       && partnerMove != MOVE_NONE
-      && gBattleStruct->moveTarget[battlerAtkPartner] == battlerDef)
+      && GetAllyChosenTarget(battlerAtkPartner) == battlerDef)
     {
         return TRUE;
     }
@@ -4372,6 +4383,24 @@ bool32 PartnerHasSameMoveEffectWithoutTarget(u32 battlerAtkPartner, u32 move, u3
     return FALSE;
 }
 
+bool32 PartnerMoveHasSameAdditionalEffectSameTarget(u32 battlerAtkPartner, u32 battlerDef, u32 partnerMove, u32 moveEffect, u32 chance)
+{
+    u32 i;
+
+    if (!IsDoubleBattle() || partnerMove == MOVE_NONE || GetAllyChosenTarget(battlerAtkPartner) != battlerDef)
+        return FALSE;
+
+    for (i = 0; i < GetMoveAdditionalEffectCount(partnerMove); i++)
+    {
+        const struct AdditionalEffect *additionalEffect = GetMoveAdditionalEffectById(partnerMove, i);
+
+        if (additionalEffect->moveEffect == moveEffect && additionalEffect->chance == chance)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 //PARTNER_MOVE_EFFECT_IS_STATUS_SAME_TARGET
 bool32 PartnerMoveEffectIsStatusSameTarget(u32 battlerAtkPartner, u32 battlerDef, u32 partnerMove)
 {
@@ -4381,7 +4410,7 @@ bool32 PartnerMoveEffectIsStatusSameTarget(u32 battlerAtkPartner, u32 battlerDef
     enum BattleMoveEffects partnerEffect = GetMoveEffect(partnerMove);
     u32 nonVolatileStatus = GetMoveNonVolatileStatus(partnerMove);
     if (partnerMove != MOVE_NONE
-     && gBattleStruct->moveTarget[battlerAtkPartner] == battlerDef
+     && GetAllyChosenTarget(battlerAtkPartner) == battlerDef
      && (nonVolatileStatus == MOVE_EFFECT_POISON
        || nonVolatileStatus == MOVE_EFFECT_TOXIC
        || nonVolatileStatus == MOVE_EFFECT_SLEEP
@@ -4452,7 +4481,7 @@ bool32 PartnerMoveIsSameAsAttacker(u32 battlerAtkPartner, u32 battlerDef, u32 mo
     if (!IsDoubleBattle())
         return FALSE;
 
-    if (partnerMove != MOVE_NONE && move == partnerMove && gBattleStruct->moveTarget[battlerAtkPartner] == battlerDef)
+    if (partnerMove != MOVE_NONE && move == partnerMove && GetAllyChosenTarget(battlerAtkPartner) == battlerDef)
         return TRUE;
     return FALSE;
 }

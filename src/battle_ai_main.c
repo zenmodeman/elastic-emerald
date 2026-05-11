@@ -3303,6 +3303,25 @@ static bool32 ShouldUseSpeedControl(u32 battlerAtk, u32 battlerDef, u32 move, s8
     return TRUE;
 }
 
+//To check if the ally has already covered the speed drop; used in scenarios like Doubles Roxanne Rock Tomb logic
+//Note: with limitations on how the code is structured, the lower index mon is computed first
+//This can at least be mitigated in doubles leads by putting the faster mon in slot one
+static bool32 PartnerSpeedDropAlreadyHandlesTarget(u32 battlerAtk, u32 battlerDef, s8 partnerSpeedDrop)
+{
+    u32 battlerAtkPartner = GetPartnerBattler(battlerAtk);
+    struct StatsDelta statChanges = {0};
+    struct StatsDelta appliedChanges;
+    bool32 wouldOutspeedAfterPartnerDrop;
+
+    statChanges.speed = partnerSpeedDrop;
+    appliedChanges = ApplySimulatedStatChanges(battlerAtkPartner, battlerDef, statChanges);
+
+    wouldOutspeedAfterPartnerDrop = AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT);
+
+    ReverseSimulatedStatChanges(battlerDef, appliedChanges);
+    return wouldOutspeedAfterPartnerDrop;
+}
+
 
 static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
@@ -6371,7 +6390,23 @@ case EFFECT_DISABLE:
                     //When the chance is not 100%, it's only going to factor in AI_CompareDamagingMoves
                     if (gMovesInfo[move].additionalEffects[i].chance == 100 &&
                     ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
-                        if (ShouldUseSpeedControl(battlerAtk, battlerDef, move, speedValue, FALSE)){
+                        u32 battlerAtkPartner = GetPartnerBattler(battlerAtk);
+                        DebugPrintf("SPD drop check atk=%d def=%d partner=%d partnerMove=%d partnerTarget=%d chosenIdx=%d",
+                            battlerAtk,
+                            battlerDef,
+                            battlerAtkPartner,
+                            aiData->partnerMove,
+                            gAiBattleData->chosenTarget[battlerAtkPartner],
+                            gAiBattleData->chosenMoveIndex[battlerAtkPartner]);
+
+                        if (PartnerMoveHasSameAdditionalEffectSameTarget(GetPartnerBattler(battlerAtk), battlerDef, aiData->partnerMove, additionalEffect->moveEffect, 100)
+                         && PartnerSpeedDropAlreadyHandlesTarget(battlerAtk, battlerDef, speedValue))
+                        {
+                            DebugPrintf("Partner drop handles target %d for battler %d", battlerDef, battlerAtk);
+                            //No incenvtive
+                            ADJUST_SCORE(0);
+                        }
+                        else if (ShouldUseSpeedControl(battlerAtk, battlerDef, move, speedValue, FALSE)){
                             if (AI_GetMoveEffectiveness(move, battlerAtk, battlerDef) < UQ_4_12(1.0)){
                                 //Lower incentive for resisted moves because the damage value is less impactful
                                 //Making this guarenteed would make resistance manipulation easier
@@ -6379,7 +6414,8 @@ case EFFECT_DISABLE:
                             }else{
                                 ADJUST_SCORE(DECENT_EFFECT);
                             }
-                        }else if (AI_GetMoveEffectiveness(move, battlerAtk, battlerDef) >= UQ_4_12(1.0)){
+                        }else if (AI_GetMoveEffectiveness(move, battlerAtk, battlerDef) >= UQ_4_12(1.0) && AI_RandLessThan(128)){
+                            //Chance to get an incentive otherwise
                             ADJUST_SCORE(WEAK_EFFECT);
                         }
                     }
