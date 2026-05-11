@@ -13454,7 +13454,7 @@ F_TRAINER_FEMALE |
 #line 5493
             .ev = TRAINER_PARTY_EVS(32, 0, 0, 0, 0, 28),
 #line 5495
-            .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
+            .iv = TRAINER_PARTY_IVS(16, 12, 25, 5, 10, 21),
 #line 5491
             .ability = ABILITY_STURDY,
 #line 5492
@@ -13478,15 +13478,15 @@ F_TRAINER_FEMALE |
 #line 5501
             .heldItem = ITEM_KEE_BERRY,
 #line 5504
-            .ev = TRAINER_PARTY_EVS(12, 0, 16, 28, 0, 0),
+            .ev = TRAINER_PARTY_EVS(12, 0, 16, 36, 0, 0),
 #line 5506
-            .iv = TRAINER_PARTY_IVS(25, 12, 19, 24, 17, 21),
+            .iv = TRAINER_PARTY_IVS(24, 12, 19, 30, 17, 21),
 #line 5502
             .ability = ABILITY_STORM_DRAIN,
 #line 5503
             .lvl = 13,
 #line 5505
-            .nature = NATURE_SERIOUS,
+            .nature = NATURE_JOLLY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
 #line 5507
