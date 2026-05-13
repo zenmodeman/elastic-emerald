@@ -4269,6 +4269,38 @@ static bool32 IsBattleMovePreferableOnCurrentTarget(u32 battlerAtk, u32 battlerD
 }
 
  
+static bool32 ShouldConsiderWrapDamageCombo(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    if (!MoveHasAdditionalEffect(move, MOVE_EFFECT_WRAP))
+        return FALSE;
+
+    if (GetMovePower(move) == 0)
+        return FALSE;
+
+    if (gBattleMons[battlerDef].status2 & STATUS2_WRAPPED)
+        return FALSE;
+
+    if (AI_CanBattlerEscape(battlerDef))
+        return FALSE;
+
+    if (IsBattlerProtectedByMagicGuard(battlerDef, gAiLogicData->abilities[battlerDef]))
+        return FALSE;
+
+    return TRUE;
+}
+
+static u32 GetPredictedWrapResidualDamage(u32 battlerAtk, u32 battlerDef)
+{
+    u32 dmg;
+
+    if (gAiLogicData->holdEffects[battlerAtk] == HOLD_EFFECT_BINDING_BAND)
+        dmg = GetNonDynamaxMaxHP(battlerDef) / (B_BINDING_DAMAGE >= GEN_6 ? 6 : 8);
+    else
+        dmg = GetNonDynamaxMaxHP(battlerDef) / (B_BINDING_DAMAGE >= GEN_6 ? 8 : 16);
+
+    return max(1, dmg);
+}
+
 
 static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
 {
@@ -4304,6 +4336,70 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
             // }
 
             noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i, AI_ATTACKING);
+
+            //A string of checks to determine if wrapping moves should have consideration for best damage based on tempo factors.
+            if (ShouldConsiderWrapDamageCombo(battlerAtk, battlerDef, moves[i])){
+                u32 bestDmgMove = GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING);
+                u32 bestDmg = GetBestDmgFromBattler(battlerAtk, battlerDef, AI_ATTACKING);
+                u32 wrapMoveDmg = AI_GetDamage(battlerAtk, battlerDef, i, AI_ATTACKING, gAiLogicData);
+                u32 wrapResidualDmg = GetPredictedWrapResidualDamage(battlerAtk, battlerDef);
+                u32 numHitsToGetKOd = NoOfHitsForTargetToFaintAI(battlerDef, battlerAtk);
+                
+                //It's okay for this value to be Unknown number of hits, since that just signifies the consideration is just number of turns for attacker to KO
+                u32 numRemainingActionsBeforeKOd = AI_IsFaster(battlerAtk, battlerDef, moves[i]) ?  numHitsToGetKOd : numHitsToGetKOd -1;
+                
+                u32 wrapSequenceDmgWithinActions = 0;
+                u32 bestMoveDmgWithinActions = 0; 
+                s32 numHitsForWrapSequence;
+
+                //This sort of logic only matters when comparing to better damaging moves
+                if (bestDmgMove != moves[i]
+                //Don't consider this logic if the user doesn't at least have one wrap turn and one turn for best damaging move
+                && numRemainingActionsBeforeKOd >= 2){
+                    u32 numResidualTurns = 4;
+                    s32 remainingDefenderHP = gBattleMons[battlerDef].hp;
+                    if (gAiLogicData->holdEffects[battlerAtk] == HOLD_EFFECT_GRIP_CLAW){
+                        numResidualTurns = 7;
+                    }
+
+                    //Setup the first turn before best damaging logic is used
+                    numHitsForWrapSequence = 1;
+                    remainingDefenderHP -= wrapMoveDmg;
+                    remainingDefenderHP -= wrapResidualDmg;
+                    numResidualTurns -= 1;
+                    wrapSequenceDmgWithinActions += (wrapMoveDmg + wrapResidualDmg);
+                    bestMoveDmgWithinActions += bestDmg;
+                    numRemainingActionsBeforeKOd -= 1;
+
+                    while (remainingDefenderHP > 0){
+                        u32 residualDmgThisTurn = 0;
+                        remainingDefenderHP -= bestDmg;
+
+                        if (numResidualTurns > 0){
+                            //Need to update this variable so it can be factored in the dmg within actions check
+                            residualDmgThisTurn = wrapResidualDmg;
+                            remainingDefenderHP -= residualDmgThisTurn;
+                            numResidualTurns -= 1;
+                        }
+
+                        if (numRemainingActionsBeforeKOd > 0){
+                            //For these turns with remaining actions, currentWrapSequence gains a little more than normally attacking
+                            //And this will be used to try to determine whether the residual increases within the number of window turns
+                            wrapSequenceDmgWithinActions += (bestDmg + residualDmgThisTurn);
+                            bestMoveDmgWithinActions += bestDmg;
+                        }
+                        numHitsForWrapSequence += 1;
+                        numRemainingActionsBeforeKOd -= 1;
+                    }
+                    
+                    //Only apply the best number of Hits to KO if using wrap is worthwhile tempo in relation to number of actions based on survivability
+                    if (wrapSequenceDmgWithinActions > bestMoveDmgWithinActions){
+                        noOfHits[i] = numHitsForWrapSequence;
+
+                    }
+                }
+            }
+
             if (ShouldUseSpreadDamageMove(battlerAtk,moves[i], i, noOfHits[i]))
             {
                 noOfHits[i] = -1;
