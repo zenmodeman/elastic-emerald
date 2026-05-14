@@ -1418,6 +1418,7 @@ static bool32 HandleEndTurnThirdEventBlock(u32 battler)
         case ABILITY_BAD_DREAMS:
         case ABILITY_BALL_FETCH:
         case ABILITY_HARVEST:
+        case ABILITY_HONEY_GATHER:
         case ABILITY_MOODY:
         case ABILITY_PICKUP:
         case ABILITY_SPEED_BOOST:

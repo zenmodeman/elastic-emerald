@@ -4148,6 +4148,15 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                     effect++;
                 }
                 break;
+            case ABILITY_HONEY_GATHER:
+                if (gBattleMons[battler].item == ITEM_NONE
+                 && gBattleStruct->changedItems[battler] == ITEM_NONE)   // Will not inherit an item
+                {
+                    gLastUsedItem = ITEM_HONEY;
+                    BattleScriptPushCursorAndCallback(BattleScript_HoneyGatherActivates);
+                    effect++;
+                }
+                break;
             case ABILITY_ICE_BODY:
                 if (IsBattlerWeatherAffected(battler, B_WEATHER_HAIL | B_WEATHER_SNOW)
                  && !IsBattlerAtMaxHp(battler)
@@ -11503,6 +11512,7 @@ void UpdateStallMons(void)
 bool32 TryRestoreHPBerries(u32 battler, enum ItemCaseId caseId)
 {
     if (gItemsInfo[gBattleMons[battler].item].pocket == POCKET_BERRIES
+     || gBattleMons[battler].item == ITEM_HONEY
      || GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_RESTORE_HP)  // Edge case for Berry Juice
     {
         if (ItemBattleEffects(caseId, battler, FALSE))

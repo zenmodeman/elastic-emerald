@@ -7623,6 +7623,7 @@ BattleScript_HoneyGatherActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_XFOUNDONEY
 	waitmessage B_WAIT_TIME_LONG
+	tryrestorehpberry
 	
 BattleScript_PickupActivatesEnd:
 	end3
@@ -10159,4 +10160,3 @@ BattleScript_ForfeitBattleGaveMoney::
 .endif
 	waitmessage B_WAIT_TIME_LONG
 	end2
-

@@ -15871,13 +15871,20 @@ static void Cmd_tryrecycleitem(void)
         usedHeldItem = &gBattleStruct->usedHeldItems[gBattlerPartyIndexes[gBattlerTarget]][GetBattlerSide(gBattlerTarget)];
     else
         usedHeldItem = &gBattleStruct->usedHeldItems[gBattlerPartyIndexes[gBattlerAttacker]][GetBattlerSide(gBattlerAttacker)];
-    if ((*usedHeldItem != ITEM_NONE || GetBattlerAbility(gBattlerAttacker) == ABILITY_HONEY_GATHER) && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
+    if (GetBattlerAbility(gBattlerAttacker) == ABILITY_HONEY_GATHER
+     && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
     {
-        if (GetBattlerAbility(gBattlerAttacker) == ABILITY_HONEY_GATHER){
-            gLastUsedItem = ITEM_HONEY;
-        }else{
-            gLastUsedItem = *usedHeldItem;
-        }
+        gLastUsedItem = ITEM_HONEY;
+        gBattleMons[gBattlerAttacker].item = gLastUsedItem;
+
+        BtlController_EmitSetMonData(gBattlerAttacker, B_COMM_TO_CONTROLLER, REQUEST_HELDITEM_BATTLE, 0, sizeof(gBattleMons[gBattlerAttacker].item), &gBattleMons[gBattlerAttacker].item);
+        MarkBattlerForControllerExec(gBattlerAttacker);
+
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+    else if (*usedHeldItem != ITEM_NONE && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
+    {
+        gLastUsedItem = *usedHeldItem;
         *usedHeldItem = ITEM_NONE;
         gBattleMons[gBattlerAttacker].item = gLastUsedItem;
 
