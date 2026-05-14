@@ -4291,17 +4291,21 @@ static bool32 ShouldConsiderWrapDamageCombo(u32 battlerAtk, u32 battlerDef, u32 
         return FALSE;
     }
 
-    if (AI_CanBattlerEscape(battlerDef))
-    {
-        // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d target can escape", battlerAtk, battlerDef, move);
-        return FALSE;
-    }
-
     if (aiData->abilities[battlerDef] == ABILITY_MAGIC_GUARD)
     {
         // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d target has Magic Guard", battlerAtk, battlerDef, move);
         return FALSE;
     }
+
+    //Making the logic conditional if the battler can't escape. 
+    //Because the residual damage would still, but it shouldn't be guarenteed since it has the possibility to be compromised (through switching)
+    if (AI_CanBattlerEscape(battlerDef) && AI_RandLessThan(128))
+    {
+        // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d target can escape", battlerAtk, battlerDef, move);
+        return FALSE;
+    }
+
+
 
     // DebugPrintf("Wrap combo guard passed: atk=%d def=%d move=%d", battlerAtk, battlerDef, move);
     return TRUE;
@@ -4479,10 +4483,17 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
             if (noOfHits[currId] == noOfHits[i])
             {
                 u32 dmgGapThreshold = 120; //Percentage amount above which one move is prioritized over others, even for the same number of hits
+                bool32 canOHKO = (leastHits == 1);
+                bool32 currIdIsWrapping = MoveHasAdditionalEffect(moves[currId], MOVE_EFFECT_WRAP);
+                bool32 iMoveIsWrapping = MoveHasAdditionalEffect(moves[i], MOVE_EFFECT_WRAP);
 
-                if (leastHits != 1){ //Damage gap exceptions don't apply for OHKO scenarios
+                //Damage gap exceptions don't apply for OHKO scenarios
+                //Ignore damage gap when wrapping moves are involved because wrapping moves take into account previously computed tempo values instead.
+                //This has slightly unideal edge cases if the wrapping move takes the same amount of hits from raw damage, but
+                //the tempo factor is not relevant (most common with Magic Guard), but accepting this concession for simplicity.
+                if (!canOHKO && !currIdIsWrapping && !iMoveIsWrapping){ 
                     //Keep going if current move is stronger than the other move by at least the threshold
-                    if (gAiLogicData->simulatedDmg[battlerAtk][battlerDef][currId].median >= (gAiLogicData->simulatedDmg[battlerAtk][battlerDef][i].median * dmgGapThreshold)/10){
+                    if (gAiLogicData->simulatedDmg[battlerAtk][battlerDef][currId].median >= (gAiLogicData->simulatedDmg[battlerAtk][battlerDef][i].median * dmgGapThreshold)/100){
                         viableMoveScores[i] -= 1;
                         continue;
                     }

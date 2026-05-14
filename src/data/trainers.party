@@ -821,7 +821,7 @@ EVs: 12 HP / 16 Def / 28 SpD / 16 Spe
 Serious Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 - Mega Drain  
-- Wrap  
+- Infestation  
 - Rock Tomb  
 - Recover  
 
@@ -866,7 +866,7 @@ EVs: 12 HP / 16 Def / 28 SpD / 16 Spe
 Serious Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 - Mega Drain  
-- Wrap  
+- Infestation  
 - Rock Tomb  
 - Recover  
 
@@ -5042,7 +5042,7 @@ EVs: 12 HP / 16 Def / 28 SpD / 16 Spe
 Serious Nature  
 IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 - Mega Drain  
-- Wrap  
+- Infestation  
 - Rock Tomb  
 - Recover  
 
@@ -5505,7 +5505,7 @@ EVs: 12 HP / 16 Def / 36 Spe
 Jolly Nature  
 IVs: 24 HP / 12 Atk / 19 Def / 17 SpA / 21 SpD / 30 Spe  
 - Mega Drain  
-- Wrap  
+- Infestation  
 - Rock Tomb  
 - Recover  
 

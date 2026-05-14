@@ -1873,7 +1873,7 @@ F_TRAINER_FEMALE |
             .moves = {
 #line 823
                 MOVE_MEGA_DRAIN,
-                MOVE_WRAP,
+                MOVE_INFESTATION,
                 MOVE_ROCK_TOMB,
                 MOVE_RECOVER,
             },
@@ -1976,7 +1976,7 @@ F_TRAINER_FEMALE |
             .moves = {
 #line 868
                 MOVE_MEGA_DRAIN,
-                MOVE_WRAP,
+                MOVE_INFESTATION,
                 MOVE_ROCK_TOMB,
                 MOVE_RECOVER,
             },
@@ -12396,7 +12396,7 @@ F_TRAINER_FEMALE |
             .moves = {
 #line 5044
                 MOVE_MEGA_DRAIN,
-                MOVE_WRAP,
+                MOVE_INFESTATION,
                 MOVE_ROCK_TOMB,
                 MOVE_RECOVER,
             },
@@ -13491,7 +13491,7 @@ F_TRAINER_FEMALE |
             .moves = {
 #line 5507
                 MOVE_MEGA_DRAIN,
-                MOVE_WRAP,
+                MOVE_INFESTATION,
                 MOVE_ROCK_TOMB,
                 MOVE_RECOVER,
             },
