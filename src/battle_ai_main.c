@@ -4271,21 +4271,39 @@ static bool32 IsBattleMovePreferableOnCurrentTarget(u32 battlerAtk, u32 battlerD
  
 static bool32 ShouldConsiderWrapDamageCombo(u32 battlerAtk, u32 battlerDef, u32 move)
 {
+    struct AiLogicData *aiData = gAiLogicData;
+
     if (!MoveHasAdditionalEffect(move, MOVE_EFFECT_WRAP))
+    {
+        // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d is not a wrap-effect move", battlerAtk, battlerDef, move);
         return FALSE;
+    }
 
     if (GetMovePower(move) == 0)
+    {
+        // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d has zero power", battlerAtk, battlerDef, move);
         return FALSE;
+    }
 
     if (gBattleMons[battlerDef].status2 & STATUS2_WRAPPED)
+    {
+        // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d target already wrapped", battlerAtk, battlerDef, move);
         return FALSE;
+    }
 
     if (AI_CanBattlerEscape(battlerDef))
+    {
+        // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d target can escape", battlerAtk, battlerDef, move);
         return FALSE;
+    }
 
-    if (IsBattlerProtectedByMagicGuard(battlerDef, gAiLogicData->abilities[battlerDef]))
+    if (aiData->abilities[battlerDef] == ABILITY_MAGIC_GUARD)
+    {
+        // DebugPrintf("Wrap combo guard failed: atk=%d def=%d move=%d target has Magic Guard", battlerAtk, battlerDef, move);
         return FALSE;
+    }
 
+    // DebugPrintf("Wrap combo guard passed: atk=%d def=%d move=%d", battlerAtk, battlerDef, move);
     return TRUE;
 }
 
@@ -4352,6 +4370,10 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                 u32 bestMoveDmgWithinActions = 0; 
                 s32 numHitsForWrapSequence;
 
+                // DebugPrintf("Wrap tempo check: atk=%d def=%d move=%d slot=%d bestMove=%d bestDmg=%d wrapDmg=%d residual=%d atkFaster=%d hitsToBeKOd=%d actions=%d baseNoHits=%d",
+                //     battlerAtk, battlerDef, moves[i], i, bestDmgMove, bestDmg, wrapMoveDmg, wrapResidualDmg,
+                //     AI_IsFaster(battlerAtk, battlerDef, moves[i]), numHitsToGetKOd, numRemainingActionsBeforeKOd, noOfHits[i]);
+
                 //This sort of logic only matters when comparing to better damaging moves
                 if (bestDmgMove != moves[i]
                 //Don't consider this logic if the user doesn't at least have one wrap turn and one turn for best damaging move
@@ -4370,6 +4392,9 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                     wrapSequenceDmgWithinActions += (wrapMoveDmg + wrapResidualDmg);
                     bestMoveDmgWithinActions += bestDmg;
                     numRemainingActionsBeforeKOd -= 1;
+
+                    // DebugPrintf("Wrap tempo turn 1: remainingHp=%d residualTurns=%d wrapTempoDmg=%d bestTempoDmg=%d actionsLeft=%u",
+                    //     remainingDefenderHP, numResidualTurns, wrapSequenceDmgWithinActions, bestMoveDmgWithinActions, numRemainingActionsBeforeKOd);
 
                     while (remainingDefenderHP > 0){
                         u32 residualDmgThisTurn = 0;
@@ -4390,13 +4415,29 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                         }
                         numHitsForWrapSequence += 1;
                         numRemainingActionsBeforeKOd -= 1;
+
+                        // DebugPrintf("Wrap tempo turn %d: remainingHp=%d residualThisTurn=%d residualTurns=%d wrapTempoDmg=%d bestTempoDmg=%d actionsLeft=%d",
+                        //     numHitsForWrapSequence, remainingDefenderHP, residualDmgThisTurn, numResidualTurns,
+                        //     wrapSequenceDmgWithinActions, bestMoveDmgWithinActions, numRemainingActionsBeforeKOd);
                     }
                     
                     //Only apply the best number of Hits to KO if using wrap is worthwhile tempo in relation to number of actions based on survivability
                     if (wrapSequenceDmgWithinActions > bestMoveDmgWithinActions){
+                        // DebugPrintf("Wrap tempo accepted: move=%d slot=%d oldNoHits=%d newNoHits=%d wrapTempoDmg=%d bestTempoDmg=%d",
+                        //     moves[i], i, noOfHits[i], numHitsForWrapSequence, wrapSequenceDmgWithinActions, bestMoveDmgWithinActions);
                         noOfHits[i] = numHitsForWrapSequence;
 
                     }
+                    else
+                    {
+                        // DebugPrintf("Wrap tempo rejected: move=%d slot=%d noHits=%d wrapTempoDmg=%d bestTempoDmg=%d",
+                        //     moves[i], i, noOfHits[i], wrapSequenceDmgWithinActions, bestMoveDmgWithinActions);
+                    }
+                }
+                else
+                {
+                    // DebugPrintf("Wrap tempo skipped: move=%d slot=%d bestDmgMove=%d actions=%d",
+                    //     moves[i], i, bestDmgMove, numRemainingActionsBeforeKOd);
                 }
             }
 
@@ -6487,13 +6528,13 @@ case EFFECT_DISABLE:
                     if (gMovesInfo[move].additionalEffects[i].chance == 100 &&
                     ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
                         u32 battlerAtkPartner = GetPartnerBattler(battlerAtk);
-                        DebugPrintf("SPD drop check atk=%d def=%d partner=%d partnerMove=%d partnerTarget=%d chosenIdx=%d",
-                            battlerAtk,
-                            battlerDef,
-                            battlerAtkPartner,
-                            aiData->partnerMove,
-                            gAiBattleData->chosenTarget[battlerAtkPartner],
-                            gAiBattleData->chosenMoveIndex[battlerAtkPartner]);
+                        // DebugPrintf("SPD drop check atk=%d def=%d partner=%d partnerMove=%d partnerTarget=%d chosenIdx=%d",
+                        //     battlerAtk,
+                        //     battlerDef,
+                        //     battlerAtkPartner,
+                        //     aiData->partnerMove,
+                        //     gAiBattleData->chosenTarget[battlerAtkPartner],
+                        //     gAiBattleData->chosenMoveIndex[battlerAtkPartner]);
 
                         if (PartnerMoveHasSameAdditionalEffectSameTarget(GetPartnerBattler(battlerAtk), battlerDef, aiData->partnerMove, additionalEffect->moveEffect, 100)
                          && PartnerSpeedDropAlreadyHandlesTarget(battlerAtk, battlerDef, speedValue))
