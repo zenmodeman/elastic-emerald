@@ -133,7 +133,8 @@ struct DisableStruct
     u8 neutralizingGas:1;
     u8 iceFaceActivationPrevention:1; // fixes hit escape move edge case
     u8 unnerveActivated:1; // Unnerve and As One (Unnerve part) activate only once per switch in
-    u8 padding:3;
+    u8 anticipationActivated:1;
+    u8 padding:2;
     u16 forewarnMove;
 };
 

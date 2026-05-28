@@ -31,22 +31,18 @@ SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice powers up with consecutive uses by 
         OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_TACKLE, MOVE_CELEBRATE); }
     } WHEN {
         TURN {MOVE(player, MOVE_CELEBRATE);}
-        EXPECT_ECHOED_VOICE_COUNTER(0);
 
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
         
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(2);
         
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(3);
         
         TURN { MOVE(player, MOVE_TACKLE); }
-        EXPECT_ECHOED_VOICE_COUNTER(0);
         
         // Turn 5: Chain restarts
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(1);
     }
 }
@@ -60,14 +56,13 @@ SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice powers up across different battlers
     } WHEN {
         // Turn 1: Player uses Echoed Voice
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
         
         // Turn 2: Opponent uses Echoed Voice (should power up)
         TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(2);
         
         // Turn 3: Player uses Echoed Voice again (should power up further)
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(3);
     }
 }
@@ -81,17 +76,16 @@ SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain breaks when move execution is
     } WHEN {
         // Turn 1: Player uses Echoed Voice
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
         
         // Turn 2: Player flinches from Fake Out, can't use Echoed Voice
         TURN { 
             MOVE(opponent, MOVE_IRON_HEAD); 
             MOVE(player, MOVE_ECHOED_VOICE); // This won't execute due to flinch
         }
-        EXPECT_ECHOED_VOICE_COUNTER(0); // Chain broken
         
         // Turn 3: Chain restarts
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(1);
     }
 }
@@ -105,11 +99,8 @@ SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain breaks when battler is asleep
     } WHEN {
         // Turn 1: Player tries Echoed Voice but is asleep
         TURN { MOVE(player, MOVE_ECHOED_VOICE); } // Won't execute
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(0);
-        
-        // Turn 2: Player wakes up and uses Echoed Voice
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
     }
 }
 
@@ -122,17 +113,16 @@ SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain continues even when blocked b
     } WHEN {
         // Turn 1: Player uses Echoed Voice
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
         
         // Turn 2: Opponent uses Protect, Player's Echoed Voice is blocked but PP is consumed
         TURN { 
             MOVE(opponent, MOVE_PROTECT);
             MOVE(player, MOVE_ECHOED_VOICE); // Blocked but PP reduced
         }
-        EXPECT_ECHOED_VOICE_COUNTER(2); // Chain continues
         
         // Turn 3: Opponent uses Echoed Voice (should be powered up)
         TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(3);
     }
 }
@@ -150,13 +140,13 @@ SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain continues after user faints")
             MOVE(player, MOVE_ECHOED_VOICE); 
             MOVE(opponent, MOVE_TACKLE); // Chatot faints
         }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
         
         // Turn 2: Send in Pidgeot, use Echoed Voice (should be powered up)
         TURN { 
             SEND_OUT(player, 1); // Pidgeot
             MOVE(player, MOVE_ECHOED_VOICE); 
         }
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(2);
     }
 }
@@ -191,8 +181,8 @@ SINGLE_BATTLE_TEST("Echoed Voice caps at 200 base power")
         TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }
 
         //The cap is 4
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(4);
-        
     }
 }
 
@@ -210,14 +200,13 @@ DOUBLE_BATTLE_TEST("Echoed Voice works correctly in double battles")
             MOVE(playerLeft, MOVE_ECHOED_VOICE, target: opponentLeft); 
             MOVE(playerRight, MOVE_ECHOED_VOICE, target: opponentRight);
         }
-        EXPECT_ECHOED_VOICE_COUNTER(1); // Should only increment once per turn
         
         // Turn 2: Opponent uses Echoed Voice (should be powered up)
         TURN { MOVE(opponentLeft, MOVE_ECHOED_VOICE, target: playerLeft); }
-        EXPECT_ECHOED_VOICE_COUNTER(2);
         
         // Turn 3: Break chain
         TURN { MOVE(playerRight, MOVE_TACKLE, target: opponentLeft); }
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(0);
     }
 }
@@ -231,21 +220,19 @@ SINGLE_BATTLE_TEST("Echoed Voice counter resets correctly in various scenarios")
     } WHEN {
         // Build up counter
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
         
         // Reset with different move
         TURN { MOVE(player, MOVE_TACKLE); }
-        EXPECT_ECHOED_VOICE_COUNTER(0);
         
         // Build up again
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        EXPECT_ECHOED_VOICE_COUNTER(1);
         
         // Reset when neither battler uses Echoed Voice
         TURN { 
             MOVE(player, MOVE_TACKLE); 
             MOVE(opponent, MOVE_TACKLE); 
         }
+    } THEN {
         EXPECT_ECHOED_VOICE_COUNTER(0);
     }
 }

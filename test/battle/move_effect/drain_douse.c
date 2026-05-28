@@ -6,7 +6,7 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_DRAIN_DOUSE) == EFFECT_DRAIN_DOUSE);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse inflicts a status that causes attacks to heal 50% of damage dealt")
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse inflicts a status that causes attacks to heal percentage of damage dealt")
 {
     s16 damage;
     s16 healed;
@@ -25,7 +25,8 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse inflicts a status that causes attack
         HP_BAR(player, captureDamage: &damage);
         HP_BAR(opponent, captureDamage: &healed);
     } THEN {
-        EXPECT_MUL_EQ(damage, Q_4_12(-0.5), healed);
+        //33% because not poison or water
+        EXPECT_MUL_EQ(damage, Q_4_12(-0.33), healed);
     }
 }
 
@@ -48,7 +49,8 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse healing is inverted when attacking a
         HP_BAR(player, captureDamage: &targetDamage);
         HP_BAR(opponent, captureDamage: &attackerDamage);
     } THEN {
-        EXPECT_MUL_EQ(targetDamage, Q_4_12(0.5), attackerDamage);
+        //2/3rds because of Polison
+        EXPECT_MUL_EQ(targetDamage, Q_4_12(0.67), attackerDamage);
     }
 }
 
@@ -262,5 +264,4 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse healing is inverted when attacking a
 //         MESSAGE("The opposing Wobbuffet sucked up the liquid ooze!");
 //     }
 // }
-
 

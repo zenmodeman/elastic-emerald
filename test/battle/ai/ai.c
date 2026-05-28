@@ -172,6 +172,66 @@ AI_SINGLE_BATTLE_TEST("AI prefers moves which deal more damage instead of moves 
     }
 }
 
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI considers binding residual when comparing damaging moves")
+{
+    GIVEN {
+        ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
+        ASSUME(GetMoveCategory(MOVE_FIRE_SPIN) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMoveCategory(MOVE_EMBER) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMovePower(MOVE_FIRE_SPIN) < GetMovePower(MOVE_EMBER));
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_WOBBUFFET) { MaxHP(400); HP(400); Speed(10); Moves(MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_TYPHLOSION) { Speed(100); Moves(MOVE_FIRE_SPIN, MOVE_INCINERATE); }
+    } WHEN {
+        TURN { SCORE_GT(opponent, MOVE_FIRE_SPIN, MOVE_INCINERATE); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not consider binding residual if it loses in tempo")
+{
+    GIVEN {
+        ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
+        ASSUME(GetMoveCategory(MOVE_FIRE_SPIN) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMoveCategory(MOVE_EMBER) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMovePower(MOVE_FIRE_SPIN) < GetMovePower(MOVE_EMBER));
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_WOBBUFFET) { MaxHP(400); HP(250); Speed(10); Moves(MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_TYPHLOSION) { Speed(100); Moves(MOVE_FIRE_SPIN, MOVE_FLAMETHROWER); }
+    } WHEN {
+        TURN { SCORE_GT(opponent, MOVE_FLAMETHROWER, MOVE_FIRE_SPIN); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not consider binding residual against Magic Guard")
+{
+    GIVEN {
+        ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
+        ASSUME(GetMoveCategory(MOVE_FIRE_SPIN) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMoveCategory(MOVE_EMBER) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMovePower(MOVE_FIRE_SPIN) < GetMovePower(MOVE_EMBER));
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_MAGIC_GUARD); MaxHP(140); HP(140); Speed(10); Moves(MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_TYPHLOSION) { Speed(100); Moves(MOVE_FIRE_SPIN, MOVE_EMBER); }
+    } WHEN {
+        TURN { SCORE_GT(opponent, MOVE_EMBER, MOVE_FIRE_SPIN); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not prefer binding residual if it expects too few actions")
+{
+    GIVEN {
+        ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
+        ASSUME(GetMoveCategory(MOVE_FIRE_SPIN) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMoveCategory(MOVE_EMBER) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMovePower(MOVE_FIRE_SPIN) < GetMovePower(MOVE_EMBER));
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_WOBBUFFET) { MaxHP(140); HP(140); Speed(100); SpAttack(255); Moves(MOVE_SURF, MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_TYPHLOSION) { MaxHP(200); HP(200); Speed(10); Moves(MOVE_FIRE_SPIN, MOVE_EMBER); }
+    } WHEN {
+        TURN { SCORE_GT(opponent, MOVE_EMBER, MOVE_FIRE_SPIN); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("AI prefers Earthquake over Drill Run if both require the same number of hits to ko")
 {
     // Drill Run has less accuracy than E-quake, but can score a higher crit. However the chance is too small, so AI should ignore it.

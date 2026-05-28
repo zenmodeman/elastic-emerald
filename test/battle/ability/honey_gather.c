@@ -12,7 +12,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather grants Honey at the end of the turn
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, player);
         ABILITY_POPUP(opponent, ABILITY_HONEY_GATHER);
-        MESSAGE("Combee found one Honey!");
+        MESSAGE("The opposing Combee found one Honey!");
     } THEN {
         EXPECT_EQ(opponent->item, ITEM_HONEY);
     }
@@ -29,7 +29,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather grants and immediately uses Honey i
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, player);
         ABILITY_POPUP(opponent, ABILITY_HONEY_GATHER);
-        MESSAGE("Combee found one Honey!");
+        MESSAGE("The opposing Combee found one Honey!");
         ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_EFFECT, opponent);
     } THEN {
         EXPECT_EQ(opponent->item, ITEM_NONE);
