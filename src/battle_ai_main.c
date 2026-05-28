@@ -3926,8 +3926,8 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     }
                     //Temporarily apply Coaching buff
                     changesToReverse = ApplySimulatedStatChanges(battlerAtk, battlerPartner, coachingStatChanges);
-                    DebugPrintf("Temporary Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerDef].statStages[STAT_ATK], gBattleMons[battlerDef].statStages[STAT_DEF], 
-                        gBattleMons[battlerDef].statStages[STAT_SPEED]);
+                    DebugPrintf("Temporary Stat Changes for Atk, Def, Speed: %d, %d, %d", gBattleMons[battlerPartner].statStages[STAT_ATK], gBattleMons[battlerPartner].statStages[STAT_DEF], 
+                        gBattleMons[battlerPartner].statStages[STAT_SPEED]);
         
 
                     //Kill checks after applying Coaching changes

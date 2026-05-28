@@ -484,6 +484,78 @@ AI_SINGLE_BATTLE_TEST("AI will choose either Rock Tomb or Bulldoze if Stat drop 
     }
 }
 
+
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI values Rock Tomb when the simulated Speed drop lets it move first")
+{
+    GIVEN {
+        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_SPD_MINUS_1, 100) == TRUE);
+        ASSUME(GetMoveType(MOVE_ROCK_TOMB) == TYPE_ROCK);
+        ASSUME(GetMoveType(MOVE_ROCK_THROW) == TYPE_ROCK);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(100); Moves(MOVE_CELEBRATE);}
+        OPPONENT(SPECIES_GEODUDE) { Speed(70); Moves(MOVE_ROCK_TOMB, MOVE_ROCK_SLIDE); }
+    } WHEN {
+        TURN { SCORE_GT(opponent, MOVE_ROCK_TOMB, MOVE_ROCK_SLIDE); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not prioritize Rock Tomb when the simulated Speed drop not let it move first")
+{
+    GIVEN {
+        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_SPD_MINUS_1, 100) == TRUE);
+        ASSUME(GetMoveType(MOVE_ROCK_TOMB) == TYPE_ROCK);
+        ASSUME(GetMoveType(MOVE_ROCK_SLIDE) == TYPE_ROCK);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(140); Moves(MOVE_CELEBRATE);}
+        OPPONENT(SPECIES_GEODUDE) { Speed(70); Moves(MOVE_ROCK_TOMB, MOVE_ROCK_SLIDE); }
+    } WHEN {
+        //At most Rock tomb can get the +1
+        TURN { SCORE_LT_VAL(opponent, MOVE_ROCK_TOMB, AI_SCORE_DEFAULT + 2); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: HiddenSTAB includes unrevealed STAB moves but revealed logic does not")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_CACNEA) { Moves(MOVE_ABSORB, MOVE_FLAMETHROWER, MOVE_GIGA_DRAIN, MOVE_HYPER_BEAM); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_FLAMETHROWER); EXPECT_MOVE(opponent, MOVE_CELEBRATE); }
+    } THEN {
+        u16 surmisedMoves[MAX_MON_MOVES];
+        u16 *revealedMoves = GetMovesArray(B_POSITION_PLAYER_LEFT);
+
+        GetMovesArrayWithHiddenSTAB(B_POSITION_PLAYER_LEFT, surmisedMoves);
+
+        EXPECT(revealedMoves[0] == MOVE_NONE);
+        EXPECT(revealedMoves[1] == MOVE_FLAMETHROWER);
+        EXPECT(revealedMoves[2] == MOVE_NONE);
+        EXPECT(revealedMoves[3] == MOVE_NONE);
+        EXPECT(surmisedMoves[0] == MOVE_ABSORB);
+        EXPECT(surmisedMoves[1] == MOVE_FLAMETHROWER);
+        EXPECT(surmisedMoves[2] == MOVE_GIGA_DRAIN);
+        EXPECT(surmisedMoves[3] == MOVE_NONE);
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not restore a below-default damaging move with best damage logic")
+{
+    GIVEN {
+        ASSUME(GetMoveType(MOVE_THUNDERBOLT) == TYPE_ELECTRIC);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_LANTURN) { Ability(ABILITY_VOLT_ABSORB); }
+        OPPONENT(SPECIES_JOLTEON) { Moves(MOVE_THUNDERBOLT, MOVE_TACKLE); }
+    } WHEN {
+        TURN {
+            EXPECT_MOVE(opponent, MOVE_TACKLE);
+            SCORE_LT_VAL(opponent, MOVE_THUNDERBOLT, AI_SCORE_DEFAULT);
+            SCORE_EQ_VAL(opponent, MOVE_TACKLE, AI_SCORE_DEFAULT + 1);
+        }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("First Impression is preferred on the first turn of the species if it's the best dmg move")
 {
     GIVEN {
