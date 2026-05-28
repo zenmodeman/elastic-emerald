@@ -14,6 +14,7 @@
 #include "debug.h"
 #include "event_data.h"
 #include "item.h"
+#include "math_util.h"
 #include "pokemon.h"
 #include "random.h"
 #include "recorded_battle.h"
@@ -44,6 +45,7 @@ static u32 ChooseMoveOrAction_Doubles(u32 battler);
 static inline void BattleAI_DoAIProcessing(struct AiThinkingStruct *aiThink, u32 battlerAtk, u32 battlerDef);
 static inline void BattleAI_DoAIProcessing_PredictedSwitchin(struct AiThinkingStruct *aiThink, struct AiLogicData *aiData, u32 battlerAtk, u32 battlerDef);
 static bool32 IsPinchBerryItemEffect(enum ItemHoldEffect holdEffect);
+static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef);
 
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
@@ -144,10 +146,6 @@ static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
     [62] = AI_Safari,               // AI_FLAG_SAFARI
     [63] = AI_FirstBattle,          // AI_FLAG_FIRST_BATTLE
 };
-
-//The first 4 represent the scores of the 4 indexes
-//And the last index represents whether the values have been set
-s32 tentativeScores[5] = {0};
 
 // Functions
 void BattleAI_SetupItems(void)
@@ -309,7 +307,7 @@ void BattleAI_SetupAIData(u8 defaultScoreMoves, u32 battler)
     {
         if (moveLimitations & (1u << moveIndex))
             SET_SCORE(battler, moveIndex, 0);
-        if (defaultScoreMoves & 1)
+        else if (defaultScoreMoves & 1)
             SET_SCORE(battler, moveIndex, AI_SCORE_DEFAULT);
         else
             SET_SCORE(battler, moveIndex, 0);
@@ -915,6 +913,9 @@ static u32 ChooseMoveOrAction_Singles(u32 battler)
         gAiThinkingStruct->aiLogicId++;
     }
 
+    if (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_CHECK_VIABILITY)
+        AI_CompareDamagingMoves(battler, opposingBattler);
+
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         gAiBattleData->finalScore[battler][opposingBattler][i] = gAiThinkingStruct->score[i];
@@ -991,6 +992,8 @@ static u32 ChooseMoveOrAction_Doubles(u32 battler)
                 flags >>= (u64)1;
                 gAiThinkingStruct->aiLogicId++;
             }
+            if (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_CHECK_VIABILITY)
+                AI_CompareDamagingMoves(battler, gBattlerTarget);
 
             mostViableMovesScores[0] = gAiThinkingStruct->score[0];
             mostViableMovesIndices[0] = 0;
@@ -1070,8 +1073,6 @@ static inline bool32 ShouldConsiderMoveForBattler(u32 battlerAi, u32 battlerDef,
 
 static inline void BattleAI_DoAIProcessing(struct AiThinkingStruct *aiThink, u32 battlerAtk, u32 battlerDef)
 {
-    //Clear the array before processing it
-    memset(tentativeScores, 0, sizeof(tentativeScores));
     do
     {
         if (gBattleMons[battlerAtk].pp[aiThink->movesetIndex] == 0)
@@ -2330,7 +2331,11 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             break;
         case EFFECT_COPYCAT:
         case EFFECT_MIRROR_MOVE:
-            return AI_CheckBadMove(battlerAtk, battlerDef, predictedMove, score);
+            if (predictedMove && GetMoveEffect(predictedMove) != GetMoveEffect(move))
+                return AI_CheckBadMove(battlerAtk, battlerDef, predictedMove, score);
+            else
+                ADJUST_SCORE(-10);
+            break;
         case EFFECT_FLOWER_SHIELD:
             if (!IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GRASS)
               && !(isDoubleBattle && IS_BATTLER_OF_TYPE(BATTLE_PARTNER(battlerAtk), TYPE_GRASS)))
@@ -2595,7 +2600,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_NATURE_POWER:
-            return AI_CheckBadMove(battlerAtk, battlerDef, GetNaturePowerMove(battlerAtk), score);
+            predictedMove = GetNaturePowerMove(battlerAtk);
+            if (GetMoveEffect(predictedMove) != GetMoveEffect(move))
+                return AI_CheckBadMove(battlerAtk, battlerDef, GetNaturePowerMove(battlerAtk), score);
+            break;
         case EFFECT_TAUNT:
             if (gDisableStructs[battlerDef].tauntTimer > 0
               || DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
@@ -2776,7 +2784,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             {
                 if (AI_IsSlower(battlerAtk, battlerDef, move))
                     ADJUST_SCORE(-10);    // Target is predicted to go first, Me First will fail
-                else
+                else if (GetMoveEffect(predictedMove) != GetMoveEffect(move))
                     return AI_CheckBadMove(battlerAtk, battlerDef, predictedMove, score);
             }
             else
@@ -3041,7 +3049,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             break;
         case EFFECT_MAGNET_RISE:
             if (gFieldStatuses & STATUS_FIELD_GRAVITY
-              ||  gDisableStructs[battlerAtk].magnetRiseTimer != 0
+              ||  gDisableStructs[battlerAtk].magnetRiseTimer > gBattleTurnCounter
               || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_IRON_BALL
               || gStatuses3[battlerAtk] & (STATUS3_ROOTED | STATUS3_MAGNET_RISE | STATUS3_SMACKED_DOWN)
               || !IsBattlerGrounded(battlerAtk))
@@ -4322,16 +4330,26 @@ static u32 GetPredictedWrapResidualDamage(u32 battlerAtk, u32 battlerDef)
 
     return max(1, dmg);
 }
-
-
-static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
+static bool32 ShouldCompareMove(u32 battlerAtk, u32 battlerDef, u32 moveIndex, u16 move)
 {
-    u32 i;
+    if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
+        return FALSE;
+    if (GetMovePower(move) == 0)
+        return FALSE;
+    if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, moveIndex, AI_ATTACKING) == 0)
+        return FALSE;
+    if (gAiThinkingStruct->aiFlags[battlerAtk] & (AI_FLAG_RISKY | AI_FLAG_PREFER_HIGHEST_DAMAGE_MOVE) && GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING) == move)
+        return FALSE;
+    return TRUE;
+}
+
+static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
+{
+    u32 i, currId;
+    u32 moveComparisonScores[MAX_MON_MOVES];
+    u32 bestScore = AI_SCORE_DEFAULT;
     bool32 multipleBestMoves = FALSE;
-    s32 viableMoveScores[MAX_MON_MOVES];
-    s32 bestViableMoveScore;
     s32 noOfHits[MAX_MON_MOVES];
-    s32 score = 0;
     s32 leastHits = 1000;
     u16 *moves = GetMovesArray(battlerAtk);
     bool8 isTwoTurnNotSemiInvulnerableMove[MAX_MON_MOVES];
@@ -4340,18 +4358,16 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
     {
         if (moves[i] != MOVE_NONE && GetMovePower(moves[i]) != 0)
         {
-            // DebugPrintf("For move %d, the tentative score is %d", moves[i], tentativeScores[i]);
-            
             //Idea is that if the effect score is disincentivized, don't factor it in best number of hits
-            if (tentativeScores[i] < AI_SCORE_DEFAULT){
-                //Just set viableMoveScore to its score, since it will natively be below the default scoring.
-                viableMoveScores[i] = tentativeScores[i];
+            if (gAiThinkingStruct->score[i] < AI_SCORE_DEFAULT){
+                noOfHits[i] = -1;
+                isTwoTurnNotSemiInvulnerableMove[i] = FALSE;
                 continue;
             }
 
             //Currently skip incentives if the other target is just superior
             if (DoesBattlerPreferDamagingOtherTarget(battlerAtk, battlerDef)){
-                return score;
+                return;
             }
             // if (moves[i] == 664 && gBattleMons[battlerDef].species == SPECIES_BEAUTIFLY){
             // // DebugPrintf("Code below DoesBattlerPreferDamagingOtherTarget has been reached for %d, %d", battlerAtk, battlerDef);
@@ -4368,7 +4384,10 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                 u32 numHitsToGetKOd = NoOfHitsForTargetToFaintAI(battlerDef, battlerAtk);
                 
                 //It's okay for this value to be Unknown number of hits, since that just signifies the consideration is just number of turns for attacker to KO
-                u32 numRemainingActionsBeforeKOd = AI_IsFaster(battlerAtk, battlerDef, moves[i]) ?  numHitsToGetKOd : numHitsToGetKOd -1;
+                u32 numRemainingActionsBeforeKOd = numHitsToGetKOd;
+
+                if (!AI_IsFaster(battlerAtk, battlerDef, moves[i]) && numRemainingActionsBeforeKOd != 0)
+                    numRemainingActionsBeforeKOd--;
                 
                 u32 wrapSequenceDmgWithinActions = 0;
                 u32 bestMoveDmgWithinActions = 0; 
@@ -4448,20 +4467,17 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
             if (ShouldUseSpreadDamageMove(battlerAtk,moves[i], i, noOfHits[i]))
             {
                 noOfHits[i] = -1;
-                viableMoveScores[i] = 0;
                 isTwoTurnNotSemiInvulnerableMove[i] = FALSE;
             }
             else if (noOfHits[i] < leastHits && noOfHits[i] != 0)
             {
                 leastHits = noOfHits[i];
             }
-            viableMoveScores[i] = AI_SCORE_DEFAULT;
             isTwoTurnNotSemiInvulnerableMove[i] = IsTwoTurnNotSemiInvulnerableMove(battlerAtk, moves[i]);
         }
         else
         {
             noOfHits[i] = -1;
-            viableMoveScores[i] = 0;
             isTwoTurnNotSemiInvulnerableMove[i] = FALSE;
         }
     }
@@ -4473,8 +4489,18 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
     // 4. Better effect
 
     // Current move requires the least hits to KO. Compare with other moves.
-    if (leastHits == noOfHits[currId])
+    for (currId = 0; currId < MAX_MON_MOVES; currId++)
     {
+        u32 tempMoveScore = AI_SCORE_DEFAULT;
+
+        moveComparisonScores[currId] = 0;
+        if (!ShouldCompareMove(battlerAtk, battlerDef, currId, moves[currId]))
+            continue;
+
+        if (leastHits != noOfHits[currId])
+            continue;
+
+        multipleBestMoves = FALSE;
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
             if (i == currId)
@@ -4494,13 +4520,14 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                 if (!canOHKO && !currIdIsWrapping && !iMoveIsWrapping){ 
                     //Keep going if current move is stronger than the other move by at least the threshold
                     if (gAiLogicData->simulatedDmg[battlerAtk][battlerDef][currId].median >= (gAiLogicData->simulatedDmg[battlerAtk][battlerDef][i].median * dmgGapThreshold)/100){
-                        viableMoveScores[i] -= 1;
+                        tempMoveScore += MathUtil_Exponent(MAX_MON_MOVES, PRIORITY_EFFECT);
                         continue;
                     }
 
                     //Give up on getting best damaging move score if the other move hits harder by at least the threshold
                     else if ((gAiLogicData->simulatedDmg[battlerAtk][battlerDef][currId].median * dmgGapThreshold)/100 <= gAiLogicData->simulatedDmg[battlerAtk][battlerDef][i].median){
-                        return score;
+                        multipleBestMoves = TRUE;
+                        continue;
                     }
                 }
 
@@ -4508,49 +4535,45 @@ static s32 AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef, u32 currId)
                 multipleBestMoves = TRUE;
                 // We need to make sure it's the current move which is objectively better.
                 if (isTwoTurnNotSemiInvulnerableMove[i] && !isTwoTurnNotSemiInvulnerableMove[currId])
-                    viableMoveScores[i] -= 3;
-                else if (!isTwoTurnNotSemiInvulnerableMove[i] && isTwoTurnNotSemiInvulnerableMove[currId])
-                    viableMoveScores[currId] -= 3;
+                    tempMoveScore += MathUtil_Exponent(MAX_MON_MOVES, PRIORITY_NOT_CHARGING);
 
                 switch (CompareMoveAccuracies(battlerAtk, battlerDef, currId, i))
                 {
                 case 1:
-                    viableMoveScores[i] -= 2;
+                    tempMoveScore += MathUtil_Exponent(MAX_MON_MOVES, PRIORITY_ACCURACY);
                     break;
                 case -1:
-                    viableMoveScores[currId] -= 2;
                     break;
                 }
                 switch (AI_WhichMoveBetter(moves[currId], moves[i], battlerAtk, battlerDef, noOfHits[currId]))
                 {
                 case 1:
-                    viableMoveScores[i] -= 1;
+                    tempMoveScore += MathUtil_Exponent(MAX_MON_MOVES, PRIORITY_EFFECT);
                     break;
                 case -1:
-                    viableMoveScores[currId] -= 1;
                     break;
                 }
             }
         }
-
         // Turns out the current move deals the most dmg compared to the other 3.
         if (!multipleBestMoves)
-            ADJUST_SCORE(BEST_DAMAGE_MOVE);
+            moveComparisonScores[currId] = UINT32_MAX;
         else
-        {
-            bestViableMoveScore = 0;
-            for (i = 0; i < MAX_MON_MOVES; i++)
-            {
-                if (viableMoveScores[i] > bestViableMoveScore)
-                    bestViableMoveScore = viableMoveScores[i];
-            }
-            // Unless a better move was found increase score of current move
-            if (viableMoveScores[currId] == bestViableMoveScore)
-                ADJUST_SCORE(BEST_DAMAGE_MOVE);
-        }
+            moveComparisonScores[currId] = tempMoveScore;
     }
 
-    return score;
+    // Find highest comparison score
+    for (int i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moveComparisonScores[i] > bestScore)
+            bestScore = moveComparisonScores[i];
+    }
+    // Increase score for corresponding move(s), accomodating ties
+    for (int i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moveComparisonScores[i] == bestScore)
+            gAiThinkingStruct->score[i] += BEST_DAMAGE_MOVE;
+    }
 }
 
 static u32 AI_CalcHoldEffectMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
@@ -4694,7 +4717,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_MIRROR_MOVE:
-        if (predictedMove != MOVE_NONE)
+        if (predictedMove && GetMoveEffect(predictedMove) != GetMoveEffect(move))
             return AI_CheckViability(battlerAtk, battlerDef, predictedMove, score);
         break;
     case EFFECT_ATTACK_UP:
@@ -5120,7 +5143,8 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_MIMIC:
         if (AI_IsFaster(battlerAtk, battlerDef, move))
         {
-            if (gLastMoves[battlerDef] != MOVE_NONE && gLastMoves[battlerDef] != 0xFFFF)
+            if (gLastMoves[battlerDef] != MOVE_NONE && gLastMoves[battlerDef] != 0xFFFF
+                    && (GetMoveEffect(gLastMoves[battlerDef]) != GetMoveEffect(move)))
                 return AI_CheckViability(battlerAtk, battlerDef, gLastMoves[battlerDef], score);
         }
         break;
@@ -6396,6 +6420,68 @@ case EFFECT_DISABLE:
             }
         }
         break;
+    case EFFECT_STEAL_ITEM:
+        {
+            bool32 canSteal = FALSE;
+
+            if (B_TRAINERS_KNOCK_OFF_ITEMS == TRUE)
+                canSteal = TRUE;
+
+            if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER || IsOnPlayerSide(battlerAtk))
+                canSteal = TRUE;
+
+            if (canSteal && aiData->items[battlerAtk] == ITEM_NONE
+             && aiData->items[battlerDef] != ITEM_NONE
+             && CanBattlerGetOrLoseItem(battlerDef, aiData->items[battlerDef])
+             && CanBattlerGetOrLoseItem(battlerAtk, aiData->items[battlerDef])
+             && !HasMoveWithEffect(battlerAtk, EFFECT_ACROBATICS)
+             && aiData->abilities[battlerDef] != ABILITY_STICKY_HOLD)
+            {
+                switch (aiData->holdEffects[battlerDef])
+                {
+                case HOLD_EFFECT_NONE:
+                    break;
+                case HOLD_EFFECT_CHOICE_BAND:
+                case HOLD_EFFECT_CHOICE_SCARF:
+                case HOLD_EFFECT_CHOICE_SPECS:
+                    ADJUST_SCORE(DECENT_EFFECT);
+                    break;
+                case HOLD_EFFECT_TOXIC_ORB:
+                    if (ShouldPoison(battlerAtk, battlerAtk))
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    break;
+                case HOLD_EFFECT_FLAME_ORB:
+                    if (ShouldBurn(battlerAtk, battlerAtk, aiData->abilities[battlerAtk]))
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    break;
+                case HOLD_EFFECT_BLACK_SLUDGE:
+                    if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_POISON))
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    break;
+                case HOLD_EFFECT_IRON_BALL:
+                    if (HasMoveWithEffect(battlerAtk, EFFECT_FLING))
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    break;
+                case HOLD_EFFECT_LAGGING_TAIL:
+                case HOLD_EFFECT_STICKY_BARB:
+                    break;
+                default:
+                    ADJUST_SCORE(WEAK_EFFECT);
+                    break;
+                }
+            }
+            break;
+        }
+    case EFFECT_STONE_AXE:
+    case EFFECT_CEASELESS_EDGE:
+        if (AI_ShouldSetUpHazards(battlerAtk, battlerDef, aiData))
+        {
+            if (gDisableStructs[battlerAtk].isFirstTurn)
+                ADJUST_SCORE(BEST_EFFECT);
+            else
+                ADJUST_SCORE(DECENT_EFFECT);
+        }
+        break;
     default:
         break;
     } // move effect checks
@@ -6654,68 +6740,6 @@ case EFFECT_DISABLE:
                     else if (GetItemPocket(aiData->items[battlerDef]) == POCKET_BERRIES || aiData->holdEffects[battlerDef] == HOLD_EFFECT_GEMS)
                         ADJUST_SCORE(DECENT_EFFECT);
                     break;
-                case MOVE_EFFECT_STEAL_ITEM:
-                    {
-                        bool32 canSteal = FALSE;
-
-                        if (B_TRAINERS_KNOCK_OFF_ITEMS == TRUE)
-                            canSteal = TRUE;
-                        if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER || IsOnPlayerSide(battlerAtk))
-                            canSteal = TRUE;
-
-                        if (canSteal && aiData->items[battlerAtk] == ITEM_NONE
-                        && aiData->items[battlerDef] != ITEM_NONE
-                        && CanBattlerGetOrLoseItem(battlerDef, aiData->items[battlerDef])
-                        && CanBattlerGetOrLoseItem(battlerAtk, aiData->items[battlerDef])
-                        && !HasMoveWithEffect(battlerAtk, EFFECT_ACROBATICS)
-                        && aiData->abilities[battlerDef] != ABILITY_STICKY_HOLD)
-                        {
-                            switch (aiData->holdEffects[battlerDef])
-                            {
-                            case HOLD_EFFECT_NONE:
-                                break;
-                            case HOLD_EFFECT_CHOICE_BAND:
-                            case HOLD_EFFECT_CHOICE_SCARF:
-                            case HOLD_EFFECT_CHOICE_SPECS:
-                                ADJUST_SCORE(DECENT_EFFECT);
-                                break;
-                            case HOLD_EFFECT_TOXIC_ORB:
-                                if (ShouldPoison(battlerAtk, battlerAtk))
-                                    ADJUST_SCORE(DECENT_EFFECT);
-                                break;
-                            case HOLD_EFFECT_FLAME_ORB:
-                                if (ShouldBurn(battlerAtk, battlerAtk, aiData->abilities[battlerAtk]))
-                                    ADJUST_SCORE(DECENT_EFFECT);
-                                break;
-                            case HOLD_EFFECT_BLACK_SLUDGE:
-                                if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_POISON))
-                                    ADJUST_SCORE(DECENT_EFFECT);
-                                break;
-                            case HOLD_EFFECT_IRON_BALL:
-                                if (HasMoveWithEffect(battlerAtk, EFFECT_FLING))
-                                    ADJUST_SCORE(DECENT_EFFECT);
-                                break;
-                            case HOLD_EFFECT_LAGGING_TAIL:
-                            case HOLD_EFFECT_STICKY_BARB:
-                                break;
-                            default:
-                                ADJUST_SCORE(WEAK_EFFECT);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    break;
-                case MOVE_EFFECT_STEALTH_ROCK:
-                case MOVE_EFFECT_SPIKES:
-                    if (AI_ShouldSetUpHazards(battlerAtk, battlerDef, aiData));
-                    {
-                        if (gDisableStructs[battlerAtk].isFirstTurn)
-                            ADJUST_SCORE(BEST_EFFECT);
-                        else
-                            ADJUST_SCORE(DECENT_EFFECT);
-                    }
-                    break;
                 case MOVE_EFFECT_FEINT:
                     if (GetMoveEffect(predictedMove) == EFFECT_PROTECT)
                         ADJUST_SCORE(GOOD_EFFECT);
@@ -6745,84 +6769,40 @@ case EFFECT_DISABLE:
     return score;
 }
 
-
-
-
-
-
-
-static void setTentativeScores(){
-    u32 i;
-
-    //Do nothing if tentative scores are already set
-    if (tentativeScores[4] == 1){
-        return;
-    }
-    
-    for (i=0; i < MAX_MON_MOVES; i++){
-        tentativeScores[i] = gAiThinkingStruct->score[i];
-    }
-    tentativeScores[4] = 1;
-}
-
 // AI_FLAG_CHECK_VIABILITY - Chooses best possible move to hit player
 static s32 AI_CheckViability(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
-    u32 moveSlot = GetMoveSlot(GetMovesArray(battlerAtk), move);
-
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
         return score;
 
-    setTentativeScores();
-    tentativeScores[moveSlot] += AI_CalcMoveEffectScore(battlerAtk, battlerDef, move);
-    tentativeScores[moveSlot] += AI_CalcHoldEffectMoveScore(battlerAtk, battlerDef, move);
-    
-    if (GetMovePower(move) != 0)
+    score += AI_CalcMoveEffectScore(battlerAtk, battlerDef, move);
+    score += AI_CalcHoldEffectMoveScore(battlerAtk, battlerDef, move);
+
+    if (GetMovePower(move) != 0
+     && gAiThinkingStruct->aiFlags[battlerAtk] & (AI_FLAG_RISKY | AI_FLAG_PREFER_HIGHEST_DAMAGE_MOVE)
+     && GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING) == move)
     {
-        //Don't think this is necessary after the check bad move penalty which should already cover this
-        //But leaving it for now in case there's some case I'm forgetting
-        
-        // if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, gAiThinkingStruct->movesetIndex, AI_ATTACKING) == 0){
-        //     tentativeScores[moveSlot] -= 20;
-        //     // ADJUST_AND_RETURN_SCORE(NO_DAMAGE_OR_FAILS); // No point in checking the move further so return early
-
-
-        // }
-        // else
-        {
-            if (gAiThinkingStruct->aiFlags[battlerAtk] & (AI_FLAG_RISKY | AI_FLAG_PREFER_HIGHEST_DAMAGE_MOVE)
-                && GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING) == move){
-                tentativeScores[moveSlot] += 1;
-                // ADJUST_SCORE(BEST_DAMAGE_MOVE);
-            }
-            else{
-                tentativeScores[moveSlot] += AI_CompareDamagingMoves(battlerAtk, battlerDef, gAiThinkingStruct->movesetIndex);
-                // score += AI_CompareDamagingMoves(battlerAtk, battlerDef, gAiThinkingStruct->movesetIndex);
-            }
-        }
+        ADJUST_SCORE(BEST_DAMAGE_MOVE);
     }
-
-    // score += AI_CalcMoveEffectScore(battlerAtk, battlerDef, move);
 
     // Some additional scores for very specific cases
     switch(move){
         case MOVE_CONSTRICT:
             //Because Constrict makes so little progres, have a chance to give it a disincentivize score, in the case that it's the best damaging move
             //This raises the liklihood of using a neutral score status move above best damaging move Constrict
-            if (gBattleMons[battlerAtk].statStages[STAT_ATK] <= DEFAULT_STAT_STAGE && gBattleMons[battlerDef].statStages[STAT_DEF] >= DEFAULT_STAT_STAGE && score > 100){
-                tentativeScores[moveSlot] -=1;
-                // ADJUST_SCORE(-1);
+            if (gBattleMons[battlerAtk].statStages[STAT_ATK] <= DEFAULT_STAT_STAGE && gBattleMons[battlerDef].statStages[STAT_DEF] >= DEFAULT_STAT_STAGE && score > AI_SCORE_DEFAULT){
+                ADJUST_SCORE(-1);
             }
             break;
     }
-    return tentativeScores[moveSlot];
-    // return score;
+    return score;
 }
 
 // Effects that are encouraged on the first turn of battle
 static s32 AI_ForceSetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
 {
-    u8 i;
+    u32 i;
+
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef)
       || gBattleResults.battleTurnCounter != 0)
         return score;
@@ -6920,7 +6900,8 @@ static s32 AI_ForceSetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 
     case EFFECT_CHILLY_RECEPTION:
     case EFFECT_GEOMANCY:
     case EFFECT_VICTORY_DANCE:
-        //Give a good chance of 
+    case EFFECT_CEASELESS_EDGE:
+    case EFFECT_STONE_AXE:
         ADJUST_SCORE(DECENT_EFFECT);
 
         //During AI battles, give especially high incentive
@@ -6934,12 +6915,12 @@ static s32 AI_ForceSetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 
         {
         case HOLD_EFFECT_RING_TARGET:
             //Do just a weak incentive for now since there's other logic that should incentivize this scenario.
-            DebugPrintf("The Ring Target Trick Setup scenario is reached.");
             ADJUST_SCORE(WEAK_EFFECT);
             break;
         default:
             break;
         }
+        break;
     case EFFECT_HIT:
     {
         // TEMPORARY - should applied to all moves regardless of EFFECT
