@@ -2186,9 +2186,9 @@ bool32 ShouldLowerStat(u32 battlerAtk, u32 battlerDef, u32 abilityDef, u32 stat)
     case ABILITY_BIG_PECKS:
         if (stat == STAT_DEF)
             return FALSE;
-    // case ABILITY_ILLUMINATE:
-    //     if (B_ILLUMINATE_EFFECT < GEN_9)
-    //         break;
+    case ABILITY_ILLUMINATE:
+        if (GetGenConfig(GEN_ILLUMINATE_EFFECT) < GEN_9)
+            break;
     case ABILITY_KEEN_EYE:
     case ABILITY_MINDS_EYE:
         if (stat == STAT_ACC)
@@ -2517,7 +2517,7 @@ bool32 ShouldLowerAccuracy(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_KEEN_EYE
       && defAbility != ABILITY_MINDS_EYE
-    //   && (B_ILLUMINATE_EFFECT >= GEN_9 && defAbility != ABILITY_ILLUMINATE)
+      && !(GetGenConfig(GEN_ILLUMINATE_EFFECT) >= GEN_9 && defAbility == ABILITY_ILLUMINATE)
       && !(gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MIST)
       && gAiLogicData->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;

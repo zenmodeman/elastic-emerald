@@ -1362,8 +1362,9 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             case MOVE_EFFECT_BURN:
                 ADJUST_SCORE(-5);
                 break;
+            default:
+                break;
             }
-            break;
             break;
         case ABILITY_WONDER_GUARD:
             if (effectiveness < UQ_4_12(2.0))
@@ -1579,10 +1580,14 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_EVASION_UP_2:
         case EFFECT_MINIMIZE:
             if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_EVASION))
-                ADJUST_SCORE(-10);    
-            if (aiData->abilities[battlerDef] == ABILITY_NO_GUARD || aiData->abilities[battlerDef] == ABILITY_KEEN_EYE || aiData->abilities[battlerDef] == ABILITY_LONG_REACH
-            || aiData->abilities[battlerDef] == ABILITY_MINDS_EYE  || aiData->abilities[battlerDef] == ABILITY_ILLUMINATE
-              ||  gBattleMons[battlerAtk].status2 & STATUS2_FORESIGHT){
+                ADJUST_SCORE(-10);
+            if (aiData->abilities[battlerDef] == ABILITY_NO_GUARD
+             || aiData->abilities[battlerDef] == ABILITY_KEEN_EYE
+             || aiData->abilities[battlerDef] == ABILITY_LONG_REACH
+             || aiData->abilities[battlerDef] == ABILITY_MINDS_EYE
+             || (GetGenConfig(GEN_ILLUMINATE_EFFECT) >= GEN_9 && aiData->abilities[battlerDef] == ABILITY_ILLUMINATE)
+             || gBattleMons[battlerAtk].status2 & STATUS2_FORESIGHT)
+            {
                 ADJUST_SCORE(-10);
             }
             if (moveEffect == EFFECT_MINIMIZE && HasMinimizeDoubleMove(battlerDef)){
@@ -5060,6 +5065,8 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
               || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_CURE_STATUS
               || HasMoveWithEffect(battlerAtk, EFFECT_SLEEP_TALK)
               || HasMoveWithEffect(battlerAtk, EFFECT_SNORE)
+              || aiData->abilities[battlerAtk] == ABILITY_SHED_SKIN
+              || aiData->abilities[battlerAtk] == ABILITY_EARLY_BIRD
               || (AI_GetWeather() & B_WEATHER_RAIN && gWishFutureKnock.weatherDuration != 1 && aiData->abilities[battlerAtk] == ABILITY_HYDRATION && aiData->holdEffects[battlerAtk] != HOLD_EFFECT_UTILITY_UMBRELLA))
                 ADJUST_SCORE(DECENT_EFFECT);
             

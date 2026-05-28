@@ -490,10 +490,9 @@ static void CB2_InitBattleInternal(void)
     else
     {
         gBattle_WIN0V = WIN_RANGE(DISPLAY_HEIGHT / 2, DISPLAY_HEIGHT / 2 + 1);
+        ScanlineEffect_Clear();
         if (B_FAST_INTRO_NO_SLIDE == FALSE && !gTestRunnerHeadless)
         {
-            ScanlineEffect_Clear();
-
             for (i = 0; i < DISPLAY_HEIGHT / 2; i++)
             {
                 gScanlineEffectRegBuffers[0][i] = 0xF0;
@@ -3216,6 +3215,8 @@ void SwitchInClearSetData(u32 battler)
             gBattleMons[i].status2 &= ~STATUS2_WRAPPED;
         if ((gStatuses4[i] & STATUS4_SYRUP_BOMB) && gBattleStruct->stickySyrupdBy[i] == battler)
             gStatuses4[i] &= ~STATUS4_SYRUP_BOMB;
+        if (gDisableStructs[i].octolock && gDisableStructs[i].octolockedBy == battler)
+            gDisableStructs[i].octolock = FALSE;
     }
 
     gActionSelectionCursor[battler] = 0;
@@ -3334,6 +3335,8 @@ const u8* FaintClearSetData(u32 battler)
             gBattleMons[i].status2 &= ~STATUS2_WRAPPED;
         if ((gStatuses4[i] & STATUS4_SYRUP_BOMB) && gBattleStruct->stickySyrupdBy[i] == battler)
             gStatuses4[i] &= ~STATUS4_SYRUP_BOMB;
+        if (gDisableStructs[i].octolock && gDisableStructs[i].octolockedBy == battler)
+            gDisableStructs[i].octolock = FALSE;
     }
 
     gActionSelectionCursor[battler] = 0;
@@ -4004,7 +4007,7 @@ void BattleTurnPassed(void)
     gHitMarker &= ~HITMARKER_NO_ATTACKSTRING;
     gHitMarker &= ~HITMARKER_UNABLE_TO_USE_MOVE;
     gHitMarker &= ~HITMARKER_PLAYER_FAINTED;
-    gHitMarker &= ~HITMARKER_PASSIVE_DAMAGE;
+    gHitMarker &= ~HITMARKER_PASSIVE_HP_UPDATE;
     gBattleScripting.animTurn = 0;
     gBattleScripting.animTargetsHit = 0;
     gBattleScripting.moveendState = 0;
@@ -5424,7 +5427,7 @@ static void RunTurnActionsFunctions(void)
 
     if (gCurrentTurnActionNumber >= gBattlersCount) // everyone did their actions, turn finished
     {
-        gHitMarker &= ~HITMARKER_PASSIVE_DAMAGE;
+        gHitMarker &= ~HITMARKER_PASSIVE_HP_UPDATE;
         gBattleMainFunc = sEndTurnFuncsTable[gBattleOutcome & 0x7F];
     }
     else
