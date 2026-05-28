@@ -77,7 +77,6 @@ static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef);
 static bool32 ShouldUseSpeedControl(u32 battlerAtk, u32 battlerDef, u32 move, s8 speedChange, bool32 boostAffectsSelf);
 static bool32 OppositeSideHas2Mons(u32 battler);
 static bool32 IsBattleMovePreferableOnCurrentTarget(u32 battlerAtk, u32 battlerDef, u32 move);
-static bool32 BattlerHasSlowKill(u32 battlerAtk, u32 battlerDef);
 
 static s32 (*const sBattleAiFuncTable[])(u32, u32, u32, s32) =
 {
@@ -2679,7 +2678,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
               || gAbilitiesInfo[aiData->abilities[battlerAtk]].cantBeCopied
               || gAbilitiesInfo[aiData->abilities[battlerDef]].cantBeOverwritten
               || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_ABILITY_SHIELD
-              || aiData->abilities[battlerAtk] == aiData ->abilities[battlerDef])
+              || aiData->abilities[battlerAtk] == aiData->abilities[battlerDef])
                 ADJUST_SCORE(-10);
             else if (GetActiveGimmick(battlerDef) == GIMMICK_DYNAMAX)
                 ADJUST_SCORE(-10);
@@ -3201,17 +3200,6 @@ static bool32 BattlerHasFastKill(u32 battlerAtk, u32 battlerDef){
     //The IsBattlerAlive check is mainly to simplify double battle inputs
     if (IsBattlerAlive(battlerAtk) && CanTargetFaintAi(battlerAtk, battlerDef)
         && AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT))
-        {
-            return TRUE;
-
-        }
-    return FALSE;
-}
-
-static bool32 BattlerHasSlowKill(u32 battlerAtk, u32 battlerDef){
-    //The IsBattlerAlive check is mainly to simplify double battle inputs
-    if (IsBattlerAlive(battlerAtk) && CanTargetFaintAi(battlerAtk, battlerDef)
-        && !AI_IsFaster(battlerAtk, battlerDef, MOVE_IRRELEVANT))
         {
             return TRUE;
 
@@ -4657,8 +4645,10 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     
     //Gem Logic with Thief and Covet; in the future, maybe extend to effects such as Acrobatics
     //Give a chance of incentivizing the strongest move compatible with a gem if a stealing move is available
-    if (aiData -> holdEffects[battlerAtk] == HOLD_EFFECT_GEMS && HasMoveWithEffect(battlerAtk, MOVE_EFFECT_STEAL_ITEM)
-    && move == GetBestDmgMoveofType(battlerAtk, battlerDef, GetItemSecondaryId(aiData->items[battlerAtk]))){
+    if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_GEMS
+     && HasMoveWithEffect(battlerAtk, EFFECT_STEAL_ITEM)
+     && move == GetBestDmgMoveofType(battlerAtk, battlerDef, GetItemSecondaryId(aiData->items[battlerAtk])))
+    {
         //This is a multi-turn combo, so if AI will faint, doesn't make sense to get an incentive here.
         if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_RandLessThan(127)){
             ADJUST_SCORE(WEAK_EFFECT);
@@ -5068,8 +5058,8 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         {
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_CURE_SLP
               || aiData->holdEffects[battlerAtk] == HOLD_EFFECT_CURE_STATUS
-              || HasMoveWithEffect(EFFECT_SLEEP_TALK, battlerAtk)
-              || HasMoveWithEffect(EFFECT_SNORE, battlerAtk)
+              || HasMoveWithEffect(battlerAtk, EFFECT_SLEEP_TALK)
+              || HasMoveWithEffect(battlerAtk, EFFECT_SNORE)
               || (AI_GetWeather() & B_WEATHER_RAIN && gWishFutureKnock.weatherDuration != 1 && aiData->abilities[battlerAtk] == ABILITY_HYDRATION && aiData->holdEffects[battlerAtk] != HOLD_EFFECT_UTILITY_UMBRELLA))
                 ADJUST_SCORE(DECENT_EFFECT);
             
@@ -6624,19 +6614,17 @@ case EFFECT_DISABLE:
                     //When the chance is not 100%, it's only going to factor in AI_CompareDamagingMoves
                     if (gMovesInfo[move].additionalEffects[i].chance == 100 &&
                     ShouldLowerSpeed(battlerAtk, battlerDef, aiData->abilities[battlerDef]) && aiData->speedStats[battlerDef] > aiData->speedStats[battlerAtk]){
-                        u32 battlerAtkPartner = GetPartnerBattler(battlerAtk);
                         // DebugPrintf("SPD drop check atk=%d def=%d partner=%d partnerMove=%d partnerTarget=%d chosenIdx=%d",
                         //     battlerAtk,
                         //     battlerDef,
-                        //     battlerAtkPartner,
+                        //     GetPartnerBattler(battlerAtk),
                         //     aiData->partnerMove,
-                        //     gAiBattleData->chosenTarget[battlerAtkPartner],
-                        //     gAiBattleData->chosenMoveIndex[battlerAtkPartner]);
+                        //     gAiBattleData->chosenTarget[GetPartnerBattler(battlerAtk)],
+                        //     gAiBattleData->chosenMoveIndex[GetPartnerBattler(battlerAtk)]);
 
                         if (PartnerMoveHasSameAdditionalEffectSameTarget(GetPartnerBattler(battlerAtk), battlerDef, aiData->partnerMove, additionalEffect->moveEffect, 100)
                          && PartnerSpeedDropAlreadyHandlesTarget(battlerAtk, battlerDef, speedValue))
                         {
-                            DebugPrintf("Partner drop handles target %d for battler %d", battlerDef, battlerAtk);
                             //No incenvtive
                             ADJUST_SCORE(0);
                         }
@@ -6932,13 +6920,13 @@ static s32 AI_ForceSetupFirstTurn(u32 battlerAtk, u32 battlerDef, u32 move, s32 
             switch (additionalEffect->moveEffect)
             {
                 case MOVE_EFFECT_STEALTH_ROCK:
-                case MOVE_EFFECT_SPIKES:
                     ADJUST_SCORE(DECENT_EFFECT);
                     break;
                 default:
                     break;
             }
         }
+        break;
     }
     default:
         break;
