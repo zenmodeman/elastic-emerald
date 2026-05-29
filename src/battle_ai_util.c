@@ -1833,6 +1833,17 @@ bool32 CanTargetMoveFaintAi(u32 move, u32 battlerDef, u32 battlerAtk, u32 nHits)
     return FALSE;
 }
 
+bool32 CanAiMoveFaintTarget(u32 move, u32 battlerAtk, u32 battlerDef, u32 nHits)
+{
+    u32 indexSlot = GetMoveSlot(GetMovesArray(battlerAtk), move);
+    if (indexSlot < MAX_MON_MOVES)
+    {
+        if (GetNoOfHitsToKO(AI_GetDamage(battlerAtk, battlerDef, indexSlot, AI_ATTACKING, gAiLogicData), gBattleMons[battlerDef].hp) <= nHits)
+            return TRUE;
+    }
+    return FALSE;
+}
+
 // Check if target has means to faint ai mon after modding hp/dmg
 bool32 CanTargetFaintAiWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod, s32 dmgMod)
 {

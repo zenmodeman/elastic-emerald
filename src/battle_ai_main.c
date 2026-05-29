@@ -6990,11 +6990,35 @@ case EFFECT_GUARD_SPLIT:
                 }
                 break;
             case MOVE_EFFECT_WRAP:
-                if (!HasMoveWithEffect(battlerDef, EFFECT_RAPID_SPIN) && ShouldTrap(battlerAtk, battlerDef, move))
-                    ADJUST_SCORE(BEST_EFFECT);
-                else
-                    ADJUST_SCORE(DECENT_EFFECT);
+            {
+                bool32 bindingBandIsRelevant; 
+                bool32 attackerHasBindingBand = gAiLogicData->holdEffects[battlerAtk] == HOLD_EFFECT_BINDING_BAND;
+                bool32 defenderTakesDamage = aiData->abilities[battlerDef] != ABILITY_MAGIC_GUARD;
+                bindingBandIsRelevant = attackerHasBindingBand && defenderTakesDamage;
+
+                //Chance to conditionally disincentivize the move if it's not a worthwhile move in terms of damage or tempo
+                if (HasMoveWithEffect(battlerDef, EFFECT_RAPID_SPIN) 
+                    && !(GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING) == move)
+                    && !CanAiMoveFaintTarget(move, battlerAtk, battlerDef, 2))
+                    {
+                        if (AI_RandLessThan(128)){
+                            ADJUST_SCORE(-3);
+                        }
+                    }
+                
+                if (bindingBandIsRelevant || gAiLogicData->holdEffects[battlerAtk] == HOLD_EFFECT_GRIP_CLAW){
+                    if (ShouldTrap(battlerAtk, battlerDef, move)){
+                        ADJUST_SCORE(DECENT_EFFECT);
+                    }else{
+                        ADJUST_SCORE(WEAK_EFFECT);
+                    }
+                }
+                // if (!HasMoveWithEffect(battlerDef, EFFECT_RAPID_SPIN) && ShouldTrap(battlerAtk, battlerDef, move))
+                //     ADJUST_SCORE(BEST_EFFECT);
+                // else
+                //     ADJUST_SCORE(DECENT_EFFECT);
                 break;
+            }
             case MOVE_EFFECT_SALT_CURE:
                 if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_WATER) || IS_BATTLER_OF_TYPE(battlerDef, TYPE_STEEL))
                     ADJUST_SCORE(DECENT_EFFECT);

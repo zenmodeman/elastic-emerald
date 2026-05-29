@@ -2955,6 +2955,8 @@ const struct Item gItemsInfo[] =
             "Sweet honey that\n"
             "heals at\n"
             "moderate HP.\n"),
+        .holdEffect = HOLD_EFFECT_RESTORE_PCT_HP,
+        .holdEffectParam = 13,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STATUS_RECOVERY,
         .type = ITEM_USE_FIELD,

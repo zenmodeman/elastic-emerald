@@ -6126,21 +6126,41 @@ static void Cmd_moveend(void)
              && IsBattlerTurnDamaged(gBattlerTarget))
             {
                 u32 healingFactor = 0;
-                if (moveEffect == EFFECT_ABSORB){
+                bool32 isDrainDoused = gBattleMons[gBattlerAttacker].volatiles.drainDouse;
+
+                if (moveEffect == EFFECT_ABSORB)
+                {
                     healingFactor += GetMoveAbsorbPercentage(gCurrentMove);
                 }
-                    if (gBattleMons[gBattlerAttacker].volatiles.drainDouse){
-                        if (BattlerHasType(gBattlerTarget, TYPE_POISON)){
-                            healingFactor += 67;
-                        }else if (BattlerHasType(gBattlerTarget, TYPE_WATER)){
-                            healingFactor += 50;
-                        }else{
-                            healingFactor += 33;
-                        }
+
+                if (isDrainDoused)
+                {
+                    if (BattlerHasType(gBattlerTarget, TYPE_POISON))
+                    {
+                        healingFactor += 67;
                     }
+                    else if (BattlerHasType(gBattlerTarget, TYPE_WATER))
+                    {
+                        healingFactor += 50;
+                    }
+                    else
+                    {
+                        healingFactor += 33;
+                    }
+                }
+
                 gBattleStruct->moveDamage[gBattlerAttacker] = max(1, (gBattleStruct->moveDamage[gBattlerTarget] * healingFactor / 100));
                 gBattleStruct->moveDamage[gBattlerAttacker] = GetDrainedBigRootHp(gBattlerAttacker, gBattleStruct->moveDamage[gBattlerAttacker]);
                 gHitMarker |= HITMARKER_IGNORE_SUBSTITUTE | HITMARKER_IGNORE_DISGUISE | HITMARKER_PASSIVE_HP_UPDATE;
+                if (GetBattlerAbility(gBattlerTarget) == ABILITY_LIQUID_OOZE)
+                {
+                    gBattleStruct->moveDamage[gBattlerAttacker] *= -1;
+                    BattleScriptCall(isDrainDoused ? BattleScript__DrainDouseOoze : BattleScript_EffectAbsorbLiquidOoze);
+                }
+                else
+                {
+                    BattleScriptCall(isDrainDoused ? BattleScript_DrainDouseHeal : BattleScript_EffectAbsorb);
+                }
                 effect = TRUE;
             }
             gBattleScripting.moveendState++;
