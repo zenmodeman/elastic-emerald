@@ -51,6 +51,9 @@ static bool8 IsWildLevelAllowedByRepel(u8 level);
 static void ApplyFluteEncounterRateMod(u32 *encRate);
 static void ApplyCleanseTagEncounterRateMod(u32 *encRate);
 static u8 GetMaxLevelOfSpeciesInWildTable(const struct WildPokemon *wildMon, u16 species, enum WildPokemonArea area);
+static bool8 IsMonMonotypeException(u16 species, enum Type type);
+static bool8 TryGetMonotypeWildMonIndex(const struct WildPokemon *wildMon, enum Type type, u8 numMon, u8 *monIndex);
+static u8 GetFishingWildCount(u8 rod);
 #ifdef BUGFIX
 static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, enum Type type, enum Ability ability, u8 *monIndex, u32 size);
 #else
@@ -507,11 +510,42 @@ u8 PickWildMonNature(void)
     return Random() % NUM_NATURES;
 }
 
+static bool32 IsBurmyCloakType(enum Type type)
+{
+    return type == TYPE_GRASS || type == TYPE_GROUND || type == TYPE_STEEL;
+}
+
+static bool32 IsBurmyExclusiveEvolutionType(enum Type type)
+{
+    return IsBurmyCloakType(type) || type == TYPE_FLYING;
+}
+
 void CreateWildMon(u16 species, u8 level)
 {
+    u8 gender;
     bool32 checkCuteCharm = TRUE;
+    enum Type monotype = GetMonoType();
 
     ZeroEnemyPartyMons();
+
+    if (species == SPECIES_SNORUNT && monotype == TYPE_GHOST)
+    {
+        CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, MON_FEMALE, PickWildMonNature(), 0);
+        return;
+    }
+
+    if ((species == SPECIES_RALTS || species == SPECIES_KIRLIA) && monotype == TYPE_FIGHTING)
+    {
+        CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, MON_MALE, PickWildMonNature(), 0);
+        return;
+    }
+
+    if (species == SPECIES_BURMY && IsBurmyExclusiveEvolutionType(monotype))
+    {
+        gender = monotype == TYPE_FLYING ? MON_MALE : MON_FEMALE;
+        CreateMonWithGenderNatureLetter(&gEnemyParty[0], species, level, USE_RANDOM_IVS, gender, PickWildMonNature(), 0);
+        return;
+    }
 
     switch (gSpeciesInfo[species].genderRatio)
     {
@@ -529,7 +563,7 @@ void CreateWildMon(u16 species, u8 level)
     {
         u16 leadingMonSpecies = GetMonData(&gPlayerParty[0], MON_DATA_SPECIES);
         u32 leadingMonPersonality = GetMonData(&gPlayerParty[0], MON_DATA_PERSONALITY);
-        u8 gender = GetGenderFromSpeciesAndPersonality(leadingMonSpecies, leadingMonPersonality);
+        gender = GetGenderFromSpeciesAndPersonality(leadingMonSpecies, leadingMonPersonality);
 
         // misses mon is genderless check, although no genderless mon can have cute charm as ability
         if (gender == MON_FEMALE)
@@ -553,10 +587,18 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum 
 {
     u8 wildMonIndex = 0;
     u8 level;
+    enum Type monotype = GetMonoType();
 
     switch (area)
     {
     case WILD_AREA_LAND:
+        if (monotype != TYPE_NONE)
+        {
+            if (TryGetMonotypeWildMonIndex(wildMonInfo->wildPokemon, monotype, LAND_WILD_COUNT, &wildMonIndex))
+                break;
+            else
+                return FALSE;
+        }
         if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_STEEL, ABILITY_MAGNET_PULL, &wildMonIndex, LAND_WILD_COUNT))
             break;
         if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_STATIC, &wildMonIndex, LAND_WILD_COUNT))
@@ -592,6 +634,13 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum 
         wildMonIndex = ChooseWildMonIndex_Rocks();
         break;
     case WILD_AREA_SHAKE:
+        if (monotype != TYPE_NONE)
+        {
+            if (TryGetMonotypeWildMonIndex(wildMonInfo->wildPokemon, monotype, SHAKE_WILD_COUNT, &wildMonIndex))
+                break;
+            else
+                return FALSE;
+        }
         wildMonIndex = ChooseWildMonIndex_Shake();
         break;
     default:
@@ -615,6 +664,18 @@ static u16 GenerateFishingWildMon(const struct WildPokemonInfo *wildMonInfo, u8 
     u8 wildMonIndex = ChooseWildMonIndex_Fishing(rod);
     u16 wildMonSpecies = wildMonInfo->wildPokemon[wildMonIndex].species;
     u8 level = ChooseWildMonLevel(wildMonInfo->wildPokemon, wildMonIndex, WILD_AREA_FISHING);
+    enum Type monotype = GetMonoType();
+
+    if (monotype != TYPE_NONE
+     && GetSpeciesType(wildMonSpecies, 0) != monotype
+     && GetSpeciesType(wildMonSpecies, 1) != monotype
+     && !IsMonMonotypeException(wildMonSpecies, monotype))
+    {
+        if (TryGetMonotypeWildMonIndex(wildMonInfo->wildPokemon, monotype, GetFishingWildCount(rod), &wildMonIndex))
+            wildMonSpecies = wildMonInfo->wildPokemon[wildMonIndex].species;
+        else
+            wildMonSpecies = SPECIES_MAGIKARP;
+    }
 
     UpdateChainFishingStreak();
     CreateWildMon(wildMonSpecies, level);
@@ -1205,6 +1266,60 @@ static bool8 TryGetRandomWildMonIndexByType(const struct WildPokemon *wildMon, e
 
     *monIndex = validIndexes[Random() % validMonCount];
     return TRUE;
+}
+
+static bool8 IsMonMonotypeException(u16 species, enum Type type)
+{
+    u32 i;
+    const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+
+    if (evolutions == NULL)
+        return FALSE;
+
+    for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+    {
+        u16 evoSpecies = evolutions[i].targetSpecies;
+        if (GetSpeciesType(evoSpecies, 0) == type || GetSpeciesType(evoSpecies, 1) == type)
+            return TRUE;
+        if (IsMonMonotypeException(evoSpecies, type))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+static bool8 TryGetMonotypeWildMonIndex(const struct WildPokemon *wildMon, enum Type type, u8 numMon, u8 *monIndex)
+{
+    u8 validIndexes[numMon];
+    u8 i, validMonCount;
+
+    for (validMonCount = 0, i = 0; i < numMon; i++)
+    {
+        u16 species = wildMon[i].species;
+        if (GetSpeciesType(species, 0) == type || GetSpeciesType(species, 1) == type || IsMonMonotypeException(species, type))
+            validIndexes[validMonCount++] = i;
+    }
+
+    if (validMonCount == 0)
+        return FALSE;
+
+    *monIndex = validIndexes[Random() % validMonCount];
+    return TRUE;
+}
+
+static u8 GetFishingWildCount(u8 rod)
+{
+    switch (rod)
+    {
+    case OLD_ROD:
+        return 2;
+    case GOOD_ROD:
+        return 5;
+    case SUPER_ROD:
+        return FISH_WILD_COUNT;
+    default:
+        return FISH_WILD_COUNT;
+    }
 }
 
 #include "data.h"
