@@ -19,6 +19,7 @@
 #include "field_weather.h"
 #include "graphics.h"
 #include "international_string_util.h"
+#include "item.h"
 #include "item_icon.h"
 #include "link.h"
 #include "load_save.h"
@@ -59,7 +60,6 @@
 #include "constants/field_specials.h"
 #include "constants/items.h"
 #include "constants/heal_locations.h"
-#include "constants/map_types.h"
 #include "constants/mystery_gift.h"
 #include "constants/slot_machine.h"
 #include "constants/songs.h"
@@ -1281,7 +1281,7 @@ void IsGrassTypeInParty(void)
         if (GetMonData(pokemon, MON_DATA_SANITY_HAS_SPECIES) && !GetMonData(pokemon, MON_DATA_IS_EGG))
         {
             species = GetMonData(pokemon, MON_DATA_SPECIES);
-            if (gSpeciesInfo[species].types[0] == TYPE_GRASS || gSpeciesInfo[species].types[1] == TYPE_GRASS)
+            if (GetSpeciesType(species, 0) == TYPE_GRASS || GetSpeciesType(species, 1) == TYPE_GRASS)
             {
                 gSpecialVar_Result = TRUE;
                 return;
@@ -1680,7 +1680,7 @@ u16 GetMysteryGiftCardStat(void)
 
 bool8 BufferTMHMMoveName(void)
 {
-    if (gSpecialVar_0x8004 >= ITEM_TM01 && gSpecialVar_0x8004 <= ITEM_HM08)
+    if (gItemsInfo[gSpecialVar_0x8004].pocket == POCKET_TM_HM)
     {
         StringCopy(gStringVar2, GetMoveName(ItemIdToBattleMoveId(gSpecialVar_0x8004)));
         return TRUE;
@@ -4370,9 +4370,6 @@ void GetCodeFeedback(void)
         gSpecialVar_Result = 0;
 }
 
-
-
-
 u8 TrainPlainIV(void)
 {
     u8 targetIv = 15;
@@ -4431,7 +4428,6 @@ u16 GetTutorAbility(){
     struct Pokemon *mon = &gPlayerParty[gSpecialVar_0x8004];
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
-    DebugPrintf("abilityNum is %d", abilityNum);
 
     //Checking ability1 slot
     if (abilityNum != 0){
@@ -4441,7 +4437,6 @@ u16 GetTutorAbility(){
             gSpecialVar_0x8009 = 0;
             GetMonNickname(mon, gStringVar1);
             StringCopy(gStringVar2, gAbilitiesInfo[ability1].name);
-            DebugPrintf("ability1 check has been reached with %d", ability1);
             return ability1;
         }
     }
@@ -4451,7 +4446,6 @@ u16 GetTutorAbility(){
             gSpecialVar_0x8009 = 1;
             GetMonNickname(mon, gStringVar1);
             StringCopy(gStringVar2, gAbilitiesInfo[ability2].name);
-             DebugPrintf("ability2 check has been reached with %d", ability2);
             return ability2;
         }
 
@@ -4463,7 +4457,6 @@ u16 GetTutorAbility(){
             gSpecialVar_0x8009 = 2;
             GetMonNickname(mon, gStringVar1);
             StringCopy(gStringVar2, gAbilitiesInfo[hiddenAbility].name);
-            DebugPrintf("hidden ability check has been reached with %d", hiddenAbility);
             return hiddenAbility;
         }
     }
@@ -4507,3 +4500,9 @@ u8 TrainMaxIVs(void){
 }
 
 
+void SetHiddenNature(void)
+{
+    u32 hiddenNature = gSpecialVar_Result;
+    SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_HIDDEN_NATURE, &hiddenNature);
+    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+}

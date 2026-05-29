@@ -573,3 +573,4 @@ gSpecials::
 	def_special NpcAdvanceTime
 	def_special GetTutorAbility
 	def_special SetTutorAbility
+	def_special SetHiddenNature

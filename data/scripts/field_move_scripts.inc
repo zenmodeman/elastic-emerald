@@ -6,13 +6,8 @@
 EventScript_CutTree::
 # 4 "data/scripts/field_move_scripts.pory"
 	lockall
-# 5 "data/scripts/field_move_scripts.pory"
-	goto_if_unset FLAG_BADGE01_GET, EventScript_CheckTreeCantCut
-# 6 "data/scripts/field_move_scripts.pory"
-	checkpartymove MOVE_CUT
-# 7 "data/scripts/field_move_scripts.pory"
+	checkfieldmove FIELD_MOVE_CUT, TRUE
 	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_AskScytherToCut
-# 8 "data/scripts/field_move_scripts.pory"
 	setfieldeffectargument 0, VAR_RESULT
 # 9 "data/scripts/field_move_scripts.pory"
 	bufferpartymonnick STR_VAR_1, VAR_RESULT
@@ -132,11 +127,7 @@ EventScript_UseRockSmash::
 EventScript_RockSmash::
 # 67 "data/scripts/field_move_scripts.pory"
 	lockall
-# 68 "data/scripts/field_move_scripts.pory"
-	goto_if_unset FLAG_BADGE03_GET, EventScript_CantSmashRock
-# 69 "data/scripts/field_move_scripts.pory"
-	checkpartymove MOVE_ROCK_SMASH
-# 70 "data/scripts/field_move_scripts.pory"
+	checkfieldmove FIELD_MOVE_ROCK_SMASH, TRUE
 	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantSmashRock
 # 71 "data/scripts/field_move_scripts.pory"
 	setfieldeffectargument 0, VAR_RESULT
@@ -454,13 +445,8 @@ Text_CantSmash:
 EventScript_StrengthBoulder::
 # 228 "data/scripts/field_move_scripts.pory"
 	lockall
-# 229 "data/scripts/field_move_scripts.pory"
-	goto_if_unset FLAG_BADGE04_GET, EventScript_CantStrength
-# 230 "data/scripts/field_move_scripts.pory"
 	goto_if_set FLAG_SYS_USE_STRENGTH, EventScript_CheckActivatedBoulder
-# 231 "data/scripts/field_move_scripts.pory"
-	checkpartymove MOVE_STRENGTH
-# 232 "data/scripts/field_move_scripts.pory"
+	checkfieldmove FIELD_MOVE_STRENGTH, TRUE
 	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantStrength
 # 233 "data/scripts/field_move_scripts.pory"
 	setfieldeffectargument 0, VAR_RESULT
@@ -576,9 +562,7 @@ Text_StrengthActivated:
 EventScript_UseWaterfall::
 # 289 "data/scripts/field_move_scripts.pory"
 	lockall
-# 290 "data/scripts/field_move_scripts.pory"
-	checkpartymove MOVE_WATERFALL
-# 291 "data/scripts/field_move_scripts.pory"
+	checkfieldmove FIELD_MOVE_WATERFALL
 	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantWaterfall
 # 292 "data/scripts/field_move_scripts.pory"
 	bufferpartymonnick STR_VAR_1, VAR_RESULT
@@ -646,9 +630,7 @@ Text_MonUsedWaterfall:
 EventScript_UseDive::
 # 324 "data/scripts/field_move_scripts.pory"
 	lockall
-# 325 "data/scripts/field_move_scripts.pory"
-	checkpartymove MOVE_DIVE
-# 326 "data/scripts/field_move_scripts.pory"
+	checkfieldmove FIELD_MOVE_DIVE
 	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantDive
 # 327 "data/scripts/field_move_scripts.pory"
 	copyvar 0x8004 VAR_RESULT
@@ -700,9 +682,7 @@ EventScript_EndDive::
 EventScript_UseDiveUnderwater::
 # 351 "data/scripts/field_move_scripts.pory"
 	lockall
-# 352 "data/scripts/field_move_scripts.pory"
-	checkpartymove MOVE_DIVE
-# 353 "data/scripts/field_move_scripts.pory"
+	checkfieldmove FIELD_MOVE_DIVE
 	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantSurface
 # 354 "data/scripts/field_move_scripts.pory"
 	bufferpartymonnick STR_VAR_1, VAR_RESULT
@@ -1013,3 +993,36 @@ EventScript_AskScytherToCut_Text_0:
 EventScript_AskScytherToCut_Text_1:
 # 494 "data/scripts/field_move_scripts.pory"
 	.string "Call Cutter's Scyther to Cut it?$"
+
+EventScript_UseRockClimb::
+	lockall
+	checkfieldmove FIELD_MOVE_ROCK_CLIMB
+	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantRockClimb
+	bufferpartymonnick STR_VAR_1, VAR_RESULT
+	setfieldeffectargument 0, VAR_RESULT
+	msgbox Text_WantToRockClimb, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, EventScript_EndRockClimb
+	msgbox Text_MonUsedRockClimb, MSGBOX_DEFAULT
+	closemessage
+	dofieldeffect FLDEFF_USE_ROCK_CLIMB
+	waitstate
+	goto EventScript_EndRockClimb
+	end
+
+EventScript_CantRockClimb::
+	msgbox Text_CantRockClimb, MSGBOX_DEFAULT
+
+EventScript_EndRockClimb::
+	releaseall
+	end
+
+Text_WantToRockClimb:
+    .string "The cliff is steep.\n"
+    .string "Would you like to use Rock Climb?$"
+
+Text_MonUsedRockClimb:
+    .string "{STR_VAR_1} used Rock Climb!$"
+
+Text_CantRockClimb:
+    .string "The cliff is steep.\n"
+    .string "A Pokémon may be able to climb it.$"
