@@ -12,6 +12,7 @@
 #include "battle_tower.h"
 #include "battle_z_move.h"
 #include "data.h"
+#include "daycare.h"
 #include "dexnav.h"
 #include "event_data.h"
 #include "event_object_movement.h"
@@ -19,12 +20,14 @@
 #include "field_player_avatar.h"
 #include "field_specials.h"
 #include "field_weather.h"
+#include "fishing.h"
 #include "follower_npc.h"
 #include "graphics.h"
 #include "item.h"
 #include "caps.h"
 #include "link.h"
 #include "main.h"
+#include "move_relearner.h"
 #include "overworld.h"
 #include "m4a.h"
 #include "party_menu.h"
@@ -37,6 +40,7 @@
 #include "pokemon_storage_system.h"
 #include "random.h"
 #include "recorded_battle.h"
+#include "regions.h"
 #include "rtc.h"
 #include "sound.h"
 #include "string_util.h"
@@ -55,7 +59,6 @@
 #include "constants/cries.h"
 #include "constants/event_objects.h"
 #include "constants/form_change_types.h"
-#include "constants/hold_effects.h"
 #include "constants/item_effects.h"
 #include "constants/items.h"
 #include "constants/layouts.h"
@@ -65,7 +68,6 @@
 #include "constants/trainers.h"
 #include "constants/union_room.h"
 #include "constants/weather.h"
-#include "wild_encounter.h"
 
 #include "data/pokemon/center_tutor_moves.h"
 
@@ -858,7 +860,7 @@ static const u8 sGetMonDataEVConstants[] =
 };
 
 // For stat-raising items
-static const u8 sStatsToRaise[] =
+static const enum Stat sStatsToRaise[] =
 {
     STAT_ATK, STAT_ATK, STAT_DEF, STAT_SPEED, STAT_SPATK, STAT_SPDEF, STAT_ACC
 };
@@ -1059,8 +1061,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u32 value;
     u16 checksum;
     u8 i;
-    u8 availableIVs[NUM_STATS];
-    u8 selectedIvs[NUM_STATS];
+    enum Stat availableIVs[NUM_STATS];
+    enum Stat selectedIvs[NUM_STATS];
     bool32 isShiny;
 
     ZeroBoxMonData(boxMon);
@@ -1106,8 +1108,7 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
                 totalRerolls += I_SHINY_CHARM_ADDITIONAL_ROLLS;
             if (LURE_STEP_COUNT != 0)
                 totalRerolls += 1;
-            if (I_FISHING_CHAIN && gIsFishingEncounter)
-                totalRerolls += CalculateChainFishingShinyRolls();
+            totalRerolls += CalculateChainFishingShinyRolls();
             if (gDexNavSpecies)
                 totalRerolls += CalculateDexNavShinyRolls();
 
@@ -1146,7 +1147,7 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     SetBoxMonData(boxMon, MON_DATA_POKEBALL, &value);
     SetBoxMonData(boxMon, MON_DATA_OT_GENDER, &gSaveBlock2Ptr->playerGender);
 
-    u32 teraType = (boxMon->personality & 0x1) == 0 ? GetSpeciesType(species, 0) : GetSpeciesType(species, 1);
+    enum Type teraType = (boxMon->personality & 0x1) == 0 ? GetSpeciesType(species, 0) : GetSpeciesType(species, 1);
     SetBoxMonData(boxMon, MON_DATA_TERA_TYPE, &teraType);
 
     if (fixedIV < USE_RANDOM_IVS)
@@ -1217,6 +1218,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
                     break;
                 case STAT_SPDEF:
                     SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &iv);
+                    break;
+                default:
                     break;
                 }
             }
@@ -1708,32 +1711,10 @@ static u16 CalculateBoxMonChecksumReencrypt(struct BoxPokemon *boxMon)
     return checksum;
 }
 
-#define CALC_STAT(base, iv, ev, statIndex, field)               \
-{                                                               \
-    u8 baseStat = gSpeciesInfo[species].base;                   \
-    s32 n = (((2 * baseStat + iv + ev / 4) * level) / 100) + 5; \
-    n = ModifyStatByNature(nature, n, statIndex);               \
-    if (B_FRIENDSHIP_BOOST == TRUE)                             \
-        n = n + ((n * 10 * friendship) / (MAX_FRIENDSHIP * 100));\
-    SetMonData(mon, field, &n);                                 \
-}
-
 void CalculateMonStats(struct Pokemon *mon)
 {
     s32 oldMaxHP = GetMonData(mon, MON_DATA_MAX_HP, NULL);
     s32 currentHP = GetMonData(mon, MON_DATA_HP, NULL);
-    s32 hpIV = GetMonData(mon, MON_DATA_HYPER_TRAINED_HP) ? MAX_PER_STAT_IVS : GetMonData(mon, MON_DATA_HP_IV, NULL);
-    s32 hpEV = GetMonData(mon, MON_DATA_HP_EV, NULL);
-    s32 attackIV = GetMonData(mon, MON_DATA_HYPER_TRAINED_ATK) ? MAX_PER_STAT_IVS : GetMonData(mon, MON_DATA_ATK_IV, NULL);
-    s32 attackEV = GetMonData(mon, MON_DATA_ATK_EV, NULL);
-    s32 defenseIV = GetMonData(mon, MON_DATA_HYPER_TRAINED_DEF) ? MAX_PER_STAT_IVS : GetMonData(mon, MON_DATA_DEF_IV, NULL);
-    s32 defenseEV = GetMonData(mon, MON_DATA_DEF_EV, NULL);
-    s32 speedIV = GetMonData(mon, MON_DATA_HYPER_TRAINED_SPEED) ? MAX_PER_STAT_IVS : GetMonData(mon, MON_DATA_SPEED_IV, NULL);
-    s32 speedEV = GetMonData(mon, MON_DATA_SPEED_EV, NULL);
-    s32 spAttackIV = GetMonData(mon, MON_DATA_HYPER_TRAINED_SPATK) ? MAX_PER_STAT_IVS : GetMonData(mon, MON_DATA_SPATK_IV, NULL);
-    s32 spAttackEV = GetMonData(mon, MON_DATA_SPATK_EV, NULL);
-    s32 spDefenseIV = GetMonData(mon, MON_DATA_HYPER_TRAINED_SPDEF) ? MAX_PER_STAT_IVS : GetMonData(mon, MON_DATA_SPDEF_IV, NULL);
-    s32 spDefenseEV = GetMonData(mon, MON_DATA_SPDEF_EV, NULL);
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
     s32 level = GetLevelFromMonExp(mon);
@@ -1743,27 +1724,54 @@ void CalculateMonStats(struct Pokemon *mon)
 
     SetMonData(mon, MON_DATA_LEVEL, &level);
 
+    bool32 hyperTrained[NUM_STATS]; //In a battle test, hyper training flag indicates a fixed stat
+    s32 iv[NUM_STATS];
+    s32 ev[NUM_STATS];
+    for (u32 i = 0; i < NUM_STATS; i++)
+    {
+        hyperTrained[i] = GetMonData(mon, MON_DATA_HYPER_TRAINED_HP + i);
+        iv[i] = GetMonData(mon, MON_DATA_HP_IV + i);
+        ev[i] = GetMonData(mon, MON_DATA_HP_EV + i);
+
+        if (hyperTrained[i])
+        {
+        #if TESTING
+            if (gMain.inBattle)
+                continue;
+        #endif
+            iv[i] = MAX_PER_STAT_IVS;
+        }
+
+        if (i == STAT_HP)
+            continue;
+
+        u8 baseStat = GetSpeciesBaseStat(species, i);
+        s32 n = (((2 * baseStat + iv[i] + ev[i] / 4) * level) / 100) + 5;
+        n = ModifyStatByNature(nature, n, i);
+        if (B_FRIENDSHIP_BOOST == TRUE)
+            n = n + ((n * 10 * friendship) / (MAX_FRIENDSHIP * 100));
+        SetMonData(mon, MON_DATA_MAX_HP + i, &n);
+    }
+
+#if TESTING
+    if (hyperTrained[STAT_HP] && gMain.inBattle)
+        return;
+#endif
+
     if (species == SPECIES_SHEDINJA)
     {
         newMaxHP = 1;
     }
     else
     {
-        s32 n = 2 * GetSpeciesBaseHP(species) + hpIV;
-        newMaxHP = (((n + hpEV / 4) * level) / 100) + level + 10;
+        s32 n = 2 * GetSpeciesBaseHP(species) + iv[STAT_HP];
+        newMaxHP = (((n + ev[STAT_HP] / 4) * level) / 100) + level + 10;
     }
 
     gBattleScripting.levelUpHP = newMaxHP - oldMaxHP;
     if (gBattleScripting.levelUpHP == 0)
         gBattleScripting.levelUpHP = 1;
-
     SetMonData(mon, MON_DATA_MAX_HP, &newMaxHP);
-
-    CALC_STAT(baseAttack, attackIV, attackEV, STAT_ATK, MON_DATA_ATK)
-    CALC_STAT(baseDefense, defenseIV, defenseEV, STAT_DEF, MON_DATA_DEF)
-    CALC_STAT(baseSpeed, speedIV, speedEV, STAT_SPEED, MON_DATA_SPEED)
-    CALC_STAT(baseSpAttack, spAttackIV, spAttackEV, STAT_SPATK, MON_DATA_SPATK)
-    CALC_STAT(baseSpDefense, spDefenseIV, spDefenseEV, STAT_SPDEF, MON_DATA_SPDEF)
 
     // Since a pokemon's maxHP data could either not have
     // been initialized at this point or this pokemon is
@@ -2343,7 +2351,7 @@ static u32 getCuratedOrRandomTeraType(u16 species, u32 personality){
     if (randomTeraType == TYPE_MYSTERY){
         randomTeraType = TYPE_STELLAR;
     }
-    
+
     if (!FlagGet(FLAG_CURATED_TERA)){
         return randomTeraType;
     }
@@ -2377,7 +2385,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
     switch(species){
         //Pure Water Tera Types
         /*Not given a Tera Type because of points: Vaporeon, Suicune, Milotic, Floatzel, Manaphy, Greninja, Inteleon, Dondozo, Palafin
-        */  
+        */
 
         case SPECIES_SQUIRTLE: case SPECIES_WARTORTLE: case SPECIES_BLASTOISE:
             return TYPE_DARK; //Dark Pulse; Steel might be a little too good
@@ -2387,7 +2395,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GHOST;
         case SPECIES_POLIWAG: case SPECIES_POLIWHIRL:
             return TYPE_NORMAL;
-        case SPECIES_POLITOED: 
+        case SPECIES_POLITOED:
             return TYPE_FAIRY;
         case SPECIES_SHELLDER:
             return TYPE_ICE;
@@ -2407,7 +2415,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GRASS;
         case SPECIES_CASTFORM_RAINY:
             return TYPE_STELLAR;
-        case SPECIES_FEEBAS: 
+        case SPECIES_FEEBAS:
             return TYPE_ELECTRIC;
         case SPECIES_LUVDISC:
             return TYPE_FAIRY;
@@ -2417,7 +2425,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_BUG;
         case SPECIES_PIPLUP: case SPECIES_PRINPLUP:
             return TYPE_ICE;
-        case SPECIES_BUIZEL: 
+        case SPECIES_BUIZEL:
             return TYPE_GHOST;
         case SPECIES_SHELLOS:
             return TYPE_BUG;
@@ -2426,14 +2434,14 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_PHIONE:
             return TYPE_WATER;
         case SPECIES_PANPOUR: case SPECIES_SIMIPOUR:
-            return TYPE_STELLAR; 
-        case SPECIES_FROAKIE: case SPECIES_FROGADIER: 
+            return TYPE_STELLAR;
+        case SPECIES_FROAKIE: case SPECIES_FROGADIER:
             return TYPE_ICE;
         case SPECIES_CLAUNCHER: case SPECIES_CLAWITZER:
             return TYPE_FIGHTING;
-        case SPECIES_WISHIWASHI: 
+        case SPECIES_WISHIWASHI:
             return TYPE_GROUND;
-        case SPECIES_SOBBLE: case SPECIES_DRIZZILE: 
+        case SPECIES_SOBBLE: case SPECIES_DRIZZILE:
             return TYPE_DRAGON;
         case SPECIES_WIGLETT: case SPECIES_WUGTRIO: //Maybe do Tera Water Dugtrio-Alola as a complement
             return TYPE_STEEL;
@@ -2441,15 +2449,15 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         //Pure Normal Tera Types
         /*Not given a Tera Type because of points: Chansey, Blissey, Tauros (Rock if returned), Porygon2, PorygonZ, Snorlax,
          Ursaring (Fighting if returned), Ambipom, Zangoose, Cinccino, Maushold
-        */  
+        */
         case SPECIES_RATTATA: case SPECIES_RATICATE:
             return TYPE_ICE; //Ice Beam or Tera Blast; but mainly to keep the Fighting weakness. Was Bug for U-Turn beforehand
-            //Wanted to tone down the Tera type because of 3-point shakiness 
+            //Wanted to tone down the Tera type because of 3-point shakiness
         case SPECIES_MEOWTH: case SPECIES_PERSIAN:
             return TYPE_FLYING; //Technician Aerial Ace
         case SPECIES_LICKITUNG: case SPECIES_LICKILICKY:
             return TYPE_STELLAR; //Various coverage and giving a one-time boost to Wring Out
-        case SPECIES_HAPPINY: 
+        case SPECIES_HAPPINY:
             return TYPE_ICE;
         case SPECIES_KANGASKHAN:
             return TYPE_FIGHTING;
@@ -2457,9 +2465,9 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_STELLAR;
         case SPECIES_EEVEE:
             return TYPE_NORMAL;
-        case SPECIES_PORYGON: 
+        case SPECIES_PORYGON:
             return TYPE_ELECTRIC;
-        case SPECIES_MUNCHLAX: 
+        case SPECIES_MUNCHLAX:
             return TYPE_GRASS; //Thick Fat and Seed Bomb
         case SPECIES_SENTRET: case SPECIES_FURRET:
             return TYPE_FAIRY;
@@ -2470,15 +2478,15 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         //Teddiursa line pivots the curated Tera Type
         case SPECIES_TEDDIURSA:
             return TYPE_BUG;
-        case SPECIES_AIPOM: 
+        case SPECIES_AIPOM:
             return TYPE_DARK; //Technician Beat Up for the earlier game
         case SPECIES_SMEARGLE:
             return TYPE_GHOST; //Immunity for frailness
         case SPECIES_MILTANK:
             return TYPE_FAIRY; //Play Rough
         case SPECIES_ZIGZAGOON: case  SPECIES_LINOONE:
-            return TYPE_NORMAL;     
-        case SPECIES_SLAKOTH: case SPECIES_VIGOROTH: 
+            return TYPE_NORMAL;
+        case SPECIES_SLAKOTH: case SPECIES_VIGOROTH:
         case SPECIES_SLAKING: //Keeping the Tera Type for Stomping Tantrum & Truant synergy purposes though it cannot tera in Restricted Mode
             return TYPE_GROUND;
         case SPECIES_WHISMUR: case SPECIES_LOUDRED: case SPECIES_EXPLOUD:
@@ -2490,7 +2498,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_CASTFORM:
             return TYPE_STELLAR;
         case SPECIES_KECLEON:
-            return TYPE_GHOST; 
+            return TYPE_GHOST;
         case SPECIES_BUNEARY: case SPECIES_LOPUNNY:
             return TYPE_FLYING; //Bounce and Acrobatics
         case SPECIES_GLAMEOW: case SPECIES_PURUGLY:
@@ -2499,7 +2507,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FIGHTING; //Hammer Arm
         case SPECIES_WATCHOG: case SPECIES_PATRAT:
             return TYPE_PSYCHIC; //Potential also for Stellar
-        case SPECIES_MINCCINO: 
+        case SPECIES_MINCCINO:
             return TYPE_WATER; //Aqua Tail
         case SPECIES_LILLIPUP: case SPECIES_HERDIER: case SPECIES_STOUTLAND:
             return TYPE_FAIRY; //Play Rough
@@ -2518,17 +2526,17 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_SKWOVET: case SPECIES_GREEDENT:
             return TYPE_FIGHTING; //Body Press which synergizes with Stuff Cheeks
         case SPECIES_DUBWOOL: case SPECIES_WOOLOO:
-            return TYPE_FLYING; //Bounce 
+            return TYPE_FLYING; //Bounce
         case SPECIES_LECHONK:  case SPECIES_OINKOLOGNE: case SPECIES_OINKOLOGNE_F:
             return TYPE_GROUND; //High Horsepower and Dig
-        case SPECIES_TANDEMAUS:  
-            return TYPE_GRASS; //Technican Bullet Seed        
+        case SPECIES_TANDEMAUS:
+            return TYPE_GRASS; //Technican Bullet Seed
 
         //Pure Grass
         /*
         Not given a Tera Type because of points: Tangrowth, Shaymin, Rillaboom, Eldagoss, Ogerpon
         */
-        case SPECIES_TANGELA: 
+        case SPECIES_TANGELA:
             return TYPE_ROCK; //Ancient Power, Rock Slide, Rock Tomb
         case SPECIES_CHIKORITA: case SPECIES_BAYLEEF: case SPECIES_MEGANIUM:
             return TYPE_DRAGON; //Dragon Tail and Outrage
@@ -2599,13 +2607,13 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DRAGON;
         case SPECIES_UXIE:
             return TYPE_GHOST; //Change that doesn't alter its weaknesses
-        case SPECIES_MESPRIT: 
+        case SPECIES_MESPRIT:
             return TYPE_FIGHTING; //Drain Punch and newly gained Revenge
         case SPECIES_MUNNA: case SPECIES_MUSHARNA:
             return TYPE_ROCK;
         case SPECIES_GOTHITA: case SPECIES_GOTHORITA: case SPECIES_GOTHITELLE:
             return TYPE_BUG; //type distribution coverage
-        case SPECIES_SOLOSIS: case SPECIES_DUOSION: 
+        case SPECIES_SOLOSIS: case SPECIES_DUOSION:
             return TYPE_WATER;
         case SPECIES_ELGYEM: case SPECIES_BEHEEYEM:
             return TYPE_STELLAR;
@@ -2623,13 +2631,13 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DARK;
         case SPECIES_FLITTLE: case SPECIES_ESPATHRA:
             return TYPE_FLYING; //Brave Bird physical option
-        
+
         //Pure Fire
         /*
         Not given a Tera Type because of points: Arcanine, Typhlosion, Entei, Cinderace
         */
         case SPECIES_CHARMANDER: case SPECIES_CHARMELEON:
-            return TYPE_DRAGON;    
+            return TYPE_DRAGON;
         case SPECIES_VULPIX: case SPECIES_NINETALES:
             return TYPE_GHOST; //One of the rare Pure Fires to get Shadow Ball
         case SPECIES_GROWLITHE:
@@ -2640,8 +2648,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_NORMAL; //For Facade Guts
         case SPECIES_MAGBY: case SPECIES_MAGMAR: case SPECIES_MAGMORTAR:
             return TYPE_ELECTRIC; //Thunderbolt
-        case SPECIES_CYNDAQUIL: case SPECIES_QUILAVA: 
-            return TYPE_GROUND; 
+        case SPECIES_CYNDAQUIL: case SPECIES_QUILAVA:
+            return TYPE_GROUND;
         case SPECIES_SLUGMA:
             return TYPE_ROCK; //To get Rock STAB before evolution
         case SPECIES_TORKOAL:
@@ -2650,8 +2658,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_STELLAR;
         case SPECIES_CHIMCHAR:
             return TYPE_FIGHTING; //Fighting STAB before Evo
-        case SPECIES_TEPIG: 
-            return TYPE_ROCK; 
+        case SPECIES_TEPIG:
+            return TYPE_ROCK;
         case SPECIES_PANSEAR: case SPECIES_SIMISEAR:
             return TYPE_STELLAR;
         case SPECIES_DARUMAKA: case SPECIES_DARMANITAN:
@@ -2665,7 +2673,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_SCORBUNNY: case SPECIES_RABOOT:
             return TYPE_NORMAL;
         case SPECIES_FUECOCO: case SPECIES_CROCALOR:
-            return TYPE_GHOST; //For Evo    
+            return TYPE_GHOST; //For Evo
         case SPECIES_CHARCADET:
             return TYPE_FIRE; //Extra power until it evolves
 
@@ -2705,16 +2713,16 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FIGHTING; //Pre-evo typing grant
         case SPECIES_TADBULB:
             return TYPE_WATER;
-        
+
         //Pure Fighting
-        case SPECIES_MANKEY: 
+        case SPECIES_MANKEY:
         // case SPECIES_PRIMEAPE:
             return TYPE_FLYING; //Acrobatics
         case SPECIES_MACHOP: case SPECIES_MACHOKE: case SPECIES_MACHAMP:
             return TYPE_STELLAR; //Ideally I'd want to do Fighting, but that seems too insane with Machamp's stats, so opting for Stellar instead
         case SPECIES_TYROGUE:
             return TYPE_FIGHTING;
-        case SPECIES_HITMONLEE: 
+        case SPECIES_HITMONLEE:
             return TYPE_NORMAL; //Reckless Double-Edge
         case SPECIES_HITMONCHAN:
             return TYPE_STEEL; //Good Defensive typing; Bullet Punch Iron Fist; also pairs nicely with the Meteor Mash addition
@@ -2724,7 +2732,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GROUND; //Headlong Rush and Thick Fat
         case SPECIES_RIOLU:
             return TYPE_STEEL; //for evo type
-        case SPECIES_TIMBURR: case SPECIES_GURDURR: 
+        case SPECIES_TIMBURR: case SPECIES_GURDURR:
             return TYPE_ROCK;
         // case SPECIES_CONKELDURR:
             // return TYPE_STEEL; //Hard Press
@@ -2732,7 +2740,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FIRE; //Fire Punch
         // case SPECIES_SAWK:
         //     return TYPE_ROCK; //Rock Slide
-        case SPECIES_MIENFOO: 
+        case SPECIES_MIENFOO:
             return TYPE_BUG; //U-Turn
         // case SPECIES_MIENSHAO:
         // return TYPE_FIRE; //Blaze Kick
@@ -2742,7 +2750,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ICE; //Evo type
         case SPECIES_PASSIMIAN:
             return TYPE_POISON; //Gunk Shot
-        case SPECIES_CLOBBOPUS: 
+        case SPECIES_CLOBBOPUS:
             return TYPE_WATER; //Liquidation and new move of Aqua Jet
         case SPECIES_GRAPPLOCT:
             return TYPE_DARK; //Technician Beat Up
@@ -2754,7 +2762,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FIGHTING; //Just a buff
         // case SPECIES_TAUROS_PALDEA_COMBAT:
         //     return TYPE_PSYCHIC; //Zen Headbutt
-        
+
         //Normal/Flying
         case SPECIES_PIDGEY: case SPECIES_PIDGEOTTO:
             return TYPE_NORMAL; //Uproar
@@ -2768,13 +2776,13 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GROUND; //Stomping Tantrum; will also get High Horsepower by Tutor
         case SPECIES_HOOTHOOT: case SPECIES_NOCTOWL:
             return TYPE_FAIRY; //Moonblast
-        case SPECIES_TAILLOW: 
+        case SPECIES_TAILLOW:
             return TYPE_DARK; //Pursuit
         // case SPECIES_SWELLOW:
             // return TYPE_WATER; //Filler Tera
         case SPECIES_SWABLU:
             return TYPE_DRAGON; //Evo type
-        case SPECIES_STARLY: case SPECIES_STARAVIA: 
+        case SPECIES_STARLY: case SPECIES_STARAVIA:
         // case SPECIES_STARAPTOR:
             return TYPE_ICE; //Retains weakness to Rock
         case SPECIES_CHATOT:
@@ -2789,7 +2797,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ROCK; //Rock Blast
         case SPECIES_SQUAWKABILLY: case SPECIES_SQUAWKABILLY_BLUE: case SPECIES_SQUAWKABILLY_WHITE: case SPECIES_SQUAWKABILLY_YELLOW:
             return TYPE_ELECTRIC;
-        
+
         //Pure Bug
         case SPECIES_CATERPIE: case SPECIES_METAPOD:
             return TYPE_ELECTRIC; //Electroweb
@@ -2810,7 +2818,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_KRICKETOT: case SPECIES_KRICKETUNE:
             return TYPE_FLYING; //Aerial Ace
         case SPECIES_BURMY: case SPECIES_BURMY_SANDY: case SPECIES_BURMY_TRASH:
-            return TYPE_BUG; 
+            return TYPE_BUG;
         case SPECIES_KARRABLAST:
             return TYPE_BUG;
         case SPECIES_SHELMET:
@@ -2831,12 +2839,12 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         //Pure Fairy
         /*Excluded because of Tier Points: Clefable, Florges, Sylveon
         */
-        case SPECIES_CLEFFA: case SPECIES_CLEFAIRY: case SPECIES_CLEFABLE: 
+        case SPECIES_CLEFFA: case SPECIES_CLEFAIRY: case SPECIES_CLEFABLE:
             return TYPE_NORMAL;
         case SPECIES_TOGEPI:
             return TYPE_FLYING; //Evo type
         case SPECIES_SNUBBULL: case SPECIES_GRANBULL:
-            return TYPE_FIGHTING; //Close 
+            return TYPE_FIGHTING; //Close
         case SPECIES_MILCERY: case SPECIES_ALCREMIE:
             return TYPE_FIRE;
         case SPECIES_FLABEBE: case SPECIES_FLABEBE_BLUE: case SPECIES_FLABEBE_ORANGE:
@@ -2850,7 +2858,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             // return TYPE_FLYING; //Has acrobatics, though doesn't have the Atk to use it
         case SPECIES_FIDOUGH: case SPECIES_DACHSBUN:
             return TYPE_ICE; //Ice Fang and Well Baked Body synergy
-        
+
         //Pure Ice
         case SPECIES_CASTFORM_SNOWY:
             return TYPE_STELLAR;
@@ -2878,7 +2886,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DARK;
         case SPECIES_CETODDLE: case SPECIES_CETITAN:
             return TYPE_STEEL;
-        
+
         //Pure Ground
         case SPECIES_SANDSHREW: case SPECIES_SANDSLASH:
             return TYPE_FAIRY;
@@ -2887,9 +2895,9 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_CUBONE: case SPECIES_MAROWAK:
             return TYPE_FIGHTING; //Low Kick, Brick Break
         case SPECIES_PHANPY: case SPECIES_DONPHAN:
-            return TYPE_FIRE; 
+            return TYPE_FIRE;
         case SPECIES_TRAPINCH:
-            return TYPE_BUG; 
+            return TYPE_BUG;
         case SPECIES_HIPPOPOTAS: case SPECIES_HIPPOWDON:
             return TYPE_WATER; //Muddy Water and such
         case SPECIES_DRILBUR:
@@ -2898,7 +2906,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ROCK; //Rock coverage
         case SPECIES_SILICOBRA: case SPECIES_SANDACONDA:
             return TYPE_DRAGON; //Scale Shot, Outrage, Dragon Rush
-        
+
         //Pure Rock
         case SPECIES_BONSLY: case SPECIES_SUDOWOODO:
             return TYPE_GRASS;
@@ -2910,7 +2918,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_PSYCHIC; //Zen Headbutt
         case SPECIES_ROGGENROLA: case SPECIES_BOLDORE: case SPECIES_GIGALITH:
             return TYPE_STELLAR;
-        case SPECIES_ROCKRUFF: case SPECIES_ROCKRUFF_OWN_TEMPO: 
+        case SPECIES_ROCKRUFF: case SPECIES_ROCKRUFF_OWN_TEMPO:
             return TYPE_NORMAL;
         case SPECIES_LYCANROC_MIDDAY:
             return TYPE_FLYING;
@@ -2941,7 +2949,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GRASS; //Giga Drain
         case SPECIES_GREAVARD: case SPECIES_HOUNDSTONE:
             return TYPE_STELLAR;
-         
+
         //Pure Poison
         case SPECIES_EKANS: case SPECIES_ARBOK:
             return TYPE_DRAGON; //Breaking Swipe and Scale Shot
@@ -2950,7 +2958,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_GRIMER: case SPECIES_MUK:
             return TYPE_WATER; //Also giving it Dive
         case SPECIES_KOFFING: case SPECIES_WEEZING:
-            return TYPE_FIRE; 
+            return TYPE_FIRE;
         case SPECIES_GULPIN: case SPECIES_SWALOT:
             return TYPE_GRASS; //Giga Drain
         case SPECIES_SEVIPER:
@@ -2977,7 +2985,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ELECTRIC; //Wild Charge
 
         //Bug/Flying
-        
+
         case SPECIES_BUTTERFREE:
             return TYPE_FLYING; //Really strong Compoundeyes Hurricanes
         case SPECIES_SCYTHER:
@@ -2985,7 +2993,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_LEDYBA: case SPECIES_LEDIAN:
             return TYPE_FAIRY; //Gets a Dark resistance for Rattled; also is added Dazzling Gleam by tutor.
         case SPECIES_YANMA: case SPECIES_YANMEGA:
-            return TYPE_GHOST; 
+            return TYPE_GHOST;
         case SPECIES_BEAUTIFLY:
             return TYPE_GROUND; //Great type synergy but reliant on Tera Blast; also given Mud-Slap for slightly more utility.
         case SPECIES_MASQUERAIN:
@@ -2997,8 +3005,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_COMBEE: case SPECIES_VESPIQUEN:
             return TYPE_STEEL; //Defensive typing
         case SPECIES_VIVILLON:
-            return TYPE_GRASS;        
-        
+            return TYPE_GRASS;
+
         //Grass/Poison
         case SPECIES_BULBASAUR: case SPECIES_IVYSAUR: case SPECIES_VENUSAUR:
             return TYPE_GROUND;
@@ -3023,8 +3031,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_AXEW: case SPECIES_FRAXURE:
             return TYPE_BUG; //First Impression
         case SPECIES_DRUDDIGON:
-            return TYPE_FAIRY; //Just for type distributions. 
-        case SPECIES_GOOMY: case SPECIES_SLIGGOO: 
+            return TYPE_FAIRY; //Just for type distributions.
+        case SPECIES_GOOMY: case SPECIES_SLIGGOO:
             return TYPE_WATER; //Hydration and several water moves
         case SPECIES_JANGMO_O:
             return TYPE_FIGHTING; //Evo Basis
@@ -3050,7 +3058,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DARK; //Knock Off, Throat Chop, Payback, Psychic immunity
         case SPECIES_VENONAT: case SPECIES_VENOMOTH:
             return TYPE_PSYCHIC; //Psychic move, and Psychic resistance
-        case SPECIES_SPINARAK: case SPECIES_ARIADOS: 
+        case SPECIES_SPINARAK: case SPECIES_ARIADOS:
             return TYPE_POISON; //Boosted Poison moves alongside Merciless
         case SPECIES_SKORUPI:
             return TYPE_DARK; //Evo type
@@ -3066,7 +3074,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_RELICANTH:
             return TYPE_ROCK; //Power Boost and for Rock Head Head Smash
         case SPECIES_TIRTOUGA: case SPECIES_CARRACOSTA:
-            return TYPE_DRAGON; 
+            return TYPE_DRAGON;
         case SPECIES_BINACLE: case SPECIES_BARBARACLE:
             return TYPE_FIGHTING; //Mega basis
         case SPECIES_DREDNAW:
@@ -3084,7 +3092,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_WATER; //Liquidation
         case SPECIES_BRAMBLIN: case SPECIES_BRAMBLEGHAST:
             return TYPE_BUG; //Pounce and Skitter Smack
-        case SPECIES_POLTCHAGEIST: case SPECIES_POLTCHAGEIST_ARTISAN: 
+        case SPECIES_POLTCHAGEIST: case SPECIES_POLTCHAGEIST_ARTISAN:
         case SPECIES_SINISTCHA: case SPECIES_SINISTCHA_MASTERPIECE:
             return TYPE_PSYCHIC; //Filler type
 
@@ -3107,7 +3115,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GRASS; //Heatproof synergy
         case SPECIES_IRON_CROWN:
             return TYPE_FIGHTING; //Filler type
-        
+
         //Water/Ground
         case SPECIES_WOOPER: case SPECIES_QUAGSIRE:
             return TYPE_ICE; //Avalanche
@@ -3126,14 +3134,14 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_WOOBAT: case SPECIES_SWOOBAT:
             return TYPE_PSYCHIC; //Extra damage
         case SPECIES_SIGILYPH:
-            return TYPE_POISON; 
+            return TYPE_POISON;
         case SPECIES_ORICORIO_PAU:
             return TYPE_FAIRY; //Make all Oricorios Fairy type since forms can be swapped
         case SPECIES_ARTICUNO_GALAR:
             return TYPE_ICE;
         case SPECIES_BRAVIARY_HISUI:
             return TYPE_NORMAL; //Regular Braviary homage
-        
+
         //Psychic/Fairy
         /*Tier points exclusion: Gardevoir, Hatterene, Tapu Lele, Scream Tail
         */
@@ -3154,20 +3162,20 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_TYPHLOSION_HISUI:
             return TYPE_GROUND;
         case SPECIES_SKELEDIRGE:
-            return TYPE_FAIRY; 
+            return TYPE_FAIRY;
         case SPECIES_CERULEDGE:
             return TYPE_FIGHTING;
         //Not bothering with Blacephalon since it's probably not available
-        
+
         //Water/Flying
         case SPECIES_GYARADOS:
             return TYPE_DARK; //Mega basis
-        case SPECIES_MANTYKE: case SPECIES_MANTINE: 
+        case SPECIES_MANTYKE: case SPECIES_MANTINE:
             return TYPE_ICE; //Blizzard
         case SPECIES_DUCKLETT: case SPECIES_SWANNA:
             return TYPE_FAIRY; //Alluring Voice
         case SPECIES_CRAMORANT:
-            return TYPE_POISON; //Belch        
+            return TYPE_POISON; //Belch
 
         //Water/Ice
         case SPECIES_DEWGONG:
@@ -3180,7 +3188,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GROUND; //Earthquake/Stomping Tantrum
         case SPECIES_ARCTOVISH:
             return TYPE_ROCK; //Rock Blast
-        
+
         //Dark/Flying
         /*Not included because of Tier Points: Mandibuzz, Moltres-Galar, Iron Jugulis
         */
@@ -3191,7 +3199,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_BOMBIRDIER:
             return TYPE_NORMAL; //Rocky Payload
         //Not including Yveltal
-        
+
         //Poison/Dark
         case SPECIES_STUNKY: case SPECIES_SKUNTANK:
             return TYPE_FIRE; //Temper Flare, Fire Blast
@@ -3201,7 +3209,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_ROCK; //Rock Slide
         case SPECIES_QWILFISH_HISUI: case SPECIES_OVERQWIL:
             return TYPE_ICE;
-        
+
         //Steel/Rock
         case SPECIES_ARON: case SPECIES_LAIRON: case SPECIES_AGGRON:
             return TYPE_NORMAL; //Rock Head
@@ -3209,27 +3217,27 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DARK; //Foul Play boost
         case SPECIES_PROBOPASS:
             return TYPE_ELECTRIC; //A lot of electric moves
-        
+
         //Steel/Fairy
         case SPECIES_MAWILE:
-            return TYPE_DARK; //Sucker Punch    
+            return TYPE_DARK; //Sucker Punch
         case SPECIES_KLEFKI:
             return TYPE_ELECTRIC;
         case SPECIES_MAGEARNA:
-            return TYPE_PSYCHIC; 
+            return TYPE_PSYCHIC;
         case SPECIES_TINKATON:
             return TYPE_ROCK;
-        
+
         //Fire/Fighting
         case SPECIES_COMBUSKEN:  case SPECIES_BLAZIKEN:
             return TYPE_FLYING; //Brave Bird
-        case SPECIES_MONFERNO: case SPECIES_INFERNAPE: 
+        case SPECIES_MONFERNO: case SPECIES_INFERNAPE:
             return TYPE_POISON; //Gunk Shot
         case SPECIES_EMBOAR:
             return TYPE_ROCK; //Reckless Head Smash
         case SPECIES_TAUROS_PALDEA_BLAZE:
             return TYPE_NORMAL; //Regular Tauros basis
-        
+
         //Grass/Flying
         case SPECIES_HOPPIP: case SPECIES_SKIPLOOM: case SPECIES_JUMPLUFF:
             return TYPE_FLYING; //More power
@@ -3239,7 +3247,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_BUG;
         case SPECIES_ROWLET: case SPECIES_DARTRIX:
             return TYPE_GHOST; // Evo basis
-        
+
         //Grass/Dragon
         /*Not included because of Tier Points: Dipplin, Hydrapple
         */
@@ -3251,13 +3259,13 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_BUG;
         case SPECIES_APPLETUN:
             return TYPE_FIGHTING; //Body Press and Superpower
-        
+
         //Grass/Dark
         case SPECIES_CACTURNE:
             return TYPE_DARK; //Boosted Payback and Sucker Punch
             //Water Absorb + Shedding the Grass Type makes it quite good against Water types with Ice moves
         case SPECIES_NUZLEAF:
-            return TYPE_FIGHTING; 
+            return TYPE_FIGHTING;
         case SPECIES_SHIFTRY:
             return TYPE_FLYING; //Air Slash and Hurricane Shiftry
         case SPECIES_ZARUDE:
@@ -3267,8 +3275,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_BRUTE_BONNET:
             return TYPE_FIGHTING;
         case SPECIES_WO_CHIEN:
-            return TYPE_POISON; 
-        
+            return TYPE_POISON;
+
         //Electric/Flying
         /*Not included because of tier points: Zapdos, Thundurus
         */
@@ -3280,11 +3288,11 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FAIRY; //ALl Oricorios will have the same type
         case SPECIES_WATTREL: case SPECIES_KILOWATTREL:
             return TYPE_WATER; //Rain Dance synergy
-    
+
         //Normal/Psychic
         case SPECIES_GIRAFARIG: case SPECIES_FARIGIRAF:
             return TYPE_WATER;
-        case SPECIES_MELOETTA: 
+        case SPECIES_MELOETTA:
             return TYPE_GHOST;
         case SPECIES_ORANGURU:
             return TYPE_GRASS; //Energy Ball
@@ -3299,18 +3307,18 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_SANDYGAST: case SPECIES_PALOSSAND:
             return TYPE_GRASS; //Giga Drain and Water Compaction synergy
         case SPECIES_YAMASK_GALAR: case SPECIES_RUNERIGUS:
-            return TYPE_ROCK; 
-        
+            return TYPE_ROCK;
+
         //Ground/Dragon
         /*Not included because of Tier points: Garchomp, Zygarde
         */
         case SPECIES_VIBRAVA: case SPECIES_FLYGON:
             return TYPE_BUG; //Based on all of Flygon's bug moves
-        case SPECIES_GIBLE: case SPECIES_GABITE: 
+        case SPECIES_GIBLE: case SPECIES_GABITE:
             return TYPE_FIRE;
         case SPECIES_ZYGARDE_10:
             return TYPE_DARK; //Crunch
-        
+
         //Bug/Rock
         case SPECIES_SHUCKLE:
             return TYPE_BUG; //Choosing to not give Shuckle a new defensive type
@@ -3320,7 +3328,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GROUND;
         case SPECIES_KLEAVOR:
             return TYPE_FLYING; //Scyther basis
-        
+
         //Bug/Steel
         case SPECIES_FORRETRESS:
             return TYPE_GROUND;
@@ -3334,7 +3342,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DARK;
         case SPECIES_GENESECT:
             return TYPE_ROCK;
-        
+
         //Bug/Grass
         case SPECIES_PARAS: case SPECIES_PARASECT:
             return TYPE_GROUND; //Dry Skin synergy
@@ -3342,7 +3350,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_GHOST; //Shadow Ball
         case SPECIES_SEWADDLE: case SPECIES_SWADLOON: case SPECIES_LEAVANNY:
             return TYPE_DRAGON;
-        
+
         //Steel/Ground
         /*Not included because of Tier Points: Steelix, Excadrill, Dugtrio-Alola, Iron Treads
         */
@@ -3350,10 +3358,10 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_WATER; //Relation to Wugtrio
         case SPECIES_STUNFISK_GALAR:
             return TYPE_GHOST; //Payback and Crunch
-        
+
         //Fire/Flying
         /*Not included because of Tier Points: Charizard, Moltres, Talonflame
-        */        
+        */
         case SPECIES_FLETCHINDER:
             return TYPE_BUG; //U-Turn
         case SPECIES_ORICORIO_BAILE:
@@ -3361,7 +3369,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
 
         //Water/Poison
         /*Not included because of Tier Points: Toxapex
-        */       
+        */
         case SPECIES_TENTACOOL: case SPECIES_TENTACRUEL:
             return TYPE_FIGHTING; //Mainly just choosing a type that isn't the most useful; keeps Psychic weakness
         case SPECIES_QWILFISH:
@@ -3372,32 +3380,32 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DARK;
 
         //Water/Psychic
-        /*Not included because of Tier Points: Slowbro, Slowking, Starmie, 
-        */         
+        /*Not included because of Tier Points: Slowbro, Slowking, Starmie,
+        */
         case SPECIES_SLOWPOKE:
             return TYPE_GRASS; //Grass Knot
         case SPECIES_BRUXISH:
             return TYPE_ICE; //Strong Jaw boosted Ice Fang
         case SPECIES_VELUZA:
             return TYPE_DARK; //Sharpness Night Slash
-        
+
         //Water/Dragon
         /*Not included because of Tier Points: Kingdra, Palkia, Dracovish, Walking Wake
-        */                 
+        */
         case SPECIES_TATSUGIRI: case SPECIES_TATSUGIRI_DROOPY: case SPECIES_TATSUGIRI_STRETCHY:
             return TYPE_ICE; //boosted Icy Wind
-        
+
         //Water/Dark
         /*Not included because of Tier Points: Greninja, Samurott-Hisui
-        */                         
+        */
         case SPECIES_CARVANHA: case SPECIES_SHARPEDO:
             return TYPE_PSYCHIC; //Zen Headbutt
         case SPECIES_CRAWDAUNT:
             return TYPE_POISON; //Increase the incentive to use Sludge Bomb or Sludge Wave
-        
+
         //Grass/Fairy
         /*Not included because of Tier Points: Whimsicott, Tapu Bulu
-        */     
+        */
         case SPECIES_COTTONEE:
             return TYPE_GRASS; //Power boost and parallel with Petilil
         case SPECIES_MORELULL:
@@ -3406,12 +3414,12 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
 
         //Dragon/Flying
         /*Not included because of Tier Points: Dragonite, Salamence, Noivern
-        */           
+        */
         case SPECIES_NOIBAT:
             return TYPE_ELECTRIC; //WIld Charge
         case SPECIES_ALTARIA:
             return TYPE_GRASS; //Solarbeam
-        
+
         //Normal/Grass
         /*Not included because of Tier Points: Arboliva
         */
@@ -3419,43 +3427,43 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_SAWSBUCK: case SPECIES_SAWSBUCK_AUTUMN: case SPECIES_SAWSBUCK_SUMMER: case SPECIES_SAWSBUCK_WINTER:
             return TYPE_WATER; //Sap Sipper synergy
         case SPECIES_SMOLIV: case SPECIES_DOLLIV:
-            return TYPE_GROUND; 
+            return TYPE_GROUND;
 
         //Normal/Fairy
         case SPECIES_IGGLYBUFF: case SPECIES_JIGGLYPUFF: case SPECIES_WIGGLYTUFF:
             return TYPE_STEEL; //Gyro Ball and Steel Roller
         case SPECIES_AZURILL:
             return TYPE_WATER; //Evo basis
-        
+
         //Poison/Fighting
         /*Not included because of Tier Points: Sneasler, Okidogi
         */
         case SPECIES_CROAGUNK: case SPECIES_TOXICROAK:
             return TYPE_ELECTRIC; //Thunder Punch
-        
+
         //Bug/Water
         /*Not included because of Tier Points: Araquanid, Golisopod
         */
         case SPECIES_SURSKIT:
-            return TYPE_FAIRY; 
+            return TYPE_FAIRY;
         case SPECIES_DEWPIDER:
             return TYPE_DARK; //Bite
-        
+
         //Steel/Dragon
         /*Not included because of Tier Points: Goodra-Hisui, Archaludon
         */
         case SPECIES_DURALUDON:
-            return TYPE_ELECTRIC; 
+            return TYPE_ELECTRIC;
         case SPECIES_SLIGGOO_HISUI:
             return TYPE_ROCK; //Keeps the same weaknesses
-        
-        
+
+
         //Fire/Rock
         /*Not included because of Tier Points: Coalossal and Arcanine-Hisui
         */
         case SPECIES_MAGCARGO:
             return TYPE_GRASS; //Defensive type, though there's also Solarbeam
-        case SPECIES_CARKOL: 
+        case SPECIES_CARKOL:
             return TYPE_WATER; //Scald
         case SPECIES_GROWLITHE_HISUI:
             return TYPE_STEEL;
@@ -3465,9 +3473,9 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         */
         case SPECIES_POLIWRATH:
             return TYPE_PSYCHIC; //For Fighting-type Tera coverage
-        
+
         //Grass/Fighting
-        /*/*Not included because of Tier Points: Chesnaught, Lilligant-Hisui, 
+        /*/*Not included because of Tier Points: Chesnaught, Lilligant-Hisui,
         */
         case SPECIES_BRELOOM:
             return TYPE_BUG;
@@ -3475,21 +3483,21 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FLYING; //Slightly stronger Aerial Ace
         case SPECIES_DECIDUEYE_HISUI:
             return TYPE_GHOST; //Leveraging a lot of the Ghost moves the Rowlet line can learn
-        
+
         //Grass/Psychic
-        /*/*Not included because of Tier Points: Celebi, Iron Leaves 
-        */        
+        /*/*Not included because of Tier Points: Celebi, Iron Leaves
+        */
         case SPECIES_EXEGGCUTE: case SPECIES_EXEGGUTOR:
             return TYPE_FIGHTING; //Low Kick
-        case SPECIES_CALYREX: 
+        case SPECIES_CALYREX:
             return TYPE_GRASS; //extra power
-        
+
         //Ice/Psychic
         case SPECIES_SMOOCHUM: case SPECIES_JYNX:
             return TYPE_FAIRY; //Draining Kiss and also give Alluring Voice
         case SPECIES_MR_MIME_GALAR: case SPECIES_MR_RIME:
             return TYPE_GRASS; //Grass Knot
-        
+
         //All Dragon/Electric mons are currently 4+ points so no curated teras included
 
         //Normal/Dark
@@ -3497,8 +3505,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         */
         case SPECIES_RATTATA_ALOLA: case SPECIES_RATICATE_ALOLA:
             return TYPE_BUG; //Resists Fighting and Thick Fat basis
-        case SPECIES_ZIGZAGOON_GALAR: case SPECIES_LINOONE_GALAR: 
-            return TYPE_POISON; //Gunk Shot and Cross Poison 
+        case SPECIES_ZIGZAGOON_GALAR: case SPECIES_LINOONE_GALAR:
+            return TYPE_POISON; //Gunk Shot and Cross Poison
 
         //Dark/Dragon
         /*Not included because of Tier Points: Hydreigon, Roaring Moon
@@ -3507,64 +3515,64 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_FIGHTING; //Superpower
         case SPECIES_GUZZLORD:
             return TYPE_GROUND; //Earthquake
-        
+
         //Normal/Fighting
         /*Not included because of Tier Points: Bewear, Meloetta-Pirouette
         */
         case SPECIES_STUFFUL:
             return TYPE_ROCK; //Rock Slide and Fluffy synergy
-        
+
         //Fighting/Psychic
         /*Not included because of Tier Points: Gallade
         */
         case SPECIES_MEDITITE: case SPECIES_MEDICHAM:
             return TYPE_ICE; //Ice Punch; Medicham is only applicable in Restricted Mode if it has Telepathy
-        
-        
+
+
         //Poison/Ground
         /*Not included because of Tier Points: Nidoking, Clodsire
         */
         case SPECIES_NIDOQUEEN:
             return TYPE_FIGHTING; //Superpower
         case SPECIES_WOOPER_PALDEA:
-            return TYPE_ROCK; 
-        
+            return TYPE_ROCK;
+
         //Ground/Dark
         /*Not included because of Tier Points: Krookodile, Ting-Lu
         */
         case SPECIES_SANDILE: case SPECIES_KROKOROK:
             return TYPE_WATER; //Aqua Tail
-        
+
         //Rock/Flying
         /*Not included because of Tier Points: Aerodactyl, Archeops
         */
         case SPECIES_ARCHEN:
             return TYPE_GHOST;
         case SPECIES_MINIOR:
-            return TYPE_STELLAR; 
-        
+            return TYPE_STELLAR;
+
         //Rock/Electric
         /*Not included because of Tier Points: Iron Thorns
         */
         case SPECIES_GEODUDE_ALOLA: case SPECIES_GRAVELER_ALOLA: case SPECIES_GOLEM_ALOLA:
             return TYPE_FIRE; //Fire Punch
-        
+
         //All Bug/Fighting mons exceed the curated tera tier points
-    
+
         //Bug/Fire
         /*Not included because of Tier Points: Volcarona
         */
-        case SPECIES_LARVESTA: 
+        case SPECIES_LARVESTA:
             return TYPE_FIGHTING; //Slither Wing basis
         case SPECIES_SIZZLIPEDE: case SPECIES_CENTISKORCH:
             return TYPE_DARK; //Knock Off and Crunch
-        
+
         //Bug/Electric
         case SPECIES_JOLTIK: case SPECIES_GALVANTULA:
             return TYPE_POISON;
         case SPECIES_CHARJABUG: case SPECIES_VIKAVOLT:
             return TYPE_GRASS; //Energy Ball
-        
+
         //Ghost/Poison
         /*Not included because of Tier Points: Gengar and Pecharunt
         */
@@ -3576,38 +3584,38 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         */
         case SPECIES_DREEPY: case SPECIES_DRAKLOAK:
             return TYPE_WATER; //Dive
-        
+
         //Steel/Ghost
         /*Not included because of Tier Points: Aegislash and Gholdengo
         */
         case SPECIES_HONEDGE: case SPECIES_DOUBLADE:
             return TYPE_ROCK; //Couples with the Head Smash addition, which pairs with No Guard
-        
+
         //Dragon/Fire
         /*Not included because of Tier Points: Gouging Fire
         */
         case SPECIES_TURTONATOR:
-            return TYPE_STEEL; 
-        
+            return TYPE_STEEL;
+
         //Water/Grass
         case SPECIES_LOTAD: case SPECIES_LOMBRE: case SPECIES_LUDICOLO:
             return TYPE_NORMAL; //Hyper Voice
         case SPECIES_OGERPON_WELLSPRING:
             return TYPE_WATER; //A necessity for Wellspring, but it can't tera in Restricted mode
-        
+
         //Water/Fairy
         /*Not included because of Tier Points: Primarina and Tapu Fini
         */
         case SPECIES_MARILL: //Dig
         case SPECIES_AZUMARILL: //Only permitted for the Thick Fat exception
             return TYPE_GROUND;
-        
+
         //Electric/Steel
         /*Not included because of Tier Points: Magneton, Magnezone, Togedemaru
         */
         case SPECIES_MAGNEMITE:
-            return TYPE_BUG; 
-        
+            return TYPE_BUG;
+
         //All Psychic/Ghost mons exceed the Tier Points threshold
 
         //Fire/Psychic
@@ -3615,7 +3623,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         */
         case SPECIES_DARMANITAN_ZEN:
             return TYPE_PSYCHIC; //Gets an extra power boost
-        
+
         //Dark/Fighting
         /*Not included because of Tier Points: Urshifu-Single-Strike
         */
@@ -3623,29 +3631,29 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_DRAGON; //Dragon Claw
         case SPECIES_PANGORO:
             return TYPE_DARK; //Extra power and shedding Fighting weaknesses
-        
+
         //Dark/Fire
         /*Not included because of Tier Points: Incineroar
         */
         case SPECIES_HOUNDOUR: case SPECIES_HOUNDOOM:
             return TYPE_PSYCHIC; //Psychic Fangs
-        
+
         //Dragon/Ice
         /*Not included because of Tier Points: Baxcalibur
-        */        
+        */
         case SPECIES_ARCTIBAX: case SPECIES_FRIGIBAX:
             return TYPE_DARK; //Crunch
-        
+
         //Fairy/Flying
         /*Not included because of Tier Points: Togekiss and Enamorus
         */
         case SPECIES_TOGETIC:
             return TYPE_NORMAL; //Old normal type basis
-        
+
         //Pure Flying
         case SPECIES_ROOKIDEE: case SPECIES_CORVISQUIRE:
             return TYPE_STEEL; //Evo basis
-        
+
         //Fighting/Flying mons all have excess Tier Points
 
         //Fighting/Steel mons all have excess Tier Points
@@ -3661,88 +3669,88 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         */
         case SPECIES_SALANDIT:
             return TYPE_POISON; //Extra poison prowess
-        
+
         //Poison/Psychic mons all have excess Tier Points
 
         //Poison/Dragon
         case SPECIES_DRAGALGE:
             return TYPE_WATER; //pre-evo basis
-        
+
         //Ground/Flying
         /*Not included because of Tier Points: Gliscor and Landorus
         */
         case SPECIES_GLIGAR:
             return TYPE_BUG;
-        
+
         //Rock/Poison
         /*Not included because of Tier Points: Nihilego and Glimmora
         */
         case SPECIES_GLIMMET:
             return TYPE_GROUND; //Earth Power
-        
+
         //Rock/Grass
         case SPECIES_LILEEP: case SPECIES_CRADILY:
             return TYPE_POISON; //Sludge Bomb
         case SPECIES_OGERPON_CORNERSTONE:
             return TYPE_ROCK; //Added out of necessity but not applicable for Restricted Mode
-        
+
         //Rock/Psychic
         /*Not included because of Tier Points: Iron Boulder
-        */        
+        */
         case SPECIES_LUNATONE:
             return TYPE_FAIRY; //Moonblast
         case SPECIES_SOLROCK:
             return TYPE_FIRE; //Flare Blitz
-        
+
         //Rock/Ice
         case SPECIES_AMAURA: case SPECIES_AURORUS:
             return TYPE_ELECTRIC; //Thunderbolt
         case SPECIES_AVALUGG_HISUI:
             return TYPE_ROCK;
-        
-        
+
+
         //Bug/Psychic
         case SPECIES_DOTTLER: case SPECIES_ORBEETLE:
             return TYPE_NORMAL; //Ghost immunity
         case SPECIES_RABSCA:
-            return TYPE_FIRE; 
-        
+            return TYPE_FIRE;
+
         //Ghost/Flying
         case SPECIES_DRIFLOON: case SPECIES_DRIFBLIM:
             return TYPE_DRAGON; //Type Distribution purposes
         case SPECIES_ORICORIO_SENSU:
             return TYPE_FAIRY; //Same tera type for each Oricorio
-        
+
         //ALl Steel/Flying mons exceed Tier Points
 
         //Fire/Ground
         case SPECIES_NUMEL: case SPECIES_CAMERUPT:
-            return TYPE_WATER; //Just for type distributions 
-        
+            return TYPE_WATER; //Just for type distributions
+
         //Water/Ghost
         /*Not included because of Tier Points: Basculegion
         */
-        case SPECIES_FRILLISH: case SPECIES_JELLICENT: 
+        case SPECIES_FRILLISH: case SPECIES_JELLICENT:
             return TYPE_ICE; //Ice Beam
-        
+
         //Water/Electric
         /*Not included because of Tier Points: Rotom-Wash
         */
         case SPECIES_CHINCHOU: case SPECIES_LANTURN:
             return TYPE_BUG; //Signal Beam
-        
+
         //Grass/Ground
         /*Not included because of Tier Points: Torterra
         */
         case SPECIES_TOEDSCOOL: case SPECIES_TOEDSCRUEL:
             return TYPE_POISON;
-        
+
         //Grass/Steel
         /*Not included because of Tier Points: Ferrothorn, Kartana
         */
         case SPECIES_FERROSEED:
             return TYPE_DARK;
-        
+
         //Electric/Fighting
         /*Not included because of Tier Points: Pawmot, Iron Hands
         */
@@ -3757,14 +3765,14 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
 
         //Ice/Ground
         case SPECIES_SWINUB: case SPECIES_PILOSWINE: case SPECIES_MAMOSWINE:
-            return TYPE_FLYING; //Thick Fat inversion - Fire becomes resisted and Ice becomes neutral 
-        
+            return TYPE_FLYING; //Thick Fat inversion - Fire becomes resisted and Ice becomes neutral
+
         //Dragon/Fighting
         /*Not included because of Tier Points: Kommo-o
         */
         case SPECIES_HAKAMO_O:
             return TYPE_DARK;
-        
+
         //All Dragon/Psychic mons are above Tier Points
 
         //Dark/Steel
@@ -3772,13 +3780,13 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         */
         case SPECIES_PAWNIARD:
             return TYPE_FIGHTING;
-        
+
         //Dark/Psychic
         /*Not included because of Tier Points: Hoopa-Unbound
         */
         case SPECIES_INKAY: case SPECIES_MALAMAR:
             return TYPE_WATER; //Liquidation
-        
+
         //Dark/Ice
         /*Not included because of Tier Points: Weavile and Chien-Pao
         */
@@ -3788,7 +3796,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         //Dark/Fairy
         case SPECIES_IMPIDIMP: case SPECIES_MORGREM: case SPECIES_GRIMMSNARL:
             return TYPE_BUG;
-        
+
         //Normal/Ground
         /*Not included because of Tier Points: Ursaluna
         */
@@ -3812,34 +3820,34 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         //Poison/Normal
         case SPECIES_SHROODLE: case SPECIES_GRAFAIAI:
             return TYPE_FLYING; //Acrobatics
-        
+
         //Poison/Fairy
         /*Not included because of Tier Points: Fezandipiti
         */
         case SPECIES_WEEZING_GALAR:
-            return TYPE_ROCK; 
+            return TYPE_ROCK;
 
         //Ground/Electric
         /*Not included because of Tier Points: Sandy Shocks
         */
         case SPECIES_STUNFISK:
             return TYPE_STEEL;
-        
+
         //Ground/Psychic
         case SPECIES_BALTOY: case SPECIES_CLAYDOL:
             return TYPE_ELECTRIC; //Levitate synergy
-        
+
         //All Rock/Fighting mons exceed Tier Points
 
         //Rock/Dragon
         case SPECIES_TYRUNT: case SPECIES_TYRANTRUM:
             return TYPE_POISON; //Tera Poison Poison Fang Strong Jaw
-        
+
         //Rock/Fairy
         /*Not included because of Tier Points: Diancie
         */
         case SPECIES_CARBINK:
-            return TYPE_GHOST; 
+            return TYPE_GHOST;
 
         //Bug/Ground
         case SPECIES_NINCADA:
@@ -3860,17 +3868,17 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         //Normal/Fire
         case SPECIES_LITLEO: case SPECIES_PYROAR:
             return TYPE_FLYING; //Acrobatics for Moxie lines
-        
+
         //Grass/Fire
         case SPECIES_SCOVILLAIN:
-            return TYPE_DRAGON; 
+            return TYPE_DRAGON;
         case SPECIES_OGERPON_HEARTHFLAME:
             return TYPE_FIRE; //Added for necessity but not available for Restricted Mode
 
         //Grass/Ice
         case SPECIES_SNOVER: case SPECIES_ABOMASNOW:
             return TYPE_DRAGON; //Outrage
-        
+
         //Electric/Normal
         case SPECIES_HELIOPTILE: case SPECIES_HELIOLISK:
             return TYPE_WATER; //Surf
@@ -3880,7 +3888,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
             return TYPE_STELLAR;
         case SPECIES_TOXTRICITY_AMPED: case SPECIES_TOXTRICITY_LOW_KEY:
             return TYPE_NORMAL; //Boomburst
-        
+
         //Electric/Ice
         case SPECIES_ROTOM_FROST:
             return TYPE_GHOST;
@@ -3892,35 +3900,35 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         */
         case SPECIES_DEDENNE:
             return TYPE_GROUND;
-        
+
         //Ice/Flying
         case SPECIES_ARTICUNO:
             return TYPE_ROCK; //Ancient Power and weakness Inversion
         case SPECIES_DELIBIRD:
             return TYPE_STELLAR; //Coverage machine
-        
+
         //Ice/Bug
         case SPECIES_SNOM: case SPECIES_FROSMOTH:
             return TYPE_FLYING; //Air Slash
-        
+
         //Ice/Steel
         case SPECIES_SANDSHREW_ALOLA: case SPECIES_SANDSLASH_ALOLA:
             return TYPE_FIGHTING;
-        
+
         //Dark/Ghost
         case SPECIES_SABLEYE:
             return TYPE_STEEL; //Gyro Ball
         case SPECIES_SPIRITOMB:
             return TYPE_GHOST; //Power Boost
-        
+
         //Normal/Water
         case SPECIES_BIBAREL:
             return TYPE_GROUND; //Dig
-        
+
         //Ice/Fighting
         case SPECIES_CRABOMINABLE:
             return TYPE_WATER; //Crabhammer
-        
+
         //All Ground/Fighting mons exceed tier points
 
         //All Rock/Dark mons exceed tier points
@@ -3942,19 +3950,19 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         //Electric/Fire
         case SPECIES_ROTOM_HEAT:
             return TYPE_GHOST;
-        
+
         //Electric/Psychic
         case SPECIES_RAICHU_ALOLA:
-            return TYPE_NORMAL; //Fake Out and Extreme Speed 
-        
+            return TYPE_NORMAL; //Fake Out and Extreme Speed
+
         //Electric/Dark
         case SPECIES_MORPEKO: case SPECIES_MORPEKO_HANGRY:
             return TYPE_STELLAR; //Boosting both moves
-        
+
         //Ice/Ghost
         case SPECIES_FROSLASS:
-            return TYPE_NORMAL; 
-        
+            return TYPE_NORMAL;
+
         //All Ice/Fire mons exceed tier points
 
         //Ice/Fairy
@@ -4083,7 +4091,7 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                         data[retVal++] = substruct0->nickname12;
                     }
                 }
-                else if (POKEMON_NAME_LENGTH >= 11)
+                else if (field != MON_DATA_NICKNAME10 && POKEMON_NAME_LENGTH >= 11)
                 {
                     if (substruct0->nickname11 == 0)
                     {
@@ -4389,6 +4397,8 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 else if (substruct0->teraType == TYPE_NONE) // Tera Type hasn't been modified so we can just use the personality
                 {
                     retVal = getCuratedOrRandomTeraType(substruct0->species, boxMon->personality);
+                    const enum Type *types = gSpeciesInfo[substruct0->species].types;
+                    retVal = (boxMon->personality & 0x1) == 0 ? types[0] : types[1];
                 }
                 else
                 {
@@ -4490,6 +4500,19 @@ u32 GetBoxMonData2(struct BoxPokemon *boxMon, s32 field)
 #define SET8(lhs) (lhs) = *data
 #define SET16(lhs) (lhs) = data[0] + (data[1] << 8)
 #define SET32(lhs) (lhs) = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24)
+//
+// Prefer SET_BY_WIDTH for fields whose types might be extended (e.g.
+// anything whose typedef is in gametypes.h).
+//
+#define SET_BY_WIDTH(lhs) \
+    do { \
+       if (sizeof(lhs) == 1) \
+          SET8(lhs); \
+       else if (sizeof(lhs) == 2) \
+          SET16(lhs); \
+       else if (sizeof(lhs) == 4) \
+          SET32(lhs); \
+   } while (0)
 
 void SetMonData(struct Pokemon *mon, s32 field, const void *dataArg)
 {
@@ -5090,7 +5113,7 @@ u8 GetMonsStateToDoubles_2(void)
     return (aliveCount > 1) ? PLAYER_HAS_TWO_USABLE_MONS : PLAYER_HAS_ONE_USABLE_MON;
 }
 
-u16 GetAbilityBySpecies(u16 species, u8 abilityNum)
+enum Ability GetAbilityBySpecies(u16 species, u8 abilityNum)
 {
     int i;
 
@@ -5115,7 +5138,7 @@ u16 GetAbilityBySpecies(u16 species, u8 abilityNum)
     return gLastUsedAbility;
 }
 
-u16 GetMonAbility(struct Pokemon *mon)
+enum Ability GetMonAbility(struct Pokemon *mon)
 {
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
@@ -5226,12 +5249,12 @@ u32 GetSpeciesWeight(u16 species)
     return gSpeciesInfo[SanitizeSpeciesId(species)].weight;
 }
 
-u32 GetSpeciesType(u16 species, u8 slot)
+enum Type GetSpeciesType(u16 species, u8 slot)
 {
     return gSpeciesInfo[SanitizeSpeciesId(species)].types[slot];
 }
 
-u32 GetSpeciesAbility(u16 species, u8 slot)
+enum Ability GetSpeciesAbility(u16 species, u8 slot)
 {
     return gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot];
 }
@@ -5264,6 +5287,26 @@ u32 GetSpeciesBaseSpDefense(u16 species)
 u32 GetSpeciesBaseSpeed(u16 species)
 {
     return gSpeciesInfo[SanitizeSpeciesId(species)].baseSpeed;
+}
+
+u32 GetSpeciesBaseStat(u16 species, u32 statIndex)
+{
+    switch (statIndex)
+    {
+    case STAT_HP:
+        return GetSpeciesBaseHP(species);
+    case STAT_ATK:
+        return GetSpeciesBaseAttack(species);
+    case STAT_DEF:
+        return GetSpeciesBaseDefense(species);
+    case STAT_SPEED:
+        return GetSpeciesBaseSpeed(species);
+    case STAT_SPATK:
+        return GetSpeciesBaseSpAttack(species);
+    case STAT_SPDEF:
+        return GetSpeciesBaseSpDefense(species);
+    }
+    return 0;
 }
 
 const struct LevelUpMove *GetSpeciesLevelUpLearnset(u16 species)
@@ -5402,17 +5445,7 @@ bool8 ExecuteTableBasedItemEffect(struct Pokemon *mon, u16 item, u8 partyIndex, 
     {                                                                                                   \
         friendshipChange = itemEffect[itemEffectParam];                                                 \
         friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);                                        \
-        if (friendshipChange > 0 && holdEffect == HOLD_EFFECT_FRIENDSHIP_UP)                            \
-            friendship += 150 * friendshipChange / 100;                                                 \
-        else                                                                                            \
-            friendship += friendshipChange;                                                             \
-        if (friendshipChange > 0)                                                                       \
-        {                                                                                               \
-            if (GetMonData(mon, MON_DATA_POKEBALL, NULL) == ITEM_LUXURY_BALL)                           \
-                friendship++;                                                                           \
-            if (GetMonData(mon, MON_DATA_MET_LOCATION, NULL) == GetCurrentRegionMapSectionId())         \
-                friendship++;                                                                           \
-        }                                                                                               \
+        friendship += CalculateFriendshipBonuses(mon,friendshipChange,holdEffect);                      \
         if (friendship < 0)                                                                             \
             friendship = 0;                                                                             \
         if (friendship > MAX_FRIENDSHIP)                                                                \
@@ -5456,14 +5489,14 @@ s32 GetEVStatCap(void){
 }
 
 //Returns True if the evolution is prevented by Restricted Mode conditions, False otherwise.
-//This is mainly used for cases where an alternate message should be sent. 
+//This is mainly used for cases where an alternate message should be sent.
 //For things like friendship evos, those can be handled in the direct evolution logic.
-bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, u16 item){    
+bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, u16 item){
     u8 level =  GetMonData(mon, MON_DATA_LEVEL, 0);
     u32 species = GetMonData(mon, MON_DATA_SPECIES);
 
     // DebugPrintf("DoesNotMeetRestrictedEvoConditions is called for species %d with level %d", species, level);
-    
+
     if (!FlagGet(FLAG_RESTRICTED_MODE)){
         return FALSE; //Checks don't matter if not in Restricted Mode
     }
@@ -5493,9 +5526,9 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
     u8 itemEffectParam = ITEM_EFFECT_ARG_START;
     u32 temp1, temp2;
     s8 friendshipChange = 0;
-    u8 holdEffect;
+    enum HoldEffect holdEffect;
     u8 battler = MAX_BATTLERS_COUNT;
-    u32 friendshipOnly = FALSE;
+    bool32 friendshipOnly = FALSE;
     u16 heldItem;
     u8 effectFlags;
     s8 evChange;
@@ -5640,7 +5673,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         if (evChange > 0) // Increasing EV (HP or Atk)
                         {
                             // Has EV increase limit already been reached?
-                            // Replace MAX_TOTAL_EVS with a version relative to the EV cap 
+                            // Replace MAX_TOTAL_EVS with a version relative to the EV cap
                             if (evCount >= maxEVs)
                                 return TRUE;
 
@@ -6087,7 +6120,7 @@ u8 GetItemEffectParamOffset(u32 battler, u16 itemId, u8 effectByte, u8 effectBit
     return offset;
 }
 
-static void BufferStatRoseMessage(s32 statIdx)
+static void BufferStatRoseMessage(enum Stat statIdx)
 {
     gBattlerTarget = gBattlerInMenuId;
     StringCopy(gBattleTextBuff1, gStatNamesTable[sStatsToRaise[statIdx]]);
@@ -6202,7 +6235,7 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
     u32 evolutionTracker = GetMonData(mon, MON_DATA_EVOLUTION_TRACKER, 0);
     u32 level = GetMonData(mon, MON_DATA_LEVEL, 0);
     u32 partnerSpecies, partnerHeldItem;
-    enum ItemHoldEffect partnerHoldEffect;
+    enum HoldEffect partnerHoldEffect;
 
     if (tradePartner != NULL)
     {
@@ -6229,13 +6262,13 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
     for (i = 0; params != NULL && params[i].condition != CONDITIONS_END; i++)
     {
         enum EvolutionConditions condition = params[i].condition;
-        u32 currentCondition = FALSE;
+        bool32 currentCondition = FALSE;
 
         switch(condition)
         {
         // Gen 2
         case IF_GENDER:
-            if (gender == GetMonGender(mon))
+            if (gender == params[i].arg1)
                 currentCondition = TRUE;
             break;
         case IF_MIN_FRIENDSHIP:
@@ -6481,7 +6514,7 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
                     *canStopEvo = FALSE;
             }
             break;
-        
+
         //Elastic additional criteria
         case IF_MIN_RESTRICTED_LEVEL:
             if (!FlagGet(FLAG_RESTRICTED_MODE) || level >= params[i].arg1){
@@ -6492,6 +6525,13 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
             if (GetMonoType() == TYPE_NONE || GetMonoType() == params[i].arg1 || GetMonoType() == params[i].arg2){
                 currentCondition = TRUE;
             }
+        case IF_REGION:
+            if (GetCurrentRegion() == params[i].arg1)
+                currentCondition = TRUE;
+            break;
+        case IF_NOT_REGION:
+            if (GetCurrentRegion() != params[i].arg1)
+                currentCondition = TRUE;
             break;
         case CONDITIONS_END:
             break;
@@ -6524,7 +6564,7 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
     u32 species = GetMonData(mon, MON_DATA_SPECIES, 0);
     u32 heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, 0);
     u32 level = GetMonData(mon, MON_DATA_LEVEL, 0);
-    u32 holdEffect;
+    enum HoldEffect holdEffect;
     const struct Evolution *evolutions = GetSpeciesEvolutions(species);
 
     if (evolutions == NULL)
@@ -6606,7 +6646,7 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
     case EVO_MODE_ITEM_CHECK:
         for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
         {
-            bool32 conditionMet = FALSE;
+            bool32 conditionsMet = FALSE;
             if (SanitizeSpeciesId(evolutions[i].targetSpecies) == SPECIES_NONE)
                 continue;
 
@@ -6614,11 +6654,11 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
             {
             case EVO_ITEM:
                 if (evolutions[i].param == evolutionItem)
-                    conditionMet = TRUE;
+                    conditionsMet = TRUE;
                 break;
             }
 
-            if (conditionMet && DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, canStopEvo, evoState))
+            if (conditionsMet && DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, PARTY_SIZE, canStopEvo, evoState))
             {
                 // All checks passed, so stop checking the rest of the evolutions.
                 // This is different from vanilla where the loop continues.
@@ -6640,9 +6680,9 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
 
             switch (evolutions[i].method)
             {
-                case EVO_BATTLE_END:
-                    conditionsMet = TRUE;
-                    break;
+            case EVO_BATTLE_END:
+                conditionsMet = TRUE;
+                break;
             }
 
             if (conditionsMet && DoesMonMeetAdditionalConditions(mon, evolutions[i].params, NULL, evolutionItem, canStopEvo, evoState))
@@ -6668,7 +6708,6 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
             case EVO_SPIN:
                 if (gSpecialVar_0x8000 == evolutions[i].param)
                     conditionsMet = TRUE;
-
                 break;
             }
 
@@ -6968,7 +7007,7 @@ u8 GetTrainerEncounterMusicId(u16 trainerOpponentId)
         return gTrainers[difficulty][sanitizedTrainerId].encounterMusic_gender & (F_TRAINER_FEMALE - 1);
 }
 
-u16 ModifyStatByNature(u8 nature, u16 stat, u8 statIndex)
+u16 ModifyStatByNature(u8 nature, u16 stat, enum Stat statIndex)
 {
     // Don't modify HP, Accuracy, or Evasion by nature
     if (statIndex <= STAT_HP || statIndex > NUM_NATURE_STATS || gNaturesInfo[nature].statUp == gNaturesInfo[nature].statDown)
@@ -6984,7 +7023,7 @@ u16 ModifyStatByNature(u8 nature, u16 stat, u8 statIndex)
 void AdjustFriendship(struct Pokemon *mon, u8 event)
 {
     u16 species, heldItem;
-    u8 holdEffect;
+    enum HoldEffect holdEffect;
     s8 mod;
 
     if (ShouldSkipFriendshipChange())
@@ -7012,7 +7051,7 @@ void AdjustFriendship(struct Pokemon *mon, u8 event)
     if (species && species != SPECIES_EGG)
     {
         u8 friendshipLevel = 0;
-        s16 friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, 0);
+        s32 friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, 0);
         enum TrainerClassID opponentTrainerClass = GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA);
 
         if (friendship > 99)
@@ -7038,18 +7077,7 @@ void AdjustFriendship(struct Pokemon *mon, u8 event)
         }
 
         mod = sFriendshipEventModifiers[event][friendshipLevel];
-        if (mod > 0 && holdEffect == HOLD_EFFECT_FRIENDSHIP_UP)
-            // 50% increase, rounding down
-            mod = (150 * mod) / 100;
-
-        friendship += mod;
-        if (mod > 0)
-        {
-            if (GetMonData(mon, MON_DATA_POKEBALL, NULL) == ITEM_LUXURY_BALL)
-                friendship++;
-            if (GetMonData(mon, MON_DATA_MET_LOCATION, NULL) == GetCurrentRegionMapSectionId())
-                friendship++;
-        }
+        friendship += CalculateFriendshipBonuses(mon,mod,holdEffect);
 
         if (friendship < 0)
             friendship = 0;
@@ -7060,14 +7088,36 @@ void AdjustFriendship(struct Pokemon *mon, u8 event)
     }
 }
 
+u8 CalculateFriendshipBonuses(struct Pokemon *mon, u32 modifier, enum HoldEffect itemHoldEffect)
+{
+    u32 bonus = 0;
+
+    if ((modifier > 0) && (itemHoldEffect == HOLD_EFFECT_FRIENDSHIP_UP))
+        bonus += 150 * modifier / 100;
+    else
+        bonus += modifier;
+
+    if (modifier == 0)
+        return bonus;
+
+    if (GetMonData(mon, MON_DATA_POKEBALL, NULL) == ITEM_LUXURY_BALL)
+        bonus += ITEM_FRIENDSHIP_LUXURY_BONUS;
+
+    if (GetMonData(mon, MON_DATA_MET_LOCATION, NULL) == GetCurrentRegionMapSectionId())
+        bonus += ITEM_FRIENDSHIP_MAPSEC_BONUS;
+
+    return bonus;
+}
+
 void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
 {
     u8 evs[NUM_STATS];
     u16 evIncrease = 0;
     u16 totalEVs = 0;
     u16 heldItem;
-    u8 holdEffect;
-    int i, multiplier;
+    enum HoldEffect holdEffect;
+    enum Stat i;
+    int multiplier;
     u8 stat;
     u8 bonus;
     s32 evCap, maxEVs;
@@ -7152,6 +7202,8 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
                 evIncrease = (gSpeciesInfo[defeatedSpecies].evYield_SpDefense + bonus) * multiplier;
             else
                 evIncrease = gSpeciesInfo[defeatedSpecies].evYield_SpDefense * multiplier;
+            break;
+        default:
             break;
         }
 
@@ -7434,48 +7486,280 @@ u8 CanLearnTeachableMove(u16 species, u16 move)
     }
 }
 
-u8 GetMoveRelearnerMoves(struct Pokemon *mon, u16 *moves)
+static void QuickSortMoves(u16 *moves, s32 left, s32 right)
 {
-    u16 learnedMoves[4];
-    u8 numMoves = 0;
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
-    u8 level = GetMonData(mon, MON_DATA_LEVEL, 0);
-    const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
-    int i, j, k;
+    if (left >= right)
+        return;
 
-    for (i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
+    u16 pivot = moves[(left + right) / 2];
+    s32 i = left, j = right;
 
-    for (i = 0; i < MAX_LEVEL_UP_MOVES; i++)
+    while (i <= j)
     {
-        u16 moveLevel;
+        while (moves[i] != MOVE_NONE && StringCompare(GetMoveName(moves[i]), GetMoveName(pivot)) < 0)
+            i++;
+        while (moves[j] != MOVE_NONE && StringCompare(GetMoveName(moves[j]), GetMoveName(pivot)) > 0)
+            j--;
 
-        if (learnset[i].move == LEVEL_UP_MOVE_END)
-            break;
-
-        //Restricted Mode exception for Torch Song
-        if (FlagGet(FLAG_RESTRICTED_MODE) && learnset[i].move == MOVE_TORCH_SONG){
-            continue;
-        }
-        moveLevel = learnset[i].level;
-
-        if (moveLevel <= level)
+        if (i <= j)
         {
-            for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != learnset[i].move; j++)
-                ;
-
-            if (j == MAX_MON_MOVES)
-            {
-                for (k = 0; k < numMoves && moves[k] != learnset[i].move; k++)
-                    ;
-
-                if (k == numMoves)
-                    moves[numMoves++] = learnset[i].move;
-            }
+            u16 temp = moves[i];
+            moves[i] = moves[j];
+            moves[j] = temp;
+            i++;
+            j--;
         }
     }
 
+    QuickSortMoves(moves, left, j);
+    QuickSortMoves(moves, i, right);
+}
+
+static void SortMovesAlphabetically(u16 *moves, u8 numMoves)
+{
+    if (numMoves > 1)
+        QuickSortMoves(moves, 0, numMoves - 1);
+}
+
+u8 GetRelearnerLevelUpMoves(struct Pokemon *mon, u16 *moves)
+{
+    u16 learnedMoves[MAX_MON_MOVES] = {0};
+    u8 numMoves = 0;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
+    u8 level = (P_ENABLE_ALL_LEVEL_UP_MOVES ? MAX_LEVEL : GetMonData(mon, MON_DATA_LEVEL, 0));
+
+    for (u8 i = 0; i < MAX_MON_MOVES; i++)
+        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
+
+    do
+    {
+        const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
+
+        for (u16 i = 0; i < MAX_LEVEL_UP_MOVES && learnset[i].move != LEVEL_UP_MOVE_END; i++)
+        {
+            if (learnset[i].level > level)
+                continue;
+
+            u16 j;
+            for (j = 0; j < MAX_MON_MOVES; j++)
+            {
+                if (learnedMoves[j] == learnset[i].move)
+                    break;
+            }
+            if (j < MAX_MON_MOVES)
+                continue;
+
+            for (j = 0; j < numMoves; j++)
+            {
+                if (moves[j] == learnset[i].move)
+                    break;
+            }
+            if (j < numMoves)
+                continue;
+
+            moves[numMoves++] = learnset[i].move;
+        }
+
+        species = (P_PRE_EVO_MOVES ? GetSpeciesPreEvolution(species) : SPECIES_NONE);
+    } while (species != SPECIES_NONE);
+
+    if (P_SORT_MOVES)
+        SortMovesAlphabetically(moves, numMoves);
+
     return numMoves;
+}
+
+u8 GetRelearnerEggMoves(struct Pokemon *mon, u16 *moves)
+{
+    u16 learnedMoves[MAX_MON_MOVES] = {0};
+    u8 numMoves = 0;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+
+    while (GetSpeciesPreEvolution(species) != SPECIES_NONE)
+        species = GetSpeciesPreEvolution(species);
+    const u16 *eggMoves = GetSpeciesEggMoves(species);
+
+    if (eggMoves == sNoneEggMoveLearnset)
+        return numMoves;
+
+    for (u8 i = 0; i < MAX_MON_MOVES; i++)
+        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
+
+    for (u16 i = 0; eggMoves[i] != MOVE_UNAVAILABLE; i++)
+    {
+        u16 j;
+        for (j = 0; j < MAX_MON_MOVES; j++)
+        {
+            if (learnedMoves[j] == eggMoves[i])
+                break;
+        }
+        if (j < MAX_MON_MOVES)
+            continue;
+
+        for (j = 0; j < numMoves; j++)
+        {
+            if (moves[j] == eggMoves[i])
+                break;
+        }
+        if (j < numMoves)
+            continue;
+
+        moves[numMoves++] = eggMoves[i];
+    }
+
+    if (P_SORT_MOVES)
+        SortMovesAlphabetically(moves, numMoves);
+
+    return numMoves;
+}
+
+u8 GetRelearnerTMMoves(struct Pokemon *mon, u16 *moves)
+{
+    u16 learnedMoves[MAX_MON_MOVES] = {0};
+    u8 numMoves = 0;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    u16 allMoves[NUM_ALL_MACHINES];
+    u16 totalMoveCount = 0;
+
+    for (u16 i = 0; i < NUM_ALL_MACHINES; i++)
+    {
+        enum TMHMItemId item = GetTMHMItemId(i + 1);
+        u16 move = GetTMHMMoveId(i + 1);
+        if ((P_ENABLE_ALL_TM_MOVES || CheckBagHasItem(item, 1)) && CanLearnTeachableMove(species, move) && move != MOVE_NONE)
+            allMoves[totalMoveCount++] = move;
+    }
+
+    for (u8 i = 0; i < MAX_MON_MOVES; i++)
+        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
+
+    for (u16 i = 0; i < totalMoveCount; i++)
+    {
+        u16 j;
+        for (j = 0; j < MAX_MON_MOVES; j++)
+        {
+            if (learnedMoves[j] == allMoves[i])
+                break;
+        }
+        if (j < MAX_MON_MOVES)
+            continue;
+
+        for (j = 0; j < numMoves; j++)
+        {
+            if (moves[j] == allMoves[i])
+                break;
+        }
+        if (j < numMoves)
+            continue;
+
+        moves[numMoves++] = allMoves[i];
+    }
+
+    if (P_SORT_MOVES)
+        SortMovesAlphabetically(moves, numMoves);
+
+    return numMoves;
+}
+
+u8 GetRelearnerTutorMoves(struct Pokemon *mon, u16 *moves)
+{
+#if P_TUTOR_MOVES_ARRAY
+    u16 learnedMoves[MAX_MON_MOVES] = {0};
+    u8 numMoves = 0;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
+
+    for (u8 i = 0; i < MAX_MON_MOVES; i++)
+        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
+
+    for (u16 i = 0; gTutorMoves[i] != MOVE_UNAVAILABLE; i++)
+    {
+        u16 move = gTutorMoves[i];
+
+        if (!CanLearnTeachableMove(species, move))
+            continue;
+
+        u16 j;
+        for (j = 0; j < MAX_MON_MOVES; j++)
+        {
+            if (learnedMoves[j] == move)
+                break;
+        }
+        if (j < MAX_MON_MOVES)
+            continue;
+
+        for (j = 0; j < numMoves; j++)
+        {
+            if (moves[j] == move)
+                break;
+        }
+        if (j < numMoves)
+            continue;
+
+        moves[numMoves++] = move;
+    }
+
+    if (P_SORT_MOVES)
+        SortMovesAlphabetically(moves, numMoves);
+
+    return numMoves;
+#else
+    return 0;
+#endif // P_TUTOR_MOVES_ARRAY
+}
+
+u8 GetNumberOfLevelUpMoves(struct Pokemon *mon)
+{
+    u16 moves[MAX_RELEARNER_MOVES] = {0};
+    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
+
+    if (species == SPECIES_EGG)
+        return 0;
+
+    return GetRelearnerLevelUpMoves(mon, moves);
+}
+
+u8 GetNumberOfEggMoves(struct Pokemon *mon)
+{
+    if (!FlagGet(P_FLAG_EGG_MOVES) && !P_ENABLE_MOVE_RELEARNERS)
+        return 0;
+
+    u16 moves[EGG_MOVES_ARRAY_COUNT] = {0};
+    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
+
+    if (species == SPECIES_EGG)
+        return 0;
+
+    return GetRelearnerEggMoves(mon, moves);
+}
+
+u8 GetNumberOfTMMoves(struct Pokemon *mon)
+{
+    if (!P_TM_MOVES_RELEARNER)
+        return 0;
+
+    if (!P_ENABLE_ALL_TM_MOVES && !IsBagPocketNonEmpty(POCKET_TM_HM))
+        return 0;
+
+    u16 moves[MAX_RELEARNER_MOVES] = {0};
+    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
+
+    if (species == SPECIES_EGG)
+        return 0;
+
+    return GetRelearnerTMMoves(mon, moves);
+}
+
+u8 GetNumberOfTutorMoves(struct Pokemon *mon)
+{
+    if (!FlagGet(P_FLAG_TUTOR_MOVES) && !P_ENABLE_MOVE_RELEARNERS)
+        return 0;
+
+    u16 moves[MAX_RELEARNER_MOVES] = {0};
+    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
+
+    if (species == SPECIES_EGG)
+        return 0;
+
+    return GetRelearnerTutorMoves(mon, moves);
 }
 
 u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves)
@@ -7558,7 +7842,7 @@ static u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
     numMoves += AddTutorMoves(species, applicable_moves, gPreGym1Tutor, ARRAY_COUNT(gPreGym1Tutor), numMoves);
     //pre-badge 1 moves not available in restricted
     if (!FlagGet(FLAG_RESTRICTED_MODE)){
-        numMoves += AddTutorMoves(species, applicable_moves, gPreGym1TutorSetup, ARRAY_COUNT(gPreGym1TutorSetup), numMoves);   
+        numMoves += AddTutorMoves(species, applicable_moves, gPreGym1TutorSetup, ARRAY_COUNT(gPreGym1TutorSetup), numMoves);
     }
 
     //If acquired one badge
@@ -7566,16 +7850,16 @@ static u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
         numMoves += AddTutorMoves(species, applicable_moves, gPreGym2Tutor, ARRAY_COUNT(gPreGym2Tutor), numMoves);
         //There are currently no moves but still including the check anyway
         if (!FlagGet(FLAG_RESTRICTED_MODE)){
-            numMoves += AddTutorMoves(species, applicable_moves, gPreGym2TutorSetup, ARRAY_COUNT(gPreGym2TutorSetup), numMoves);   
+            numMoves += AddTutorMoves(species, applicable_moves, gPreGym2TutorSetup, ARRAY_COUNT(gPreGym2TutorSetup), numMoves);
         }
     }
     if (FlagGet(FLAG_BADGE02_GET)){
         numMoves += AddTutorMoves(species, applicable_moves, gPreGym3Tutor, ARRAY_COUNT(gPreGym3Tutor), numMoves);
         if (!FlagGet(FLAG_RESTRICTED_MODE)){
-            numMoves += AddTutorMoves(species, applicable_moves, gPreGym3TutorSetup, ARRAY_COUNT(gPreGym3TutorSetup), numMoves);   
-        }        
+            numMoves += AddTutorMoves(species, applicable_moves, gPreGym3TutorSetup, ARRAY_COUNT(gPreGym3TutorSetup), numMoves);
+        }
     }
-    return numMoves;    
+    return numMoves;
 }
 
 static u8 GetTechTutorMoveList(u16 species, u16 *applicable_moves){
@@ -7586,14 +7870,14 @@ static u8 GetTechTutorMoveList(u16 species, u16 *applicable_moves){
     //pre-badge one, always applies
     numMoves += AddTutorMoves(species, applicable_moves, gTechTutorAlways, ARRAY_COUNT(gTechTutorAlways), numMoves);
 
-    //If acquired one badge 
+    //If acquired one badge
     if (FlagGet(FLAG_BADGE01_GET)){
         numMoves += AddTutorMoves(species, applicable_moves, gTechTutor1Badge, ARRAY_COUNT(gTechTutor1Badge), numMoves);
     }
-    return numMoves;    
+    return numMoves;
 }
 
-u8 GetNPCTutorMoveList(u16 species, u16 *applicable_moves){    
+u8 GetNPCTutorMoveList(u16 species, u16 *applicable_moves){
     if(VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
         return GetCenterTutorMoveList(species, applicable_moves);
     }else if (VarGet(VAR_TEMP_9) == MOVE_TUTOR_TECH){
@@ -7616,7 +7900,7 @@ u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
     if (species == SPECIES_EGG){
         return 0;
     }
-    
+
     GetNPCTutorMoveList(species, applicable_tutor_moves);
 
 
@@ -7641,7 +7925,7 @@ u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
 //Simply use the CenterTutorableMoves number of tutorable moves
 //To compute this, since it handles move overlaps
 u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
-{   
+{
     u16 moves[MAX_TUTOR_LIST] = {0};
     return GetNPCTutorableMoves(mon, moves);
 }
@@ -7942,7 +8226,7 @@ static s32 GetWildMonTableIdInAlteringCave(u16 species)
 
 static inline bool32 CanFirstMonBoostHeldItemRarity(void)
 {
-    u32 ability;
+    enum Ability ability;
     if (GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
         return FALSE;
 
@@ -8238,6 +8522,14 @@ void HandleSetPokedexFlag(enum NationalDexOrder nationalNum, u8 caseId, u32 pers
     }
 }
 
+void HandleSetPokedexFlagFromMon(struct Pokemon *mon, u32 caseId)
+{
+    u32 personality = GetMonData(mon, MON_DATA_PERSONALITY);
+    enum NationalDexOrder nationalNum = SpeciesToNationalPokedexNum(GetMonData(mon, MON_DATA_SPECIES));
+
+    HandleSetPokedexFlag(nationalNum, caseId, personality);
+}
+
 bool8 HasTwoFramesAnimation(u16 species)
 {
     return P_TWO_FRAME_FRONT_SPRITES
@@ -8474,7 +8766,7 @@ u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges
     u32 targetSpecies = species;
     const struct FormChange *formChanges = GetSpeciesFormChanges(species);
     u16 heldItem;
-    u32 ability;
+    enum Ability ability;
 
     if (formChanges != NULL)
     {
@@ -8745,7 +9037,7 @@ bool32 SpeciesHasGenderDifferences(u16 species)
     return FALSE;
 }
 
-bool32 TryFormChange(u32 monId, u32 side, enum FormChanges method)
+bool32 TryFormChange(u32 monId, enum BattleSide side, enum FormChanges method)
 {
     struct Pokemon *party = (side == B_SIDE_PLAYER) ? gPlayerParty : gEnemyParty;
 
@@ -8863,7 +9155,7 @@ void UpdateMonPersonality(struct BoxPokemon *boxMon, u32 personality)
 
     bool32 isShiny = GetBoxMonData(boxMon, MON_DATA_IS_SHINY, NULL);
     u32 hiddenNature = GetBoxMonData(boxMon, MON_DATA_HIDDEN_NATURE, NULL);
-    u32 teraType = GetBoxMonData(boxMon, MON_DATA_TERA_TYPE, NULL);
+    enum Type teraType = GetBoxMonData(boxMon, MON_DATA_TERA_TYPE, NULL);
 
     old = *boxMon;
     old0 = &(GetSubstruct(&old, old.personality, SUBSTRUCT_TYPE_0)->type0);
@@ -8978,9 +9270,9 @@ void UpdateDaysPassedSinceFormChange(u16 days)
     }
 }
 
-u32 CheckDynamicMoveType(struct Pokemon *mon, u32 move, u32 battler, enum MonState state)
+enum Type CheckDynamicMoveType(struct Pokemon *mon, u32 move, u32 battler, enum MonState state)
 {
-    u32 moveType = GetDynamicMoveType(mon, move, battler, state);
+    enum Type moveType = GetDynamicMoveType(mon, move, battler, state);
     if (moveType != TYPE_NONE)
         return moveType;
     return GetMoveType(move);
@@ -9060,7 +9352,7 @@ bool32 IsSpeciesForeignRegionalForm(u32 species, u32 currentRegion)
     return FALSE;
 }
 
-u32 GetTeraTypeFromPersonality(struct Pokemon *mon)
+enum Type GetTeraTypeFromPersonality(struct Pokemon *mon)
 {
     const u8 *types = gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES)].types;
     return (GetMonData(mon, MON_DATA_PERSONALITY) & 0x1) == 0 ? types[0] : types[1];
@@ -9103,11 +9395,11 @@ u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum)
 u8 GetMonTierPoints(struct Pokemon *mon){
     u16 species;
     u8 abilityNum;
-    u32 ability; 
+    u32 ability;
 
     if (mon == NULL){
         return 3; //Default
-    }    
+    }
     //Treating eggs as 0 until they hatch
     if (GetMonData(mon, MON_DATA_IS_EGG)){
         return 0;
@@ -9173,7 +9465,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
                 return 3;
                 }
             }
-        
+
         //Special Ability Logic: Drought
         case SPECIES_VULPIX:
             if (ability == ABILITY_DROUGHT){
@@ -9182,7 +9474,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
                 }else{
                     return 6;
                 }
-                
+
             }else{
                 if (FlagGet(FLAG_BADGE04_GET)){
                     return 1;
@@ -9198,49 +9490,49 @@ u8 GetMonTierPoints(struct Pokemon *mon){
             }else{
                 return 3;
             }
-        
-            
+
+
         //6 Points Kanto
         case SPECIES_SLOWBRO_MEGA: case SPECIES_KANGASKHAN_MEGA:
         case SPECIES_CHARIZARD_MEGA_Y: //Inaccessible in Restricted Mode
         case SPECIES_CHANSEY:
-        
+
         //6 Points Johto
-        case SPECIES_BLISSEY: 
-        
+        case SPECIES_BLISSEY:
+
         //6 Points Hoenn
         case SPECIES_SHEDINJA: case SPECIES_SALAMENCE_MEGA: case SPECIES_METAGROSS_MEGA:
-        
+
         //6 Points Sinnoh
         case SPECIES_LUCARIO_MEGA: case SPECIES_DARKRAI:
-        
+
         //6 Points Kalos / Regionals
         case SPECIES_AEGISLASH: case SPECIES_GOODRA_HISUI:
-        
+
         //6 Points Alola
-        case SPECIES_MARSHADOW: case SPECIES_MAGEARNA: case SPECIES_MELMETAL: 
-        
+        case SPECIES_MARSHADOW: case SPECIES_MAGEARNA: case SPECIES_MELMETAL:
+
         //6 Points Galar
         case SPECIES_DRAGAPULT: case SPECIES_URSHIFU_SINGLE_STRIKE: case SPECIES_URSHIFU_RAPID_STRIKE:
-        
+
         //6 Points Paldea
         case SPECIES_PALAFIN: case SPECIES_ARCHALUDON: case SPECIES_ANNIHILAPE: case SPECIES_GLIMMORA: case SPECIES_IRON_HANDS:
-        
+
         //6 Points Past Paradox
         case SPECIES_GOUGING_FIRE: case SPECIES_RAGING_BOLT: case SPECIES_WALKING_WAKE: case SPECIES_GREAT_TUSK: case SPECIES_ROARING_MOON:
-        
+
         //6 Points Future Paradox
         case SPECIES_IRON_VALIANT:
             return 6;
-        
+
         //5 Points Kanto / Regionals
         case SPECIES_ARCANINE_HISUI: case SPECIES_SLOWBRO: case SPECIES_SNORLAX: case SPECIES_ZAPDOS: case SPECIES_DRAGONITE:
-        
+
         //5 Points Kanto Megas
         case SPECIES_VENUSAUR_MEGA: case SPECIES_CHARIZARD_MEGA_X: case SPECIES_BEEDRILL_MEGA: case SPECIES_PINSIR_MEGA:
         case SPECIES_GYARADOS_MEGA: case SPECIES_AERODACTYL_MEGA:
         case SPECIES_ALAKAZAM_MEGA: case SPECIES_GENGAR_MEGA: //Potentially move these two to 4 points; under review
-        
+
         //5 Points Johto / Regionals
         case SPECIES_TYPHLOSION_HISUI: case SPECIES_CROBAT: case SPECIES_SLOWKING: case SPECIES_SLOWKING_GALAR:
         case SPECIES_SCIZOR: case SPECIES_STEELIX: case SPECIES_SKARMORY: case SPECIES_TYRANITAR:
@@ -9252,12 +9544,12 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_BLAZIKEN: case SPECIES_MILOTIC: case SPECIES_SALAMENCE: case SPECIES_LATIAS: case SPECIES_LATIOS:
 
         //5 Points Hoenn Megas
-        case SPECIES_SCEPTILE_MEGA: case SPECIES_SWAMPERT_MEGA: case SPECIES_BLAZIKEN_MEGA: 
+        case SPECIES_SCEPTILE_MEGA: case SPECIES_SWAMPERT_MEGA: case SPECIES_BLAZIKEN_MEGA:
         case SPECIES_LATIAS_MEGA: case SPECIES_LATIOS_MEGA: case SPECIES_MEDICHAM_MEGA: case SPECIES_AGGRON_MEGA: case SPECIES_MAWILE_MEGA:
         case SPECIES_SHARPEDO_MEGA: case SPECIES_SABLEYE_MEGA: case SPECIES_GARDEVOIR_MEGA:
 
         //5 Points Sinnoh
-        case SPECIES_INFERNAPE: case SPECIES_GARCHOMP: case SPECIES_TANGROWTH: case SPECIES_TOGEKISS: case SPECIES_AZELF: case SPECIES_HEATRAN: 
+        case SPECIES_INFERNAPE: case SPECIES_GARCHOMP: case SPECIES_TANGROWTH: case SPECIES_TOGEKISS: case SPECIES_AZELF: case SPECIES_HEATRAN:
         case SPECIES_MANAPHY: case SPECIES_SHAYMIN_SKY:
 
         //5 Points Sinnoh Megas
@@ -9265,14 +9557,14 @@ u8 GetMonTierPoints(struct Pokemon *mon){
 
         //5 Points Unova / Regionals
         case SPECIES_EXCADRILL: case SPECIES_DARMANITAN: case SPECIES_DARMANITAN_GALAR: case SPECIES_DARMANITAN_GALAR_ZEN: case SPECIES_AMOONGUSS: case SPECIES_ALOMOMOLA:
-        case SPECIES_FERROTHORN: case SPECIES_VOLCARONA: 
+        case SPECIES_FERROTHORN: case SPECIES_VOLCARONA:
         case SPECIES_TERRAKION: case SPECIES_TORNADUS_THERIAN: case SPECIES_LANDORUS_INCARNATE: case SPECIES_LANDORUS_THERIAN: case SPECIES_GENESECT:
-        
+
         //5 Points Kalos / Regionals
         case SPECIES_GRENINJA: case SPECIES_HAWLUCHA:
         case SPECIES_FLORGES: case SPECIES_FLORGES_BLUE: case SPECIES_FLORGES_ORANGE: case SPECIES_FLORGES_WHITE: case SPECIES_FLORGES_YELLOW:
         case SPECIES_ZYGARDE:
-        
+
         //5 Points Kalos Megas
         case SPECIES_DIANCIE_MEGA:
 
@@ -9283,7 +9575,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         //5 Points Galar
         case SPECIES_RILLABOOM: case SPECIES_CINDERACE: case SPECIES_CORVIKNIGHT: case SPECIES_OBSTAGOON: case SPECIES_DRACOVISH:
 
-        //5 Points Hisui 
+        //5 Points Hisui
         case SPECIES_URSALUNA: case SPECIES_BASCULEGION_M: case SPECIES_BASCULEGION_F: case SPECIES_SNEASLER: case SPECIES_ENAMORUS:
 
         //5 Points Paldea
@@ -9294,13 +9586,13 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         //5 Points Paldea Eviolite
         case SPECIES_GLIMMET:
             return 5;
-        
+
         //4 Points Kanto/Regionals
-        case SPECIES_VENUSAUR: case SPECIES_CHARIZARD: case SPECIES_ARCANINE: case SPECIES_SLOWBRO_GALAR: case SPECIES_CLEFABLE: 
-        case SPECIES_ALAKAZAM: case SPECIES_MAROWAK: case SPECIES_MAROWAK_ALOLA: 
-        case SPECIES_MUK_ALOLA: case SPECIES_GENGAR: case SPECIES_TAUROS: case SPECIES_TAUROS_PALDEA_AQUA: case SPECIES_TAUROS_PALDEA_BLAZE: 
-        case SPECIES_TAUROS_PALDEA_COMBAT: case SPECIES_SCYTHER: case SPECIES_GYARADOS: case SPECIES_LAPRAS: case SPECIES_VAPOREON: 
-        case SPECIES_AERODACTYL: case SPECIES_ARTICUNO_GALAR: case SPECIES_ZAPDOS_GALAR: 
+        case SPECIES_VENUSAUR: case SPECIES_CHARIZARD: case SPECIES_ARCANINE: case SPECIES_SLOWBRO_GALAR: case SPECIES_CLEFABLE:
+        case SPECIES_ALAKAZAM: case SPECIES_MAROWAK: case SPECIES_MAROWAK_ALOLA:
+        case SPECIES_MUK_ALOLA: case SPECIES_GENGAR: case SPECIES_TAUROS: case SPECIES_TAUROS_PALDEA_AQUA: case SPECIES_TAUROS_PALDEA_BLAZE:
+        case SPECIES_TAUROS_PALDEA_COMBAT: case SPECIES_SCYTHER: case SPECIES_GYARADOS: case SPECIES_LAPRAS: case SPECIES_VAPOREON:
+        case SPECIES_AERODACTYL: case SPECIES_ARTICUNO_GALAR: case SPECIES_ZAPDOS_GALAR:
         case SPECIES_MOLTRES_GALAR: case SPECIES_MOLTRES: case SPECIES_STARMIE: case SPECIES_MEW: case SPECIES_CLOYSTER:
         //4 Points Kanto Eviolite
         case SPECIES_PRIMEAPE: case SPECIES_MAGNETON: case SPECIES_RHYDON:
@@ -9314,7 +9606,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
 
         //4 Points Johto Megas
         case SPECIES_AMPHAROS_MEGA: case SPECIES_HERACROSS_MEGA:
-        
+
         //4 Points Hoenn
         case SPECIES_SWAMPERT: case SPECIES_SWELLOW: case SPECIES_GARDEVOIR: case SPECIES_SLAKING:
         case SPECIES_ZANGOOSE: case SPECIES_METAGROSS: case SPECIES_REGISTEEL: case SPECIES_JIRACHI:
@@ -9333,8 +9625,8 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_ABOMASNOW_MEGA:
 
         //4 Points Unova/Regionals
-        case SPECIES_VICTINI: case SPECIES_SAMUROTT: case SPECIES_SAMUROTT_HISUI: case SPECIES_GIGALITH: case SPECIES_CONKELDURR: case SPECIES_SAWK: 
-        case SPECIES_WHIMSICOTT: case SPECIES_LILLIGANT_HISUI: case SPECIES_KROOKODILE: 
+        case SPECIES_VICTINI: case SPECIES_SAMUROTT: case SPECIES_SAMUROTT_HISUI: case SPECIES_GIGALITH: case SPECIES_CONKELDURR: case SPECIES_SAWK:
+        case SPECIES_WHIMSICOTT: case SPECIES_LILLIGANT_HISUI: case SPECIES_KROOKODILE:
         case SPECIES_ZOROARK: case SPECIES_ZOROARK_HISUI: case SPECIES_REUNICLUS: case SPECIES_ARCHEOPS: case SPECIES_ESCAVALIER:
         case SPECIES_CHANDELURE: case SPECIES_HAXORUS: case SPECIES_MIENSHAO: case SPECIES_MANDIBUZZ: case SPECIES_DURANT: case SPECIES_HYDREIGON: case SPECIES_COBALION:
         case SPECIES_CINCCINO: case SPECIES_TORNADUS: case SPECIES_KELDEO: case SPECIES_MELOETTA: case SPECIES_MELOETTA_PIROUETTE:
@@ -9354,10 +9646,10 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_XURKITREE: case SPECIES_STAKATAKA: case SPECIES_NECROZMA: case SPECIES_SILVALLY:
 
         //4 Points Galar
-        case SPECIES_INTELEON: case SPECIES_ELDEGOSS: case SPECIES_DREDNAW: case SPECIES_BARRASKEWDA: case SPECIES_COALOSSAL: case SPECIES_HATTERENE: case SPECIES_GRIMMSNARL: 
+        case SPECIES_INTELEON: case SPECIES_ELDEGOSS: case SPECIES_DREDNAW: case SPECIES_BARRASKEWDA: case SPECIES_COALOSSAL: case SPECIES_HATTERENE: case SPECIES_GRIMMSNARL:
         case SPECIES_PERRSERKER: case SPECIES_EISCUE: case SPECIES_INDEEDEE_F: case SPECIES_INDEEDEE_M: case SPECIES_FALINKS:
-        case SPECIES_DRACOZOLT: case SPECIES_GLASTRIER: case SPECIES_ZARUDE: case SPECIES_REGIELEKI: case SPECIES_REGIDRAGO: 
-        
+        case SPECIES_DRACOZOLT: case SPECIES_GLASTRIER: case SPECIES_ZARUDE: case SPECIES_REGIELEKI: case SPECIES_REGIDRAGO:
+
         //4 Points Hisui
         case SPECIES_KLEAVOR: case SPECIES_ENAMORUS_THERIAN:
 
@@ -9365,21 +9657,21 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_QUAQUAVAL: case SPECIES_BELLIBOLT: case SPECIES_LOKIX: case SPECIES_PAWMOT: case SPECIES_MAUSHOLD_THREE: case SPECIES_MAUSHOLD_FOUR: case SPECIES_DACHSBUN:
         case SPECIES_ARBOLIVA: case SPECIES_TINKATON: case SPECIES_ARMAROUGE: case SPECIES_CERULEDGE: case SPECIES_CYCLIZAR: case SPECIES_ORTHWORM: case SPECIES_FLAMIGO:
         case SPECIES_FARIGIRAF: case SPECIES_CLODSIRE: case SPECIES_WO_CHIEN: case SPECIES_BRUTE_BONNET: case SPECIES_SCREAM_TAIL: case SPECIES_SANDY_SHOCKS: case SPECIES_IRON_TREADS:
-        case SPECIES_IRON_JUGULIS: case SPECIES_IRON_THORNS: case SPECIES_SLITHER_WING: case SPECIES_TERAPAGOS: case SPECIES_IRON_LEAVES: 
+        case SPECIES_IRON_JUGULIS: case SPECIES_IRON_THORNS: case SPECIES_SLITHER_WING: case SPECIES_TERAPAGOS: case SPECIES_IRON_LEAVES:
         case SPECIES_FEZANDIPITI: case SPECIES_MUNKIDORI: case SPECIES_OKIDOGI:
             return 4;
-        
+
         //3 Points Kanto/Regionals
         case SPECIES_BLASTOISE: case SPECIES_RATICATE: case SPECIES_RAICHU: case SPECIES_RAICHU_ALOLA: case SPECIES_SANDSLASH: case SPECIES_NIDOQUEEN:
-        case SPECIES_NINETALES_ALOLA: case SPECIES_VILEPLUME: case SPECIES_PERSIAN_ALOLA: case SPECIES_DUGTRIO: case SPECIES_POLIWRATH: case SPECIES_MACHAMP: 
+        case SPECIES_NINETALES_ALOLA: case SPECIES_VILEPLUME: case SPECIES_PERSIAN_ALOLA: case SPECIES_DUGTRIO: case SPECIES_POLIWRATH: case SPECIES_MACHAMP:
         case SPECIES_TENTACRUEL: case SPECIES_GOLEM: case SPECIES_GOLEM_ALOLA: case SPECIES_MUK: case SPECIES_ELECTRODE_HISUI: case SPECIES_KINGLER:
-        case SPECIES_DODRIO: case SPECIES_EXEGGUTOR: case SPECIES_EXEGGUTOR_ALOLA: case SPECIES_HITMONLEE: case SPECIES_HITMONCHAN: 
+        case SPECIES_DODRIO: case SPECIES_EXEGGUTOR: case SPECIES_EXEGGUTOR_ALOLA: case SPECIES_HITMONLEE: case SPECIES_HITMONCHAN:
         case SPECIES_WEEZING: case SPECIES_WEEZING_GALAR: case SPECIES_KANGASKHAN: case SPECIES_JYNX: case SPECIES_PINSIR: case SPECIES_MR_MIME: case SPECIES_MR_MIME_GALAR:
         case SPECIES_JOLTEON: case SPECIES_ARTICUNO: case SPECIES_RAPIDASH: case SPECIES_RAPIDASH_GALAR: case SPECIES_WIGGLYTUFF:
-        
+
         //3 Points Kanto Eviolite
-        case SPECIES_DRAGONAIR: case SPECIES_GOLBAT: case SPECIES_GRAVELER: case SPECIES_GRAVELER_ALOLA: case SPECIES_MACHOKE: 
-        case SPECIES_TANGELA: case SPECIES_ELECTABUZZ: case SPECIES_MAGMAR: 
+        case SPECIES_DRAGONAIR: case SPECIES_GOLBAT: case SPECIES_GRAVELER: case SPECIES_GRAVELER_ALOLA: case SPECIES_MACHOKE:
+        case SPECIES_TANGELA: case SPECIES_ELECTABUZZ: case SPECIES_MAGMAR:
             return 3;
 
         //3 Points Johto/Regionals
@@ -9390,7 +9682,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_GLIGAR: case SPECIES_PUPITAR: case SPECIES_SNEASEL: case SPECIES_SNEASEL_HISUI:
         case SPECIES_QWILFISH_HISUI: case SPECIES_TOGETIC: case SPECIES_SKIPLOOM: case SPECIES_CORSOLA_GALAR: case SPECIES_GIRAFARIG:
             return 3;
-        
+
         //3 Points Hoenn/Regionals
         case SPECIES_SCEPTILE: case SPECIES_LUDICOLO: case SPECIES_BRELOOM: case SPECIES_HARIYAMA: case SPECIES_NINJASK:
         case SPECIES_MANECTRIC: case SPECIES_TORKOAL: case SPECIES_GRUMPIG: case SPECIES_FLYGON:
@@ -9404,7 +9696,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_LUXRAY: case SPECIES_BASTIODON: case SPECIES_GASTRODON: case SPECIES_GASTRODON_EAST:
         case SPECIES_DRIFBLIM: case SPECIES_TOXICROAK: case SPECIES_LICKILICKY: case SPECIES_ELECTIVIRE: case SPECIES_MAGMORTAR:
         case SPECIES_DUSKNOIR: case SPECIES_PROBOPASS: case SPECIES_FROSLASS: case SPECIES_ROTOM_HEAT: case SPECIES_ROTOM_FAN:
-        case SPECIES_ROTOM_MOW:  case SPECIES_ROTOM: case SPECIES_MESPRIT: case SPECIES_UXIE: case SPECIES_REGIGIGAS: 
+        case SPECIES_ROTOM_MOW:  case SPECIES_ROTOM: case SPECIES_MESPRIT: case SPECIES_UXIE: case SPECIES_REGIGIGAS:
         case SPECIES_WORMADAM_TRASH: case SPECIES_SPIRITOMB:
 
         //3 Points Sinnoh Eviolite
@@ -9412,9 +9704,9 @@ u8 GetMonTierPoints(struct Pokemon *mon){
             return 3;
 
         //3 Points Unova/Regionals
-        case SPECIES_SERPERIOR: case SPECIES_EMBOAR: case SPECIES_STOUTLAND: case SPECIES_MUSHARNA: case SPECIES_UNFEZANT: 
+        case SPECIES_SERPERIOR: case SPECIES_EMBOAR: case SPECIES_STOUTLAND: case SPECIES_MUSHARNA: case SPECIES_UNFEZANT:
         case SPECIES_ZEBSTRIKA: case SPECIES_SEISMITOAD: case SPECIES_THROH: case SPECIES_LILLIGANT: case SPECIES_SIGILYPH:
-        case SPECIES_COFAGRIGUS: case SPECIES_CARRACOSTA: case SPECIES_SAWSBUCK: case SPECIES_JELLICENT: case SPECIES_GOTHITELLE: 
+        case SPECIES_COFAGRIGUS: case SPECIES_CARRACOSTA: case SPECIES_SAWSBUCK: case SPECIES_JELLICENT: case SPECIES_GOTHITELLE:
         case SPECIES_GALVANTULA: case SPECIES_KLINKLANG: case SPECIES_ACCELGOR: case SPECIES_STUNFISK: case SPECIES_STUNFISK_GALAR:
         case SPECIES_GOLURK: case SPECIES_BRAVIARY: case SPECIES_BRAVIARY_HISUI: case SPECIES_VIRIZION:
         case SPECIES_DARMANITAN_ZEN: //Zen Mode Unovan Darmanitan is lower points
@@ -9426,21 +9718,21 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         //3 Points Kalos/Regionals
         case SPECIES_VIVILLON: case SPECIES_PYROAR: case SPECIES_GOGOAT: case SPECIES_PANGORO: case SPECIES_FURFROU:
         case SPECIES_MEOWSTIC: case SPECIES_MEOWSTIC_F: case SPECIES_AURORUS: case SPECIES_TYRANTRUM: case SPECIES_AROMATISSE:
-        case SPECIES_SLURPUFF: case SPECIES_BARBARACLE: case SPECIES_DRAGALGE: case SPECIES_HELIOLISK: case SPECIES_CARBINK: 
+        case SPECIES_SLURPUFF: case SPECIES_BARBARACLE: case SPECIES_DRAGALGE: case SPECIES_HELIOLISK: case SPECIES_CARBINK:
         case SPECIES_TREVENANT: case SPECIES_ZYGARDE_10:
-        
+
         //3 Points Kalos Eviolite Mons
         case SPECIES_DOUBLADE: case SPECIES_SLIGGOO: case SPECIES_FLOETTE:
             return 3;
-        
+
         //3 Points Alola
         case SPECIES_DECIDUEYE_HISUI: case SPECIES_DECIDUEYE: case SPECIES_VIKAVOLT:
-        case SPECIES_ORICORIO_POM_POM: case SPECIES_ORICORIO_BAILE: case SPECIES_ORICORIO_PAU: case SPECIES_ORICORIO_SENSU: 
+        case SPECIES_ORICORIO_POM_POM: case SPECIES_ORICORIO_BAILE: case SPECIES_ORICORIO_PAU: case SPECIES_ORICORIO_SENSU:
         case SPECIES_RIBOMBEE: case SPECIES_LYCANROC_DUSK: case SPECIES_LYCANROC_MIDDAY:
         case SPECIES_WISHIWASHI: case SPECIES_WISHIWASHI_SCHOOL: case SPECIES_SHIINOTIC: case SPECIES_BEWEAR:
         case SPECIES_TSAREENA: case SPECIES_COMFEY: case SPECIES_PASSIMIAN: case SPECIES_PALOSSAND: case SPECIES_PYUKUMUKU:
         case SPECIES_MINIOR: case SPECIES_KOMALA: case SPECIES_TURTONATOR: case SPECIES_DRAMPA:
-        case SPECIES_BRUXISH: case SPECIES_GUZZLORD: 
+        case SPECIES_BRUXISH: case SPECIES_GUZZLORD:
         //4 Points Alola Eviolite Mons
         case SPECIES_HAKAMO_O: case SPECIES_MAREANIE: case SPECIES_WIMPOD: case SPECIES_TYPE_NULL:
             return 3;
@@ -9449,14 +9741,14 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_APPLETUN: case SPECIES_SANDACONDA: case SPECIES_GRAPPLOCT: case SPECIES_CENTISKORCH:
         case SPECIES_CURSOLA: case SPECIES_TOXTRICITY_AMPED: case SPECIES_TOXTRICITY_LOW_KEY: case SPECIES_SIRFETCHD:
         case SPECIES_RUNERIGUS: case SPECIES_COPPERAJAH: case SPECIES_ALCREMIE: case SPECIES_FROSMOTH:
-        case SPECIES_STONJOURNER: case SPECIES_MORPEKO: case SPECIES_ARCTOVISH: case SPECIES_ARCTOZOLT: case SPECIES_CALYREX: 
+        case SPECIES_STONJOURNER: case SPECIES_MORPEKO: case SPECIES_ARCTOVISH: case SPECIES_ARCTOZOLT: case SPECIES_CALYREX:
         case SPECIES_MR_RIME:
         //3 Points Galar Eviolite
-        case SPECIES_DURALUDON: case SPECIES_DRAKLOAK: case SPECIES_GOSSIFLEUR: case SPECIES_LINOONE_GALAR: 
+        case SPECIES_DURALUDON: case SPECIES_DRAKLOAK: case SPECIES_GOSSIFLEUR: case SPECIES_LINOONE_GALAR:
             return 3;
 
         //3 Points Hisui
-        case SPECIES_OVERQWIL: 
+        case SPECIES_OVERQWIL:
             return 3;
 
         //3 Points Paldea
@@ -9464,11 +9756,11 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_REVAVROOM: case SPECIES_HOUNDSTONE: case SPECIES_TATSUGIRI: case SPECIES_TATSUGIRI_DROOPY: case SPECIES_TATSUGIRI_STRETCHY:
         case SPECIES_VELUZA: case SPECIES_DUDUNSPARCE_THREE_SEGMENT: case SPECIES_DUDUNSPARCE_TWO_SEGMENT: case SPECIES_CETITAN:
         case SPECIES_SINISTCHA_MASTERPIECE: case SPECIES_SINISTCHA_UNREMARKABLE: case SPECIES_BRAMBLEGHAST:
-        
+
         //3 Points Paldea Eviolite Mons
         case SPECIES_ARCTIBAX: case SPECIES_TINKATUFF: case SPECIES_NACLSTACK:
             return 3;
-        
+
         //Terminal 3 points after 8 badges; starting 4 points
         case SPECIES_YANMEGA: case SPECIES_CRUSTLE: case SPECIES_ARMALDO: case SPECIES_SHARPEDO: case SPECIES_ESPATHRA:
         case SPECIES_KABUTOPS: case SPECIES_OMASTAR: case SPECIES_SCOLIPEDE: case SPECIES_NIDOKING:
@@ -9489,9 +9781,9 @@ u8 GetMonTierPoints(struct Pokemon *mon){
                 return 4;
             }
         }
-            
+
         //Terminal 3 Points after badge 5; Starting 4 points
-        case SPECIES_IVYSAUR: 
+        case SPECIES_IVYSAUR:
         case SPECIES_MARSHTOMP: case SPECIES_COMBUSKEN:
         case SPECIES_GROTLE: case SPECIES_MONFERNO:
         case SPECIES_FROGADIER:
@@ -9507,10 +9799,10 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         }
 
         //Terminal 2 Points after 4 Badges; starting 4 Points
-        case SPECIES_BUTTERFREE: 
+        case SPECIES_BUTTERFREE:
         case SPECIES_DUSTOX:
         case SPECIES_TRUMBEAK: case SPECIES_STARAVIA:
-        case SPECIES_LOMBRE: case SPECIES_NUZLEAF: 
+        case SPECIES_LOMBRE: case SPECIES_NUZLEAF:
         case SPECIES_FLAAFFY: case SPECIES_LUXIO:
             {
                 if (FlagGet(FLAG_BADGE04_GET)){
@@ -9545,12 +9837,12 @@ u8 GetMonTierPoints(struct Pokemon *mon){
                 return 2;
             }else{
                 return 3;
-            }            
+            }
         }
         //Terminal 2 Points after 5 Badges; starting 3 Points
         case SPECIES_SWALOT: case SPECIES_CAMERUPT: case SPECIES_ALTARIA: case SPECIES_RAMPARDOS:
         case SPECIES_ABOMASNOW: case SPECIES_LEAFEON:
-        case SPECIES_ROTOM_FROST: case SPECIES_SCRAFTY: case SPECIES_GARBODOR: case SPECIES_VANILLUXE: 
+        case SPECIES_ROTOM_FROST: case SPECIES_SCRAFTY: case SPECIES_GARBODOR: case SPECIES_VANILLUXE:
         case SPECIES_BEHEEYEM: case SPECIES_BEARTIC: case SPECIES_DRUDDIGON: case SPECIES_BOUFFALANT:
         case SPECIES_STANTLER: case SPECIES_WYRDEER: case SPECIES_CLAWITZER: case SPECIES_DEDENNE:
         case SPECIES_GOURGEIST: case SPECIES_LYCANROC_MIDNIGHT: case SPECIES_LURANTIS: case SPECIES_ORANGURU:
@@ -9574,14 +9866,14 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_PIKACHU: case SPECIES_EXEGGCUTE: case SPECIES_VOLTORB_HISUI: case SPECIES_CLEFAIRY:
         case SPECIES_STARYU: case SPECIES_ROSELIA: case SPECIES_MISDREAVUS: case SPECIES_CETODDLE:
         case SPECIES_SHELMET: case SPECIES_PHANTUMP: case SPECIES_LICKITUNG: case SPECIES_AIPOM:
-        case SPECIES_YANMA: case SPECIES_DUNSPARCE: 
+        case SPECIES_YANMA: case SPECIES_DUNSPARCE:
         case SPECIES_WORMADAM_SANDY:
         {
             if (FlagGet(FLAG_BADGE05_GET)){
                 return 2;
             }else{
                 return 3;
-            }            
+            }
         }
 
         //Terminal 2 Points after 4 Badges; starting 3 Points
@@ -9602,7 +9894,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_HEATMOR: case SPECIES_RATICATE_ALOLA: case SPECIES_MALAMAR: case SPECIES_TOUCANNON:
         case SPECIES_GUMSHOOS:  case SPECIES_CRABOMINABLE: case SPECIES_CRAMORANT: case SPECIES_THIEVUL:
         case SPECIES_FLAPPLE: case SPECIES_WUGTRIO: case SPECIES_RABSCA: case SPECIES_KROKOROK:
-        case SPECIES_SEADRA: case SPECIES_SEALEO: case SPECIES_GLOOM: 
+        case SPECIES_SEADRA: case SPECIES_SEALEO: case SPECIES_GLOOM:
         case SPECIES_DEWPIDER: case SPECIES_CHEWTLE: case SPECIES_STUFFUL: case SPECIES_MEOWTH_GALAR:
         case SPECIES_KRABBY: case SPECIES_CUBONE: case SPECIES_DRIFLOON: case SPECIES_TRANQUILL:
         case SPECIES_HATTREM: case SPECIES_MORGREM: case SPECIES_PILOSWINE: case SPECIES_BRONZOR:
@@ -9648,7 +9940,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_FINIZEN:
             return 2;
 
-        
+
     //Terminal 1 Point after 5 Badges; starting 4 Points
         case SPECIES_BEEDRILL:
         case SPECIES_FURRET:
@@ -9673,7 +9965,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
     case SPECIES_MUDKIP: case SPECIES_TORCHIC:
     case SPECIES_TURTWIG:
     case SPECIES_FROAKIE:
-    case SPECIES_SCORBUNNY: case SPECIES_GROOKEY: 
+    case SPECIES_SCORBUNNY: case SPECIES_GROOKEY:
     case SPECIES_SPRIGATITO:
     {
         if (FlagGet(FLAG_BADGE04_GET)){
@@ -9701,7 +9993,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_UNOWN: case SPECIES_TRAPINCH: case SPECIES_SWABLU: case SPECIES_LITLEO:
         case SPECIES_JOLTIK: case SPECIES_AXEW: case SPECIES_LITWICK: case SPECIES_VANILLITE:
         case SPECIES_CLAMPERL: case SPECIES_SPRITZEE: case SPECIES_SWIRLIX: case SPECIES_MILCERY:
-        case SPECIES_PORYGON: case SPECIES_MINCCINO: 
+        case SPECIES_PORYGON: case SPECIES_MINCCINO:
         {
             if (FlagGet(FLAG_BADGE05_GET)){
                 return 1;
@@ -9714,7 +10006,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
     //Terminal 1 Point after 4 Badges; starting 3 Points
         case SPECIES_NUMEL: case SPECIES_BARBOACH: case SPECIES_BALTOY:
         case SPECIES_BUNEARY: case SPECIES_MURKROW: case SPECIES_DUCKLETT: case SPECIES_CUBCHOO:
-        case SPECIES_ELGYEM: case SPECIES_INKAY: case SPECIES_CLAUNCHER: case SPECIES_PUMPKABOO: 
+        case SPECIES_ELGYEM: case SPECIES_INKAY: case SPECIES_CLAUNCHER: case SPECIES_PUMPKABOO:
         case SPECIES_CRABRAWLER: case SPECIES_ROCKRUFF: case SPECIES_FOMANTIS:
         case SPECIES_APPLIN: case SPECIES_MIME_JR: case SPECIES_WIGLETT:
         case SPECIES_CAPSAKID: case SPECIES_RELLOR: case SPECIES_BRAMBLIN: case SPECIES_HAPPINY:
@@ -9722,18 +10014,18 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_DEINO: case SPECIES_GOOMY: case SPECIES_JANGMO_O: case SPECIES_DREEPY: case SPECIES_FRIGIBAX: case SPECIES_RIOLU:
         case SPECIES_CHARMANDER: case SPECIES_SQUIRTLE: case SPECIES_CHIKORITA: case SPECIES_CYNDAQUIL: case SPECIES_TOTODILE:
         case SPECIES_TREECKO: case SPECIES_PIPLUP: case SPECIES_CHIMCHAR:case SPECIES_SNIVY: case SPECIES_TEPIG: case SPECIES_OSHAWOTT: case SPECIES_FENNEKIN: case SPECIES_CHESPIN:
-        case SPECIES_ROWLET: case SPECIES_LITTEN: case SPECIES_POPPLIO: case SPECIES_SOBBLE: case SPECIES_FUECOCO: case SPECIES_QUAXLY: 
-        case SPECIES_ABRA: case SPECIES_GASTLY: case SPECIES_SOLOSIS: 
-        case SPECIES_MEDITITE: case SPECIES_SHUPPET: case SPECIES_DUSKULL: case SPECIES_GEODUDE: case SPECIES_GEODUDE_ALOLA: case SPECIES_ARON: 
+        case SPECIES_ROWLET: case SPECIES_LITTEN: case SPECIES_POPPLIO: case SPECIES_SOBBLE: case SPECIES_FUECOCO: case SPECIES_QUAXLY:
+        case SPECIES_ABRA: case SPECIES_GASTLY: case SPECIES_SOLOSIS:
+        case SPECIES_MEDITITE: case SPECIES_SHUPPET: case SPECIES_DUSKULL: case SPECIES_GEODUDE: case SPECIES_GEODUDE_ALOLA: case SPECIES_ARON:
         case SPECIES_ELEKID: case SPECIES_MAGBY: case SPECIES_SMOOCHUM: case SPECIES_BONSLY: case SPECIES_BUDEW:
         case SPECIES_NACLI: case SPECIES_TINKATINK: case SPECIES_ROGGENROLA: case SPECIES_MACHOP: case SPECIES_TIMBURR:
         case SPECIES_FIDOUGH: case SPECIES_CHINCHOU: case SPECIES_BLITZLE: case SPECIES_MEOWTH: case SPECIES_MEOWTH_ALOLA:
         case SPECIES_SIZZLIPEDE: case SPECIES_SHROODLE: case SPECIES_SANDILE: case SPECIES_TENTACOOL: case SPECIES_TOEDSCOOL: case SPECIES_MAGNEMITE:
         case SPECIES_VOLTORB: case SPECIES_TEDDIURSA: case SPECIES_CORPHISH: case SPECIES_CRANIDOS: case SPECIES_SHELLOS_EAST: case SPECIES_SHELLOS_WEST:
         case SPECIES_ZORUA: case SPECIES_ZORUA_HISUI: case SPECIES_MASCHIFF: case SPECIES_GREAVARD: case SPECIES_VENONAT: case SPECIES_DODUO: case SPECIES_PINECO: case SPECIES_HORSEA:
-        case SPECIES_SKIDDO: case SPECIES_PANCHAM: case SPECIES_HATENNA: case SPECIES_IMPIDIMP: 
+        case SPECIES_SKIDDO: case SPECIES_PANCHAM: case SPECIES_HATENNA: case SPECIES_IMPIDIMP:
         case SPECIES_SALANDIT: case SPECIES_SEEL: case SPECIES_STUNKY: case SPECIES_YAMASK: case SPECIES_YAMASK_GALAR:
-        case SPECIES_DEERLING: case SPECIES_CUFANT: case SPECIES_FLITTLE: case SPECIES_SLUGMA: case SPECIES_GLAMEOW: case SPECIES_CHARCADET: 
+        case SPECIES_DEERLING: case SPECIES_CUFANT: case SPECIES_FLITTLE: case SPECIES_SLUGMA: case SPECIES_GLAMEOW: case SPECIES_CHARCADET:
         case SPECIES_SINISTEA_PHONY: case SPECIES_SINISTEA_ANTIQUE: case SPECIES_POLTCHAGEIST_ARTISAN: case SPECIES_POLTCHAGEIST_COUNTERFEIT:
         case SPECIES_VULPIX_ALOLA: case SPECIES_EEVEE: case SPECIES_PANSEAR: case SPECIES_SHELLDER: case SPECIES_PANPOUR:
         case SPECIES_PANSAGE: case SPECIES_TADBULB: case SPECIES_JIGGLYPUFF: case SPECIES_MUNNA: case SPECIES_PETILIL: case SPECIES_HELIOPTILE:  case SPECIES_SNORUNT:
@@ -9747,7 +10039,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
                 return 3;
             }
         }
-    
+
     //Terminal 1 Point after 3 badges; starting 3 points
         case SPECIES_PIDGEY: case SPECIES_HOOTHOOT: case SPECIES_TAILLOW: case SPECIES_STARLY:
         case SPECIES_PIDOVE: case SPECIES_FLETCHLING: case SPECIES_PIKIPEK: case SPECIES_ROOKIDEE: case SPECIES_WATTREL:
@@ -9762,7 +10054,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
         case SPECIES_SKWOVET: case SPECIES_WOOLOO: case SPECIES_WHISMUR: case SPECIES_LECHONK:
         case SPECIES_NYMBLE: case SPECIES_NINCADA: case SPECIES_SPEAROW: case SPECIES_NATU:
         case SPECIES_WOOPER: case SPECIES_WOOPER_PALDEA: case SPECIES_REMORAID:
-        case SPECIES_MAKUHITA: case SPECIES_SNUBBULL: 
+        case SPECIES_MAKUHITA: case SPECIES_SNUBBULL:
         case SPECIES_SHROOMISH: case SPECIES_PARAS: case SPECIES_MORELULL: case SPECIES_CHERUBI:
         case SPECIES_PHANPY: case SPECIES_ESPURR: case SPECIES_CUTIEFLY: case SPECIES_YAMPER: case SPECIES_TANDEMAUS:
         case SPECIES_SMOLIV: case SPECIES_DIGLETT: case SPECIES_DIGLETT_ALOLA:
@@ -9776,7 +10068,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
             }else{
                 return 3;
             }
-        }    
+        }
     //Terminal 1 Point after 3 Badges; starting 2 points
         case SPECIES_BELDUM:
         case SPECIES_PSYDUCK:
@@ -9834,10 +10126,10 @@ u8 GetMonTierPoints(struct Pokemon *mon){
 
     //Terminal 1 Point
         case SPECIES_MAGIKARP:
-        case SPECIES_CATERPIE: case SPECIES_WEEDLE: case SPECIES_WURMPLE: case SPECIES_KRICKETOT: 
+        case SPECIES_CATERPIE: case SPECIES_WEEDLE: case SPECIES_WURMPLE: case SPECIES_KRICKETOT:
         case SPECIES_SCATTERBUG: case SPECIES_BLIPBUG:
             return 1;
-        default:   
+        default:
             return defaultPointValue;
     }
 }
@@ -9874,7 +10166,7 @@ void SavePlayerPartyMon(u32 index, struct Pokemon *mon)
     gSaveBlock1Ptr->playerParty[index] = *mon;
 }
 
-u32 IsSpeciesOfType(u32 species, u32 type)
+bool32 IsSpeciesOfType(u32 species, enum Type type)
 {
     if (gSpeciesInfo[species].types[0] == type
      || gSpeciesInfo[species].types[1] == type)

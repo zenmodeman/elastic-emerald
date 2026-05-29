@@ -1,238 +1,169 @@
 #include "global.h"
 #include "test/battle.h"
 
-TO_DO_BATTLE_TEST("Echoed Voice's power is multiplied for every consecutive turn used, capped at 5");
-TO_DO_BATTLE_TEST("Echoed Voice's power is reset when using a different move");
-TO_DO_BATTLE_TEST("Echoed Voice's power is increased even if it misses");
-TO_DO_BATTLE_TEST("Echoed Voice's power is increased even if it's blocked by Protect");
-
-/*
- * Comprehensive test suite for Echoed Voice implementation
- * 
- * Tests the battle-wide counter system that tracks consecutive
- * Echoed Voice uses across all battlers.
- */
-
-
-#include "battle.h"
-#include "battle_util.h"
-
-// Test helper macros
-#define EXPECT_ECHOED_VOICE_COUNTER(expected) \
-    EXPECT_EQ((u16)(gBattleStruct->echoedVoiceCounter), (u16)expected)
-
-
-
-// Test 1: Basic single battler usage
-SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice powers up with consecutive uses by same battler")
+ASSUMPTIONS
 {
-    GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_ECHOED_VOICE, MOVE_TACKLE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_TACKLE, MOVE_CELEBRATE); }
-    } WHEN {
-        TURN {MOVE(player, MOVE_CELEBRATE);}
+    ASSUME(GetMoveEffect(MOVE_ECHOED_VOICE) == EFFECT_ECHOED_VOICE);
+}
 
+SINGLE_BATTLE_TEST("Echoed Voice's power is multiplied for every consecutive turn used, capped at 5")
+{
+    s16 damage[6];
+
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_SOFT_BOILED) == EFFECT_SOFTBOILED);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_BLISSEY);
+    } WHEN {
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); MOVE(opponent, MOVE_SOFT_BOILED); }
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
-        TURN { MOVE(player, MOVE_TACKLE); }
-        
-        // Turn 5: Chain restarts
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); MOVE(opponent, MOVE_SOFT_BOILED); }
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[0]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[1]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[2]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[3]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[4]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[5]);
     } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(1);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(2.0), damage[1]);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(3.0), damage[2]);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(4.0), damage[3]);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(5.0), damage[4]);
+        EXPECT_EQ(damage[4], damage[5]);
     }
 }
 
-// Test 2: Cross-battler usage (key feature)
-SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice powers up across different battlers")
+SINGLE_BATTLE_TEST("Echoed Voice's power increases even if used by another battler")
 {
+    s16 damage[2];
+
     GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        // Turn 1: Player uses Echoed Voice
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
-        // Turn 2: Opponent uses Echoed Voice (should power up)
         TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }
-        
-        // Turn 3: Player uses Echoed Voice again (should power up further)
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, opponent);
+        HP_BAR(player, captureDamage: &damage[0]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[1]);
     } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(3);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(2.0), damage[1]);
     }
 }
 
-// Test 3: Flinch/Paralysis prevention
-SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain breaks when move execution is prevented")
+SINGLE_BATTLE_TEST("Echoed Voice's power does not change until the end of the turn")
 {
+    s16 damage[3];
+
     GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_CROBAT) { Moves(MOVE_IRON_HEAD, MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        // Turn 1: Player uses Echoed Voice
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); MOVE(opponent, MOVE_ECHOED_VOICE); }
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
-        // Turn 2: Player flinches from Fake Out, can't use Echoed Voice
-        TURN { 
-            MOVE(opponent, MOVE_IRON_HEAD); 
-            MOVE(player, MOVE_ECHOED_VOICE); // This won't execute due to flinch
-        }
-        
-        // Turn 3: Chain restarts
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[0]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, opponent);
+        HP_BAR(player, captureDamage: &damage[1]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[2]);
     } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(1);
+        EXPECT_EQ(damage[0], damage[1]);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(2.0), damage[2]);
     }
 }
 
-// Test 4: Sleep/Paralysis prevention
-SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain breaks when battler is asleep or paralyzed")
+SINGLE_BATTLE_TEST("Echoed Voice's power increase is reset when no battler uses it successfully during a turn")
 {
-    GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); Status1(STATUS1_SLEEP); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_TACKLE, MOVE_CELEBRATE); }
-    } WHEN {
-        // Turn 1: Player tries Echoed Voice but is asleep
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); } // Won't execute
-    } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(0);
-    }
-}
+    s16 damage[3];
 
-// Test 5: Protect/Miss still counts (PP is reduced)
-SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain continues even when blocked by Protect or missed")
-{
     GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_PROTECT, MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
+        ASSUME(MoveHasAdditionalEffect(MOVE_BITE, MOVE_EFFECT_FLINCH));
+        PLAYER(SPECIES_WOBBUFFET) { Speed(5); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(10); }
     } WHEN {
-        // Turn 1: Player uses Echoed Voice
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
-        // Turn 2: Opponent uses Protect, Player's Echoed Voice is blocked but PP is consumed
-        TURN { 
-            MOVE(opponent, MOVE_PROTECT);
-            MOVE(player, MOVE_ECHOED_VOICE); // Blocked but PP reduced
-        }
-        
-        // Turn 3: Opponent uses Echoed Voice (should be powered up)
         TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }
-    } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(3);
-    }
-}
-
-// Test 6: Pokemon fainting after using Echoed Voice
-SINGLE_BATTLE_TEST("Zenmodeman: Echoed Voice chain continues after user faints")
-{
-    GIVEN {
-        PLAYER(SPECIES_CHATOT) { HP(1); Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        PLAYER(SPECIES_PIDGEOT) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_TACKLE, MOVE_CELEBRATE); }
-    } WHEN {
-        // Turn 1: Chatot uses Echoed Voice, then faints to Tackle
-        TURN { 
-            MOVE(player, MOVE_ECHOED_VOICE); 
-            MOVE(opponent, MOVE_TACKLE); // Chatot faints
-        }
-        
-        // Turn 2: Send in Pidgeot, use Echoed Voice (should be powered up)
-        TURN { 
-            SEND_OUT(player, 1); // Pidgeot
-            MOVE(player, MOVE_ECHOED_VOICE); 
-        }
-    } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(2);
-    }
-}
-
-// Test 7: Maximum power cap
-SINGLE_BATTLE_TEST("Echoed Voice caps at 200 base power")
-{
-    GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_AMNESIA, MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_AMNESIA, MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-    } WHEN {
-        //Boost SP.Def to avoid dying
-        TURN{             
-            MOVE(player, MOVE_AMNESIA); 
-            MOVE(opponent, MOVE_AMNESIA); // Chatot faints
-        }
-        TURN{             
-            MOVE(player, MOVE_AMNESIA); 
-            MOVE(opponent, MOVE_AMNESIA); // Chatot faints
-        }
-        TURN{             
-            MOVE(player, MOVE_AMNESIA); 
-            MOVE(opponent, MOVE_AMNESIA); // Chatot faints
-        }
-
-        // Build up to maximum power
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); }    
-        TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }  
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); }    
-        TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }  
-        TURN { MOVE(player, MOVE_ECHOED_VOICE); }    
-        TURN { MOVE(opponent, MOVE_ECHOED_VOICE); }
-
-        //The cap is 4
-    } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(4);
-    }
-}
-
-// Test 8: Double battle scenario
-DOUBLE_BATTLE_TEST("Echoed Voice works correctly in double battles")
-{
-    GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        PLAYER(SPECIES_PIDGEOT) { Moves(MOVE_ECHOED_VOICE, MOVE_TACKLE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_ECHOED_VOICE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_LOUDRED) { Moves(MOVE_TACKLE, MOVE_CELEBRATE); }
-    } WHEN {
-        // Turn 1: Both player Pokemon use Echoed Voice
-        TURN { 
-            MOVE(playerLeft, MOVE_ECHOED_VOICE, target: opponentLeft); 
-            MOVE(playerRight, MOVE_ECHOED_VOICE, target: opponentRight);
-        }
-        
-        // Turn 2: Opponent uses Echoed Voice (should be powered up)
-        TURN { MOVE(opponentLeft, MOVE_ECHOED_VOICE, target: playerLeft); }
-        
-        // Turn 3: Break chain
-        TURN { MOVE(playerRight, MOVE_TACKLE, target: opponentLeft); }
-    } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(0);
-    }
-}
-
-// Test 9: Counter reset scenarios
-SINGLE_BATTLE_TEST("Echoed Voice counter resets correctly in various scenarios")
-{
-    GIVEN {
-        PLAYER(SPECIES_CHATOT) { Moves(MOVE_ECHOED_VOICE, MOVE_TACKLE, MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_TACKLE, MOVE_CELEBRATE); }
-    } WHEN {
-        // Build up counter
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
-        // Reset with different move
-        TURN { MOVE(player, MOVE_TACKLE); }
-        
-        // Build up again
+        TURN { MOVE(opponent, MOVE_BITE); MOVE(player, MOVE_ECHOED_VOICE); }
         TURN { MOVE(player, MOVE_ECHOED_VOICE); }
-        
-        // Reset when neither battler uses Echoed Voice
-        TURN { 
-            MOVE(player, MOVE_TACKLE); 
-            MOVE(opponent, MOVE_TACKLE); 
-        }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, opponent);
+        HP_BAR(player, captureDamage: &damage[0]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[1]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_BITE, opponent);
+        MESSAGE("Wobbuffet flinched and couldn't move!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[2]);
     } THEN {
-        EXPECT_ECHOED_VOICE_COUNTER(0);
+        EXPECT_EQ(damage[0], damage[2]);
+        EXPECT_NE(damage[1], damage[2]);
+    }
+}
+
+SINGLE_BATTLE_TEST("Echoed Voice's power is increased even if it misses")
+{
+    s16 damage[3];
+
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_SAND_ATTACK) == EFFECT_ACCURACY_DOWN);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); MOVE(opponent, MOVE_SAND_ATTACK); }
+        TURN { MOVE(player, MOVE_ECHOED_VOICE, hit: FALSE); }
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[0]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[1]);
+        MESSAGE("Wobbuffet's attack missed!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[2]);
+    } THEN {
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(2.0), damage[1]);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(4.0), damage[2]);
+    }
+}
+
+SINGLE_BATTLE_TEST("Echoed Voice's power is increased even if it's blocked by Protect")
+{
+    s16 damage[3];
+
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_PROTECT) == EFFECT_PROTECT);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); MOVE(opponent, MOVE_PROTECT); }
+        TURN { MOVE(player, MOVE_ECHOED_VOICE); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[0]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[1]);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_PROTECT, opponent);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_ECHOED_VOICE, player);
+        HP_BAR(opponent, captureDamage: &damage[2]);
+    } THEN {
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(2.0), damage[1]);
+        EXPECT_MUL_EQ(damage[0], UQ_4_12(4.0), damage[2]);
     }
 }

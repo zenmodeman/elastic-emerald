@@ -574,3 +574,6 @@ gSpecials::
 	def_special GetTutorAbility
 	def_special SetTutorAbility
 	def_special SetHiddenNature
+	def_special SetAbility
+	def_special ObjectEventInteractionGetApricornTreeData
+	def_special ObjectEventInteractionPickApricornTree

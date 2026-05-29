@@ -11,7 +11,7 @@ ASSUMPTIONS
 
 SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stage reduction from moves")
 {
-    u16 ability;
+    enum Ability ability;
     u32 species;
 
     PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
@@ -40,7 +40,7 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stag
 
 SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye ignore target's evasion stat")
 {
-    u16 ability;
+    enum Ability ability;
     u32 species;
 
     PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
@@ -64,7 +64,7 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye ignore target's evasi
 
 SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye are ignored by Mold Breaker abilities")
 {
-    u16 abilityPlayer = ABILITY_NONE, abilityOpponent = ABILITY_NONE;
+    enum Ability abilityPlayer = ABILITY_NONE, abilityOpponent = ABILITY_NONE;
     u16 speciesPlayer = SPECIES_NONE, speciesOpponent = SPECIES_NONE;
 
     u32 j;
@@ -98,7 +98,7 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye are ignored by Mold B
 
 SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent Topsy-Turvy")
 {
-    u16 ability;
+    enum Ability ability;
     u32 species;
 
     PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
@@ -139,7 +139,7 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent Topsy-T
 
 SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent receiving negative Attack stage changes from Baton Pass")
 {
-    u16 ability;
+    enum Ability ability;
     u32 species;
     PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
     PARAMETRIZE { species = SPECIES_STARYU; ability = ABILITY_ILLUMINATE; }
@@ -172,7 +172,7 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent receivi
 
 SINGLE_BATTLE_TEST("Keen Eye & Gen9+ Illuminate don't prevent Spectral Thief from resetting positive accuracy stage changes")
 {
-    u16 ability;
+    enum Ability ability;
     u32 species;
 
     PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
