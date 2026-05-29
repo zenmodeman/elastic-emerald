@@ -3967,6 +3967,8 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         default:
             return randomTeraType;
     }
+}
+
 static ALWAYS_INLINE struct PokemonSubstruct0 *GetSubstruct0(struct BoxPokemon *boxMon)
 {
     return &(GetSubstruct(boxMon, boxMon->personality, SUBSTRUCT_TYPE_0)->type0);
@@ -9855,6 +9857,8 @@ u32 CountPartyTierPoints(){
         }
     }
     return tierPoints;
+}
+
 struct Pokemon *GetSavedPlayerPartyMon(u32 index)
 {
     return &gSaveBlock1Ptr->playerParty[index];

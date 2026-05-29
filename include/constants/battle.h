@@ -195,7 +195,9 @@ enum VolatileFlags
     F(VOLATILE_HEAL_BLOCK,                  healBlock,                     (u32, 1), V_BATON_PASSABLE) \
     F(VOLATILE_AQUA_RING,                   aquaRing,                      (u32, 1), V_BATON_PASSABLE) \
     F(VOLATILE_LASER_FOCUS,                 laserFocus,                    (u32, 1)) \
-    F(VOLATILE_POWER_TRICK,                 powerTrick,                    (u32, 1), V_BATON_PASSABLE)
+    F(VOLATILE_POWER_TRICK,                 powerTrick,                    (u32, 1), V_BATON_PASSABLE) \
+    F(VOLATILE_DRAIN_DOUSE,                 drainDouse,                    (u32, 1)) \
+    F(VOLATILE_MERRY,                       merry,                         (u32, 1))
 
 #define STATUS4_ELECTRIFIED             (1 << 0)
 #define STATUS4_MUD_SPORT               (1 << 1)    // Only used if B_SPORT_TURNS < GEN_6
@@ -204,10 +206,6 @@ enum VolatileFlags
 #define STATUS4_SALT_CURE               (1 << 4)
 #define STATUS4_SYRUP_BOMB              (1 << 5)
 #define STATUS4_GLAIVE_RUSH             (1 << 6)
-//Custom Statuses
-#define STATUS4_DRAIN_DOUSE             (1 << 7)
-#define STATUS4_MERRY                   (1 << 8)
-#define STATUS4_ANTICIPATION            (1 << 9)
 
 /* Use within a macro to get the maximum allowed value for a volatile. Requires _typeMaxValue as input. */
 #define GET_VOLATILE_MAXIMUM(_typeMaxValue, ...) INVOKE_WITH_B(GET_VOLATILE_MAXIMUM_, _typeMaxValue)

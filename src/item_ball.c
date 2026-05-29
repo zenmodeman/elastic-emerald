@@ -15,7 +15,7 @@ static u32 GetItemBallAmountFromTemplate(u32 itemBallId)
     //Add logic to make ground TMs always 1 when resource mode is not in play (since in this case, the player should only get 1 of each TM)
     if (!FlagGet(FLAG_RESOURCE_MODE)){
         itemId = GetItemBallIdFromTemplate(itemBallId);
-        if (GetPocketByItemId(itemId) == POCKET_TM_HM){
+        if (GetItemPocket(itemId) == POCKET_TM_HM){
             amount = 1;
         }
     }

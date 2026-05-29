@@ -8,6 +8,7 @@
 #include "battle_ai_main.h"
 #include "battle_ai_switch_items.h"
 #include "battle_factory.h"
+#include "battle_terastal.h"
 #include "battle_setup.h"
 #include "event_data.h"
 #include "data.h"
@@ -31,6 +32,24 @@ bool32 ShouldRecordStatusMove(u32 move);
 
 
 // Functions
+void SetAIUsingGimmick(u32 battler, enum AIConsiderGimmick use)
+{
+    if (use == USE_GIMMICK)
+        gAiBattleData->aiUsingGimmick |= 1u << battler;
+    else
+        gAiBattleData->aiUsingGimmick &= ~(1u << battler);
+}
+
+bool32 IsAIUsingGimmick(u32 battler)
+{
+    return (gAiBattleData->aiUsingGimmick & (1u << battler)) != 0;
+}
+
+void DecideTerastal(u32 battler)
+{
+    SetAIUsingGimmick(battler, AI_ShouldTerastal(battler) ? USE_GIMMICK : NO_GIMMICK);
+}
+
 static bool32 AI_IsDoubleSpreadMove(u32 battlerAtk, u32 move)
 {
     u32 numOfTargets = 0;
@@ -1648,6 +1667,11 @@ u32 NoOfHitsForTargetToFaintAI(u32 battlerDef, u32 battlerAtk)
     return leastNumberOfHits;
 }
 
+u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk)
+{
+    return NoOfHitsForTargetToFaintAI(battlerDef, battlerAtk);
+}
+
 u32 NoOfHitsForTargetToFaintBattlerWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod)
 {
     u32 i;
@@ -3024,6 +3048,21 @@ bool32 HasMoveWithEffect(u32 battlerId, enum BattleMoveEffects effect)
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && GetMoveEffect(moves[i]) == effect)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+bool32 HasMoveWithAIEffect(u32 battler, u32 aiEffect)
+{
+    u32 i;
+    u16 *moves = GetMovesArray(battler);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE
+         && (GetAIEffectGroupFromMove(battler, moves[i]) & aiEffect))
             return TRUE;
     }
 
@@ -4658,6 +4697,22 @@ bool32 HasTwoOpponents(u32 battler)
     return FALSE;
 }
 
+bool32 HasPartnerIgnoreFlags(u32 battler)
+{
+    return IsDoubleBattle() && IsBattlerAlive(BATTLE_PARTNER(battler));
+}
+
+bool32 HasPartner(u32 battler)
+{
+    return HasPartnerIgnoreFlags(battler)
+        && !(gAiThinkingStruct->aiFlags[battler] & AI_FLAG_ATTACKS_PARTNER);
+}
+
+bool32 IsTargetingPartner(u32 battlerAtk, u32 battlerDef)
+{
+    return HasPartner(battlerAtk) && battlerDef == BATTLE_PARTNER(battlerAtk);
+}
+
 bool32 OnlyOnePlayerDoublesMon(){
     u32 playerBattler1 = 0;
     u32 playerBattler2;
@@ -4695,6 +4750,31 @@ static u32 GetAllyChosenTarget(u32 battlerId)
     if (BattlerHasAi(battlerId))
         return gAiBattleData->chosenTarget[battlerId];
     return gBattleStruct->moveTarget[battlerId];
+}
+
+bool32 AreMovesEquivalent(u32 battlerAtk, u32 battlerAtkPartner, u32 move, u32 partnerMove)
+{
+    u32 moveAiEffect;
+    u32 partnerMoveAiEffect;
+
+    if (!HasPartner(battlerAtk) || battlerAtkPartner != BATTLE_PARTNER(battlerAtk))
+        return FALSE;
+    if (move == MOVE_NONE || move == MOVE_UNAVAILABLE || partnerMove == MOVE_NONE || partnerMove == MOVE_UNAVAILABLE)
+        return FALSE;
+
+    if (move == partnerMove)
+    {
+        if (GetBattlerMoveTargetType(battlerAtk, move) == MOVE_TARGET_SELECTED)
+            return gAiBattleData->chosenTarget[battlerAtk] == GetAllyChosenTarget(battlerAtkPartner);
+        return TRUE;
+    }
+
+    moveAiEffect = GetAIEffectGroupFromMove(battlerAtk, move);
+    partnerMoveAiEffect = GetAIEffectGroupFromMove(battlerAtkPartner, partnerMove);
+    if (moveAiEffect != AI_EFFECT_NONE && (moveAiEffect & partnerMoveAiEffect))
+        return TRUE;
+
+    return FALSE;
 }
 
 //PARTNER_MOVE_EFFECT_IS_SAME

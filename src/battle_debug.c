@@ -141,57 +141,11 @@ enum
 
 enum
 {
-    LIST_STATUS2_CONFUSION,
-    LIST_STATUS2_FLINCHED,
-    LIST_STATUS2_TORMENT,
-    LIST_STATUS2_POWDER,
-    LIST_STATUS2_DEFENSE_CURL,
-    LIST_STATUS2_RECHARGE,
-    LIST_STATUS2_RAGE,
-    LIST_STATUS2_DESTINY_BOND,
-    LIST_STATUS2_ESCAPE_PREVENTION,
-    LIST_STATUS2_CURSED,
-    LIST_STATUS2_FORESIGHT,
-    LIST_STATUS2_DRAGON_CHEER,
-    LIST_STATUS2_FOCUS_ENERGY
-};
-
-enum
-{
-    LIST_STATUS3_LEECH_SEED_HEALER,
-    LIST_STATUS3_LEECH_SEEDED,
-    LIST_STATUS3_ALWAYS_HITS,
-    LIST_STATUS3_PERISH_SONG,
-    LIST_STATUS3_ON_AIR,
-    LIST_STATUS3_UNDERGROUND,
-    LIST_STATUS3_MINIMIZED,
-    LIST_STATUS3_CHARGED_UP,
-    LIST_STATUS3_ROOTED,
-    LIST_STATUS3_YAWN,
-    LIST_STATUS3_IMPRISONED_OTHERS,
-    LIST_STATUS3_GRUDGE,
-    LIST_STATUS3_GASTRO_ACID,
-    LIST_STATUS3_EMBARGO,
-    LIST_STATUS3_UNDERWATER,
-    LIST_STATUS3_SMACKED_DOWN,
-    LIST_STATUS3_TELEKINESIS,
-    LIST_STATUS3_MIRACLE_EYED,
-    LIST_STATUS3_MAGNET_RISE,
-    LIST_STATUS3_HEAL_BLOCK,
-    LIST_STATUS3_AQUA_RING,
-    LIST_STATUS3_LASER_FOCUS,
-    LIST_STATUS3_POWER_TRICK,
-};
-
-enum
-{
-    LIST_STATUS4_ELECTRIFIED,
-    LIST_STATUS4_MUD_SPORT,
-    LIST_STATUS4_WATER_SPORT,
-    LIST_STATUS4_SALT_CURE,
-    LIST_STATUS4_SYRUP_BOMB,
-    LIST_STATUS4_GLAIVE_RUSH,
-    LIST_STATUS4_DRAIN_DOUSE,
+    LIST_SIDE_STICKY_WEB,
+    LIST_SIDE_SPIKES,
+    LIST_SIDE_TOXIC_SPIKES,
+    LIST_SIDE_STEALTH_ROCK,
+    LIST_SIDE_STEELSURGE,
 };
 
 enum
@@ -432,44 +386,6 @@ static const struct BitfieldInfo sStatus1Bitfield[] =
     {/*Frostbite*/ 1, 12},
 };
 
-static const struct BitfieldInfo sStatus3Bitfield[] =
-{
-    {/*Leech Seed Battler*/ 2, 0},
-    {/*Leech Seed*/ 1, 2},
-    {/*Always Hits*/ 2, 3},
-    {/*Perish Song*/ 1, 5},
-    {/*On Air*/ 1, 6},
-    {/*Underground*/ 1, 7},
-    {/*Minimized*/ 1, 8},
-    {/*Charged Up*/ 1, 9},
-    {/*Rooted*/ 1, 10},
-    {/*Yawn*/ 2, 11},
-    {/*Imprisoned Others*/ 1, 13},
-    {/*Grudge*/ 1, 14},
-    {/*Gastro Acid*/ 1, 16},
-    {/*Embargo*/ 1, 17},
-    {/*Underwater*/ 1, 18},
-    {/*Smacked Down*/ 1, 21},
-    {/*Telekinesis*/ 1, 23},
-    {/*Miracle Eyed*/ 1, 25},
-    {/*Magnet Rise*/ 1, 26},
-    {/*Heal Blocked*/ 1, 27},
-    {/*Aqua Ring*/ 1, 28},
-    {/*Laser Focus*/ 1, 29},
-    {/*Power Trick*/ 1, 30},
-};
-
-static const struct BitfieldInfo sStatus4Bitfield[] =
-{
-    {/*Electrified*/ 1, 0},
-    {/*Mud Sport*/ 1, 1},
-    {/*Water Sport*/ 1, 2},
-    {/*Salt Cure*/ 1, 4},
-    {/*Syrup Bomb*/ 1, 5},
-    {/*Glaive Rush*/ 1, 6},
-    {/*Drain Douse*/ 1, 7},
-};
-
 static const struct BitfieldInfo sAIBitfield[] =
 {
     {/*Check Bad Move*/ 1, 0},
@@ -588,45 +504,17 @@ static const struct ListMenuItem sVolatileStatusListItems[] =
     {COMPOUND_STRING("Aqua Ring"),          VOLATILE_AQUA_RING},
     {COMPOUND_STRING("Laser Focus"),        VOLATILE_LASER_FOCUS},
     {COMPOUND_STRING("Power Trick"),        VOLATILE_POWER_TRICK},
+    {COMPOUND_STRING("Drain Douse"),        VOLATILE_DRAIN_DOUSE},
+    {COMPOUND_STRING("Merry"),              VOLATILE_MERRY},
 };
 
 static const struct ListMenuItem sHazardsListItems[] =
 {
-    {sText_LeechSeedHealer, LIST_STATUS3_LEECH_SEED_HEALER},
-    {sText_LeechSeeded, LIST_STATUS3_LEECH_SEEDED},
-    {sText_AlwaysHits, LIST_STATUS3_ALWAYS_HITS},
-    {sText_PerishSong, LIST_STATUS3_PERISH_SONG},
-    {sText_OnAir, LIST_STATUS3_ON_AIR},
-    {sText_Underground, LIST_STATUS3_UNDERGROUND},
-    {sText_Minimized, LIST_STATUS3_MINIMIZED},
-    {sText_ChargedUp, LIST_STATUS3_CHARGED_UP},
-    {sText_Rooted, LIST_STATUS3_ROOTED},
-    {sText_Yawn, LIST_STATUS3_YAWN},
-    {sText_ImprisonedOthers, LIST_STATUS3_IMPRISONED_OTHERS},
-    {sText_Grudge, LIST_STATUS3_GRUDGE},
-    {sText_GastroAcid, LIST_STATUS3_GASTRO_ACID},
-    {sText_Embargo, LIST_STATUS3_EMBARGO},
-    {sText_Underwater, LIST_STATUS3_UNDERWATER},
-    {sText_SmackedDown, LIST_STATUS3_SMACKED_DOWN},
-    {sText_Telekinesis, LIST_STATUS3_TELEKINESIS},
-    {sText_MiracleEyed, LIST_STATUS3_MIRACLE_EYED},
-    {sText_MagnetRise, LIST_STATUS3_MAGNET_RISE},
-    {sText_HealBlock, LIST_STATUS3_HEAL_BLOCK},
-    {sText_AquaRing, LIST_STATUS3_AQUA_RING},
-    {sText_LaserFocus, LIST_STATUS3_LASER_FOCUS},
-    {sText_PowerTrick, LIST_STATUS3_POWER_TRICK},
-};
-
-static const struct ListMenuItem sStatus4ListItems[] =
-{
-    {sText_Electrified, LIST_STATUS4_ELECTRIFIED},
-    {sText_MudSport, LIST_STATUS4_MUD_SPORT},
-    {sText_WaterSport, LIST_STATUS4_WATER_SPORT},
-    {sText_SaltCure, LIST_STATUS4_SALT_CURE},
-    {sText_SyrupBomb, LIST_STATUS4_SYRUP_BOMB},
-    {sText_GlaiveRush, LIST_STATUS4_GLAIVE_RUSH},
-    {sText_DrainDouse, LIST_STATUS4_DRAIN_DOUSE},
-    
+    {COMPOUND_STRING("Spikes"),       LIST_SIDE_SPIKES},
+    {COMPOUND_STRING("Sticky Web"),   LIST_SIDE_STICKY_WEB},
+    {COMPOUND_STRING("Toxic Spikes"), LIST_SIDE_TOXIC_SPIKES},
+    {COMPOUND_STRING("Stealth Rock"), LIST_SIDE_STEALTH_ROCK},
+    {COMPOUND_STRING("Steelsurge"),   LIST_SIDE_STEELSURGE},
 };
 
 static const struct ListMenuItem sSideStatusListItems[] =

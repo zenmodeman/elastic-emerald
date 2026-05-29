@@ -2333,7 +2333,7 @@ const struct Item gItemsInfo[] =
             .price = 550,
             .pocket = POCKET_ITEMS,
             .sortType = ITEM_TYPE_FIELD_USE,
-        #endif
+        // #endif
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_EscapeRope,
         .flingPower = 30,
@@ -2622,9 +2622,9 @@ const struct Item gItemsInfo[] =
         .iconPalette = gItemIconPalette_BottleCap,
     },
 
-        [ITEM_PLAIN_BOTTLE_CAP] =
+    [ITEM_PLAIN_BOTTLE_CAP] =
     {
-        .name = _("Plain Bottle Cap"),
+        .name = ITEM_NAME("Plain Bottle Cap"),
         .price = 500,
         .description = COMPOUND_STRING(
             "A plain bottle\n"

@@ -8382,7 +8382,7 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageContext *ctx)
         modifier = uq4_12_multiply(modifier, uq4_12_add(UQ_4_12(1.0), PercentToUQ4_12(gSpecialStatuses[battlerAtk].gemParam)));
     if (gBattleMons[battlerAtk].volatiles.charge && moveType == TYPE_ELECTRIC)
         modifier = uq4_12_multiply(modifier, UQ_4_12(2.0));
-    if (gStatuses4[battlerAtk] & STATUS4_MERRY){
+    if (gBattleMons[battlerAtk].volatiles.merry){
     modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
     }
     if (GetMoveEffect(gChosenMove) == EFFECT_ME_FIRST)
@@ -9288,9 +9288,9 @@ static inline uq4_12_t GetDefenderAbilitiesModifier(struct DamageContext *ctx)
         }
         break;
     case ABILITY_ANTICIPATION:
-        if (gDisableStructs[battlerDef].anticipationActivated && typeEffectivenessModifier >= UQ_4_12(4.0))
+        if (gDisableStructs[ctx->battlerDef].anticipationActivated && ctx->typeEffectivenessModifier >= UQ_4_12(4.0))
             return uq4_12_multiply(UQ_4_12(0.75), UQ_4_12(0.75));
-        if (gDisableStructs[battlerDef].anticipationActivated && typeEffectivenessModifier >= UQ_4_12(2.0))
+        if (gDisableStructs[ctx->battlerDef].anticipationActivated && ctx->typeEffectivenessModifier >= UQ_4_12(2.0))
             return UQ_4_12(0.75);
         break;
     case ABILITY_FLUFFY:
@@ -11910,6 +11910,11 @@ u32 GetTotalAccuracy(u32 battlerAtk, u32 battlerDef, u32 move, u32 atkAbility, u
     if (HasWeatherEffect() && gBattleWeather & B_WEATHER_FOG)
         calc = (calc * 60) / 100; // modified by 3/5
 
+    //Assurance accuracy mod
+    if (calc < 100 && GetMoveEffect(move) == EFFECT_ASSURANCE && (gProtectStructs[battlerDef].physicalDmg != 0 || gProtectStructs[battlerDef].specialDmg != 0
+     || gProtectStructs[battlerDef].confusionSelfDmg  || gProtectStructs[battlerDef].monHurt)){
+        calc = 100;
+    }
     return calc;
 }
 

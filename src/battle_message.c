@@ -194,7 +194,7 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_PLAYERWHITEOUT]                       = COMPOUND_STRING("You have no more Pokémon that can fight!\p"),
     [STRINGID_PLAYERWHITEOUT2_WILD]                 = COMPOUND_STRING("You panicked and dropped ¥{B_BUFF1}…"),
     [STRINGID_PLAYERWHITEOUT2_TRAINER]              = COMPOUND_STRING("You gave ¥{B_BUFF1} to the winner…"),
-    [STRINGID_PLAYERWHITEOUT3]                      = COMPOUND_STRING("You were overwhelmed by your defeat!"),
+    [STRINGID_PLAYERWHITEOUT3]                      = COMPOUND_STRING("Challenger has lost the battle!{PAUSE_UNTIL_PRESS}"),
     [STRINGID_PREVENTSESCAPE]                       = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX} prevents escape with {B_SCR_ABILITY}!\p"),
     [STRINGID_HITXTIMES]                            = COMPOUND_STRING("The Pokémon was hit {B_BUFF1} time(s)!"), //SV has dynamic plural here
     [STRINGID_PKMNFELLASLEEP]                       = COMPOUND_STRING("{B_EFF_NAME_WITH_PREFIX} fell asleep!"),
@@ -902,7 +902,6 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_QUESTIONFORFEITBATTLE]                = COMPOUND_STRING("Would you like to give up on this battle and quit now? Quitting the battle is the same as losing the battle."),
     [STRINGID_POWERCONSTRUCTPRESENCEOFMANY]         = COMPOUND_STRING("You sense the presence of many!"),
     [STRINGID_POWERCONSTRUCTTRANSFORM]              = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} transformed into its Complete Forme!"),
-    [STRINGID_PLAYERWHITEOUT3]                      = COMPOUND_STRING("Challenger has lost the battle!{PAUSE_UNTIL_PRESS}"),
     [STRINGID_ILLUMINATING]                         = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} became the center of attention!"),
     [STRINGID_MERRY]                                = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX}'s cheerfulness upped its \n power, accuracy, and speed!"),
     [STRINGID_CAUGHTMONEXCEEEDSPOINTS]              = COMPOUND_STRING("{B_DEF_NAME} exceeds the team points cap."),
@@ -3629,24 +3628,6 @@ static const struct TrainerSlide sTrainerSlides[DIFFICULTY_COUNT][TRAINERS_COUNT
     },
 };
 
-static u32 GetEnemyMonCount(u32 firstId, u32 lastId, bool32 onlyAlive)
-{
-    u32 i, count = 0;
-
-    for (i = firstId; i < lastId; i++)
-    {
-        u32 species = GetMonData(&gEnemyParty[i], MON_DATA_SPECIES_OR_EGG, NULL);
-        if (species != SPECIES_NONE
-            && species != SPECIES_EGG
-            && (!onlyAlive || GetMonData(&gEnemyParty[i], MON_DATA_HP, NULL)))
-            count++;
-    }
-
-    return count;
-}
-
-
-
 u32 BattlerHPPercentage(u32 battler, u32 operation, u32 threshold)
 {
     switch (operation)
@@ -3666,4 +3647,3 @@ u32 BattlerHPPercentage(u32 battler, u32 operation, u32 threshold)
         return gBattleMons[battler].hp != (gBattleMons[battler].maxHP / threshold);
     }
 }
-
