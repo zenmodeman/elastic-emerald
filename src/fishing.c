@@ -1,19 +1,25 @@
 #include "global.h"
 #include "main.h"
+#include "event_data.h"
 #include "event_object_movement.h"
 #include "fieldmap.h"
 #include "field_effect_helpers.h"
 #include "field_player_avatar.h"
+#include "item.h"
 #include "menu.h"
 #include "metatile_behavior.h"
 #include "random.h"
 #include "script.h"
 #include "strings.h"
+#include "string_util.h"
 #include "task.h"
 #include "text.h"
 #include "tv.h"
 #include "wild_encounter.h"
 #include "config/fishing.h"
+#include "constants/flags.h"
+#include "constants/items.h"
+#include "constants/vars.h"
 
 static void Task_Fishing(u8);
 static bool32 Fishing_Init(struct Task *);
@@ -37,6 +43,8 @@ static bool32 Fishing_EndNoMon(struct Task *);
 static void AlignFishingAnimationFrames(void);
 static bool32 DoesFishingMinigameAllowCancel(void);
 static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
+static bool32 Fishing_CanPlayerGetSuctionCupsItem(void);
+static void Fishing_GiveItem(void);
 static bool32 Fishing_RollForBite(u32, bool32);
 static u32 CalculateFishingBiteOdds(u32, bool32);
 static u32 CalculateFishingFollowerBoost(void);
@@ -409,6 +417,8 @@ static bool32 Fishing_NotEvenNibble(struct Task *task)
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingNoCatchDirectionAnimNum(GetPlayerFacingDirection()));
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
     AddTextPrinterParameterized2(0, FONT_NORMAL, gText_NotEvenANibble, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+    if (Fishing_CanPlayerGetSuctionCupsItem())
+        Fishing_GiveItem();
     task->tStep = FISHING_NO_MON;
     return TRUE;
 }
@@ -487,6 +497,51 @@ static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
     ability = GetMonAbility(&gPlayerParty[0]);
 
     return (ability == ABILITY_SUCTION_CUPS || ability == ABILITY_STICKY_HOLD);
+}
+
+static bool32 Fishing_CanPlayerGetSuctionCupsItem(void)
+{
+    enum Ability ability;
+
+    if (GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
+        return FALSE;
+
+    ability = GetMonAbility(&gPlayerParty[0]);
+    if (ability != ABILITY_SUCTION_CUPS)
+        return FALSE;
+
+    if (VarGet(VAR_SUCTION_CUPS) == 2 && !FlagGet(FLAG_BADGE02_GET))
+        return FALSE;
+
+    if (VarGet(VAR_SUCTION_CUPS) > 2)
+    {
+        if (FlagGet(FLAG_RESOURCE_MODE))
+            return FALSE;
+        if ((Random() % 100) > 30)
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
+static void Fishing_GiveItem(void)
+{
+    u16 item;
+    const u16 possibleItems[] = {ITEM_PLAIN_BOTTLE_CAP, ITEM_BOTTLE_CAP, ITEM_GOLD_BOTTLE_CAP};
+    u8 numItems = ARRAY_COUNT(possibleItems);
+    u16 numberofItemsPickedUp = VarGet(VAR_SUCTION_CUPS);
+
+    if (numberofItemsPickedUp < numItems)
+        item = possibleItems[numberofItemsPickedUp];
+    else
+        item = possibleItems[Random() % numItems];
+
+    CopyItemName(item, gStringVar1);
+    StringExpandPlaceholders(gStringVar4, gText_FoundItemWhileFishing);
+
+    AddBagItem(item, 1);
+    VarSet(VAR_SUCTION_CUPS, numberofItemsPickedUp + 1);
+    AddTextPrinterParameterized2(0, FONT_NORMAL, gStringVar4, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
 }
 
 static bool32 Fishing_RollForBite(u32 rod, bool32 isStickyHold)
