@@ -335,10 +335,9 @@ static void ApplyDaycareExperience(struct Pokemon *mon)
     CalculateMonStats(mon);
 }
 
-//TO REVISIT: need to test whether HARD_CAP is more appropriate than CANDY_CAP 
 static u32 GetExpAtLevelCap(struct Pokemon *mon)
 {
-    return gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES)].growthRate][GetCurrentLevelCap(HARD_CAP)];
+    return gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES)].growthRate][GetCurrentLevelCap(CANDY_CAP)];
 }
 
 static u16 TakeSelectedPokemonFromDaycare(struct DaycareMon *daycareMon)

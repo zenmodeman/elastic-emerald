@@ -42,9 +42,9 @@
 
 // The following options are enough to have a basic/smart trainer. Any other addtion could make the trainer worse/better depending on the flag
 #define AI_FLAG_BASIC_TRAINER         (AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY)
-//My Smart Trainer adds Predict Incoming Mon but removes Omniscient 
-//I'm also opting to not use AI_FLAG_PP_STALL_PREVENTION for now based on my alternative approachto switch prediction
-#define AI_FLAG_SMART_TRAINER         (AI_FLAG_BASIC_TRAINER | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_PREDICT_INCOMING_MON | AI_FLAG_SMART_TERA)
+//My Smart Trainer adds prediction but removes Omniscient.
+//I'm also opting to not use AI_FLAG_PP_STALL_PREVENTION for now based on my alternative approach to switch prediction.
+#define AI_FLAG_SMART_TRAINER         (AI_FLAG_BASIC_TRAINER | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_PREDICT_INCOMING_MON | AI_FLAG_PREDICT_MOVE | AI_FLAG_SMART_TERA)
 #define AI_FLAG_PREDICTION            (AI_FLAG_PREDICT_SWITCH | AI_FLAG_PREDICT_INCOMING_MON | AI_FLAG_PREDICT_MOVE)
 #define AI_FLAG_ASSUMPTIONS           (AI_FLAG_ASSUME_STAB | AI_FLAG_ASSUME_STATUS_MOVES | AI_FLAG_WEIGH_ABILITY_PREDICTION)
 
