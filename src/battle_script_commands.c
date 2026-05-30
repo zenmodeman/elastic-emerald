@@ -72,6 +72,8 @@
 #include "load_save.h"
 #include "test/test_runner_battle.h"
 
+extern u32 gExcessTierPoints;
+
 // table to avoid ugly powing on gba (courtesy of doesnt)
 // this returns (i^2.5)/4
 // the quarters cancel so no need to re-quadruple them in actual calculation
@@ -578,6 +580,7 @@ static void Cmd_settypetoenvironment(void);
 static void Cmd_pursuitdoubles(void);
 static void Cmd_snatchsetbattlers(void);
 static void Cmd_removescreens(void);
+static u32 GetMonotypeCatchRate(u16 species);
 static void Cmd_handleballthrow(void);
 static void Cmd_givecaughtmon(void);
 static void Cmd_trysetcaughtmondexflags(void);
@@ -13525,6 +13528,19 @@ u8 GetCatchingBattler(void)
         return GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
 }
 
+static u32 GetMonotypeCatchRate(u16 species)
+{
+    u32 minMonotypeCatchRate = 75;
+
+    switch (species)
+    {
+    case SPECIES_DREEPY:
+        return minMonotypeCatchRate;
+    default:
+        return max(gSpeciesInfo[species].catchRate, minMonotypeCatchRate);
+    }
+}
+
 static void Cmd_handleballthrow(void)
 {
     CMD_ARGS();
@@ -13558,6 +13574,8 @@ static void Cmd_handleballthrow(void)
         gBallToDisplay = gLastThrownBall = gLastUsedItem;
         if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
             catchRate = gBattleStruct->safariCatchFactor * 1275 / 100;
+        else if (GetMonoType() != TYPE_NONE)
+            catchRate = GetMonotypeCatchRate(gBattleMons[gBattlerTarget].species);
         else
             catchRate = gSpeciesInfo[gBattleMons[gBattlerTarget].species].catchRate;
 
@@ -13738,6 +13756,9 @@ static void Cmd_handleballthrow(void)
             * (gBattleMons[gBattlerTarget].maxHP * 3 - gBattleMons[gBattlerTarget].hp * 2)
             / (3 * gBattleMons[gBattlerTarget].maxHP);
 
+        if (gBattleMons[gBattlerTarget].level < 13)
+            odds = (odds * (36 - 2 * gBattleMons[gBattlerTarget].level)) / 10;
+
         if (gBattleMons[gBattlerTarget].status1 & STATUS1_INCAPACITATED)
             odds *= 2;
         if (gBattleMons[gBattlerTarget].status1 & STATUS1_CAN_MOVE)
@@ -13868,7 +13889,7 @@ static void Cmd_givecaughtmon(void)
     switch (state)
     {
     case GIVECAUGHTMON_CHECK_PARTY_SIZE:
-        if (CalculatePlayerPartyCount() == PARTY_SIZE && B_CATCH_SWAP_INTO_PARTY >= GEN_7)
+        if (CalculatePlayerPartyCount() == PARTY_SIZE && B_CATCH_SWAP_INTO_PARTY >= GEN_7 && !FlagGet(FLAG_TIERED))
         {
             PrepareStringBattle(STRINGID_SENDCAUGHTMONPARTYORBOX, gBattlerAttacker);
             gBattleCommunication[MSG_DISPLAY] = 1;
@@ -13877,6 +13898,18 @@ static void Cmd_givecaughtmon(void)
         else
         {
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_NO_MESSSAGE_SKIP;
+
+            if (FlagGet(FLAG_TIERED) && CalculatePlayerPartyCount() < PARTY_SIZE)
+            {
+                u32 resultantTierPoints = CountPartyTierPoints();
+                resultantTierPoints += GetMonTierPoints(GetBattlerMon(GetCatchingBattler()));
+                if (resultantTierPoints > TIER_POINTS_CAP)
+                {
+                    PrepareStringBattle(STRINGID_CAUGHTMONEXCEEEDSPOINTS, gBattlerAttacker);
+                    gBattleCommunication[MSG_DISPLAY] = 1;
+                }
+            }
+
             gBattleCommunication[MULTIUSE_STATE] = GIVECAUGHTMON_GIVE_AND_SHOW_MSG;
         }
         break;
@@ -14205,10 +14238,23 @@ static void Cmd_trygivecaughtmonnick(void)
     case 2:
         if (!gPaletteFade.active)
         {
+            u32 resultantTierPoints = 0;
             struct Pokemon *caughtMon = GetBattlerMon(gBattlerTarget);
+
+            if (FlagGet(FLAG_TIERED))
+            {
+                gExcessTierPoints = 0;
+                resultantTierPoints += CountPartyTierPoints();
+                resultantTierPoints += GetMonTierPoints(caughtMon);
+                if (resultantTierPoints > TIER_POINTS_CAP)
+                    gExcessTierPoints = resultantTierPoints - TIER_POINTS_CAP;
+            }
+
             GetMonData(caughtMon, MON_DATA_NICKNAME, gBattleStruct->caughtMonNick);
             FreeAllWindowBuffers();
-            MainCallback callback = CalculatePlayerPartyCount() == PARTY_SIZE ? ReshowBlankBattleScreenAfterMenu : BattleMainCB2;
+            MainCallback callback = (CalculatePlayerPartyCount() == PARTY_SIZE || (FlagGet(FLAG_TIERED) && gExcessTierPoints > 0))
+                                  ? ReshowBlankBattleScreenAfterMenu
+                                  : BattleMainCB2;
 
             DoNamingScreen(NAMING_SCREEN_CAUGHT_MON, gBattleStruct->caughtMonNick,
                            GetMonData(caughtMon, MON_DATA_SPECIES),
@@ -14571,7 +14617,6 @@ static bool32 CriticalCapture(u32 odds)
 {
     u32 numCaught;
     u32 totalDexCount;
-    u32 charmBoost = 1;
 
     if (B_CRITICAL_CAPTURE == FALSE)
         return FALSE;
@@ -14581,22 +14626,22 @@ static bool32 CriticalCapture(u32 odds)
     else
         totalDexCount = NATIONAL_DEX_COUNT;
 
-    if (CheckBagHasItem(ITEM_CATCHING_CHARM, 1))
-        charmBoost = (100 + B_CATCHING_CHARM_BOOST) / 100;
-
     numCaught = GetNationalPokedexCount(FLAG_GET_CAUGHT);
     if (numCaught > (totalDexCount * 600) / 650)
-        odds = (odds * (250 * charmBoost)) / 100;
+        odds = (odds * 250) / 100;
     else if (numCaught > (totalDexCount * 450) / 650)
-        odds = (odds * (200 * charmBoost)) / 100;
+        odds = (odds * 200) / 100;
     else if (numCaught > (totalDexCount * 300) / 650)
-        odds = (odds * (150 * charmBoost)) / 100;
+        odds = (odds * 150) / 100;
     else if (numCaught > (totalDexCount * 150) / 650)
-        odds = (odds * (100 * charmBoost)) / 100;
+        odds = (odds * 100) / 100;
     else if (numCaught > (totalDexCount * 30) / 650)
-        odds = (odds * (50 * charmBoost)) / 100;
+        odds = (odds * 50) / 100;
     else
         return FALSE;
+
+    if (CheckBagHasItem(ITEM_CATCHING_CHARM, 1))
+        odds = (odds * (100 + B_CATCHING_CHARM_BOOST)) / 100;
 
     if (odds > 255)
         odds = 255;
