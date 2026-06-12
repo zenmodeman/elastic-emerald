@@ -941,5 +941,7 @@ u32 CountPartyTierPoints();
 bool8 DepositPartyMonToPC_Auto(u8 partyId);
 u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies);
 u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum);
+bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon);
+bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon);
 
 #endif // GUARD_POKEMON_H

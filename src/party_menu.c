@@ -1135,7 +1135,7 @@ static void DisplayPartyPokemonDataForRelearner(u8 slot)
 
 static void DisplayPartyPokemonDataForCenterTutor(u8 slot)
 {
-    if (GetNumberOfCenterTutorableMoves(&gPlayerParty[slot]) == 0)
+    if (!CanMonUseCenterTutorWithCurrentResources(&gPlayerParty[slot]))
         DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NOT_ABLE_2);
     else
         DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_ABLE_2);
@@ -8171,6 +8171,8 @@ static void CB2_ChooseMonForCenterTutor(void)
     gSpecialVar_0x8004 = GetCursorSelectionMonId();
     if (gSpecialVar_0x8004 >= PARTY_SIZE)
         gSpecialVar_0x8004 = PARTY_NOTHING_CHOSEN;
+    else if (!CanMonUseCenterTutorWithCurrentResources(&gPlayerParty[gSpecialVar_0x8004]))
+        gSpecialVar_0x8005 = 0;
     else
         gSpecialVar_0x8005 = GetNumberOfCenterTutorableMoves(&gPlayerParty[gSpecialVar_0x8004]);
     gFieldCallback2 = CB2_FadeFromPartyMenu;

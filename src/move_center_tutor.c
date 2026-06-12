@@ -15,6 +15,7 @@
 #include "menu_specialized.h"
 #include "overworld.h"
 #include "palette.h"
+#include "pokemon.h"
 #include "pokemon_summary_screen.h"
 #include "script.h"
 #include "sound.h"
@@ -361,6 +362,7 @@ static s32 GetCurrentSelectedMove(void);
 static void FreeMoveTutor(void);
 static void RemoveScrollArrows(void);
 static void HideHeartSpritesAndShowTeachMoveText(bool8);
+static void TryDepleteCenterTutorPoint(void);
 
 static void VBlankCB_MoveTutor(void)
 {
@@ -522,13 +524,9 @@ static void DoMoveTutorMain(void)
             {
                 if (GiveMoveToMon(&gPlayerParty[sMoveTutorStruct->partyMon], GetCurrentSelectedMove()) != MON_HAS_MAX_MOVES)
                 {
-                    u8 remainingTutor = VarGet(VAR_REMAINING_TUTOR);
-
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
                     gSpecialVar_0x8004 = TRUE;
-                if (remainingTutor > 0 && VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
-                    VarSet(VAR_REMAINING_TUTOR, remainingTutor -1);
-                }                     
+                    TryDepleteCenterTutorPoint();
                     sMoveTutorStruct->state = MENU_STATE_PRINT_TEXT_THEN_FANFARE;
                 }
                 else
@@ -719,7 +717,6 @@ static void DoMoveTutorMain(void)
             else
             {
                 u16 moveId = GetMonData(&gPlayerParty[sMoveTutorStruct->partyMon], MON_DATA_MOVE1 + sMoveTutorStruct->moveSlot);
-                u8 remainingTutor = VarGet(VAR_REMAINING_TUTOR);
                 StringCopy(gStringVar3, GetMoveName(moveId));
                 RemoveMonPPBonus(&gPlayerParty[sMoveTutorStruct->partyMon], sMoveTutorStruct->moveSlot);
                 SetMonMoveSlot(&gPlayerParty[sMoveTutorStruct->partyMon], GetCurrentSelectedMove(), sMoveTutorStruct->moveSlot);
@@ -728,9 +725,7 @@ static void DoMoveTutorMain(void)
                 sMoveTutorStruct->state = MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE;
 
                 
-                if (remainingTutor > 0 && VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
-                    VarSet(VAR_REMAINING_TUTOR, remainingTutor -1);
-                }
+                TryDepleteCenterTutorPoint();
                 gSpecialVar_0x8004 = TRUE;
             }
         }
@@ -774,6 +769,19 @@ static void FreeMoveTutor(void)
     FREE_AND_SET_NULL(sMoveTutorStruct);
     ResetSpriteData();
     FreeAllSpritePalettes();
+}
+
+static void TryDepleteCenterTutorPoint(void)
+{
+    u8 remainingTutor = VarGet(VAR_REMAINING_TUTOR);
+
+    if (FlagGet(FLAG_RESOURCE_MODE)
+     && remainingTutor > 0
+     && VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER
+     && !IsMonFreeCenterTutorEligible(&gPlayerParty[sMoveTutorStruct->partyMon]))
+    {
+        VarSet(VAR_REMAINING_TUTOR, remainingTutor - 1);
+    }
 }
 
 // Note: The hearts are already made invisible by MoveCenterTutorShowHideHearts,

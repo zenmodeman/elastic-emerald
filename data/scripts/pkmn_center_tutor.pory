@@ -15,7 +15,13 @@ script Common_EventScript_PkmnCenterTutor{
 
 script CenterMoveTutor{
     if (flag(FLAG_RESOURCE_MODE) && var(VAR_REMAINING_TUTOR) == 0){
-        msgbox(format("Sorry, you don't have any tutor points. You can get more points by acquiring gym badges."))
+        msgbox(format("You don't have any tutor points. Only certain Pokemon that the League has made exceptions for can be tutored."))
+        msgbox(format("Are you interested in teaching a move?"), MSGBOX_YESNO)
+        if (var(VAR_RESULT) == 1){
+            call(ChooseMoveTutorMon)
+            waitstate
+            msgbox(format("Have a nice day."))
+        }
     }elif(flag(FLAG_RESOURCE_MODE) && var(VAR_REMAINING_TUTOR) > 0) {
         buffernumberstring(STR_VAR_1, VAR_REMAINING_TUTOR)
         msgbox(format("You have {STR_VAR_1} tutor points. Are you interested in teaching a move?"), MSGBOX_YESNO)

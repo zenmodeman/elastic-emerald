@@ -3643,6 +3643,8 @@ static void BufferMonTrainerMemo(void)
     DynamicPlaceholderTextUtil_Reset();
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(0, sMemoNatureTextColor);
     DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, sMemoMiscTextColor);
+    ConvertIntToDecimalStringN(gStringVar3, GetMonTierPoints(&sMonSummaryScreen->currentMon), STR_CONV_MODE_LEFT_ALIGN, 2);
+    DynamicPlaceholderTextUtil_SetPlaceholderPtr(6, gStringVar3);
     BufferNatureString();
 
     if (InBattleFactory() == TRUE || InSlateportBattleTent() == TRUE || IsInGamePartnerMon() == TRUE)

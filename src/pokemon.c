@@ -10134,6 +10134,82 @@ u8 GetMonTierPoints(struct Pokemon *mon){
     }
 }
 
+static bool32 IsFreeCenterTutorTierException(u16 species)
+{
+    switch (species)
+    {
+    case SPECIES_BEEDRILL:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+static bool32 DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(struct Pokemon *mon, u16 species)
+{
+    u32 i;
+    u8 abilityNum;
+    struct Pokemon tempMon = *mon;
+    const struct Evolution *evolutions;
+
+    SetMonData(&tempMon, MON_DATA_SPECIES, &species);
+
+    for (abilityNum = 0; abilityNum < NUM_ABILITY_SLOTS; abilityNum++)
+    {
+        if (GetSpeciesAbility(species, abilityNum) == ABILITY_NONE)
+            continue;
+
+        SetMonData(&tempMon, MON_DATA_ABILITY_NUM, &abilityNum);
+        if (GetMonTierPoints(&tempMon) > 1)
+            return TRUE;
+    }
+
+    evolutions = GetSpeciesEvolutions(species);
+    if (evolutions == NULL)
+        return FALSE;
+
+    for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+    {
+        u16 targetSpecies = SanitizeSpeciesId(evolutions[i].targetSpecies);
+
+        if (targetSpecies == SPECIES_NONE)
+            continue;
+
+        if (DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(mon, targetSpecies))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon)
+{
+    u16 species;
+
+    if (mon == NULL || GetMonData(mon, MON_DATA_IS_EGG))
+        return FALSE;
+
+    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    if (species == SPECIES_NONE || GetMonTierPoints(mon) > 1)
+        return FALSE;
+
+    if (IsFreeCenterTutorTierException(species))
+        return FALSE;
+
+    return !DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(mon, species);
+}
+
+bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon)
+{
+    if (GetNumberOfCenterTutorableMoves(mon) == 0)
+        return FALSE;
+
+    if (!FlagGet(FLAG_RESOURCE_MODE) || VarGet(VAR_TEMP_9) != MOVE_TUTOR_CENTER || VarGet(VAR_REMAINING_TUTOR) > 0)
+        return TRUE;
+
+    return IsMonFreeCenterTutorEligible(mon);
+}
+
 //Get the points of the party other than the mon to replace.
 u32 CountPartyTierPoints(){
     u16 i = 0;
