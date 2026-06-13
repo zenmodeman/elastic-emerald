@@ -1462,7 +1462,7 @@ const struct Item gItemsInfo[] =
     [ITEM_HEALTH_FEATHER] =
     {
         .name = ITEM_NAME("Health Feather"),
-        .price = (I_PRICE >= GEN_7) ? 300 : 3000,
+        .price = 400,
         .description = sHealthFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_FEATHER,
@@ -1477,7 +1477,7 @@ const struct Item gItemsInfo[] =
     [ITEM_MUSCLE_FEATHER] =
     {
         .name = ITEM_NAME("Muscle Feather"),
-        .price = (I_PRICE >= GEN_7) ? 300 : 3000,
+        .price = 400,
         .description = sMuscleFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_FEATHER,
@@ -1492,7 +1492,7 @@ const struct Item gItemsInfo[] =
     [ITEM_RESIST_FEATHER] =
     {
         .name = ITEM_NAME("Resist Feather"),
-        .price = (I_PRICE >= GEN_7) ? 300 : 3000,
+        .price = 400,
         .description = sResistFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_FEATHER,
@@ -1507,7 +1507,7 @@ const struct Item gItemsInfo[] =
     [ITEM_GENIUS_FEATHER] =
     {
         .name = ITEM_NAME("Genius Feather"),
-        .price = (I_PRICE >= GEN_7) ? 300 : 3000,
+        .price = 400,
         .description = sGeniusFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_FEATHER,
@@ -1522,7 +1522,7 @@ const struct Item gItemsInfo[] =
     [ITEM_CLEVER_FEATHER] =
     {
         .name = ITEM_NAME("Clever Feather"),
-        .price = (I_PRICE >= GEN_7) ? 300 : 3000,
+        .price = 400,
         .description = sCleverFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_FEATHER,
@@ -1537,7 +1537,7 @@ const struct Item gItemsInfo[] =
     [ITEM_SWIFT_FEATHER] =
     {
         .name = ITEM_NAME("Swift Feather"),
-        .price = (I_PRICE >= GEN_7) ? 300 : 3000,
+        .price = 400,
         .description = sSwiftFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_FEATHER,
@@ -14665,7 +14665,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Health Mochi"),
         .pluralName = ITEM_PLURAL_NAME("Health Mochi"),
-        .price = 500,
+        .price = 2000,
         .description = sHealthFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_MOCHI,
@@ -14681,7 +14681,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Muscle Mochi"),
         .pluralName = ITEM_PLURAL_NAME("Muscle Mochi"),
-        .price = 500,
+        .price = 2000,
         .description = sMuscleFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_MOCHI,
@@ -14697,7 +14697,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Resist Mochi"),
         .pluralName = ITEM_PLURAL_NAME("Resist Mochi"),
-        .price = 500,
+        .price = 2000,
         .description = sResistFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_MOCHI,
@@ -14713,7 +14713,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Genius Mochi"),
         .pluralName = ITEM_PLURAL_NAME("Genius Mochi"),
-        .price = 500,
+        .price = 2000,
         .description = sGeniusFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_MOCHI,
@@ -14729,7 +14729,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Clever Mochi"),
         .pluralName = ITEM_PLURAL_NAME("Clever Mochi"),
-        .price = 500,
+        .price = 2000,
         .description = sCleverFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_MOCHI,
@@ -14745,7 +14745,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Swift Mochi"),
         .pluralName = ITEM_PLURAL_NAME("Swift Mochi"),
-        .price = 500,
+        .price = 2000,
         .description = sSwiftFeatherDesc,
         .pocket = POCKET_ITEMS,
         .sortType = ITEM_TYPE_STAT_BOOST_MOCHI,
