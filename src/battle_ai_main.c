@@ -946,8 +946,14 @@ void BattleAI_DoAIProcessing_PredictedSwitchin(struct AiThinkingStruct *aiThink,
     u8 moveAccuracySwitchin[MAX_MON_MOVES];
 
     struct Pokemon *party = GetBattlerParty(battlerDef);
-    struct BattlePokemon *savedBattleMons = AllocSaveBattleMons();
+    struct BattlePokemon *savedBattleMons;
     u32 moveIndex;
+    u32 predictedSwitchinId = aiData->mostSuitableMonId[battlerDef];
+
+    if (predictedSwitchinId >= PARTY_SIZE)
+        return;
+
+    savedBattleMons = AllocSaveBattleMons();
 
     // Store battler moves data to save time over recalculating it
     for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
@@ -958,7 +964,7 @@ void BattleAI_DoAIProcessing_PredictedSwitchin(struct AiThinkingStruct *aiThink,
     }
 
     // Get battler and move data for predicted switchin
-    PokemonToBattleMon(&party[aiData->mostSuitableMonId[battlerDef]], &switchinCandidate);
+    PokemonToBattleMon(&party[predictedSwitchinId], &switchinCandidate);
     gBattleMons[battlerDef] = switchinCandidate;
     SetBattlerAiData(battlerDef, aiData);
     CalcBattlerAiMovesData(aiData, battlerAtk, battlerDef, AI_GetWeather());

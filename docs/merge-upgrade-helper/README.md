@@ -134,6 +134,7 @@ Primary anchors:
 
 - `src/pokemon.c`: `getCuratedOrRandomTeraType`, `GetTeraTypeFromPersonality`, `MON_DATA_TERA_TYPE` handling.
 - `include/pokemon.h`: `teraType` substruct field, `forceTeraType`, Tera prototypes.
+- `include/config/battle.h`: `B_FLAG_TERA_ORB_CHARGED` and `B_FLAG_TERA_ORB_NO_COST` are intentionally both `FLAG_TERA_CHARGED`.
 - `src/battle_terastal.c`: `IsRestrictedModeTeraBanned`, `CanTerastallize`, `GetBattlerTeraType`.
 - `src/script_pokemon_util.c`: script `givemon` Tera parameter handling.
 - `src/data/trainers.party`: trainer Tera types and intended Terastallization.
@@ -146,6 +147,7 @@ Audit checks:
 - Monotype runs may bypass curated assignment only when the random type is compatible or Stellar.
 - Restricted Mode bans should remain tied to tier points unless deliberately redesigned.
 - AI-side Tera decisions should mirror player legality and not assume the player side can always Tera.
+- Tera Orb charge is intentionally no-cost in Elastic Emerald. Do not report `B_FLAG_TERA_ORB_CHARGED` and `B_FLAG_TERA_ORB_NO_COST` sharing `FLAG_TERA_CHARGED` as a breakage unless the design changes.
 
 ## Center Tutor And Tech Tutor Systems
 
@@ -211,7 +213,7 @@ Known custom or materially modified behaviors:
 Audit checks:
 
 - For every custom move effect, verify: move constant, effect enum, battle script label, command implementation, message string, move data, AI scoring, and test references.
-- Drain Douse is especially sensitive to move-end refactors; verify both runtime healing and AI/test expectations.
+- Drain Douse is especially sensitive to move-end refactors; verify both runtime healing and AI/test expectations. `BS_SetDrainDouse` only sets the volatile, so `MOVEEND_ABSORB` must also consume `gBattleMons[gBattlerAttacker].volatiles.drainDouse` and call `BattleScript_DrainDouseHeal` or `BattleScript__DrainDouseOoze`.
 - Binding logic should not blindly add residual damage when Magic Guard, low action count, or tempo loss makes it wrong.
 - If upstream changes battle script command parameter conventions, audit every custom `try*`, `do*`, and move-end command added locally.
 
@@ -287,6 +289,7 @@ Audit checks:
 
 - Search for `AI_FLAG_SMART_TRAINER`, `AI_FLAG_PREDICT_SWITCH`, `AI_FLAG_SMART_TERA`, `GetMostSuitableMonToSwitchInto`, `ShouldSwitch`, `AI_CalcDamage`, and `ApplySimulatedStatChanges`.
 - Be suspicious of boolean rewrites in AI helper arguments, especially battler indexes and side indexes.
+- Predicted-switch logic may use `PARTY_SIZE` as a generic switch sentinel. Guard `gAiLogicData->mostSuitableMonId[...]` before indexing a party array, and scan for accidental `if (...);` constructs around predicted-switch checks.
 - Any runtime battle mechanic change should have an AI mirror if the AI scores or predicts it.
 - `src/battle_ai_switch_items.c`, `src/battle_ai_util.c`, and `src/battle_util.c` often need coordinated updates.
 - Existing dirty worktree edits in these files may be user changes; inspect before editing.

@@ -6308,6 +6308,43 @@ static void Cmd_moveend(void)
                 gBattleScripting.moveendState++;
                 break;
             }
+            if (moveEffect != EFFECT_FINAL_GAMBIT
+             && gBattleMons[gBattlerAttacker].volatiles.drainDouse
+             && !gBattleMons[gBattlerAttacker].volatiles.healBlock
+             && gBattleStruct->moveDamage[gBattlerTarget] > 0
+             && IsBattlerAlive(gBattlerAttacker))
+            {
+                u32 drainDousePercent;
+                s32 healAmount;
+
+                if (BattlerHasType(gBattlerTarget, TYPE_POISON))
+                    drainDousePercent = 67;
+                else if (BattlerHasType(gBattlerTarget, TYPE_WATER))
+                    drainDousePercent = 50;
+                else
+                    drainDousePercent = 33;
+
+                healAmount = gBattleStruct->moveDamage[gBattlerTarget] * drainDousePercent / 100;
+                if (moveEffect == EFFECT_ABSORB || moveEffect == EFFECT_DREAM_EATER)
+                    healAmount += gBattleStruct->moveDamage[gBattlerTarget] * GetMoveAbsorbPercentage(gCurrentMove) / 100;
+
+                healAmount = GetDrainedBigRootHp(gBattlerAttacker, healAmount);
+                effect = TRUE;
+                if (GetBattlerAbility(gBattlerTarget) == ABILITY_LIQUID_OOZE)
+                {
+                    SetPassiveDamageAmount(gBattlerAttacker, healAmount);
+                    gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ABSORB_OOZE;
+                    BattleScriptCall(BattleScript__DrainDouseOoze);
+                }
+                else
+                {
+                    SetHealAmount(gBattlerAttacker, healAmount);
+                    gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_DRAIN_DOUSED;
+                    BattleScriptCall(BattleScript_DrainDouseHeal);
+                }
+                gBattleScripting.moveendState++;
+                break;
+            }
             switch (moveEffect)
             {
             case EFFECT_ABSORB:

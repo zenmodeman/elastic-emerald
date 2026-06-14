@@ -5833,14 +5833,19 @@ static enum AIScore IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, 
     if (IsBattlerPredictedToSwitch(battlerDef))
     {
         struct Pokemon *playerParty = GetBattlerParty(battlerDef);
+        u32 predictedSwitchinId = gAiLogicData->mostSuitableMonId[battlerDef];
+
         // If expected switchin outspeeds and has Encore, don't increase
-        for (i = 0; i < MAX_MON_MOVES; i++)
+        if (predictedSwitchinId < PARTY_SIZE)
         {
-            if (GetMoveEffect(GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_MOVE1 + i, NULL)) == EFFECT_ENCORE
-                && GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_PP1 + i, NULL) > 0);
+            for (i = 0; i < MAX_MON_MOVES; i++)
             {
-                if (GetMonData(&playerParty[gAiLogicData->mostSuitableMonId[battlerDef]], MON_DATA_SPEED, NULL) > gBattleMons[battlerAtk].speed)
-                    return NO_INCREASE;
+                if (GetMoveEffect(GetMonData(&playerParty[predictedSwitchinId], MON_DATA_MOVE1 + i, NULL)) == EFFECT_ENCORE
+                 && GetMonData(&playerParty[predictedSwitchinId], MON_DATA_PP1 + i, NULL) > 0)
+                {
+                    if (GetMonData(&playerParty[predictedSwitchinId], MON_DATA_SPEED, NULL) > gBattleMons[battlerAtk].speed)
+                        return NO_INCREASE;
+                }
             }
         }
         // Otherwise if predicting switch, stat increases are great momentum
