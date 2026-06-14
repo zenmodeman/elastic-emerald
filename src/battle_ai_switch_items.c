@@ -235,7 +235,7 @@ static bool32 AI_DoesChoiceEffectBlockMove(u32 battler, u32 move)
 {
     // Choice locked into something else
     if (gAiLogicData->lastUsedMove[battler] != MOVE_NONE && gAiLogicData->lastUsedMove[battler] != move
-    && (IsHoldEffectChoice(GetBattlerHoldEffect(battler) && IsBattlerItemEnabled(battler))
+    && ((IsBattlerItemEnabled(battler) && IsHoldEffectChoice(GetBattlerHoldEffect(battler)))
         || gBattleMons[battler].ability == ABILITY_GORILLA_TACTICS))
         return TRUE;
     return FALSE;
@@ -1455,7 +1455,7 @@ bool32 ShouldSwitch(u32 battler)
         }
 
         //Temporary inject last landed move for FindMonWithFlagsAndSuperEffective
-        storedMove = gLastLandedMoves[aiBattler];
+        storedMove = gLastLandedMoves[battler];
         gLastLandedMoves[battler] = aiBestDmgMove;
         DEBUG_PREDICT("Testing immunity logic - injected move: %d (stored: %d)", aiBestDmgMove, storedMove);
         //Note that in addition to the 50% here, there's also the percentage value of gAiLogicData->predictingSwitch, with PREDICT_SWITCH_CHANCE (e.g. 75%)
