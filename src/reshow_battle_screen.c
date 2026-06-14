@@ -237,7 +237,7 @@ static void CB2_ReshowBlankBattleScreenAfterMenu(void)
             gBattleScripting.reshowMainState--;
         break;
     case 10:
-        if (gBattleScripting.monCaught) 
+        if (gBattleScripting.monCaught)
             CreateCaughtMonSprite(); // displays the caught mon for the switch into party feature
         break;
     default:

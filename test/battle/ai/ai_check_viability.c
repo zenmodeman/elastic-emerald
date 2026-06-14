@@ -18,7 +18,7 @@ AI_SINGLE_BATTLE_TEST("AI sees increased base power of Facade")
     PARAMETRIZE { status1 = STATUS1_BURN; expectedMove = MOVE_FACADE; }
 
     GIVEN {
-        WITH_CONFIG(GEN_CONFIG_BURN_FACADE_DMG, GEN_6);
+        WITH_CONFIG(B_BURN_FACADE_DMG, GEN_6);
         ASSUME(GetMoveEffect(MOVE_FACADE) == EFFECT_FACADE);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_WOBBUFFET) { HP(60); }
@@ -135,6 +135,25 @@ AI_SINGLE_BATTLE_TEST("AI will only use Dream Eater if target is asleep")
     }
 }
 
+AI_SINGLE_BATTLE_TEST("AI chooses Sleep Talk only when it will not wake up with Early Bird")
+{
+    enum Ability ability;
+
+    PARAMETRIZE { ability = ABILITY_RUN_AWAY; }
+    PARAMETRIZE { ability = ABILITY_EARLY_BIRD; }
+
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_DODRIO) { Ability(ability); Status1(STATUS1_SLEEP_TURN(2)); Moves(MOVE_SLEEP_TALK, MOVE_TACKLE); }
+    } WHEN {
+        if (ability == ABILITY_EARLY_BIRD)
+            TURN { EXPECT_MOVE(opponent, MOVE_TACKLE); }
+        else
+            TURN { EXPECT_MOVE(opponent, MOVE_SLEEP_TALK); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("AI sees increased base power of Spit Up")
 {
     GIVEN {
@@ -218,7 +237,7 @@ AI_DOUBLE_BATTLE_TEST("AI chooses moves that cure self or partner")
 
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_HEAL_BELL) == EFFECT_HEAL_BELL);
-        WITH_CONFIG(GEN_CONFIG_HEAL_BELL_SOUNDPROOF, GEN_8);
+        WITH_CONFIG(B_HEAL_BELL_SOUNDPROOF, GEN_8);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_WOBBUFFET);
@@ -229,6 +248,29 @@ AI_DOUBLE_BATTLE_TEST("AI chooses moves that cure self or partner")
             TURN { EXPECT_MOVE(opponentLeft, move); }
         else
             TURN { EXPECT_MOVE(opponentLeft, MOVE_ROCK_SLIDE); }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("AI uses Refresh only when curing status is worthwhile")
+{
+    u32 status1;
+    enum Ability ability;
+    u32 expectedMove;
+
+    PARAMETRIZE { status1 = STATUS1_BURN;         ability = ABILITY_GUTS;        expectedMove = MOVE_ROCK_SLIDE; }
+    PARAMETRIZE { status1 = STATUS1_BURN;         ability = ABILITY_PRESSURE;    expectedMove = MOVE_REFRESH; }
+    PARAMETRIZE { status1 = STATUS1_TOXIC_POISON; ability = ABILITY_POISON_HEAL; expectedMove = MOVE_ROCK_SLIDE; }
+    PARAMETRIZE { status1 = STATUS1_TOXIC_POISON; ability = ABILITY_SCRAPPY;     expectedMove = MOVE_REFRESH; }
+
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_REFRESH) == EFFECT_REFRESH);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_REGIROCK) { Moves(MOVE_ROCK_SLIDE, MOVE_REFRESH); Status1(status1); Ability(ability); }
+        OPPONENT(SPECIES_EXPLOUD) { Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponentLeft, expectedMove); }
     }
 }
 
@@ -244,7 +286,7 @@ AI_SINGLE_BATTLE_TEST("AI chooses moves that cure inactive party members")
 
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_HEAL_BELL) == EFFECT_HEAL_BELL);
-        WITH_CONFIG(GEN_CONFIG_HEAL_BELL_SOUNDPROOF, config);
+        WITH_CONFIG(B_HEAL_BELL_SOUNDPROOF, config);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_REGIROCK) { Moves(MOVE_BODY_PRESS, MOVE_HEAL_BELL); }
@@ -433,7 +475,7 @@ AI_DOUBLE_BATTLE_TEST("AI sees type-changing moves as the correct type")
         PLAYER(SPECIES_WOBBUFFET);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET) { Moves(fieldStatus, MOVE_RETURN, MOVE_TAUNT); }
-        OPPONENT(species) { Ability(ability); Moves(MOVE_HYPER_VOICE);  }
+        OPPONENT(species) { Ability(ability); Moves(MOVE_HYPER_VOICE); }
     } WHEN {
         if (ability != ABILITY_NONE)
             TURN { EXPECT_MOVE(opponentLeft, fieldStatus); }

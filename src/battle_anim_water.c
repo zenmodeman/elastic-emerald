@@ -1,6 +1,7 @@
 #include "global.h"
 #include "battle.h"
 #include "battle_anim.h"
+#include "battle_anim_internal.h"
 #include "gpu_regs.h"
 #include "graphics.h"
 #include "palette.h"
@@ -1023,6 +1024,8 @@ static void AnimSmallBubblePair_Step(struct Sprite *sprite)
 
 void AnimTask_CreateSurfWave(u8 taskId)
 {
+    CMD_ARGS(palette);
+
     struct BattleAnimBgData animBg;
     u8 taskId2;
     u16 *x;
@@ -1049,7 +1052,7 @@ void AnimTask_CreateSurfWave(u8 taskId)
         AnimLoadCompressedBgTilemapHandleContest(&animBg, gBattleAnimBgTilemap_SurfContest, TRUE);
     }
     AnimLoadCompressedBgGfx(animBg.bgId, gBattleAnimBgImage_Surf, animBg.tilesOffset);
-    switch (gBattleAnimArgs[0])
+    switch (cmd->palette)
     {
     case ANIM_SURF_PAL_SURF:
     default:
@@ -1443,20 +1446,20 @@ static void AnimSmallWaterOrb(struct Sprite *sprite)
     }
 }
 
-#define tRainState data[0] 
-#define tWaterSpoutPower data[1] 
-#define tDropTaskDelay data[2] 
-#define tDropInitialXPos data[4] 
-#define tDropXRange data[5] 
-#define tDropEndYPos data[6] 
-#define tDropXPos data[7] 
-#define tSineTableIndex data[8] 
-#define tCurrentDropSprites data[9] 
-#define tDropHasHit data[10] 
-#define tCreatedDropSprites data[11] 
-#define tMaxDropSprites data[12] 
-#define tShakeTasksCreated data[13] 
-#define tDropInitialYPos data[14] 
+#define tRainState data[0]
+#define tWaterSpoutPower data[1]
+#define tDropTaskDelay data[2]
+#define tDropInitialXPos data[4]
+#define tDropXRange data[5]
+#define tDropEndYPos data[6]
+#define tDropXPos data[7]
+#define tSineTableIndex data[8]
+#define tCurrentDropSprites data[9]
+#define tDropHasHit data[10]
+#define tCreatedDropSprites data[11]
+#define tMaxDropSprites data[12]
+#define tShakeTasksCreated data[13]
+#define tDropInitialYPos data[14]
 
 void AnimTask_BrineRain(u8 taskId)
 {
@@ -1634,20 +1637,20 @@ static void AnimWaterSpoutRainHit(struct Sprite *sprite)
     }
 }
 
-#undef tRainState 
-#undef tWaterSpoutPower 
-#undef tDropTaskDelay 
-#undef tDropInitialXPos 
-#undef tDropXRange 
-#undef tDropEndYPos 
-#undef tDropXPos 
-#undef tSineTableIndex 
-#undef tCurrentDropSprites 
-#undef tDropHasHit 
-#undef tCreatedDropSprites 
-#undef tMaxDropSprites 
-#undef tShakeTasksCreated 
-#undef tDropInitialYPos 
+#undef tRainState
+#undef tWaterSpoutPower
+#undef tDropTaskDelay
+#undef tDropInitialXPos
+#undef tDropXRange
+#undef tDropEndYPos
+#undef tDropXPos
+#undef tSineTableIndex
+#undef tCurrentDropSprites
+#undef tDropHasHit
+#undef tCreatedDropSprites
+#undef tMaxDropSprites
+#undef tShakeTasksCreated
+#undef tDropInitialYPos
 
 void AnimTask_WaterSport(u8 taskId)
 {
