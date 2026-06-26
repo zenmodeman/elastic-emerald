@@ -406,7 +406,6 @@ static void CB2_InitLearnMove(void)
     SetVBlankCallback(VBlankCB_MoveRelearner);
 
     InitMoveRelearnerBackgroundLayers();
-    InitMoveRelearnerWindows(FALSE);
     InitMoveRelearnerWindows(gRelearnMode == RELEARN_MODE_PSS_PAGE_CONTEST_MOVES);
 
     sMoveRelearnerMenuState.listOffset = 0;
@@ -742,28 +741,26 @@ static void DoMoveRelearnerMain(void)
     case MENU_STATE_RETURN_TO_FIELD:
         if (!gPaletteFade.active)
         {
+            u8 partyMon = sMoveRelearnerStruct->partyMon;
+
             FreeMoveRelearnerResources();
             if (FlagGet(FLAG_PARTY_MOVES))
-			{
-				CB2_ReturnToPartyMenuFromSummaryScreen();
-				FlagClear(FLAG_PARTY_MOVES);
-			}
-			else
-			{
-				SetMainCallback2(CB2_ReturnToField);
-			}
-            if (gInitialSummaryScreenCallback != NULL)
+            {
+                CB2_ReturnToPartyMenuFromSummaryScreen();
+                FlagClear(FLAG_PARTY_MOVES);
+            }
+            else if (gInitialSummaryScreenCallback != NULL)
             {
                 switch (gRelearnMode)
                 {
                 case RELEARN_MODE_PSS_PAGE_BATTLE_MOVES:
-                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_BATTLE, gPlayerParty, sMoveRelearnerStruct->partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
+                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_BATTLE, gPlayerParty, partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
                     break;
                 case RELEARN_MODE_PSS_PAGE_CONTEST_MOVES:
-                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_CONTEST, gPlayerParty, sMoveRelearnerStruct->partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
+                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_CONTEST, gPlayerParty, partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
                     break;
                 default:
-                    ShowPokemonSummaryScreen(SUMMARY_MODE_NORMAL, gPlayerParty, sMoveRelearnerStruct->partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
+                    ShowPokemonSummaryScreen(SUMMARY_MODE_NORMAL, gPlayerParty, partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
                     break;
                 }
             }
@@ -772,7 +769,6 @@ static void DoMoveRelearnerMain(void)
                 SetMainCallback2(CB2_ReturnToField);
             }
 
-            FreeMoveRelearnerResources();
             gRelearnMode = RELEARN_MODE_NONE;
         }
         break;

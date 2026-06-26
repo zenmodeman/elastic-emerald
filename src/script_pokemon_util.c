@@ -621,6 +621,24 @@ void Script_GetChosenMonDefensiveIVs(void)
     ConvertIntToDecimalStringN(gStringVar3, GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPDEF_IV), STR_CONV_MODE_LEFT_ALIGN, 3);
 }
 
+void Script_BufferChosenMonTriumph(void)
+{
+    u32 triumph = GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_TRIUMPH);
+
+    GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_NICKNAME, gStringVar1);
+    gSpecialVar_Result = triumph;
+
+    if (triumph == TRIUMPH_REWARD_CLAIMED)
+    {
+        StringExpandPlaceholders(gStringVar4, COMPOUND_STRING("The reward for {STR_VAR_1}'s\ntriumphs has already been claimed."));
+    }
+    else
+    {
+        ConvertIntToDecimalStringN(gStringVar2, triumph, STR_CONV_MODE_LEFT_ALIGN, 2);
+        StringExpandPlaceholders(gStringVar4, COMPOUND_STRING("{STR_VAR_1} has {STR_VAR_2} triumphs."));
+    }
+}
+
 void Script_SetStatus1(struct ScriptContext *ctx)
 {
     u32 status1 = VarGet(ScriptReadHalfword(ctx));

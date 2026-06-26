@@ -4704,7 +4704,7 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
                  && gBattleStruct->changedItems[battler] == ITEM_NONE)   // Will not inherit an item
                 {
                     gLastUsedItem = ITEM_HONEY;
-                    BattleScriptPushCursorAndCallback(BattleScript_HoneyGatherActivates);
+                    BattleScriptExecute(BattleScript_HoneyGatherActivates);
                     effect++;
                 }
                 break;
@@ -7507,10 +7507,8 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageContext *ctx)
         modifier = uq4_12_multiply(modifier, uq4_12_add(UQ_4_12(1.0), PercentToUQ4_12(gSpecialStatuses[battlerAtk].gemParam)));
     if (moveType == TYPE_ELECTRIC && gBattleMons[battlerAtk].volatiles.chargeTimer > 0)
         modifier = uq4_12_multiply(modifier, UQ_4_12(2.0));
-    if (gBattleMons[battlerAtk].volatiles.merry){
-    modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
-    }
-    if (GetMoveEffect(gChosenMove) == EFFECT_ME_FIRST)
+    if (gBattleMons[battlerAtk].volatiles.merry)
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
     if (GetMoveEffect(ctx->chosenMove) == EFFECT_ME_FIRST)
         modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
     if (IsBattlerTerrainAffected(battlerAtk, ctx->abilityAtk, ctx->holdEffectAtk, STATUS_FIELD_GRASSY_TERRAIN) && moveType == TYPE_GRASS)

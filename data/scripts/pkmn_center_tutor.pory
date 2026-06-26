@@ -2,12 +2,14 @@ script Common_EventScript_PkmnCenterTutor{
     lock
     faceplayer
     msgbox(format("Welcome, to the Pokemon Center Service Station. How May I help you?"))
-    dynmultichoice(0, 100, FALSE, 3, 0, DYN_MULTICHOICE_CB_NONE, "Tutor Move", "Take a Rest", "Cancel")
+    dynmultichoice(0, 100, FALSE, 4, 0, DYN_MULTICHOICE_CB_NONE, "Tutor Move", "Take a Rest", "Check Triumphs", "Cancel")
     if (var(VAR_RESULT) == 0){
         call(CenterMoveTutor)
     }elif(var(VAR_RESULT) == 1){
         call(TakeCenterNap)
-    }elif(var(VAR_RESULT) == 2 || var(VAR_RESULT) ==  MULTI_B_PRESSED){
+    }elif(var(VAR_RESULT) == 2){
+        call(CheckTriumphs)
+    }elif(var(VAR_RESULT) == 3 || var(VAR_RESULT) ==  MULTI_B_PRESSED){
         goto(CenterRejected)
     }
     release
@@ -60,6 +62,16 @@ script TakeCenterNap{
         special(NpcAdvanceTime)
         fadescreen(FADE_FROM_BLACK)
         msgbox(format("Hope you had a nice rest!"))
+    }
+}
+
+script CheckTriumphs{
+    msgbox(format("Whose triumphs would you like to check?"))
+    special(ChoosePartyMon)
+    waitstate
+    if (var(VAR_0x8004) != PARTY_NOTHING_CHOSEN){
+        special(Script_BufferChosenMonTriumph)
+        msgbox(gStringVar4)
     }
 }
 

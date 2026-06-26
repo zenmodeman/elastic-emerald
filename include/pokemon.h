@@ -128,6 +128,7 @@ enum MonData {
     MON_DATA_GIGANTAMAX_FACTOR,
     MON_DATA_TERA_TYPE,
     MON_DATA_EVOLUTION_TRACKER,
+    MON_DATA_TRIUMPH,
 };
 
 
@@ -155,7 +156,7 @@ struct PokemonSubstruct1
     u16 move2:11; // 2047 moves.
     u16 evolutionTracker2:5;
     u16 move3:11; // 2047 moves.
-    u16 unused_04:5;
+    u16 triumph:5; // 0-30 triumphs, 31 means reward claimed.
     u16 move4:11; // 2047 moves.
     u16 unused_06:3;
     u16 hyperTrainedHP:1;

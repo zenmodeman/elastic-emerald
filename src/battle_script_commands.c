@@ -387,6 +387,9 @@ static void Cmd_seteffectprimary(void);
 static void Cmd_seteffectsecondary(void);
 static void Cmd_clearvolatile(void);
 static void Cmd_tryfaintmon(void);
+static bool32 IsTriumphLevelEligible(u32 playerBattler, u32 opponentBattler);
+static bool32 IsTriumphPlayerBattlerEligible(u32 playerBattler, u32 opponentBattler);
+static void TryMarkBattleTriumph(u32 opponentBattler, bool32 directMoveFaint);
 static void Cmd_dofaintanimation(void);
 static void Cmd_cleareffectsonfaint(void);
 static void Cmd_jumpifstatus(void);
@@ -4348,6 +4351,66 @@ static void Cmd_clearvolatile(void)
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
+static bool32 IsTriumphLevelEligible(u32 playerBattler, u32 opponentBattler)
+{
+    // Prevent farming triumphs from severely underleveled opposing mons.
+    return gBattleMons[opponentBattler].level + 5 >= gBattleMons[playerBattler].level;
+}
+
+static bool32 IsTriumphPlayerBattlerEligible(u32 playerBattler, u32 opponentBattler)
+{
+    if (playerBattler >= gBattlersCount)
+        return FALSE;
+    if (gAbsentBattlerFlags & (1u << playerBattler))
+        return FALSE;
+    if (!IsOnPlayerSide(playerBattler) || IsOnPlayerSide(opponentBattler))
+        return FALSE;
+    if (gBattleMons[playerBattler].species == SPECIES_NONE)
+        return FALSE;
+    if (gBattlerPartyIndexes[playerBattler] >= PARTY_SIZE)
+        return FALSE;
+    if ((gBattleTypeFlags & (BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_MULTI))
+     && GetBattlerPosition(playerBattler) != B_POSITION_PLAYER_LEFT)
+        return FALSE;
+
+    return IsTriumphLevelEligible(playerBattler, opponentBattler);
+}
+
+static void TryMarkBattleTriumph(u32 opponentBattler, bool32 directMoveFaint)
+{
+    u32 i;
+    u32 eligiblePlayerBattlers = 0;
+    u32 lastEligiblePlayerBattler = 0;
+
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+        return;
+    if (IsOnPlayerSide(opponentBattler))
+        return;
+
+    for (i = 0; i < gBattlersCount; i++)
+    {
+        if (IsTriumphPlayerBattlerEligible(i, opponentBattler))
+        {
+            eligiblePlayerBattlers++;
+            lastEligiblePlayerBattler = i;
+        }
+    }
+
+    // Single eligible player mon on field: no credit ambiguity, so presence during the opposing faint is enough.
+    if (eligiblePlayerBattlers == 1)
+    {
+        gBattleTriumphPartyMask |= 1u << gBattlerPartyIndexes[lastEligiblePlayerBattler];
+    }
+    // Multiple eligible player mons on field: require direct KO credit so passive damage is not assigned arbitrarily.
+    else if (eligiblePlayerBattlers > 1
+          && directMoveFaint
+          && IsTriumphPlayerBattlerEligible(gBattlerAttacker, opponentBattler)
+          && !IsBattlerAlly(gBattlerAttacker, opponentBattler))
+    {
+        gBattleTriumphPartyMask |= 1u << gBattlerPartyIndexes[gBattlerAttacker];
+    }
+}
+
 static void Cmd_tryfaintmon(void)
 {
     CMD_ARGS(u8 battler, bool8 isSpikes, const u8 *instr);
@@ -4403,6 +4466,8 @@ static void Cmd_tryfaintmon(void)
             }
             else
             {
+                TryMarkBattleTriumph(battler, cmd->battler == BS_TARGET && gCurrentMove != MOVE_NONE);
+
                 if (gBattleResults.opponentFaintCounter < 255)
                     gBattleResults.opponentFaintCounter++;
                 gBattleResults.lastOpponentSpecies = GetMonData(GetBattlerMon(battler), MON_DATA_SPECIES, NULL);
@@ -7359,6 +7424,34 @@ static void Cmd_moveend(void)
                     ClearPursuitValues();
                     effect = TRUE;
                 }
+            }
+            gBattleScripting.moveendState++;
+            break;
+        case MOVEEND_ILLUMINATING:
+            if (GetBattlerAbility(gBattlerAttacker) == ABILITY_ILLUMINATE
+             && IsIlluminatingMove(gCurrentMove)
+             && IsDoubleBattle()
+             && gSideTimers[GetBattlerSide(gBattlerAttacker)].followmeTimer == 0)
+            {
+                gSideTimers[GetBattlerSide(gBattlerAttacker)].followmeTimer = 1;
+                gSideTimers[GetBattlerSide(gBattlerAttacker)].followmeTarget = gBattlerAttacker;
+                gBattleScripting.battler = gBattlerAbility = gBattlerAttacker;
+                BattleScriptPushCursor();
+                gBattlescriptCurrInstr = BattleScript_IlluminateActivates;
+                effect = TRUE;
+            }
+            gBattleScripting.moveendState++;
+            break;
+        case MOVEEND_MERRY:
+            if (GetBattlerAbility(gBattlerAttacker) == ABILITY_MERRY
+             && IsGiftingMove(gCurrentMove)
+             && !gBattleMons[gBattlerAttacker].volatiles.merry)
+            {
+                gBattleMons[gBattlerAttacker].volatiles.merry = TRUE;
+                gBattleScripting.battler = gBattlerAbility = gBattlerAttacker;
+                BattleScriptPushCursor();
+                gBattlescriptCurrInstr = BattleScript_MerryActivates;
+                effect = TRUE;
             }
             gBattleScripting.moveendState++;
             break;
@@ -12379,8 +12472,14 @@ static void Cmd_tryactivateitem(void)
     switch ((enum ItemActivationState)cmd->flag)
     {
     case ACTIVATION_ON_USABLE_AGAIN:
-    case ACTIVATION_ON_PICK_UP:
         if (ItemBattleEffects(battler, 0, GetBattlerHoldEffect(battler), IsForceTriggerItemActivation))
+            return;
+        break;
+    case ACTIVATION_ON_PICK_UP:
+        if (ItemBattleEffects(battler, 0, GetBattlerHoldEffect(battler), IsForceTriggerItemActivation)
+         || ItemBattleEffects(battler, 0, GetBattlerHoldEffect(battler), IsOnBerryActivation)
+         || ItemBattleEffects(battler, 0, GetBattlerHoldEffect(battler), IsOnHpThresholdActivation)
+         || ItemBattleEffects(battler, 0, GetBattlerHoldEffect(battler), IsOnStatusChangeActivation))
             return;
         break;
     case ACTIVATION_ON_HARVEST:
@@ -13566,7 +13665,18 @@ static void Cmd_tryrecycleitem(void)
         usedHeldItem = &GetBattlerPartyState(gBattlerTarget)->usedHeldItem;
     else
         usedHeldItem = &GetBattlerPartyState(gBattlerAttacker)->usedHeldItem;
-    if (*usedHeldItem != ITEM_NONE && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
+    if (GetBattlerAbility(gBattlerAttacker) == ABILITY_HONEY_GATHER
+     && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
+    {
+        gLastUsedItem = ITEM_HONEY;
+        gBattleMons[gBattlerAttacker].item = gLastUsedItem;
+
+        BtlController_EmitSetMonData(gBattlerAttacker, B_COMM_TO_CONTROLLER, REQUEST_HELDITEM_BATTLE, 0, sizeof(gBattleMons[gBattlerAttacker].item), &gBattleMons[gBattlerAttacker].item);
+        MarkBattlerForControllerExec(gBattlerAttacker);
+
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+    else if (*usedHeldItem != ITEM_NONE && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
     {
         gLastUsedItem = *usedHeldItem;
         *usedHeldItem = ITEM_NONE;

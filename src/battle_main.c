@@ -95,6 +95,7 @@ static void EndLinkBattleInSteps(void);
 static void CB2_InitAskRecordBattle(void);
 static void CB2_AskRecordBattle(void);
 static void AskRecordBattle(void);
+static bool32 HasBattleTriumphTrainerBeenFought(void);
 static void SpriteCB_MoveWildMonToRight(struct Sprite *sprite);
 static void SpriteCB_WildMonShowHealthbox(struct Sprite *sprite);
 static void SpriteCB_WildMonAnimate(struct Sprite *sprite);
@@ -125,6 +126,7 @@ static void HandleEndTurn_BattleLost(void);
 static void HandleEndTurn_RanFromBattle(void);
 static void HandleEndTurn_MonFled(void);
 static void HandleEndTurn_FinishBattle(void);
+static void AwardBattleTriumphs(void);
 static u32 Crc32B (const u8 *data, u32 size);
 static u32 GeneratePartyHash(const struct Trainer *trainer, u32 i);
 static s32 Factorial(s32);
@@ -211,6 +213,7 @@ EWRAM_DATA u8 gSentPokesToOpponent[2] = {0};
 EWRAM_DATA struct BattleEnigmaBerry gEnigmaBerries[MAX_BATTLERS_COUNT] = {0};
 EWRAM_DATA struct BattleScripting gBattleScripting = {0};
 EWRAM_DATA struct BattleStruct *gBattleStruct = NULL;
+ALIGNED(4) EWRAM_DATA u8 gBattleTriumphPartyMask = 0;
 
 EWRAM_DATA struct AiThinkingStruct *gAiThinkingStruct = NULL;
 EWRAM_DATA struct AiLogicData *gAiLogicData = NULL;
@@ -3123,6 +3126,7 @@ static void BattleStartClearSetData(void)
 
     gMultiHitCounter = 0;
     gBattleOutcome = 0;
+    gBattleTriumphPartyMask = 0;
     gBattleControllerExecFlags = 0;
     gPaydayMoney = 0;
     gBattleResources->battleScriptsStack->size = 0;
@@ -5509,6 +5513,7 @@ static void HandleEndTurn_BattleWon(void)
     {
         BattleStopLowHpSound();
         gBattlescriptCurrInstr = BattleScript_LocalTrainerBattleWon;
+        AwardBattleTriumphs();
 
         switch (GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA))
         {
@@ -5538,6 +5543,56 @@ static void HandleEndTurn_BattleWon(void)
     }
 
     gBattleMainFunc = HandleEndTurn_FinishBattle;
+}
+
+static bool32 HasBattleTriumphTrainerBeenFought(void)
+{
+    // Do not award triumphs for trainer IDs already marked defeated; this blocks rematch farming.
+    if (GetTrainerFlag())
+        return TRUE;
+    // Paired trainer battles set both flags after victory, so check opponent B explicitly too.
+    if (TRAINER_BATTLE_PARAM.opponentB != 0
+     && TRAINER_BATTLE_PARAM.opponentB != 0xFFFF
+     && HasTrainerBeenFought(TRAINER_BATTLE_PARAM.opponentB))
+        return TRUE;
+
+    return FALSE;
+}
+
+static void AwardBattleTriumphs(void)
+{
+    u32 i;
+
+    // Triumphs are only for first-time local trainer victories, not link/frontier/scripted battle loops.
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+     ||  (gBattleTypeFlags & (BATTLE_TYPE_LINK
+                            | BATTLE_TYPE_RECORDED_LINK
+                            | BATTLE_TYPE_FRONTIER
+                            | BATTLE_TYPE_TRAINER_HILL
+                            | BATTLE_TYPE_EREADER_TRAINER
+                            | BATTLE_TYPE_WALLY_TUTORIAL))
+     || HasBattleTriumphTrainerBeenFought())
+    {
+        gBattleTriumphPartyMask = 0;
+        return;
+    }
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u32 triumph;
+
+        if (!(gBattleTriumphPartyMask & (1u << i)))
+            continue;
+
+        triumph = GetMonData(&gPlayerParty[i], MON_DATA_TRIUMPH);
+        if (triumph < MAX_TRIUMPH_COUNT)
+        {
+            triumph++;
+            SetMonData(&gPlayerParty[i], MON_DATA_TRIUMPH, &triumph);
+        }
+    }
+
+    gBattleTriumphPartyMask = 0;
 }
 
 static void HandleEndTurn_BattleLost(void)

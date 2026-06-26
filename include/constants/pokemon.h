@@ -153,6 +153,8 @@ enum __attribute__((packed)) Stat
 #define MAX_LEVEL 100
 
 #define MAX_DYNAMAX_LEVEL 10
+#define MAX_TRIUMPH_COUNT 30
+#define TRIUMPH_REWARD_CLAIMED 31
 
 #define OT_ID_PLAYER_ID       0
 #define OT_ID_PRESET          1
