@@ -3109,6 +3109,23 @@ static inline bool32 IgnoreTargetingForMoveEffect(enum MoveEffect moveEffect) //
     }
 }
 
+static enum MoveEffect GetMetalRushMoveEffect(u32 battler, u32 *effectBattler)
+{
+    u32 weight = GetBattlerWeight(battler);
+
+    if (weight <= 500)
+    {
+        *effectBattler = battler;
+        return MOVE_EFFECT_SPD_PLUS_1;
+    }
+    else if (weight >= 2000)
+    {
+        return MOVE_EFFECT_DEF_MINUS_1;
+    }
+
+    return MOVE_EFFECT_NONE;
+}
+
 // To avoid confusion the arguments are naned battler/effectBattler since they can be different from gBattlerAttacker/gBattlerTarget
 void SetMoveEffect(u32 battler, u32 effectBattler, enum MoveEffect moveEffect, const u8 *battleScript, enum SetMoveEffectFlags effectFlags)
 {
@@ -3119,6 +3136,12 @@ void SetMoveEffect(u32 battler, u32 effectBattler, enum MoveEffect moveEffect, c
     bool32 mirrorArmorReflected = (GetBattlerAbility(gBattlerTarget) == ABILITY_MIRROR_ARMOR);
     union StatChangeFlags flags = {0};
     u32 battlerAbility;
+
+    if (moveEffect == MOVE_EFFECT_METAL_RUSH)
+    {
+        moveEffect = GetMetalRushMoveEffect(battler, &effectBattler);
+        affectsUser = (battler == effectBattler);
+    }
 
     // NULL move effect
     if (moveEffect == MOVE_EFFECT_NONE)

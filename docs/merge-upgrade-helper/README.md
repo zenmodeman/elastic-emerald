@@ -1,8 +1,106 @@
 # Elastic Emerald Custom Functionality Dossier
 
-This README summarizes the core project-specific functionality authored by commit user `zenmodeman`. It is intended as a regression-audit companion for the `merge-upgrade-helper` skill during upstream `pokeemerald-expansion` merges.
+This README summarizes the core project-specific functionality authored by commit user `zenmodeman`. It is intended as a regression-audit companion for the `merge-upgrade-helper` skill during upstream `pokeemerald-expansion` merges, and as a trace of custom systems that are easy to forget once they are woven into normal gameplay.
 
-The inventory was built from local `git log --author=zenmodeman`, current symbol scans, and current implementation anchors. Treat it as a functional map, not a complete design spec.
+The inventory was built from local `git log --author=zenmodeman`, current symbol scans, and current implementation anchors. It intentionally focuses on feature additions, AI logic, mechanic changes, and merge-sensitive integration points, not routine moveset, encounter, map, or trainer balance changes unless those changes introduced a new mechanic or gate. Treat it as a functional map, not a complete design spec.
+
+## Tag-Partitioned Custom Implementation Trace
+
+This section groups the major custom implementations by Elastic Emerald release tag. Entries are grouped by where the implementation first appears in history; later fixes may be listed in a newer tag range or in the merge-regression ledger below.
+
+### Up To `v0.1.0`
+
+Major systems and mechanics:
+
+- Initial content and scripting foundation: Poryscript setup, Petalburg Forest route boss, Sidney singles/doubles teams, early route content, Oldale Ruins, Petalburg Grove, Sandfront, Rustboro Grass, Trainer School flow, no-whiteout battles, AI-vs-AI player-side backsprite support, and early demo/progression guards.
+- Mode framework: monotype selection, Resource Mode, Restricted Mode, EV mode, progression-based EV acquisition, truck-start variables/flags, mode-aware Oldale mart logic, Resource Mode berry/TM/consumable behavior, and mode-specific starter/gift setup.
+- Monotype encounters and gifts: type-filtered wild encounters, tree encounters, monotype exceptions, monotype evolution handling, gender forcing for split-evolution lines, monotype catch-rate support, monotype starter expansion, and monotype-aware `givemon` improvements.
+- Tutor and acquisition systems: Menu Move Relearner, Center Tutor data structure and resource logic, Tech Tutor/Tech House, already-learned Center Tutor count exclusion, Hyper Training/Bottle Cap NPCs, and custom gift IV shuffling.
+- Tera framework: random/curated Tera assignment, Tera Orb teaching/charging, player-side Terastallization logic, and AI safeguards around pre-emptive player Tera calculation.
+- AI foundation: item-clause support, double-target KO de-incentivizing, faster-attacker logic, Knock Off/Parting Shot/status scoring tweaks, Hidden STAB and non-protecting move helpers, move-effect viability before best damage, smart trainer flags, move history for Soak/Aqua Ring targeting, and early switch/immunity prediction work.
+- Battle mechanics and ability work: item restore/prevent keeping trainer items, Life Orb recording, Summary Screen IV/EV display, Mud Sport and Water Sport protection changes, Hail/Snow defense behavior, trainer money formula by total levels, Pinch Berry healing, accuracy boosts for Foresight/Odor Sleuth/Laser Focus, Life Dew singles healing, Big Pecks defensive buff, Honey Gather/Honey rework, Heavy/Light Metal bounds, Electro Ball/Punishment changes, and initial Drain Douse.
+- QOL and overworld: MenuFly, custom Cut HM users, HM deletion, Pokedex Plus, Party Nickname option, Box Link work/reversion, Fake RTC and time advancing, reduced egg steps, larger bags, minimum berry yield, fishing/content scripts, and map menu flag cleanup.
+- Content-scoped systems that can still affect mechanics: early Route 101/102/104/115/116, Petalburg, Rustboro, Oldale, Sandfront, Trainer School, Aurelio, Cindy, Darren, Birch aide, and Roxanne checks.
+
+### `v0.1.0` To `v.0.1.1`
+
+Major systems and mechanics:
+
+- Custom Cut HM use: field-effect generation, designated/custom mon Cut behavior, Cutter and Fly Rider dialogue support, and HM deletion support.
+- Restricted Mode evolution-move guards and Move Tutor adjustments.
+- AI and move-helper refinements: `IncreaseStatUpScore` stat-constant parameterization, monotype catch-rate/AI refinements, and miscellaneous move/learnset/script adjustments that support early-game systems.
+- Rustboro/Sandfront content hooks: Roxanne first-battle check, Rustboro Center/Mart changes, and Route 115/116/Sandfront map/trainer integration.
+
+### `v.0.1.1` To `v.0.1.2`
+
+Major systems and mechanics:
+
+- QOL/menu additions: Pokedex Plus, Party Nickname option, and Box Link.
+- Tech Tutor and ability-tutor expansion: Niche Ability Tutor in Tech House, Tech House dialogue work, and Tech Tutor slot-fix follow-up.
+- Restricted Mode ability-item guards: early Ability Patch guard work.
+- New or modified ability mechanics: Covered/Fur Layer as Shield Dust clone, Solar Core, Frisk item-move modification, Limber speed-drop immunity, Truant Slack Off healing, Suction Cups starting-item and fishing refinements, and Water Veil/Aqua Ring interaction.
+- Move and battle-mechanic updates: Mud Sport/Water Sport type checks, Assurance hurt tracking and accuracy component, Enticing/item-interacting move flags, monotype fishing guards, sweeping minimum monotype catch rate, and wild table expansion.
+- Demo/progression/content support: demo guard, Devon Hyper Training dialogue, Wally duplicate fix, Rustboro mart fix, map/item/trainer adjustments, starter learnsets, tutor/encounter/evolution checks, and documentation checkpoint.
+
+### `v.0.1.2` To `v.0.1.2.1`
+
+Major systems and mechanics:
+
+- AI upgrades: damage-optimized doubles targeting, GapThreshold fix, Illuminate rework and illuminating move category, and `IncreaseStatUpScore` change-id/stat handling.
+- Ability and mechanic updates: Damp healing on switch-in against Rain/Water Sport, after-resolution Damp healing trigger, Truant `lastMoveFailed` logic, Razor Wind skipping recharge under Tailwind, and affection mechanic removal.
+- Merge and script repairs: Tech Tutor var-order fix, truck dialogue fix, hidden-STAB read restoration, and post-merge adjustment commits.
+- Content hooks: Dewford Garden starting content, overworld Sweet Scent doubles chance, Aurelio tweaks, Index Land slot completion, and trainer/move tweaks.
+
+### `v.0.1.2.1` To `v.0.2.0`
+
+Major systems and mechanics:
+
+- Dewford/Gym 2 expansion: Dewford Garden, Granite Cave trainers/encounters/items, Brawly Gym script, Steven's Room/Tera Orb, Dewford Delibird gift, Rustboro trade monotype guard, Good Rod/fishing changes, Cindy level-increasing rematches, and demo `v0.2.0` guards.
+- AI and switching: Hidden STAB switch logic, smarter speed-control logic, doubles preference logic for self-benefitting move effects, switch prediction for immunity abuse, defensive Tera calculation, smart Tera/switching adjustments, Coaching AI, simulated stat-change apply/reverse helpers, Reflect/Light Screen/Recovery/Rest/Defense Curl AI tuning, Paralysis/Leech Seed scoring, sport/Damp healing AI, OHKO switch timing, and Collector Darren AI.
+- New or modified abilities: Merry, Dedicated, Inner Focus prevents Focus Punch loss, Astral Charge, Anticipation damage reduction, Covered rename, Forewarn modification, extra burn-damage-reduction exceptions, and additional derived ability work.
+- Move and battle mechanics: Metal Rush, Present formula, more accurate Echoed Voice with battle-struct support, Refresh full-status/unblockable behavior, Drain Douse infinite-loop fix and later move-end absorb rework, Stockpile/Swallow/Gluttony synergy, Restricted evolution-item guards, custom move tests, Snore/Bounce groundwork via species changes, and Lucky Chant follow-up after the tag.
+- Tier Points and restricted Tera: Tier Point display, catch/gift/evolution/PC/withdraw/empty-slot guards, 4-6 point values, Shedinja monotype/tier logic, truck-start integration, Restricted Mode Tera guard, and White Herb florist progression change.
+- Curated Tera: main curated Tera pass, monotype-aware curated/random Tera behavior, curated species adjustments, and Rustboro/Steven/Tera teaching content.
+- QOL and progression: auto-boxing egg hatches, improved egg hatch memo, item recording for defensive items, NPC level badge checks via `FlagGet`, fishing leniency restored, and miscellaneous freeze/flow fixes.
+
+### After `v.0.2.0` / No Elastic Tag Yet
+
+Major systems and mechanics:
+
+- Upstream expansion merge survival: merges through `expansion/1.12.0`, `1.12.1`, `1.12.2`, `1.12.3`, `1.13.0`, `1.14.0`, and `1.14.4`, followed by several custom repair commits.
+- Tier Points refinement: ability-aware point computation, ability-swap prevention, curated Tera/tier point tweaks, one-tier-point Center Tutor exception, restored Summary Screen tier point display, restored catch logic after `expansion/1.14.0`, and current party/PC/evolution/gift/tutor guard anchors.
+- AI refinements and tests: revealed-KO/lead/quad-effective fast-switch conditions, Dig switch removal, Sweet Scent double-battle static state, smarter double Rock Tomb logic, simulated stat-change guards/reverse fix, Wrap/binding best-damage work, Magic Guard and damage-gap exceptions, AI test additions, and trainer flag restoration after merge breaks.
+- Move and ability regression repairs: improved Swallow logic after upstream refactors, Honey Gather regression repairs, binding and Drain Douse test repairs, Aqua Ring bonus-effect cleanup, extra Suction Cups restoration, species-specific Snore/Bounce modifications, Lucky Chant turn/priority adjustment, and post-merge minor patches.
+- Data/mechanic standardization: standardized EV acquisition items and prices, Center Tutor/Brawly Combusken tweaks, Triumph counts, and several freeze-scenario fixes.
+- Documentation: feature summary/dossier commits now fold into this README.
+
+## Merge Regression And Rework Ledger
+
+Confirmed later-merge breakages already repaired in history:
+
+- Hidden STAB move reading was broken by a merge and restored in `829ec9c367`.
+- Tech Tutor var/slot ordering broke and was repaired in `bb06e1f632` and `e670a4e65b`.
+- Scyther Cut event script was lost and restored in `f6508306a4`.
+- Improved Swallow logic was broken by upstream battle refactors and repaired in `8bd215017a`.
+- Honey Gather regressed and was repaired in `23421cb46e`.
+- After `expansion/1.14.0`, monotype filtering, non-monotype modulus behavior, Tier Points catch logic, extra Suction Cups behavior, AI flags, candy cap logic, and Aqua Ring bonus-effect cleanup needed restoration in `5b2db2f453`, `448477bf2e`, `4038c36be7`, `5d34747fa5`, and `86a1b336ef`.
+- After `expansion/1.14.4`, additional minor custom-functionality patches landed in `9865fe909f` and `0cf4955fd9`.
+- Binding, Wrap, and Drain Douse tests required post-merge fixes around `bd83b55fb4`, `c701193e0d`, and `be3390bd51`.
+
+Current audit status from static symbol scans:
+
+- Monotype, Tier Points, curated Tera, Restricted/Resource gates, Drain Douse, custom abilities, and smart AI systems all still have live data and runtime anchors in current `include`, `src`, `data`, and `test` scans.
+- Drain Douse still injects through `MOVEEND_ABSORB` and still has script/message/test anchors. Several advanced Drain Douse tests remain commented out in `test/battle/move_effect/drain_douse.c`; treat that as a test coverage gap, not proof the runtime is broken.
+- Tier Points catch/gift/evolution/PC/tutor/ability-change paths are present, including `gExcessTierPoints`, Summary Screen display, and one-point Center Tutor exceptions.
+- AI prediction and smart switching still retain `AI_FLAG_PREDICT_SWITCH`, `AI_FLAG_PREDICT_INCOMING_MON`, `AI_FLAG_SMART_TERA`, `GetMostSuitableMonToSwitchInto`, and `ShouldSwitch` hooks, plus tests for prediction and smart Tera.
+
+Likely rework candidates:
+
+- Tier Points now compute with ability awareness, but the point table itself is still hand-coded in `src/pokemon.c`; if expansion gains richer species/form metadata or if more form/ability exceptions accumulate, consider moving tier data into a structured species-side table.
+- Curated Tera is still centralized in code; as curated lists grow, a data-driven species table would make merge conflict resolution easier than editing a large switch/list in `src/pokemon.c`.
+- Monotype exceptions and gender-forced split-evolution handling are runtime helpers in `src/wild_encounter.c`; these are stable, but they should be revisited if expansion adds native encounter filters or richer evolution-family predicates.
+- Drain Douse's current `MOVEEND_ABSORB` integration is the right post-refactor shape, but double/spread/mixed-target semantics are under-tested because several tests are commented out.
+- Smart AI systems are extensive and merge-sensitive. When expansion changes AI damage, switching, or Tera APIs, prefer adapting these helpers onto the new upstream utilities over preserving stale duplicated calculations.
 
 ## How To Use This During A Merge
 

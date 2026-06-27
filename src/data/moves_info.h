@@ -21360,7 +21360,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Slams foe metal body.\n"
             "Effect based on weight.\n"),
         .effect = EFFECT_METAL_RUSH,
-        .power = 75,
+        .power = 65,
         .type = TYPE_STEEL,
         .accuracy = 100,
         .pp = 15,
@@ -21374,7 +21374,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .contestComboMoves = {0},
         .battleAnimScript = gBattleAnimMove_IronHead,
         .additionalEffects = ADDITIONAL_EFFECTS({
-            .moveEffect = MOVE_EFFECT_METAL_RUSH, //Currently only being used as a placeholder
+            .moveEffect = MOVE_EFFECT_METAL_RUSH,
             .chance = 100,
         }),
     },

@@ -6930,9 +6930,18 @@ u32 GetBattlerWeight(u32 battler)
     enum HoldEffect holdEffect = GetBattlerHoldEffect(battler);
 
     if (ability == ABILITY_HEAVY_METAL)
+    {
         weight *= 2;
+        if (weight < 2000)
+            weight = 2000;
+    }
     else if (ability == ABILITY_LIGHT_METAL)
+    {
         weight /= 2;
+        //Using 400 instead of 500 for better Low Kick damage
+        if (weight > 400)
+            weight = 400;
+    }
 
     if (holdEffect == HOLD_EFFECT_FLOAT_STONE)
         weight /= 2;
