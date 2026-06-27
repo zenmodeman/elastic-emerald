@@ -44,6 +44,7 @@
 #include "constants/battle_move_effects.h"
 #include "constants/battle_script_commands.h"
 #include "constants/battle_string_ids.h"
+#include "constants/flags.h"
 #include "constants/items.h"
 #include "constants/item_effects.h"
 #include "constants/moves.h"
@@ -1241,6 +1242,10 @@ bool32 ShouldDefiantCompetitiveActivate(u32 battler, enum Ability ability)
     u32 side = GetBattlerSide(battler);
     if (ability != ABILITY_DEFIANT && ability != ABILITY_COMPETITIVE)
         return FALSE;
+    if (FlagGet(FLAG_RESTRICTED_MODE)
+     && IsOnPlayerSide(battler)
+     && gBattleMons[battler].statStages[ability == ABILITY_DEFIANT ? STAT_ATK : STAT_SPATK] >= DEFAULT_STAT_STAGE + 2)
+        return FALSE;
     // if an ally dropped the stats (except for Sticky Web), don't activate
     if (IsBattlerAlly(gSpecialStatuses[battler].changedStatsBattlerId, battler) && !gBattleScripting.stickyWebStatDrop)
         return FALSE;
@@ -1249,6 +1254,56 @@ bool32 ShouldDefiantCompetitiveActivate(u32 battler, enum Ability ability)
         return TRUE;
     // only activate Defiant/Competitive if Web was setup by foe
     return gSideTimers[side].stickyWebBattlerSide != side;
+}
+
+u32 GetDefiantCompetitiveStatRaise(u32 battler, enum Ability ability)
+{
+    enum Stat stat;
+    u32 restrictedModeCap;
+
+    if (!ShouldDefiantCompetitiveActivate(battler, ability))
+        return 0;
+
+    if (!FlagGet(FLAG_RESTRICTED_MODE) || !IsOnPlayerSide(battler))
+        return 2;
+
+    stat = ability == ABILITY_DEFIANT ? STAT_ATK : STAT_SPATK;
+    restrictedModeCap = DEFAULT_STAT_STAGE + 2;
+    if (gBattleMons[battler].statStages[stat] >= restrictedModeCap)
+        return 0;
+
+    return min(2, restrictedModeCap - gBattleMons[battler].statStages[stat]);
+}
+
+bool32 CanRestrictedModePlayerStatBoost(u32 battler, enum Stat stat)
+{
+    return !FlagGet(FLAG_RESTRICTED_MODE)
+        || !IsOnPlayerSide(battler)
+        || gBattleMons[battler].statStages[stat] <= DEFAULT_STAT_STAGE;
+}
+
+//In Restricted Mode, Mirror Herb for the player only works if triggered by 
+//moves that raise the target's stats directly.
+bool32 CanMirrorHerbCopyStatBoost(u32 battler, u32 boostedBattler)
+{
+    if (!FlagGet(FLAG_RESTRICTED_MODE) || !IsOnPlayerSide(battler))
+        return TRUE;
+
+    if (boostedBattler != gBattlerTarget)
+        return FALSE;
+
+    switch (GetMoveEffect(gCurrentMove))
+    {
+
+    //Hardcoding effects that boost a stat 
+    case EFFECT_SWAGGER:
+    case EFFECT_FLATTER:
+    case EFFECT_SPICY_EXTRACT:
+    case EFFECT_DECORATE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
 }
 
 void PrepareStringBattle(enum StringID stringId, u32 battler)
@@ -1307,12 +1362,16 @@ void PrepareStringBattle(enum StringID stringId, u32 battler)
     if ((stringId == STRINGID_PKMNCUTSATTACKWITH || stringId == STRINGID_DEFENDERSSTATFELL)
      && ShouldDefiantCompetitiveActivate(gBattlerTarget, targetAbility))
     {
+        u32 statRaise = GetDefiantCompetitiveStatRaise(gBattlerTarget, targetAbility);
         gBattlerAbility = gBattlerTarget;
-        BattleScriptCall(BattleScript_AbilityRaisesDefenderStat);
-        if (targetAbility == ABILITY_DEFIANT)
-            SET_STATCHANGER(STAT_ATK, 2, FALSE);
-        else
-            SET_STATCHANGER(STAT_SPATK, 2, FALSE);
+        if (statRaise != 0)
+        {
+            BattleScriptCall(BattleScript_AbilityRaisesDefenderStat);
+            if (targetAbility == ABILITY_DEFIANT)
+                SET_STATCHANGER(STAT_ATK, statRaise, FALSE);
+            else
+                SET_STATCHANGER(STAT_SPATK, statRaise, FALSE);
+        }
     }
 
     BtlController_EmitPrintString(battler, B_COMM_TO_CONTROLLER, stringId);

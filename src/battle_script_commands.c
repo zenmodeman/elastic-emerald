@@ -5885,7 +5885,9 @@ static bool32 HandleMoveEndAbilityBlock(u32 battlerAtk, u32 battlerDef, u32 move
             else if (abilityAtk == ABILITY_GRIM_NEIGH || abilityAtk == ABILITY_AS_ONE_SHADOW_RIDER)
                 stat = STAT_SPATK;
 
-            if (numMonsFainted && CompareStat(battlerAtk, stat, MAX_STAT_STAGE, CMP_LESS_THAN, abilityAtk))
+            if (numMonsFainted
+             && CompareStat(battlerAtk, stat, MAX_STAT_STAGE, CMP_LESS_THAN, abilityAtk)
+             && CanRestrictedModePlayerStatBoost(battlerAtk, stat))
             {
                 gLastUsedAbility = abilityAtk;
                 if (abilityAtk == ABILITY_AS_ONE_ICE_RIDER)
@@ -10749,7 +10751,8 @@ static u32 ChangeStatBuffs(u32 battler, s8 statValue, enum Stat statId, union St
                     {
                         gProtectStructs[index].activateOpportunist = 2;      // set stats to copy
                     }
-                    if (GetBattlerHoldEffect(index) == HOLD_EFFECT_MIRROR_HERB)
+                    if (GetBattlerHoldEffect(index) == HOLD_EFFECT_MIRROR_HERB
+                     && CanMirrorHerbCopyStatBoost(index, battler))
                     {
                         gProtectStructs[index].eatMirrorHerb = 1;
                     }
@@ -17511,7 +17514,8 @@ void BS_TryActivateSoulheart(void)
         if (ability == ABILITY_SOUL_HEART
             && IsBattlerAlive(gBattleScripting.battler)
             && !NoAliveMonsForEitherParty()
-            && CompareStat(gBattleScripting.battler, STAT_SPATK, MAX_STAT_STAGE, CMP_LESS_THAN, ability))
+            && CompareStat(gBattleScripting.battler, STAT_SPATK, MAX_STAT_STAGE, CMP_LESS_THAN, ability)
+            && CanRestrictedModePlayerStatBoost(gBattleScripting.battler, STAT_SPATK))
         {
             SET_STATCHANGER(STAT_SPATK, 1, FALSE);
             PREPARE_STAT_BUFFER(gBattleTextBuff1, STAT_SPATK);
