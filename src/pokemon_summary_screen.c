@@ -182,6 +182,10 @@ static EWRAM_DATA struct PokemonSummaryScreenData
     bool8 lockMovesFlag; // This is used to prevent the player from changing position of moves in a battle or when trading.
     u8 bgDisplayOrder; // Determines the order page backgrounds are loaded while scrolling between them
     bool8 hasRelearnableMoves;
+    bool8 evRedistActive;
+    u8 evRedistSelectedStat;
+    u16 evRedistOriginalTotal;
+    u8 evRedistOriginalEvs[NUM_STATS];
     u8 windowIds[8];
     u8 spriteIds[SPRITE_ARR_ID_COUNT];
     bool8 handleDeoxys;
@@ -205,6 +209,7 @@ static bool8 ExtractMonDataToSummaryStruct(struct Pokemon *);
 static void SetDefaultTilemaps(void);
 static void CloseSummaryScreen(u8);
 static void Task_HandleInput(u8);
+static void Task_HandleInput_EvRedistribution(u8 taskId);
 static void ChangeSummaryPokemon(u8, s8);
 static void Task_ChangeSummaryMon(u8);
 static s8 AdvanceMonIndex(s8);
@@ -318,6 +323,15 @@ static void SummaryScreen_DestroyAnimDelayTask(void);
 static bool32 ShouldShowMoveRelearner(void);
 static bool32 ShouldShowRename(void);
 static bool32 ShouldShowIvEvPrompt(void);
+static bool32 ShouldShowEvRedistribution(void);
+static void StartEvRedistribution(u8 taskId);
+static void EndEvRedistribution(u8 taskId, bool8 save);
+static void ChangeEvRedistributionSelection(s8 delta);
+static void ChangeEvRedistributionValue(s8 delta);
+static u16 GetEvRedistributionTotal(void);
+static u16 GetEvRedistributionPending(void);
+static void ApplyEvRedistribution(void);
+static bool32 IsEvRedistributionValid(void);
 static void BufferLeftColumnIvEvStats(void);
 static void CB2_ReturnToSummaryScreenFromNamingScreen(void);
 static void CB2_PssChangePokemonNickname(void);
@@ -768,6 +782,15 @@ static const u8 sStatsLeftColumnLayout[] = _("{DYNAMIC 0}/{DYNAMIC 1}\n{DYNAMIC 
 static const u8 sStatsLeftIVEVColumnLayout[] = _("{DYNAMIC 0}\n{DYNAMIC 1}\n{DYNAMIC 2}");
 static const u8 sStatsRightColumnLayout[] = _("{DYNAMIC 0}\n{DYNAMIC 1}\n{DYNAMIC 2}");
 static const u8 sMovesPPLayout[] = _("{PP}{DYNAMIC 0}/{DYNAMIC 1}");
+static const enum Stat sEvRedistStatOrder[NUM_STATS] =
+{
+    STAT_HP,
+    STAT_ATK,
+    STAT_DEF,
+    STAT_SPATK,
+    STAT_SPDEF,
+    STAT_SPEED,
+};
 
 #define TAG_MOVE_SELECTOR 30000
 #define TAG_MON_STATUS 30001
@@ -1758,6 +1781,16 @@ static void Task_HandleInput(u8 taskId)
                 }
             }
         }
+        else if (JOY_NEW(START_BUTTON))
+        {
+            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_SKILLS
+             && sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_EVS
+             && ShouldShowEvRedistribution())
+            {
+                StartEvRedistribution(taskId);
+                PlaySE(SE_SELECT);
+            }
+        }
         else if (JOY_NEW(B_BUTTON))
         {
             StopPokemonAnimations();
@@ -1802,6 +1835,48 @@ static void Task_HandleInput(u8 taskId)
                 ShowRelearnPrompt();
             }
         }
+    }
+}
+
+static void Task_HandleInput_EvRedistribution(u8 taskId)
+{
+    if (MenuHelpers_ShouldWaitForLinkRecv() == TRUE || gPaletteFade.active)
+        return;
+
+    if (JOY_NEW(DPAD_UP))
+    {
+        ChangeEvRedistributionSelection(-1);
+        PlaySE(SE_SELECT);
+    }
+    else if (JOY_NEW(DPAD_DOWN))
+    {
+        ChangeEvRedistributionSelection(1);
+        PlaySE(SE_SELECT);
+    }
+    else if (JOY_NEW(DPAD_LEFT))
+    {
+        ChangeEvRedistributionValue(-1);
+    }
+    else if (JOY_NEW(DPAD_RIGHT))
+    {
+        ChangeEvRedistributionValue(1);
+    }
+    else if (JOY_NEW(A_BUTTON))
+    {
+        if (IsEvRedistributionValid())
+        {
+            EndEvRedistribution(taskId, TRUE);
+            PlaySE(SE_SELECT);
+        }
+        else
+        {
+            PlaySE(SE_FAILURE);
+        }
+    }
+    else if (JOY_NEW(B_BUTTON) || JOY_NEW(START_BUTTON))
+    {
+        EndEvRedistribution(taskId, FALSE);
+        PlaySE(SE_SELECT);
     }
 }
 
@@ -1874,6 +1949,224 @@ static void ShowMonSkillsInfo(u8 taskId, s16 mode)
     BufferRightColumnStats();
     PrintRightColumnStats();
     gTasks[taskId].func = Task_HandleInput;
+}
+
+static u16 GetSummaryEvByStat(enum Stat stat)
+{
+    switch (stat)
+    {
+    case STAT_HP:
+        return sMonSummaryScreen->summary.currentHP;
+    case STAT_ATK:
+        return sMonSummaryScreen->summary.atk;
+    case STAT_DEF:
+        return sMonSummaryScreen->summary.def;
+    case STAT_SPEED:
+        return sMonSummaryScreen->summary.speed;
+    case STAT_SPATK:
+        return sMonSummaryScreen->summary.spatk;
+    case STAT_SPDEF:
+        return sMonSummaryScreen->summary.spdef;
+    default:
+        return 0;
+    }
+}
+
+static void SetSummaryEvByStat(enum Stat stat, u16 value)
+{
+    switch (stat)
+    {
+    case STAT_HP:
+        sMonSummaryScreen->summary.currentHP = value;
+        break;
+    case STAT_ATK:
+        sMonSummaryScreen->summary.atk = value;
+        break;
+    case STAT_DEF:
+        sMonSummaryScreen->summary.def = value;
+        break;
+    case STAT_SPEED:
+        sMonSummaryScreen->summary.speed = value;
+        break;
+    case STAT_SPATK:
+        sMonSummaryScreen->summary.spatk = value;
+        break;
+    case STAT_SPDEF:
+        sMonSummaryScreen->summary.spdef = value;
+        break;
+    default:
+        break;
+    }
+}
+
+static u16 GetEvRedistributionTotal(void)
+{
+    u16 total = 0;
+    u32 i;
+
+    for (i = 0; i < NUM_STATS; i++)
+        total += GetSummaryEvByStat(i);
+
+    return total;
+}
+
+static u16 GetEvRedistributionPending(void)
+{
+    return sMonSummaryScreen->evRedistOriginalTotal - GetEvRedistributionTotal();
+}
+
+static void RefreshEvRedistributionStats(void)
+{
+    FillWindowPixelBuffer(sMonSummaryScreen->windowIds[PSS_DATA_WINDOW_SKILLS_STATS_LEFT], 0);
+    FillWindowPixelBuffer(sMonSummaryScreen->windowIds[PSS_DATA_WINDOW_SKILLS_STATS_RIGHT], 0);
+    BufferLeftColumnIvEvStats();
+    PrintLeftColumnStats();
+    BufferRightColumnStats();
+    PrintRightColumnStats();
+    ShowUtilityPrompt(SUMMARY_SKILLS_MODE_EVS);
+}
+
+static bool32 IsEvRedistributionValid(void)
+{
+    u32 i;
+    s32 evCap = GetEVStatCap();
+
+    if (GetEvRedistributionTotal() != sMonSummaryScreen->evRedistOriginalTotal)
+        return FALSE;
+
+    for (i = 0; i < NUM_STATS; i++)
+    {
+        if (GetSummaryEvByStat(i) > evCap)
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
+static bool32 ShouldShowEvRedistribution(void)
+{
+    return (FlagGet(FLAG_EV_MODE)
+         && GetEVStatCap() > 0
+         && !sMonSummaryScreen->lockMovesFlag
+         && !sMonSummaryScreen->summary.isEgg
+         && !sMonSummaryScreen->isBoxMon
+         && sMonSummaryScreen->mode == SUMMARY_MODE_NORMAL
+         && !gMain.inBattle
+         && !InBattleFactory()
+         && !InSlateportBattleTent());
+}
+
+static void StartEvRedistribution(u8 taskId)
+{
+    u32 i;
+
+    sMonSummaryScreen->evRedistActive = TRUE;
+    sMonSummaryScreen->evRedistSelectedStat = 0;
+    sMonSummaryScreen->evRedistOriginalTotal = GetEvRedistributionTotal();
+    for (i = 0; i < NUM_STATS; i++)
+        sMonSummaryScreen->evRedistOriginalEvs[i] = GetSummaryEvByStat(i);
+    RefreshEvRedistributionStats();
+    gTasks[taskId].func = Task_HandleInput_EvRedistribution;
+}
+
+static void EndEvRedistribution(u8 taskId, bool8 save)
+{
+    sMonSummaryScreen->evRedistActive = FALSE;
+
+    if (save)
+        ApplyEvRedistribution();
+    else
+        ExtractMonSkillEvData(&sMonSummaryScreen->currentMon, &sMonSummaryScreen->summary);
+
+    RefreshEvRedistributionStats();
+    gTasks[taskId].func = Task_HandleInput;
+}
+
+static void ChangeEvRedistributionSelection(s8 delta)
+{
+    if (delta > 0)
+        sMonSummaryScreen->evRedistSelectedStat = (sMonSummaryScreen->evRedistSelectedStat + 1) % NUM_STATS;
+    else
+        sMonSummaryScreen->evRedistSelectedStat = (sMonSummaryScreen->evRedistSelectedStat + NUM_STATS - 1) % NUM_STATS;
+
+    RefreshEvRedistributionStats();
+}
+
+static void ChangeEvRedistributionValue(s8 delta)
+{
+    u16 ev;
+    u16 step;
+    enum Stat stat = sEvRedistStatOrder[sMonSummaryScreen->evRedistSelectedStat];
+
+    if (delta < 0)
+    {
+        ev = GetSummaryEvByStat(stat);
+        if (ev == 0)
+        {
+            PlaySE(SE_FAILURE);
+            return;
+        }
+
+        step = ev % 4;
+        if (step == 0)
+            step = 4;
+        if (step > ev)
+            step = ev;
+
+        SetSummaryEvByStat(stat, ev - step);
+    }
+    else
+    {
+        s32 evCap = GetEVStatCap();
+        u16 pending = GetEvRedistributionPending();
+
+        ev = GetSummaryEvByStat(stat);
+        if (pending == 0 || ev >= evCap)
+        {
+            PlaySE(SE_FAILURE);
+            return;
+        }
+
+        if (pending == 4)
+            step = 4;
+        else
+        {
+            step = 4 - (ev % 4);
+            if (step == 0)
+                step = 4;
+        }
+        if (step > pending)
+            step = pending;
+        if (ev + step > evCap)
+            step = evCap - ev;
+        if (step == 0)
+        {
+            PlaySE(SE_FAILURE);
+            return;
+        }
+
+        SetSummaryEvByStat(stat, ev + step);
+    }
+
+    RefreshEvRedistributionStats();
+    PlaySE(SE_SELECT);
+}
+
+static void ApplyEvRedistribution(void)
+{
+    u32 i;
+    struct Pokemon *mon = &sMonSummaryScreen->monList.mons[sMonSummaryScreen->curMonIndex];
+
+    for (i = 0; i < NUM_STATS; i++)
+    {
+        u8 ev = GetSummaryEvByStat(i);
+
+        SetMonData(mon, MON_DATA_HP_EV + i, &ev);
+        SetMonData(&sMonSummaryScreen->currentMon, MON_DATA_HP_EV + i, &ev);
+    }
+
+    CalculateMonStats(mon);
+    CalculateMonStats(&sMonSummaryScreen->currentMon);
 }
 
 void ExtractMonSkillStatsData(struct Pokemon *mon, struct PokeSummary *sum)
@@ -3946,9 +4239,19 @@ static void BufferStat(u8 *dst, enum Stat statIndex, u32 stat, u32 strId, u32 n)
     static const u8 sTextNatureDown[] = _("{COLOR}{08}");
     static const u8 sTextNatureUp[] = _("{COLOR}{05}");
     static const u8 sTextNatureNeutral[] = _("{COLOR}{01}");
+    static const u8 sTextSelected[] = _("{COLOR}{05}");
+    static const u8 sTextNegativeDelta[] = _("{COLOR}{08}");
+    static const u8 sTextPositiveDelta[] = _("{COLOR}{05}");
     u8 *txtPtr;
+    s16 diff;
 
-    if (statIndex == 0 || !P_SUMMARY_SCREEN_NATURE_COLORS || gNaturesInfo[sMonSummaryScreen->summary.mintNature].statUp == gNaturesInfo[sMonSummaryScreen->summary.mintNature].statDown)
+    if (sMonSummaryScreen->evRedistActive
+     && sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_EVS
+     && statIndex == sEvRedistStatOrder[sMonSummaryScreen->evRedistSelectedStat])
+        txtPtr = StringCopy(dst, sTextSelected);
+    else if (sMonSummaryScreen->skillsPageMode != SUMMARY_SKILLS_MODE_STATS)
+        txtPtr = StringCopy(dst, sTextNatureNeutral);
+    else if (statIndex == 0 || !P_SUMMARY_SCREEN_NATURE_COLORS || gNaturesInfo[sMonSummaryScreen->summary.mintNature].statUp == gNaturesInfo[sMonSummaryScreen->summary.mintNature].statDown)
         txtPtr = StringCopy(dst, sTextNatureNeutral);
     else if (statIndex == gNaturesInfo[sMonSummaryScreen->summary.mintNature].statUp)
         txtPtr = StringCopy(dst, sTextNatureUp);
@@ -3957,7 +4260,53 @@ static void BufferStat(u8 *dst, enum Stat statIndex, u32 stat, u32 strId, u32 n)
     else
         txtPtr = StringCopy(dst, sTextNatureNeutral);
 
-    if (!P_SUMMARY_SCREEN_IV_EV_VALUES
+    if (sMonSummaryScreen->evRedistActive
+     && sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_EVS)
+    {
+        diff = (s16)stat - (s16)sMonSummaryScreen->evRedistOriginalEvs[statIndex];
+        if (statIndex == STAT_SPATK || statIndex == STAT_SPDEF || statIndex == STAT_SPEED)
+        {
+            if (diff >= 100)
+            {
+                txtPtr = StringCopy(dst, sTextPositiveDelta);
+                ConvertIntToDecimalStringN(txtPtr, diff, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            }
+            else if (diff <= -100)
+            {
+                txtPtr = StringCopy(dst, sTextNegativeDelta);
+                ConvertIntToDecimalStringN(txtPtr, -diff, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            }
+            else if (diff > 0)
+            {
+                *txtPtr++ = CHAR_PLUS;
+                ConvertIntToDecimalStringN(txtPtr, diff, STR_CONV_MODE_LEFT_ALIGN, 3);
+            }
+            else if (diff < 0)
+            {
+                *txtPtr++ = CHAR_HYPHEN;
+                ConvertIntToDecimalStringN(txtPtr, -diff, STR_CONV_MODE_LEFT_ALIGN, 3);
+            }
+            else
+            {
+                ConvertIntToDecimalStringN(txtPtr, stat, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            }
+        }
+        else
+        {
+            txtPtr = ConvertIntToDecimalStringN(txtPtr, stat, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            if (diff > 0)
+            {
+                *txtPtr++ = CHAR_PLUS;
+                ConvertIntToDecimalStringN(txtPtr, diff, STR_CONV_MODE_LEFT_ALIGN, 3);
+            }
+            else if (diff < 0)
+            {
+                *txtPtr++ = CHAR_HYPHEN;
+                ConvertIntToDecimalStringN(txtPtr, -diff, STR_CONV_MODE_LEFT_ALIGN, 3);
+            }
+        }
+    }
+    else if (!P_SUMMARY_SCREEN_IV_EV_VALUES
         && sMonSummaryScreen->skillsPageMode == SUMMARY_SKILLS_MODE_IVS)
         StringAppend(dst, GetLetterGrade(stat));
     else
@@ -4874,6 +5223,8 @@ static inline void ShowUtilityPrompt(s16 mode)
     const u8* gText_SkillPageIvs = COMPOUND_STRING("IVs");
     const u8* gText_SkillPageEvs = COMPOUND_STRING("EVs");
     const u8* gText_SkillPageStats = COMPOUND_STRING("STATS");
+    const u8* gText_SkillPageSave = COMPOUND_STRING("SAVE");
+    const u8* gText_SkillPageBack = COMPOUND_STRING("BACK");
 
     if (sMonSummaryScreen->currPageIndex == PSS_PAGE_INFO)
     {
@@ -4884,7 +5235,14 @@ static inline void ShowUtilityPrompt(s16 mode)
     }
     else if (sMonSummaryScreen->currPageIndex == PSS_PAGE_SKILLS)
     {
-        if (ShouldShowIvEvPrompt())
+        if (sMonSummaryScreen->evRedistActive)
+        {
+            if (IsEvRedistributionValid())
+                promptText = gText_SkillPageSave;
+            else
+                promptText = gText_SkillPageBack;
+        }
+        else if (ShouldShowIvEvPrompt())
         {
             if (mode == SUMMARY_SKILLS_MODE_STATS)
             {

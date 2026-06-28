@@ -477,7 +477,6 @@ static void ShiftMoveSlot(struct Pokemon *, u8, u8);
 static void BlitBitmapToPartyWindow_LeftColumn(u8, u8, u8, u8, u8, bool8);
 static void BlitBitmapToPartyWindow_RightColumn(u8, u8, u8, u8, u8, bool8);
 static void CursorCb_Summary(u8);
-static void CursorCb_Nickname(u8);
 static void CursorCb_Moves(u8);
 static void CursorCb_Switch(u8);
 static void CursorCb_Cancel1(u8);
@@ -2930,11 +2929,6 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
         {
             AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_MOVES);
         }
-        // Mainly here to avoid the menu getting overcrowded if number of field moves is maximized
-        if (sPartyMenuInternal->numActions < 7)
-        {
-            AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_NICKNAME);
-        }
         if (ItemIsMail(GetMonData(&mons[slotId], MON_DATA_HELD_ITEM)))
             AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_MAIL);
         else
@@ -3122,16 +3116,6 @@ static void CursorCb_Moves(u8 taskId)
     DisplayPartyPokemonDataForRelearner(gSpecialVar_0x8004);
     TeachMoveRelearnerMove();
     sPartyMenuInternal->exitCallback = TeachMoveRelearnerMove;
-    Task_ClosePartyMenu(taskId);
-}
-
-void ChangePokemonNickname(void);
-
-static void CursorCb_Nickname(u8 taskId)
-{
-    PlaySE(SE_SELECT);
-    gSpecialVar_0x8004 = gPartyMenu.slotId;
-    sPartyMenuInternal->exitCallback = ChangePokemonNickname;
     Task_ClosePartyMenu(taskId);
 }
 
