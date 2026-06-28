@@ -122,3 +122,47 @@ SINGLE_BATTLE_TEST("Effect Spore will check if it can inflict status onto attack
         STATUS_ICON(player, sleep: TRUE);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Effect Spore remaps a blocked proc to another valid status")
+{
+    GIVEN {
+        WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_5);
+        ASSUME(MoveMakesContact(MOVE_SCRATCH));
+        PLAYER(SPECIES_TOXEL);
+        OPPONENT(SPECIES_BRELOOM) { Ability(ABILITY_EFFECT_SPORE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_EFFECT_SPORE, 0)); }
+    } SCENE {
+        ABILITY_POPUP(opponent, ABILITY_EFFECT_SPORE);
+        ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_SLP, player);
+        MESSAGE("The opposing Breloom's Effect Spore made Toxel sleep!");
+        STATUS_ICON(player, sleep: TRUE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Effect Spore does not count contact attempts when no status can be inflicted")
+{
+    GIVEN {
+        WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_5);
+        ASSUME(MoveMakesContact(MOVE_SCRATCH));
+        PLAYER(SPECIES_TOXEL) { Ability(ABILITY_INSOMNIA); }
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_BRELOOM) { Ability(ABILITY_EFFECT_SPORE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_EFFECT_SPORE, 0)); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_EFFECT_SPORE, 0)); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_EFFECT_SPORE, 0)); }
+        TURN { SWITCH(player, 1); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_EFFECT_SPORE, 30)); }
+    } SCENE {
+        NONE_OF {
+            ABILITY_POPUP(opponent, ABILITY_EFFECT_SPORE);
+            ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_PSN, player);
+            ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_PRZ, player);
+            ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_SLP, player);
+            STATUS_ICON(player, poison: TRUE);
+            STATUS_ICON(player, paralysis: TRUE);
+            STATUS_ICON(player, sleep: TRUE);
+        }
+    }
+}

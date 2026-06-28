@@ -71,6 +71,9 @@ static bool32 IsOpposingSideEmpty(u32 battler);
 static void ResetParadoxWeatherStat(u32 battler);
 static void ResetParadoxTerrainStat(u32 battler);
 static bool32 CanBattlerFormChange(u32 battler, enum FormChanges method);
+static bool32 UpdateDefensiveContactAbilityCounter(u32 battler, bool32 triggered);
+static bool32 TryDefensiveContactAbilityTrigger(u32 battler, enum RandomTag tag);
+static u32 GetEffectSporeMoveEffect(u32 preferredEffect, bool32 canPoison, bool32 canParalyze, bool32 canSleep);
 
 // Submoves
 static u32 GetMirrorMoveMove(void);
@@ -4029,6 +4032,64 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
     return effect;
 }
 
+static bool32 UpdateDefensiveContactAbilityCounter(u32 battler, bool32 triggered)
+{
+    u16 attempts = ++gBattleStruct->battlerState[battler].defensiveContactAbilityAttempts;
+    u16 *hits = &gBattleStruct->battlerState[battler].defensiveContactAbilityHits;
+
+    if (triggered
+     || (GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_4
+       ? attempts >= 4 && *hits * 10 < attempts * 3
+       : attempts >= 3 && *hits * 3 < attempts))
+    {
+        (*hits)++;
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+static bool32 TryDefensiveContactAbilityTrigger(u32 battler, enum RandomTag tag)
+{
+    bool32 triggered = (GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_4)
+        ? RandomPercentage(tag, 30)
+        : RandomChance(tag, 1, 3);
+
+    return UpdateDefensiveContactAbilityCounter(battler, triggered);
+}
+
+static u32 GetEffectSporeMoveEffect(u32 preferredEffect, bool32 canPoison, bool32 canParalyze, bool32 canSleep)
+{
+    u32 numEffects = 0;
+    u8 effects[3];
+
+    if (preferredEffect == MOVE_EFFECT_POISON && canPoison)
+        return MOVE_EFFECT_POISON;
+    if (preferredEffect == MOVE_EFFECT_PARALYSIS && canParalyze)
+        return MOVE_EFFECT_PARALYSIS;
+    if (preferredEffect == MOVE_EFFECT_SLEEP && canSleep)
+        return MOVE_EFFECT_SLEEP;
+
+    if (canPoison && preferredEffect != MOVE_EFFECT_POISON)
+        effects[numEffects++] = MOVE_EFFECT_POISON;
+    if (canParalyze && preferredEffect != MOVE_EFFECT_PARALYSIS)
+        effects[numEffects++] = MOVE_EFFECT_PARALYSIS;
+    if (canSleep && preferredEffect != MOVE_EFFECT_SLEEP)
+        effects[numEffects++] = MOVE_EFFECT_SLEEP;
+
+    switch (numEffects)
+    {
+    case 0:
+        return MOVE_EFFECT_NONE;
+    case 1:
+        return effects[0];
+    case 2:
+        return effects[RandomUniform(RNG_EFFECT_SPORE_STATUS, 0, 1)];
+    default:
+        return RandomElement(RNG_EFFECT_SPORE_STATUS, effects);
+    }
+}
+
 u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ability, u32 special, u32 moveArg)
 {
     u32 effect = 0;
@@ -5237,9 +5298,14 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
         {
             enum Ability abilityAtk = GetBattlerAbility(gBattlerAttacker);
             enum HoldEffect holdEffectAtk = GetBattlerHoldEffect(gBattlerAttacker);
-            if (IsAffectedByPowderMove(gBattlerAttacker, abilityAtk, holdEffectAtk))
+            if (IsBattlerAlive(gBattlerAttacker)
+             && !gProtectStructs[gBattlerAttacker].confusionSelfDmg
+             && IsBattlerTurnDamaged(gBattlerTarget)
+             && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, abilityAtk, holdEffectAtk, move)
+             && IsAffectedByPowderMove(gBattlerAttacker, abilityAtk, holdEffectAtk))
             {
-                u32 poison, paralysis, sleep;
+                u32 poison, paralysis, sleep, preferredEffect;
+                bool32 canPoison, canParalyze, canSleep;
 
                 if (GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_5)
                 {
@@ -5253,24 +5319,28 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
                 }
                 sleep = 30;
 
+                canPoison = CanBePoisoned(gBattlerTarget, gBattlerAttacker, gLastUsedAbility, abilityAtk);
+                canParalyze = CanBeParalyzed(gBattlerTarget, gBattlerAttacker, abilityAtk);
+                canSleep = CanBeSlept(gBattlerTarget, gBattlerAttacker, abilityAtk, NOT_BLOCKED_BY_SLEEP_CLAUSE);
+                if (!canPoison && !canParalyze && !canSleep)
+                    break;
+
                 i = RandomUniform(RNG_EFFECT_SPORE, 0, GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_4 ? 99 : 299);
+                preferredEffect = MOVE_EFFECT_NONE;
                 if (i < poison)
-                    goto POISON_POINT;
-                if (i < paralysis)
-                    goto STATIC;
-                // Sleep
-                if (i < sleep
-                 && IsBattlerAlive(gBattlerAttacker)
-                 && !gProtectStructs[gBattlerAttacker].confusionSelfDmg
-                 && IsBattlerTurnDamaged(gBattlerTarget)
-                 && CanBeSlept(gBattlerTarget, gBattlerAttacker, abilityAtk, NOT_BLOCKED_BY_SLEEP_CLAUSE)
-                 && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, abilityAtk, holdEffectAtk, move))
+                    preferredEffect = MOVE_EFFECT_POISON;
+                else if (i < paralysis)
+                    preferredEffect = MOVE_EFFECT_PARALYSIS;
+                else if (i < sleep)
+                    preferredEffect = MOVE_EFFECT_SLEEP;
+
+                if (UpdateDefensiveContactAbilityCounter(gBattlerTarget, i < sleep))
                 {
-                    if (IsSleepClauseEnabled())
+                    gBattleScripting.moveEffect = GetEffectSporeMoveEffect(preferredEffect, canPoison, canParalyze, canSleep);
+                    if (gBattleScripting.moveEffect == MOVE_EFFECT_SLEEP && IsSleepClauseEnabled())
                         gBattleStruct->battlerState[gBattlerAttacker].sleepClauseEffectExempt = TRUE;
                     gEffectBattler = gBattlerAttacker;
                     gBattleScripting.battler = gBattlerTarget;
-                    gBattleScripting.moveEffect = MOVE_EFFECT_SLEEP;
                     PREPARE_ABILITY_BUFFER(gBattleTextBuff1, gLastUsedAbility);
                     BattleScriptCall(BattleScript_AbilityStatusEffect);
                     effect++;
@@ -5279,16 +5349,14 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
         }
             break;
         case ABILITY_POISON_POINT:
-            if (GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_4 ? RandomPercentage(RNG_POISON_POINT, 30) : RandomChance(RNG_POISON_POINT, 1, 3))
-            {
-            POISON_POINT:
             {
                 enum Ability abilityAtk = GetBattlerAbility(gBattlerAttacker);
                 if (IsBattlerAlive(gBattlerAttacker)
                 && !gProtectStructs[gBattlerAttacker].confusionSelfDmg
                 && IsBattlerTurnDamaged(gBattlerTarget)
                 && CanBePoisoned(gBattlerTarget, gBattlerAttacker, gLastUsedAbility, abilityAtk)
-                && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, abilityAtk, GetBattlerHoldEffect(gBattlerAttacker), move))
+                && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, abilityAtk, GetBattlerHoldEffect(gBattlerAttacker), move)
+                && TryDefensiveContactAbilityTrigger(gBattlerTarget, RNG_POISON_POINT))
                 {
                     gEffectBattler = gBattlerAttacker;
                     gBattleScripting.battler = gBattlerTarget;
@@ -5298,19 +5366,16 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
                     effect++;
                 }
             }
-            }
             break;
         case ABILITY_STATIC:
-            if (GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_4 ? RandomPercentage(RNG_STATIC, 30) : RandomChance(RNG_STATIC, 1, 3))
-            {
-            STATIC:
             {
                 enum Ability abilityAtk = GetBattlerAbility(gBattlerAttacker);
                 if (IsBattlerAlive(gBattlerAttacker)
                 && !gProtectStructs[gBattlerAttacker].confusionSelfDmg
                 && IsBattlerTurnDamaged(gBattlerTarget)
                 && CanBeParalyzed(gBattlerTarget, gBattlerAttacker, abilityAtk)
-                && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, abilityAtk, GetBattlerHoldEffect(gBattlerAttacker), move))
+                && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, abilityAtk, GetBattlerHoldEffect(gBattlerAttacker), move)
+                && TryDefensiveContactAbilityTrigger(gBattlerTarget, RNG_STATIC))
                 {
                     gEffectBattler = gBattlerAttacker;
                     gBattleScripting.battler = gBattlerTarget;
@@ -5320,7 +5385,6 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
                     effect++;
                 }
             }
-            }
             break;
         case ABILITY_FLAME_BODY:
             if (IsBattlerAlive(gBattlerAttacker)
@@ -5328,7 +5392,7 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
              && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, GetBattlerAbility(gBattlerAttacker), GetBattlerHoldEffect(gBattlerAttacker), move)
              && IsBattlerTurnDamaged(gBattlerTarget)
              && CanBeBurned(gBattlerTarget, gBattlerAttacker, GetBattlerAbility(gBattlerAttacker))
-             && (GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_4 ? RandomPercentage(RNG_FLAME_BODY, 30) : RandomChance(RNG_FLAME_BODY, 1, 3)))
+             && TryDefensiveContactAbilityTrigger(gBattlerTarget, RNG_FLAME_BODY))
             {
                 gEffectBattler = gBattlerAttacker;
                 gBattleScripting.battler = gBattlerTarget;
@@ -5343,12 +5407,12 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, u32 battler, enum Ability ab
              && !gProtectStructs[gBattlerAttacker].confusionSelfDmg
              && IsBattlerTurnDamaged(gBattlerTarget)
              && IsBattlerAlive(gBattlerTarget)
-             && (GetConfig(B_ABILITY_TRIGGER_CHANCE) >= GEN_4 ? RandomPercentage(RNG_CUTE_CHARM, 30) : RandomChance(RNG_CUTE_CHARM, 1, 3))
              && !(gBattleMons[gBattlerAttacker].volatiles.infatuation)
              && AreBattlersOfOppositeGender(gBattlerAttacker, gBattlerTarget)
              && !IsAbilityAndRecord(gBattlerAttacker, GetBattlerAbility(gBattlerAttacker), ABILITY_OBLIVIOUS)
              && !CanBattlerAvoidContactEffects(gBattlerAttacker, gBattlerTarget, GetBattlerAbility(gBattlerAttacker), GetBattlerHoldEffect(gBattlerAttacker), move)
-             && !IsAbilityOnSide(gBattlerAttacker, ABILITY_AROMA_VEIL))
+             && !IsAbilityOnSide(gBattlerAttacker, ABILITY_AROMA_VEIL)
+             && TryDefensiveContactAbilityTrigger(gBattlerTarget, RNG_CUTE_CHARM))
             {
                 gBattleMons[gBattlerAttacker].volatiles.infatuation = INFATUATED_WITH(gBattlerTarget);
                 BattleScriptCall(BattleScript_CuteCharmActivates);

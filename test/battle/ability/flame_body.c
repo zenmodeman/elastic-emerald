@@ -50,3 +50,67 @@ SINGLE_BATTLE_TEST("Flame Body triggers 1/3 times (Gen3) or 30% (Gen 4+) of the 
         STATUS_ICON(player, burn: TRUE);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Flame Body is forced when its defensive contact ability rate would fall below odds")
+{
+    GIVEN {
+        WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);
+        ASSUME(MoveMakesContact(MOVE_SCRATCH));
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_MAGMAR) { Ability(ABILITY_FLAME_BODY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+    } SCENE {
+        ABILITY_POPUP(opponent, ABILITY_FLAME_BODY);
+        ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_BRN, player);
+        MESSAGE("The opposing Magmar's Flame Body burned Wobbuffet!");
+        STATUS_ICON(player, burn: TRUE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Flame Body is not forced on the first eligible contact")
+{
+    GIVEN {
+        WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);
+        ASSUME(MoveMakesContact(MOVE_SCRATCH));
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_MAGMAR) { Ability(ABILITY_FLAME_BODY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+    } SCENE {
+        NONE_OF {
+            ABILITY_POPUP(opponent, ABILITY_FLAME_BODY);
+            ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_BRN, player);
+            MESSAGE("The opposing Magmar's Flame Body burned Wobbuffet!");
+            STATUS_ICON(player, burn: TRUE);
+        }
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Flame Body defensive contact ability counter resets when the ability user switches in")
+{
+    GIVEN {
+        WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);
+        ASSUME(MoveMakesContact(MOVE_SCRATCH));
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_MAGMAR) { Ability(ABILITY_FLAME_BODY); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+        TURN { SWITCH(opponent, 1); }
+        TURN { SWITCH(opponent, 0); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_FLAME_BODY, FALSE)); }
+    } SCENE {
+        NONE_OF {
+            ABILITY_POPUP(opponent, ABILITY_FLAME_BODY);
+            ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_BRN, player);
+            MESSAGE("The opposing Magmar's Flame Body burned Wobbuffet!");
+            STATUS_ICON(player, burn: TRUE);
+        }
+    }
+}

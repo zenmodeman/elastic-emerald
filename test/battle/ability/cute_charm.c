@@ -69,3 +69,52 @@ SINGLE_BATTLE_TEST("Cute Charm triggers 1/3 times (Gen3) or 30% (Gen 4+) of the 
         MESSAGE("Wobbuffet is in love with the opposing Clefairy!");
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Cute Charm successful triggers count toward defensive contact ability odds")
+{
+    GIVEN {
+        WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);
+        ASSUME(MoveMakesContact(MOVE_SCRATCH));
+        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
+        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
+        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
+        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
+        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
+        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
+        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
+        OPPONENT(SPECIES_CLEFAIRY) { Gender(MON_FEMALE); Ability(ABILITY_CUTE_CHARM); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, TRUE)); }
+        TURN { SWITCH(player, 1); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, TRUE)); }
+        TURN { SWITCH(player, 2); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
+        TURN { SWITCH(player, 3); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
+        TURN { SWITCH(player, 4); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
+        TURN { SWITCH(player, 5); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
+        TURN { SWITCH(player, 6); }
+        TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
+    } SCENE {
+        ABILITY_POPUP(opponent, ABILITY_CUTE_CHARM);
+        ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_INFATUATION, player);
+        MESSAGE("The opposing Clefairy's Cute Charm infatuated Wobbuffet!");
+        MESSAGE("Wobbuffet is in love with the opposing Clefairy!");
+        ABILITY_POPUP(opponent, ABILITY_CUTE_CHARM);
+        ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_INFATUATION, player);
+        MESSAGE("The opposing Clefairy's Cute Charm infatuated Wobbuffet!");
+        MESSAGE("Wobbuffet is in love with the opposing Clefairy!");
+        NONE_OF {
+            ABILITY_POPUP(opponent, ABILITY_CUTE_CHARM);
+            ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_INFATUATION, player);
+            MESSAGE("The opposing Clefairy's Cute Charm infatuated Wobbuffet!");
+            MESSAGE("Wobbuffet is in love with the opposing Clefairy!");
+        }
+        ABILITY_POPUP(opponent, ABILITY_CUTE_CHARM);
+        ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_INFATUATION, player);
+        MESSAGE("The opposing Clefairy's Cute Charm infatuated Wobbuffet!");
+        MESSAGE("Wobbuffet is in love with the opposing Clefairy!");
+    }
+}

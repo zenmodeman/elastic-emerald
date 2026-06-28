@@ -557,6 +557,8 @@ struct BattleVideo {
 struct BattlerState
 {
     u8 targetsDone[MAX_BATTLERS_COUNT];
+    u16 defensiveContactAbilityAttempts;
+    u16 defensiveContactAbilityHits;
 
     u32 commandingDondozo:1;
     u32 focusPunchBattlers:1;
