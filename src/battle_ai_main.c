@@ -32,6 +32,9 @@
 #define AI_ACTION_WATCH         (1 << 2)
 #define AI_ACTION_DO_NOT_ATTACK (1 << 3)
 
+#define ONLY_ONE_TARGET 100
+#define NO_KO_TARGET 255
+
 static u32 ChooseMoveOrAction(u32 battler);
 static u32 ChooseMoveOrAction_Singles(u32 battler);
 static u32 ChooseMoveOrAction_Doubles(u32 battler);
@@ -39,6 +42,9 @@ static inline void BattleAI_DoAIProcessing(struct AiThinkingStruct *aiThink, u32
 static inline void BattleAI_DoAIProcessing_PredictedSwitchin(struct AiThinkingStruct *aiThink, struct AiLogicData *aiData, u32 battlerAtk, u32 battlerDef);
 static bool32 IsPinchBerryItemEffect(enum HoldEffect holdEffect);
 static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef);
+static u8 GetTargetToKOInDoubles(u32 battler);
+static u8 FindSpeedTargetPreference(u32 battler);
+static bool32 DoesBattlerPreferDamagingOtherTarget(u32 battlerAtk, u32 battlerDef);
 
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
@@ -526,6 +532,152 @@ void Ai_UpdateFaintData(u32 battler)
     aiMon->isFainted = TRUE;
 }
 
+static u32 GetBestHitsFromBattlerToTarget(u32 battlerAtk, u32 battlerDef)
+{
+    return GetBestNoOfHitsToKO(battlerAtk, battlerDef, AI_ATTACKING);
+}
+
+static u8 FindSpeedTargetPreference(u32 battler)
+{
+    u32 playerOpposite = BATTLE_OPPOSITE(battler);
+    u32 playerPartner = BATTLE_PARTNER(playerOpposite);
+
+    if (gAiLogicData->speedStats[battler] > gAiLogicData->speedStats[playerOpposite]
+     && gAiLogicData->speedStats[battler] <= gAiLogicData->speedStats[playerPartner])
+        return playerOpposite;
+
+    if (gAiLogicData->speedStats[battler] > gAiLogicData->speedStats[playerPartner]
+     && gAiLogicData->speedStats[battler] <= gAiLogicData->speedStats[playerOpposite])
+        return playerPartner;
+
+    if (gAiLogicData->speedStats[playerOpposite] >= gAiLogicData->speedStats[playerPartner])
+        return playerOpposite;
+
+    return playerPartner;
+}
+
+static u8 GetTargetToKOInDoubles(u32 battler)
+{
+    u32 playerOpposite, playerPartner, battlerPartner;
+    u32 hitsToKOPlayerOpposite, hitsToKOPlayerPartner;
+
+    if (!IsDoubleBattle() || GetBattlerSide(battler) == B_SIDE_PLAYER)
+        return NO_KO_TARGET;
+
+    playerOpposite = BATTLE_OPPOSITE(battler);
+    playerPartner = BATTLE_PARTNER(playerOpposite);
+    battlerPartner = BATTLE_PARTNER(battler);
+
+    if (!IsBattlerAlive(playerOpposite) || !IsBattlerAlive(playerPartner))
+        return ONLY_ONE_TARGET;
+
+    hitsToKOPlayerOpposite = GetBestHitsFromBattlerToTarget(battler, playerOpposite);
+    hitsToKOPlayerPartner = GetBestHitsFromBattlerToTarget(battler, playerPartner);
+
+    if (hitsToKOPlayerOpposite != 1 && hitsToKOPlayerPartner != 1)
+        return NO_KO_TARGET;
+
+    if (IsBattlerAlive(battlerPartner))
+    {
+        u32 partnerHitsToKOPlayerOpposite = GetBestHitsFromBattlerToTarget(battlerPartner, playerOpposite);
+        u32 partnerHitsToKOPlayerPartner = GetBestHitsFromBattlerToTarget(battlerPartner, playerPartner);
+
+        if (hitsToKOPlayerOpposite == 1 && hitsToKOPlayerPartner == 1
+         && partnerHitsToKOPlayerOpposite != 1 && partnerHitsToKOPlayerPartner != 1)
+        {
+            if (partnerHitsToKOPlayerOpposite > partnerHitsToKOPlayerPartner)
+                return playerOpposite;
+            if (partnerHitsToKOPlayerPartner > partnerHitsToKOPlayerOpposite)
+                return playerPartner;
+            return FindSpeedTargetPreference(battler);
+        }
+
+        if (hitsToKOPlayerOpposite == 1 && hitsToKOPlayerPartner == 1
+         && partnerHitsToKOPlayerOpposite == 1 && partnerHitsToKOPlayerPartner == 1)
+        {
+            if (gAiLogicData->speedStats[battler] > gAiLogicData->speedStats[battlerPartner]
+             || (gAiLogicData->speedStats[battler] == gAiLogicData->speedStats[battlerPartner] && battler < battlerPartner))
+                return FindSpeedTargetPreference(battler);
+            return BATTLE_PARTNER(FindSpeedTargetPreference(battlerPartner));
+        }
+
+        if (hitsToKOPlayerOpposite == 1 && hitsToKOPlayerPartner != 1
+         && partnerHitsToKOPlayerOpposite == 1 && partnerHitsToKOPlayerPartner != 1)
+        {
+            if (hitsToKOPlayerPartner > partnerHitsToKOPlayerPartner)
+                return playerOpposite;
+            if (partnerHitsToKOPlayerPartner > hitsToKOPlayerPartner)
+                return NO_KO_TARGET;
+            if (gAiLogicData->speedStats[battler] > gAiLogicData->speedStats[battlerPartner]
+             || (gAiLogicData->speedStats[battler] == gAiLogicData->speedStats[battlerPartner] && battler < battlerPartner))
+                return playerOpposite;
+            return NO_KO_TARGET;
+        }
+
+        if (hitsToKOPlayerOpposite != 1 && hitsToKOPlayerPartner == 1
+         && partnerHitsToKOPlayerOpposite != 1 && partnerHitsToKOPlayerPartner == 1)
+        {
+            if (hitsToKOPlayerOpposite > partnerHitsToKOPlayerOpposite)
+                return playerPartner;
+            if (partnerHitsToKOPlayerOpposite > hitsToKOPlayerOpposite)
+                return NO_KO_TARGET;
+            if (gAiLogicData->speedStats[battler] > gAiLogicData->speedStats[battlerPartner]
+             || (gAiLogicData->speedStats[battler] == gAiLogicData->speedStats[battlerPartner] && battler < battlerPartner))
+                return playerPartner;
+            return NO_KO_TARGET;
+        }
+
+        if (hitsToKOPlayerOpposite == 1 && partnerHitsToKOPlayerOpposite != 1)
+            return playerOpposite;
+        if (hitsToKOPlayerPartner == 1 && partnerHitsToKOPlayerPartner != 1)
+            return playerPartner;
+
+        if (hitsToKOPlayerOpposite == 1 && hitsToKOPlayerPartner != 1
+         && partnerHitsToKOPlayerOpposite == 1 && partnerHitsToKOPlayerPartner == 1)
+            return playerOpposite;
+        if (hitsToKOPlayerOpposite != 1 && hitsToKOPlayerPartner == 1
+         && partnerHitsToKOPlayerOpposite == 1 && partnerHitsToKOPlayerPartner == 1)
+            return playerPartner;
+    }
+    else
+    {
+        if (hitsToKOPlayerOpposite == 1 && hitsToKOPlayerPartner == 1)
+            return FindSpeedTargetPreference(battler);
+        if (hitsToKOPlayerOpposite == 1)
+            return playerOpposite;
+        if (hitsToKOPlayerPartner == 1)
+            return playerPartner;
+    }
+
+    return NO_KO_TARGET;
+}
+
+static bool32 DoesBattlerPreferDamagingOtherTarget(u32 battlerAtk, u32 battlerDef)
+{
+    u32 battlerPartner = BATTLE_PARTNER(battlerAtk);
+    u32 opposingPartner = BATTLE_PARTNER(battlerDef);
+    u32 hitsAgainstBattlerDef, hitsAgainstOpposingPartner;
+
+    if (GetBattlerSide(battlerAtk) == GetBattlerSide(battlerDef) || !IsDoubleBattle())
+        return FALSE;
+
+    if (!IsBattlerAlive(battlerDef) || !IsBattlerAlive(opposingPartner))
+        return FALSE;
+
+    if (IsBattlerAlive(battlerPartner))
+    {
+        if (gAiLogicData->doublesKoTargets[battlerPartner] == battlerDef)
+            return TRUE;
+        if (gAiLogicData->doublesKoTargets[battlerPartner] == opposingPartner)
+            return FALSE;
+    }
+
+    hitsAgainstBattlerDef = GetBestHitsFromBattlerToTarget(battlerAtk, battlerDef);
+    hitsAgainstOpposingPartner = GetBestHitsFromBattlerToTarget(battlerAtk, opposingPartner);
+
+    return hitsAgainstOpposingPartner + 2 <= hitsAgainstBattlerDef;
+}
+
 void SetBattlerAiData(u32 battler, struct AiLogicData *aiData)
 {
     enum Ability ability;
@@ -648,6 +800,14 @@ void SetAiLogicDataForTurn(struct AiLogicData *aiData)
             continue;
 
         SetBattlerAiMovesData(aiData, battlerAtk, battlersCount, weather);
+    }
+
+    for (battlerAtk = 0; battlerAtk < battlersCount; battlerAtk++)
+    {
+        if (!IsBattlerAlive(battlerAtk))
+            continue;
+
+        aiData->doublesKoTargets[battlerAtk] = GetTargetToKOInDoubles(battlerAtk);
     }
 
     for (battlerAtk = 0; battlerAtk < battlersCount; battlerAtk++)
@@ -3037,6 +3197,11 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     if (IsBattleMoveStatus(move))
         return score; // status moves aren't accounted here
 
+    if (IsDoubleBattle()
+     && IsBattlerAlive(BATTLE_PARTNER(battlerAtk))
+     && gAiLogicData->doublesKoTargets[BATTLE_PARTNER(battlerAtk)] == battlerDef)
+        return score;
+
     enum BattleMoveEffects effect = GetMoveEffect(move);
     if (CanIndexMoveFaintTarget(battlerAtk, battlerDef, movesetIndex, AI_ATTACKING)
         && effect != EFFECT_EXPLOSION && effect != EFFECT_MISTY_EXPLOSION)
@@ -3087,6 +3252,9 @@ static s32 AI_DoubleBattle(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     bool32 wouldPartnerFaint = hasPartner && CanIndexMoveFaintTarget(battlerAtk, battlerAtkPartner, gAiThinkingStruct->movesetIndex, AI_ATTACKING)
         && !partnerProtecting;
     bool32 isFriendlyFireOK = !wouldPartnerFaint && (noOfHitsToKOPartner == 0 || noOfHitsToKOPartner > friendlyFireThreshold);
+
+    if (hasPartner && gAiLogicData->doublesKoTargets[battlerAtkPartner] == battlerDef)
+        ADJUST_SCORE(-3);
 
     // check what effect partner is using
     if (aiData->partnerMove != 0 && hasPartner)
@@ -3883,6 +4051,8 @@ static bool32 ShouldCompareMove(u32 battlerAtk, u32 battlerDef, u32 moveIndex, u
 {
     if (IsTargetingPartner(battlerAtk, battlerDef))
         return FALSE;
+    if (gAiThinkingStruct->score[moveIndex] < AI_SCORE_DEFAULT)
+        return FALSE;
     if (GetMovePower(move) == 0)
         return FALSE;
     if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, moveIndex, AI_ATTACKING) == 0)
@@ -3892,29 +4062,128 @@ static bool32 ShouldCompareMove(u32 battlerAtk, u32 battlerDef, u32 moveIndex, u
     return TRUE;
 }
 
+static bool32 ShouldConsiderWrapDamageCombo(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    if (!MoveHasAdditionalEffect(move, MOVE_EFFECT_WRAP))
+        return FALSE;
+    if (GetMovePower(move) == 0)
+        return FALSE;
+    if (gBattleMons[battlerDef].volatiles.wrapped)
+        return FALSE;
+    if (gAiLogicData->abilities[battlerDef] == ABILITY_MAGIC_GUARD)
+        return FALSE;
+
+    // Escape-capable targets may switch away before residual damage pays off.
+    if (AI_CanBattlerEscape(battlerDef) && AI_RandLessThan(128))
+        return FALSE;
+
+    return TRUE;
+}
+
+static u32 GetPredictedWrapResidualDamage(u32 battlerAtk, u32 battlerDef)
+{
+    u32 dmg;
+
+    if (gAiLogicData->holdEffects[battlerAtk] == HOLD_EFFECT_BINDING_BAND)
+        dmg = GetNonDynamaxMaxHP(battlerDef) / (B_BINDING_DAMAGE >= GEN_6 ? 6 : 8);
+    else
+        dmg = GetNonDynamaxMaxHP(battlerDef) / (B_BINDING_DAMAGE >= GEN_6 ? 8 : 16);
+
+    return max(1, dmg);
+}
+
+static u32 GetNoOfHitsWithWrapResidual(u32 battlerAtk, u32 battlerDef, u32 moveIndex)
+{
+    u16 move = GetMovesArray(battlerAtk)[moveIndex];
+    u32 bestDmgMove = GetBestDmgMoveFromBattler(battlerAtk, battlerDef, AI_ATTACKING);
+    u32 bestDmg = GetBestDmgFromBattler(battlerAtk, battlerDef, AI_ATTACKING);
+    u32 wrapMoveDmg = AI_GetDamage(battlerAtk, battlerDef, moveIndex, AI_ATTACKING, gAiLogicData);
+    u32 wrapResidualDmg = GetPredictedWrapResidualDamage(battlerAtk, battlerDef);
+    u32 actionsBeforeFaint = NoOfHitsForTargetToFaintAI(battlerDef, battlerAtk);
+    u32 numResidualTurns = gAiLogicData->holdEffects[battlerAtk] == HOLD_EFFECT_GRIP_CLAW ? 7 : 4;
+    u32 wrapSequenceDmgWithinActions = 0;
+    u32 bestMoveDmgWithinActions = 0;
+    s32 remainingDefenderHp = gBattleMons[battlerDef].hp;
+    u32 hitsForWrapSequence = 1;
+
+    if (bestDmgMove == move || bestDmg == 0)
+        return GetNoOfHitsToKOBattler(battlerAtk, battlerDef, moveIndex, AI_ATTACKING);
+
+    if (actionsBeforeFaint == UNKNOWN_NO_OF_HITS)
+        actionsBeforeFaint = MAX_MON_MOVES;
+    else if (actionsBeforeFaint == 0)
+        return GetNoOfHitsToKOBattler(battlerAtk, battlerDef, moveIndex, AI_ATTACKING);
+    else if (!AI_IsFaster(battlerAtk, battlerDef, move, GetIncomingMoveSpeedCheck(battlerAtk, battlerDef, gAiLogicData), CONSIDER_PRIORITY))
+        actionsBeforeFaint--;
+
+    if (actionsBeforeFaint < 2)
+        return GetNoOfHitsToKOBattler(battlerAtk, battlerDef, moveIndex, AI_ATTACKING);
+
+    remainingDefenderHp -= wrapMoveDmg;
+    remainingDefenderHp -= wrapResidualDmg;
+    numResidualTurns--;
+    wrapSequenceDmgWithinActions += wrapMoveDmg + wrapResidualDmg;
+    bestMoveDmgWithinActions += bestDmg;
+    actionsBeforeFaint--;
+
+    while (remainingDefenderHp > 0)
+    {
+        u32 residualDmgThisTurn = 0;
+
+        remainingDefenderHp -= bestDmg;
+        if (numResidualTurns > 0)
+        {
+            residualDmgThisTurn = wrapResidualDmg;
+            remainingDefenderHp -= residualDmgThisTurn;
+            numResidualTurns--;
+        }
+
+        if (actionsBeforeFaint > 0)
+        {
+            wrapSequenceDmgWithinActions += bestDmg + residualDmgThisTurn;
+            bestMoveDmgWithinActions += bestDmg;
+            actionsBeforeFaint--;
+        }
+        hitsForWrapSequence++;
+    }
+
+    if (wrapSequenceDmgWithinActions > bestMoveDmgWithinActions)
+        return hitsForWrapSequence;
+
+    return GetNoOfHitsToKOBattler(battlerAtk, battlerDef, moveIndex, AI_ATTACKING);
+}
+
 static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
 {
     u32 i, currId;
-    u32 tempMoveScores[MAX_MON_MOVES];
-    u32 moveComparisonScores[MAX_MON_MOVES];
-    u32 bestScore = AI_SCORE_DEFAULT;
-    bool32 multipleBestMoves = FALSE;
+    s32 tempMoveScores[MAX_MON_MOVES];
+    s32 moveComparisonScores[MAX_MON_MOVES];
+    s32 bestScore = AI_SCORE_DEFAULT;
     s32 noOfHits[MAX_MON_MOVES];
-    s32 leastHits = 1000;
     u16 *moves = GetMovesArray(battlerAtk);
     bool8 isTwoTurnNotSemiInvulnerableMove[MAX_MON_MOVES];
 
+    if (DoesBattlerPreferDamagingOtherTarget(battlerAtk, battlerDef))
+        return;
+
     for (currId = 0; currId < MAX_MON_MOVES; currId++)
     {
+        bool32 multipleBestMoves = FALSE;
+        bool32 currLostByDamageGap = FALSE;
+        s32 leastHits = 1000;
+
         moveComparisonScores[currId] = 0;
         if (!ShouldCompareMove(battlerAtk, battlerDef, currId, moves[currId]))
             continue;
         for (i = 0; i < MAX_MON_MOVES; i++)
         {
-            if (moves[i] != MOVE_NONE && GetMovePower(moves[i]) != 0)
+            if (moves[i] != MOVE_NONE && GetMovePower(moves[i]) != 0 && gAiThinkingStruct->score[i] >= AI_SCORE_DEFAULT)
             {
                 noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i, AI_ATTACKING);
-                if (ShouldUseSpreadDamageMove(battlerAtk,moves[i], i, noOfHits[i]))
+                if (ShouldConsiderWrapDamageCombo(battlerAtk, battlerDef, moves[i]))
+                    noOfHits[i] = GetNoOfHitsWithWrapResidual(battlerAtk, battlerDef, i);
+
+                if (ShouldUseSpreadDamageMove(battlerAtk, moves[i], i, noOfHits[i]))
                 {
                     noOfHits[i] = -1;
                     tempMoveScores[i] = 0;
@@ -3952,6 +4221,29 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
                     continue;
                 if (noOfHits[currId] == noOfHits[i])
                 {
+                    u32 dmgGapThreshold = 120;
+                    bool32 canOHKO = (noOfHits[currId] == 1);
+                    bool32 currIdIsWrapping = MoveHasAdditionalEffect(moves[currId], MOVE_EFFECT_WRAP);
+                    bool32 iMoveIsWrapping = MoveHasAdditionalEffect(moves[i], MOVE_EFFECT_WRAP);
+
+                    if (!canOHKO && !currIdIsWrapping && !iMoveIsWrapping)
+                    {
+                        u32 currDmg = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][currId].median;
+                        u32 otherDmg = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][i].median;
+
+                        if (currDmg >= (otherDmg * dmgGapThreshold) / 100)
+                        {
+                            tempMoveScores[i] -= 1;
+                            continue;
+                        }
+                        else if ((currDmg * dmgGapThreshold) / 100 <= otherDmg)
+                        {
+                            tempMoveScores[currId] -= 1;
+                            currLostByDamageGap = TRUE;
+                            break;
+                        }
+                    }
+
                     multipleBestMoves = TRUE;
                     // We need to make sure it's the current move which is objectively better.
                     if (isTwoTurnNotSemiInvulnerableMove[i] && !isTwoTurnNotSemiInvulnerableMove[currId])
@@ -3996,7 +4288,7 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
                         tempMoveScores[i] += MathUtil_Exponent(MAX_MON_MOVES, PRIORITY_ACCURACY);
                         break;
                     case MOVE_NEUTRAL_COMPARISON:
-                            break;
+                        break;
                     }
                     switch (AI_WhichMoveBetter(moves[currId], moves[i], battlerAtk, battlerDef, noOfHits[currId]))
                     {
@@ -4007,13 +4299,18 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
                         tempMoveScores[i] += MathUtil_Exponent(MAX_MON_MOVES, PRIORITY_EFFECT);
                         break;
                     case MOVE_NEUTRAL_COMPARISON:
-                            break;
+                        break;
                     }
                 }
             }
+            if (currLostByDamageGap)
+            {
+                moveComparisonScores[currId] = 0;
+                continue;
+            }
             // Turns out the current move deals the most dmg compared to the other 3.
             if (!multipleBestMoves)
-                moveComparisonScores[currId] = UINT32_MAX;
+                moveComparisonScores[currId] = 1000000;
             else
                 moveComparisonScores[currId] = tempMoveScores[currId];
         }
@@ -4028,7 +4325,7 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
     // Increase score for corresponding move(s), accomodating ties
     for (int i = 0; i < MAX_MON_MOVES; i++)
     {
-        if (moveComparisonScores[i] == bestScore)
+        if (moveComparisonScores[i] == bestScore && gAiThinkingStruct->score[i] >= AI_SCORE_DEFAULT)
             gAiThinkingStruct->score[i] += BEST_DAMAGE_MOVE;
     }
 }
