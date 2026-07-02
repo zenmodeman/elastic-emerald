@@ -481,11 +481,12 @@ void Ai_InitPartyStruct(void)
         if (isOmniscient || hasPartyKnowledge)
             gAiPartyData->mons[B_SIDE_PLAYER][i].species = GetMonData(mon, MON_DATA_SPECIES);
 
+        gAiPartyData->mons[B_SIDE_PLAYER][i].item = GetMonData(mon, MON_DATA_HELD_ITEM);
+        gAiPartyData->mons[B_SIDE_PLAYER][i].heldEffect = GetItemHoldEffect(gAiPartyData->mons[B_SIDE_PLAYER][i].item);
+
         if (isOmniscient)
         {
             u32 j;
-            gAiPartyData->mons[B_SIDE_PLAYER][i].item = GetMonData(mon, MON_DATA_HELD_ITEM);
-            gAiPartyData->mons[B_SIDE_PLAYER][i].heldEffect = GetItemHoldEffect(gAiPartyData->mons[B_SIDE_PLAYER][i].item);
             gAiPartyData->mons[B_SIDE_PLAYER][i].ability = GetMonAbility(mon);
             for (j = 0; j < MAX_MON_MOVES; j++)
                 gAiPartyData->mons[B_SIDE_PLAYER][i].moves[j] = GetMonData(mon, MON_DATA_MOVE1 + j);
@@ -4153,6 +4154,77 @@ static u32 GetNoOfHitsWithWrapResidual(u32 battlerAtk, u32 battlerDef, u32 moveI
     return GetNoOfHitsToKOBattler(battlerAtk, battlerDef, moveIndex, AI_ATTACKING);
 }
 
+static bool32 TryGetResistBerryConsumedDamages(u32 battlerAtk, u32 battlerDef, u32 moveIndex, u32 *firstHitDmg, u32 *laterHitDmg)
+{
+    u16 move = GetMovesArray(battlerAtk)[moveIndex];
+    enum HoldEffect holdEffect = gAiLogicData->holdEffects[battlerDef];
+    uq4_12_t effectiveness;
+    struct SimulatedDamage dmg;
+
+    if (holdEffect != HOLD_EFFECT_RESIST_BERRY)
+        return FALSE;
+
+    *firstHitDmg = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][moveIndex].median;
+
+    //Temporarily remove the hold item to comute the second damage
+    gAiLogicData->holdEffects[battlerDef] = HOLD_EFFECT_NONE;
+    dmg = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, USE_GIMMICK, NO_GIMMICK, AI_GetWeather());
+    
+    //Put the held item back now that damage without the resist berry has been computed
+    gAiLogicData->holdEffects[battlerDef] = holdEffect;
+
+    *laterHitDmg = dmg.median;
+    return *laterHitDmg > *firstHitDmg;
+}
+
+static u32 GetNoOfHitsWithResistBerryConsumed(u32 firstHitDmg, u32 laterHitDmg, s32 hp)
+{
+    if (firstHitDmg == 0)
+        return 0;
+    if (hp <= firstHitDmg)
+        return 1;
+    if (laterHitDmg == 0)
+        return 0;
+
+    return 1 + GetNoOfHitsToKO(laterHitDmg, hp - firstHitDmg);
+}
+
+static bool32 CompareResistBerryConsumedDamage(u32 battlerAtk, u32 battlerDef, u32 moveIndex1, u32 moveIndex2, enum MoveComparisonResult *result)
+{
+    u32 firstHitDmg1, laterHitDmg1;
+    u32 firstHitDmg2, laterHitDmg2;
+    bool32 move1ConsumesResistBerry = TryGetResistBerryConsumedDamages(battlerAtk, battlerDef, moveIndex1, &firstHitDmg1, &laterHitDmg1);
+    bool32 move2ConsumesResistBerry = TryGetResistBerryConsumedDamages(battlerAtk, battlerDef, moveIndex2, &firstHitDmg2, &laterHitDmg2);
+    u32 twoTurnDmg1;
+    u32 twoTurnDmg2;
+
+    if (!move1ConsumesResistBerry && !move2ConsumesResistBerry)
+        return FALSE;
+
+    if (!move1ConsumesResistBerry)
+    {
+        firstHitDmg1 = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][moveIndex1].median;
+        laterHitDmg1 = firstHitDmg1;
+    }
+    if (!move2ConsumesResistBerry)
+    {
+        firstHitDmg2 = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][moveIndex2].median;
+        laterHitDmg2 = firstHitDmg2;
+    }
+
+    twoTurnDmg1 = firstHitDmg1 + laterHitDmg1;
+    twoTurnDmg2 = firstHitDmg2 + laterHitDmg2;
+
+    if (twoTurnDmg1 > twoTurnDmg2)
+        *result = MOVE_WON_COMPARISON;
+    else if (twoTurnDmg2 > twoTurnDmg1)
+        *result = MOVE_LOST_COMPARISON;
+    else
+        *result = MOVE_NEUTRAL_COMPARISON;
+
+    return TRUE;
+}
+
 static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
 {
     u32 i, currId;
@@ -4182,6 +4254,13 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
                 noOfHits[i] = GetNoOfHitsToKOBattler(battlerAtk, battlerDef, i, AI_ATTACKING);
                 if (ShouldConsiderWrapDamageCombo(battlerAtk, battlerDef, moves[i]))
                     noOfHits[i] = GetNoOfHitsWithWrapResidual(battlerAtk, battlerDef, i);
+                else
+                {
+                    u32 firstHitDmg, laterHitDmg;
+
+                    if (TryGetResistBerryConsumedDamages(battlerAtk, battlerDef, i, &firstHitDmg, &laterHitDmg))
+                        noOfHits[i] = GetNoOfHitsWithResistBerryConsumed(firstHitDmg, laterHitDmg, gBattleMons[battlerDef].hp);
+                }
 
                 if (ShouldUseSpreadDamageMove(battlerAtk, moves[i], i, noOfHits[i]))
                 {
@@ -4230,8 +4309,23 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
                     {
                         u32 currDmg = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][currId].median;
                         u32 otherDmg = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][i].median;
+                        enum MoveComparisonResult resistBerryConsumedComparison;
 
-                        if (currDmg >= (otherDmg * dmgGapThreshold) / 100)
+                        if (CompareResistBerryConsumedDamage(battlerAtk, battlerDef, currId, i, &resistBerryConsumedComparison))
+                        {
+                            if (resistBerryConsumedComparison == MOVE_WON_COMPARISON)
+                            {
+                                tempMoveScores[i] -= 1;
+                                continue;
+                            }
+                            else if (resistBerryConsumedComparison == MOVE_LOST_COMPARISON)
+                            {
+                                tempMoveScores[currId] -= 1;
+                                currLostByDamageGap = TRUE;
+                                break;
+                            }
+                        }
+                        else if (currDmg >= (otherDmg * dmgGapThreshold) / 100)
                         {
                             tempMoveScores[i] -= 1;
                             continue;

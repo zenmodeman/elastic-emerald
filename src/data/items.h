@@ -10066,7 +10066,7 @@ const struct Item gItemsInfo[] =
         .price = 200,
     #endif
         .holdEffect = HOLD_EFFECT_BIG_ROOT,
-        .holdEffectParam = 35, //Slight buff, though the actual implementation is irrespective of this parameter
+        .holdEffectParam = 40, //Slight buff, though the actual implementation is irrespective of this parameter
         .description = COMPOUND_STRING(
             "A held item that\n"
             "ups the power of\n"

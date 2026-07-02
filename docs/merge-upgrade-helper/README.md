@@ -69,9 +69,11 @@ Major systems and mechanics:
 
 - Upstream expansion merge survival: merges through `expansion/1.12.0`, `1.12.1`, `1.12.2`, `1.12.3`, `1.13.0`, `1.14.0`, and `1.14.4`, followed by several custom repair commits.
 - Tier Points refinement: ability-aware point computation, ability-swap prevention, curated Tera/tier point tweaks, one-tier-point Center Tutor exception, restored Summary Screen tier point display, restored catch logic after `expansion/1.14.0`, and current party/PC/evolution/gift/tutor guard anchors.
-- AI refinements and tests: revealed-KO/lead/quad-effective fast-switch conditions, Dig switch removal, Sweet Scent double-battle static state, smarter double Rock Tomb logic, simulated stat-change guards/reverse fix, Wrap/binding best-damage work, Magic Guard and damage-gap exceptions, AI test additions, and trainer flag restoration after merge breaks.
+- Item and mode refinements: Restricted Mode automatically enforces item clause before trainer battles by bagging duplicate held items in party order, monotype truck setup seeds the PC with resist berries for types super-effective against the chosen monotype, and Big Root drain recovery is buffed to 40%.
+- AI refinements and tests: revealed-KO/lead/quad-effective fast-switch conditions, Dig switch removal, Sweet Scent double-battle static state, smarter double Rock Tomb logic, simulated stat-change guards/reverse fix, Wrap/binding best-damage work, Magic Guard and damage-gap exceptions, player held-item knowledge, resist-berry two-turn damage comparison, AI test additions, and trainer flag restoration after merge breaks.
 - Move and ability regression repairs: improved Swallow logic after upstream refactors, Honey Gather regression repairs, binding and Drain Douse test repairs, Aqua Ring bonus-effect cleanup, extra Suction Cups restoration, species-specific Snore/Bounce modifications, Lucky Chant turn/priority adjustment, and post-merge minor patches.
 - Data/mechanic standardization: standardized EV acquisition items and prices, Center Tutor/Brawly Combusken tweaks, Triumph counts, and several freeze-scenario fixes.
+- Overworld fail-safes: Fly menu use from Route 109 can return Mr. Briney to Dewford when Slateport is not yet visited, preventing the early MenuFly softlock state where Briney remains stranded on Route 109.
 - Documentation: feature summary/dossier commits now fold into this README.
 
 ## Merge Regression And Rework Ledger
@@ -92,7 +94,7 @@ Current audit status from static symbol scans:
 - Monotype, Tier Points, curated Tera, Restricted/Resource gates, Drain Douse, custom abilities, and smart AI systems all still have live data and runtime anchors in current `include`, `src`, `data`, and `test` scans.
 - Drain Douse still injects through `MOVEEND_ABSORB` and still has script/message/test anchors. Several advanced Drain Douse tests remain commented out in `test/battle/move_effect/drain_douse.c`; treat that as a test coverage gap, not proof the runtime is broken.
 - Tier Points catch/gift/evolution/PC/tutor/ability-change paths are present, including `gExcessTierPoints`, Summary Screen display, and one-point Center Tutor exceptions.
-- AI prediction and smart switching still retain `AI_FLAG_PREDICT_SWITCH`, `AI_FLAG_PREDICT_INCOMING_MON`, `AI_FLAG_SMART_TERA`, `GetMostSuitableMonToSwitchInto`, and `ShouldSwitch` hooks, plus tests for prediction and smart Tera.
+- AI prediction and smart switching still retain `AI_FLAG_PREDICT_SWITCH`, `AI_FLAG_PREDICT_INCOMING_MON`, `AI_FLAG_SMART_TERA`, `GetMostSuitableMonToSwitchInto`, and `ShouldSwitch` hooks, plus tests for prediction and smart Tera. Held-item awareness now also feeds damage simulation for player-side items, including resist berries.
 
 Likely rework candidates:
 
@@ -166,6 +168,7 @@ Primary anchors:
 
 - `src/pokemon.c`: `GetMonoType`.
 - `src/wild_encounter.c`: `IsMonMonotypeException`, `TryGetMonotypeWildMonIndex`, land/shaking/fishing filters, gender fixes for split-evolution lines.
+- `src/script_pokemon_util.c`: `PopulateMonotypeResistBerriesInPC`, which seeds PC resist berries during truck setup for monotypes weak to covered attacking types.
 - `src/evolution_scene.c`: Shedinja and other evolution exceptions.
 - `src/battle_terastal.c`: Tera is allowed only if it preserves the monotype or is Stellar.
 - `data/maps/InsideOfTruck/scripts.pory`: monotype choice and explanation.
@@ -176,6 +179,7 @@ Audit checks:
 
 - Wild encounter filtering must fall back to a valid compatible slot rather than allowing incompatible species in monotype mode.
 - Exceptions such as Snorunt/Ghost, Ralts/Fighting, Burmy exclusive-evolution types, Shedinja/Ghost, and split-evolution gender forcing must survive refactors.
+- Truck setup should still add 12 copies of each applicable resist berry to PC storage for attack types that are super-effective against the selected monotype.
 - Tera legality must continue to consider both the chosen monotype and Restricted Mode bans.
 - Search for `GetMonoType()` after merges. If only data references remain, runtime hooks likely dropped.
 
@@ -210,6 +214,7 @@ Restricted Mode and Resource Mode impose balance and scarcity constraints across
 Primary anchors:
 
 - `include/constants/flags.h`: `FLAG_RESTRICTED_MODE`, `FLAG_RESOURCE_MODE`.
+- `src/battle_setup.c`, `include/battle_setup.h`, `src/battle_tower.c`: `BattleSetup_EnforceRestrictedModeItemClause` removes duplicate held items from the player's party before trainer battles, sending them to bag, then PC, then discard if no storage remains.
 - `src/pokemon.c`: Restricted evolution item checks, restricted move/tutor logic, `CanMonUseCenterTutorWithCurrentResources`.
 - `src/party_menu.c`: item use and ability-change restrictions.
 - `src/pokemon_storage_system.c`: restricted release move ownership checks.
@@ -220,7 +225,9 @@ Primary anchors:
 Audit checks:
 
 - Do not reduce Restricted Mode to only script gates; party menu, evolution, release, and Tera checks are also enforcement points.
+- Do not restore old explicit Roxanne/Brawly item-clause script gates unless the automatic trainer-battle item-clause enforcement is intentionally removed.
 - If a merge changes item-use, tutor, or evolution APIs, re-thread Restricted Mode checks through the new helper path.
+- If a merge changes trainer-battle setup callbacks, ensure Restricted Mode item-clause enforcement still runs before standard trainer battles, Battle Pyramid/Trainer Hill battles, and Battle Tower trainer battles.
 - Restricted release logic should prevent releasing the sole owner of certain required moves.
 - Resource Mode shop/gift/tutor scripts should be audited when command names or item constants change.
 
@@ -294,6 +301,7 @@ Primary anchors:
 Known custom or materially modified behaviors:
 
 - `Drain Douse`: status-like absorb injection through move-end absorb handling, Liquid Ooze inversion, infinite-loop guard.
+- `Big Root`: locally buffed drain recovery to 40%; the runtime multiplier in `GetDrainedBigRootHp` is the important behavior, not just the item data parameter.
 - `Metal Rush`: custom move with weight/metal interactions and speed-boost planning.
 - `Echoed Voice`: more accurate consecutive-use behavior tracked through battle structs and AI damage prediction.
 - `Refresh`: heals all status conditions and is not blocked by those statuses.
@@ -375,6 +383,8 @@ Primary anchors:
 Known AI systems:
 
 - Best-damaging-move logic includes Hidden STAB, binding residual, damage gaps, wrapping exceptions, and OHKO exclusions.
+- Player held items are known to the AI at all times; player-side `AI_DecideHoldEffectForTurn` uses the battler's current held item effect, and player party data records held items outside omniscient-only knowledge.
+- Resist berries are modeled as consumed over repeated damaging turns: the first hit uses current simulated berry-reduced damage, later hits recalculate without the berry, and non-OHKO same-KO-timing move comparisons can prefer the higher two-turn damage line.
 - Smart switching integrates hazards, weather, status, recurring healing/damage, priority, 1v1 viability, ace rules, Baton Pass, Truant, Wonder Guard, trapper, choice lock, and ability-benefit switches.
 - Switch prediction mirrors player-side `ShouldSwitch` and can score against predicted incoming Pokemon.
 - Smart Tera chooses Tera for KO, survival, and priority contexts.
@@ -389,6 +399,7 @@ Audit checks:
 - Be suspicious of boolean rewrites in AI helper arguments, especially battler indexes and side indexes.
 - Predicted-switch logic may use `PARTY_SIZE` as a generic switch sentinel. Guard `gAiLogicData->mostSuitableMonId[...]` before indexing a party array, and scan for accidental `if (...);` constructs around predicted-switch checks.
 - Any runtime battle mechanic change should have an AI mirror if the AI scores or predicts it.
+- Resist-berry AI depends on `gAiLogicData->holdEffects` being restored after temporary no-item damage simulation; also verify Unnerve/As One still prevents the berry damage modifier through `IsUnnerveBlocked`.
 - `src/battle_ai_switch_items.c`, `src/battle_ai_util.c`, and `src/battle_util.c` often need coordinated updates.
 - Existing dirty worktree edits in these files may be user changes; inspect before editing.
 
@@ -443,6 +454,7 @@ Primary anchors:
 Known QOL/content systems:
 
 - MenuFly, custom Cut HM users, HM deletion, Party Nickname option, Box Link, Pokedex Plus, no-whiteout battles, AI-vs-AI/player-side backsprite support.
+- Route 109 MenuFly softlock prevention: if Fly is used from Route 109 before Slateport is visited and Briney/boat are still present there, `SetFlyDestination` returns Briney and the boat to Dewford.
 - Fake RTC and in-game time advancement.
 - Reduced egg steps, auto-boxing egg hatches, improved hatch memo.
 - Split EXP progression scaling and level/candy caps.
@@ -452,6 +464,7 @@ Known QOL/content systems:
 Audit checks:
 
 - These systems often depend on callbacks and menu state; merge conflicts can compile while losing return paths.
+- Route 109's Briney failsafe is intentionally in the successful Fly destination path, not the Fly cancel path.
 - If upstream changes menu tasks, field effects, daycare, or RTC helpers, verify custom callbacks still restore the correct screen/state.
 
 ## Data Balance And Learnsets
@@ -503,7 +516,7 @@ Default static checks for this repo:
 git diff --check
 rg -n '(<{7}|={7}|>{7})' .
 rg -n 'GetMonTierPoints|CountPartyTierPoints|CalcTierPointsAfter|GetMonoType|FLAG_TIERED|FLAG_RESTRICTED_MODE|FLAG_RESOURCE_MODE|FLAG_CURATED_TERA|CanTerastallize|IsRestrictedModeTeraBanned|CanMonUseCenterTutorWithCurrentResources' include src data
-rg -n 'Drain Douse|EFFECT_DRAIN_DOUSE|trydamphealing|Honey Gather|Astral Charge|Merry|Covered|Stockpile|Swallow|Echoed Voice|AI_FLAG_SMART_TRAINER|AI_FLAG_PREDICT_SWITCH|AI_FLAG_SMART_TERA|ApplySimulatedStatChanges' include src data test
+rg -n 'Drain Douse|EFFECT_DRAIN_DOUSE|trydamphealing|Honey Gather|Astral Charge|Merry|Covered|Stockpile|Swallow|Echoed Voice|AI_FLAG_SMART_TRAINER|AI_FLAG_PREDICT_SWITCH|AI_FLAG_SMART_TERA|ApplySimulatedStatChanges|BattleSetup_EnforceRestrictedModeItemClause|PopulateMonotypeResistBerriesInPC|TryGetResistBerryConsumedDamages|TryReturnMrBrineyToDewfordAfterRoute109Fly' include src data test
 ```
 
 Avoid full build checks unless explicitly requested.

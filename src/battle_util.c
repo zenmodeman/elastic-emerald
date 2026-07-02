@@ -1919,7 +1919,8 @@ bool32 BattleArenaTurnEnd(void)
 s32 GetDrainedBigRootHp(u32 battler, s32 hp)
 {
     if (GetBattlerHoldEffect(battler) == HOLD_EFFECT_BIG_ROOT)
-        hp = (hp * 1300) / 1000;
+        //Slight Big Root buff
+        hp = (hp * 1400) / 1000;
     if (hp == 0)
         hp = 1;
 

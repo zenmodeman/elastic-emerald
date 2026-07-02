@@ -2030,7 +2030,9 @@ enum HoldEffect AI_DecideHoldEffectForTurn(u32 battlerId)
     if (gBattleMons[battlerId].item == ITEM_NONE) // Failsafe for when user recorded an item but it was consumed
         return holdEffect;
 
-    if (!IsAiBattlerAware(battlerId))
+    if (IsOnPlayerSide(battlerId))
+        holdEffect = GetBattlerHoldEffectIgnoreNegation(battlerId);
+    else if (!IsAiBattlerAware(battlerId))
         holdEffect = gAiPartyData->mons[GetBattlerSide(battlerId)][gBattlerPartyIndexes[battlerId]].heldEffect;
     else
         holdEffect = GetBattlerHoldEffectIgnoreNegation(battlerId);
