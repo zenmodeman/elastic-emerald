@@ -11,9 +11,13 @@ OldaleTown_OnTransition:
 	call_if_set FLAG_ADVENTURE_STARTED, OldaleTown_EventScript_SetOldaleState
 	end
 
-@ This script seems pointless because nothing uses VAR_OLDALE_TOWN_STATE
 OldaleTown_EventScript_SetOldaleState::
+	goto_if_set FLAG_SYS_FLY_GET, OldaleTown_EventScript_SetOldaleRideCallerState
 	setvar VAR_OLDALE_TOWN_STATE, 1
+	return
+
+OldaleTown_EventScript_SetOldaleRideCallerState::
+	setvar VAR_OLDALE_TOWN_STATE, 2
 	return
 
 OldaleTown_EventScript_BlockWestEntrance::
@@ -438,18 +442,275 @@ script OldaleTown_EventScript_Fisherman {
 script OldaleTown_EventScript_Taxi{
 	lock
 	faceplayer	
+	call(OldaleTown_EventScript_TaxiConversation)
+	release
+	end
+}
+
+script OldaleTown_EventScript_TaxiConversation{
 	if (!flag(FLAG_SYS_FLY_GET)){
 		msgbox(format("Hello, I manage the Corviknight ride system. I see you're missing out, so I'll give you a ride caller free of charge."))
 		playfanfare(MUS_OBTAIN_ITEM)
 		msgbox(format( "{PLAYER} received the Corviknight Ride Caller!"))
 		waitfanfare
 		setflag(FLAG_SYS_FLY_GET)
+		setvar(VAR_OLDALE_TOWN_STATE, 2)
 		msgbox(format("You should be able to Fly from your menu when you're outdoors. Hope you enjoy!"))
 	}else{
 		msgbox(format("Being able to fly is great isn't it? I'm glad to offer my services in Hoenn."))
 	}
-	release
+	return
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromBelow {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerFaceTaxi)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
 	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromLeft {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromLeft)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromFarLeft {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayerFromLeft)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromFarLeft)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromNorthLeft {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayerFromNorth)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromNorthLeft)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromRight {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromRight)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromNorthRight {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayerFromNorth)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromNorthRight)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromSouth {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromSouth)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromSouthLeft {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromSouthLeft)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiTriggerFromSouthRight {
+	lockall
+	if (flag(FLAG_SYS_FLY_GET)){
+		releaseall
+		end
+	}
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFacePlayer)
+	applymovement(LOCALID_PLAYER, OldaleTown_Movement_PlayerApproachTaxiFromSouthRight)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiConversation)
+	releaseall
+	end
+}
+
+script OldaleTown_EventScript_TaxiNoticePlayer {
+	playse(SE_PIN)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, Common_Movement_ExclamationMark)
+	waitmovement(0)
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, Common_Movement_Delay48)
+	waitmovement(0)
+	msgbox(format("Oh! You there! I haven't told you about our Corviknight ride service yet. Come here a moment, would you?"))
+	closemessage
+	return
+}
+
+script OldaleTown_EventScript_TaxiNoticePlayerFromLeft {
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFaceLeft)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	return
+}
+
+script OldaleTown_EventScript_TaxiNoticePlayerFromRight {
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFaceRight)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	return
+}
+
+script OldaleTown_EventScript_TaxiNoticePlayerFromNorth {
+	applymovement(LOCALID_OLDALE_RIDE_CALLER_MAN, OldaleTown_Movement_TaxiFaceUp)
+	waitmovement(0)
+	call(OldaleTown_EventScript_TaxiNoticePlayer)
+	return
+}
+
+movement OldaleTown_Movement_TaxiFacePlayer {
+	face_down
+	step_end
+}
+
+movement OldaleTown_Movement_TaxiFaceUp {
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_TaxiFaceLeft {
+	face_left
+	step_end
+}
+
+movement OldaleTown_Movement_TaxiFaceRight {
+	face_right
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerFaceTaxi {
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromLeft {
+	walk_right
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromFarLeft {
+	walk_right
+	walk_right
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromNorthLeft {
+	walk_down
+	walk_down
+	walk_down
+	walk_right
+	walk_right
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromRight {
+	walk_left
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromNorthRight {
+	walk_down
+	walk_down
+	walk_down
+	walk_left
+	walk_left
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromSouth {
+	walk_up
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromSouthLeft {
+	walk_right
+	walk_up
+	face_up
+	step_end
+}
+
+movement OldaleTown_Movement_PlayerApproachTaxiFromSouthRight {
+	walk_left
+	walk_up
+	face_up
+	step_end
 }
 
 script OldaleTown_EventScript_RuinsSign{

@@ -164,6 +164,7 @@
       "flag": "0"
     },
     {
+      "local_id": "LOCALID_OLDALE_RIDE_CALLER_MAN",
       "graphics_id": "OBJ_EVENT_GFX_MYSTERY_GIFT_MAN",
       "x": 10,
       "y": 9,
@@ -257,6 +258,87 @@
       "var": "VAR_OLDALE_RIVAL_STATE",
       "var_value": "1",
       "script": "OldaleTown_EventScript_RivalTrigger3"
+    },
+    {
+      "type": "trigger",
+      "x": 10,
+      "y": 10,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromBelow"
+    },
+    {
+      "type": "trigger",
+      "x": 9,
+      "y": 10,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromLeft"
+    },
+    {
+      "type": "trigger",
+      "x": 8,
+      "y": 10,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromFarLeft"
+    },
+    {
+      "type": "trigger",
+      "x": 8,
+      "y": 7,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromNorthLeft"
+    },
+    {
+      "type": "trigger",
+      "x": 11,
+      "y": 10,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromRight"
+    },
+    {
+      "type": "trigger",
+      "x": 12,
+      "y": 7,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromNorthRight"
+    },
+    {
+      "type": "trigger",
+      "x": 10,
+      "y": 11,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromSouth"
+    },
+    {
+      "type": "trigger",
+      "x": 9,
+      "y": 11,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromSouthLeft"
+    },
+    {
+      "type": "trigger",
+      "x": 11,
+      "y": 11,
+      "elevation": 3,
+      "var": "VAR_OLDALE_TOWN_STATE",
+      "var_value": "1",
+      "script": "OldaleTown_EventScript_TaxiTriggerFromSouthRight"
     }
   ],
   "bg_events": [
