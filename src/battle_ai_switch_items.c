@@ -98,10 +98,7 @@ static u32 GetHPHealAmount(u8 itemEffectParam, struct Pokemon *mon);
 static u32 GetBattleMonTypeMatchup(struct BattlePokemon opposingBattleMon, struct BattlePokemon battleMon);
 
 
-//Custom static function
-static bool32 FindHealAbsorbMonWithSwitches(u32 battler, u16 move, u32 numRequiredSwitches);
-
-#define MIN_SWITCHES_FOR_PREDICTION 3
+#define MIN_SWITCHES_FOR_IMMUNITY_PREDICTION 6
 
 static void InitializeSwitchinCandidate(struct Pokemon *mon)
 {
@@ -1105,7 +1102,7 @@ static bool32 FindMonWithFlagsAndSuperEffective(u32 battler, u16 flags, u32 perc
         if (moveFlags & flags)
         {
             if (GetBattlerSide(battler) == B_SIDE_PLAYER){
-                //Note that in addition to percentChance here, there's also the percentage value of gAiLogicData->predictingSwitch, with PREDICT_SWITCH_CHANCE (e.g. 75%)
+                // Note that in addition to percentChance here, there's also PREDICT_SWITCH_CHANCE via gAiLogicData->predictingSwitch.
                 if (RandomPercentage(RNG_AI_SWITCH_SE_DEFENSIVE, percentChance)){
                     DEBUG_PREDICT("The custom Player Side call occurred, species is %d, and i is %d.", species, i);
                     return SetSwitchinAndSwitch(battler, i);
@@ -1291,52 +1288,97 @@ static bool32 ShouldSwitchIfAttackingStatsLowered(u32 battler)
     return FALSE;
 }
 
-//NOTE: Need to verify whether AiPartyMon indexes align with SetSwitchinAndSwitch indices
-//Follow-up to Note: Seems to be so, since testing seems to have succeeded, but try to confirm in the future.
-static bool32 FindHealAbsorbMonWithSwitches(u32 battler, u16 move, u32 numRequiredSwitches){
+static u32 GetMoveImmunityValue(u32 battlerAtk, u32 partyIndex, u32 move)
+{
+    struct AiPartyMon *aiMon = &gAiPartyData->mons[B_SIDE_PLAYER][partyIndex];
+    enum Ability abilityAtk = gAiLogicData->abilities[battlerAtk];
+    enum Ability abilityDef = aiMon->ability;
+    enum Type moveType = CheckDynamicMoveType(GetBattlerMon(battlerAtk), move, battlerAtk, MON_IN_BATTLE);
 
-    u32 i, count;
-    u32 moveType = GetMoveType(move);
-    struct AiPartyMon *aiMons;
+    if (abilityDef != ABILITY_NONE
+     && CanAbilityAbsorbMove(battlerAtk, GetOppositeBattler(battlerAtk), abilityDef, move, moveType, AI_CHECK))
+        return 3;
+    if (abilityDef != ABILITY_NONE
+     && CanAbilityBlockMove(battlerAtk, GetOppositeBattler(battlerAtk), abilityAtk, abilityDef, move, AI_CHECK))
+        return 2;
+    if (CalcPartyMonTypeEffectivenessMultiplier(move, aiMon->species, abilityDef) == 0)
+        return 1;
+    return 0;
+}
 
-    if (IsDoubleBattle()){
-        //Only consider singles for now.
+static bool32 IsRevealedPlayerMonAvailableForPrediction(u32 battlerDef, u32 partyIndex)
+{
+    struct AiPartyMon *aiMon = &gAiPartyData->mons[B_SIDE_PLAYER][partyIndex];
+    struct Pokemon *party = GetBattlerParty(battlerDef);
+
+    if (!aiMon->wasSentInBattle || aiMon->species == SPECIES_NONE)
+        return FALSE;
+    if (!IsValidForBattle(&party[partyIndex]))
+        return FALSE;
+    if (partyIndex == gBattlerPartyIndexes[battlerDef])
+        return FALSE;
+    return TRUE;
+}
+
+bool32 TryChooseImmunityPredictionSwitchin(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    u32 i;
+    u32 candidates[PARTY_SIZE];
+    u32 candidateCount = 0;
+    u32 bestSwitchCount = 0;
+    u32 bestImmunityValue = 0;
+    u32 chosenPartyIndex;
+
+    if (IsDoubleBattle() || GetBattlerSide(battlerDef) != B_SIDE_PLAYER)
+        return FALSE;
+    if (move == MOVE_NONE || move == MOVE_UNAVAILABLE || IsBattleMoveStatus(move))
+        return FALSE;
+    if (gAiBattleData->playerSwitchesDuringAiStint < MIN_SWITCHES_FOR_IMMUNITY_PREDICTION)
+    {
+        DEBUG_PREDICT("Player switch count during AI stint: %d (required: %d)",
+                      gAiBattleData->playerSwitchesDuringAiStint, MIN_SWITCHES_FOR_IMMUNITY_PREDICTION);
         return FALSE;
     }
 
-    if (moveType != TYPE_ELECTRIC && moveType != TYPE_WATER && moveType != TYPE_GROUND){
-        return FALSE;
-    }
+    for (i = 0; i < gAiPartyData->count[B_SIDE_PLAYER]; i++)
+    {
+        u32 immunityValue;
+        u32 switchCount;
 
-    aiMons = gAiPartyData->mons[GetBattlerSide(battler)];
+        if (!IsRevealedPlayerMonAvailableForPrediction(battlerDef, i))
+            continue;
 
-    count = gAiPartyData->count[GetBattlerSide(battler)];
+        immunityValue = GetMoveImmunityValue(battlerAtk, i, move);
+        if (immunityValue == 0)
+            continue;
 
-    for (i=0; i < count; i++){
-        u16 monAbility = aiMons[i].ability;
-        bool32 isAbilityTypeMatch =  (
-            (monAbility == ABILITY_VOLT_ABSORB && moveType == TYPE_ELECTRIC)
-            || (monAbility == ABILITY_EARTH_EATER && moveType == TYPE_GROUND)
-            || ((monAbility == ABILITY_WATER_ABSORB || monAbility == ABILITY_DRY_SKIN) && moveType == TYPE_WATER)
-        );
-
-        if (!isAbilityTypeMatch) continue;
-        if (aiMons[i].species == gBattleMons[battler].species) continue;
-        //The switch-in mon needs to have had a large enough track record of switching in
-        else if (aiMons[i].switchInCount < numRequiredSwitches) continue;
-
-        //Perform a switch with an absorbing mon that doesn't violate the above conditions
-        //Note that in addition to the 50% here, there's also the percentage value of gAiLogicData->predictingSwitch, with PREDICT_SWITCH_CHANCE (e.g. 75%)
-        if (RandomPercentage(RNG_AI_SWITCH_ABSORBING_STAY_IN, 50)){
-            DEBUG_ABILITY("HealAbsorb check passed, but RNG check failed.");
-            return FALSE;
-        }else{
-            DEBUG_ABILITY("HealAbsorb RNG check passed.");
-            return SetSwitchinAndSwitch(battler, i);
+        switchCount = gAiPartyData->mons[B_SIDE_PLAYER][i].switchInCount;
+        if (candidateCount == 0 || switchCount > bestSwitchCount || (switchCount == bestSwitchCount && immunityValue > bestImmunityValue))
+        {
+            candidateCount = 0;
+            bestSwitchCount = switchCount;
+            bestImmunityValue = immunityValue;
         }
-    }
-    return FALSE;
 
+        if (switchCount == bestSwitchCount && immunityValue == bestImmunityValue)
+            candidates[candidateCount++] = i;
+    }
+
+    if (candidateCount == 0)
+        return FALSE;
+    // PREDICT_SWITCH_CHANCE via RNG_AI_PREDICT_SWITCH owns the chance for this prediction (generally 50%), so this particular RNG check can be 100%.
+    if (!RandomPercentage(RNG_AI_SWITCH_SE_DEFENSIVE, 100))
+    {
+        DEBUG_PREDICT("Immunity prediction candidate found, but RNG failed.");
+        return FALSE;
+    }
+
+    chosenPartyIndex = candidates[Random() % candidateCount];
+    DEBUG_PREDICT("Predicting player switch to party index %d against move %d.", chosenPartyIndex, move);
+    gAiLogicData->mostSuitableMonId[battlerDef] = chosenPartyIndex;
+    gBattleStruct->AI_monToSwitchIntoId[battlerDef] = chosenPartyIndex;
+    gAiLogicData->shouldSwitch |= (1u << battlerDef);
+    return TRUE;
 }
 
 static bool32 CanBattlerConsiderSwitch(u32 battler)
@@ -1397,78 +1439,8 @@ bool32 ShouldSwitch(u32 battler)
 
     if (GetBattlerSide(battler) == B_SIDE_PLAYER){
         DEBUG_PREDICT("=== Player Switch Prediction Logic ===");
-        //Special player switch-in check
-        //Note, even if player mon can outspeed and OHKO, still carry through with the check, to prevent switch abuse in these cases
-
-        u32 aiBattler = GetOpposingSideBattler(battler);
-        struct AiPartyMon *aiMons = gAiPartyData->mons[GetBattlerSide(battler)];
-        u16 aiBestDmgMove;
-        u16 storedMove;
-        bool32 immuneMonFound;
-
-        DEBUG_PREDICT("AI battler: %d, Player battler: %d", aiBattler, battler);
-
-        //AI battler must be able to do damage
-        u32 bestDamage = GetBestDmgFromBattler(aiBattler, battler, AI_ATTACKING);
-        if (bestDamage == 0){
-            DEBUG_PREDICT("Player ShouldSwitch call: player mon takes no damage from AI mon's damaging moves; aborted.");
-            return FALSE;
-        }
-        DEBUG_PREDICT("AI's best damage against player: %d", bestDamage);
-
-        aiBestDmgMove = (u16)GetBestDmgMoveFromBattler(aiBattler, battler, AI_ATTACKING);
-        DEBUG_PREDICT("AI's best damage move: %d", aiBestDmgMove);
-
-        //Before the standard check for immunity looping, do a check for immunity healing abilities just to prevent them from getting
-        //infinite healing
-        if (FindHealAbsorbMonWithSwitches(battler, aiBestDmgMove, MIN_SWITCHES_FOR_PREDICTION)){
-            DEBUG_PREDICT("Heal Absorb mon check is being reached - switching!");
-            return TRUE;
-        }
-
-        u32 switchCount = aiMons[gBattlerPartyIndexes[battler]].switchInCount;
-        DEBUG_PREDICT("Current mon switch count: %d (required: %d)", switchCount, MIN_SWITCHES_FOR_PREDICTION);
-        if (switchCount < MIN_SWITCHES_FOR_PREDICTION){
-            DEBUG_PREDICT("Player ShouldSwitch call: Current mon hasn't switched out enough; aborted.");
-            return FALSE;
-        }
-
-        //Switch prediction only triggered if the player mon is immune to one of the battler's moves
-        bool32 hasIneffectiveMove = HasIneffectiveDamagingMove(aiBattler, battler);
-        DEBUG_PREDICT("AI has ineffective move against player: %s", hasIneffectiveMove ? "YES" : "NO");
-        if (!hasIneffectiveMove){
-            DEBUG_PREDICT("Player ShouldSwitch call: player mon isn't immune to AI mon's moves; aborted.");
-            return FALSE;
-        }
-
-
-        //Temporary inject last used move for FindMonThatAbsorbsOpponentsMove
-        storedMove = gAiLogicData->lastUsedMove[aiBattler];
-        gAiLogicData->lastUsedMove[aiBattler] = aiBestDmgMove;
-        DEBUG_PREDICT("Testing absorb logic - injected move: %d (stored: %d)", aiBestDmgMove, storedMove);
-        immuneMonFound = FindMonThatAbsorbsOpponentsMove(battler);
-        gAiLogicData->lastUsedMove[aiBattler] = storedMove;
-        DEBUG_PREDICT("Absorb mon found: %s", immuneMonFound ? "YES" : "NO");
-        if (immuneMonFound){
-            DEBUG_PREDICT("Player Switch logic on Absorb is triggered - switching!");
-            return TRUE;
-        }
-
-        //Temporary inject last landed move for FindMonWithFlagsAndSuperEffective
-        storedMove = gLastLandedMoves[battler];
-        gLastLandedMoves[battler] = aiBestDmgMove;
-        DEBUG_PREDICT("Testing immunity logic - injected move: %d (stored: %d)", aiBestDmgMove, storedMove);
-        //Note that in addition to the 50% here, there's also the percentage value of gAiLogicData->predictingSwitch, with PREDICT_SWITCH_CHANCE (e.g. 75%)
-        immuneMonFound = FindMonWithFlagsAndSuperEffective(battler, MOVE_RESULT_DOESNT_AFFECT_FOE, 50);
-        gLastLandedMoves[battler] = storedMove;
-        DEBUG_PREDICT("Immune mon found: %s", immuneMonFound ? "YES" : "NO");
-        if (immuneMonFound){
-            DEBUG_PREDICT("Player Switch logic on Immunity is triggered - switching!");
-            return TRUE;
-        }else{
-            DEBUG_PREDICT("Player Switch logic on immunity/Absorb is not triggered - staying in.");
-            return FALSE;
-        }
+        DEBUG_PREDICT("Player immunity prediction is handled after AI move scoring.");
+        return FALSE;
     }
     // Sequence Switching AI never switches mid-battle
     if (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SEQUENCE_SWITCHING)
@@ -1541,7 +1513,10 @@ bool32 ShouldSwitch(u32 battler)
     {
         DEBUG_REASON("SWITCHING: Found mon that hits Wonder Guard");
         return TRUE;
+    }
     if ((gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING) && (CanMonSurviveHazardSwitchin(battler) == FALSE))
+    {
+        DEBUG_REASON("NOT SWITCHING: Switch-in would faint to hazards");
         return FALSE;
     }
     if (ShouldSwitchIfTrapperInParty(battler))

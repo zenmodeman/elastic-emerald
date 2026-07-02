@@ -784,6 +784,7 @@ struct AiBattleData
 {
     s32 finalScore[MAX_BATTLERS_COUNT][MAX_BATTLERS_COUNT][MAX_MON_MOVES]; // AI, target, moves to make debugging easier
     u8 playerStallMons[PARTY_SIZE];
+    u8 playerSwitchesDuringAiStint;
     u8 chosenMoveIndex[MAX_BATTLERS_COUNT];
     u8 chosenTarget[MAX_BATTLERS_COUNT];
     u16 aiUsingGimmick:6;

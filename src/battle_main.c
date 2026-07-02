@@ -4633,6 +4633,8 @@ static void HandleTurnActionSelectionState(void)
                     }
                     else
                     {
+                        if (!IsDoubleBattle() && IsOnPlayerSide(battler))
+                            gAiBattleData->playerSwitchesDuringAiStint++;
                         UpdateBattlerPartyOrdersOnSwitch(battler);
                         gBattleCommunication[battler]++;
                     }

@@ -123,6 +123,7 @@ bool32 IsAiBattlerAware(u32 battlerId);
 bool32 CanAiPredictMove(void);
 bool32 IsAiBattlerAssumingStab(void);
 bool32 IsAiBattlerAssumingStatusMoves(void);
+bool32 TryChooseImmunityPredictionSwitchin(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 ShouldRecordStatusMove(u32 move);
 void ClearBattlerMoveHistory(u32 battlerId);
 void RecordLastUsedMoveBy(u32 battlerId, u32 move);

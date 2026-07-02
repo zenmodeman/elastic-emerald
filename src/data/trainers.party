@@ -17734,6 +17734,13 @@ Battle Type: Singles
 AI: Smart Trainer
 
 /*Using this trainer as a misc testing trainer at the moment.*/
+
+Snorlax  
+Ability: Immunity  
+Level: 22 
+- Strength  
+- Bite
+
 Nidoking @ Assault Vest  
 Ability: Sheer Force  
 Level: 35  

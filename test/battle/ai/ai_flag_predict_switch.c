@@ -150,3 +150,52 @@ AI_SINGLE_BATTLE_TEST("AI_FLAG_PREDICT_SWITCH: AI would normally choose predicti
         TURN { MOVE(player, MOVE_CRUNCH); EXPECT_MOVE(opponent, MOVE_SPORE); }
     }
 }
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON only considers immunity switches after repeated player switches")
+{
+    PASSES_RANDOMLY(PREDICT_SWITCH_CHANCE, 100, RNG_AI_PREDICT_SWITCH);
+    PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_SE_DEFENSIVE);
+    GIVEN {
+        ASSUME(GetMovePower(MOVE_STRENGTH) > GetMovePower(MOVE_BITE));
+        ASSUME(GetMoveType(MOVE_STRENGTH) == TYPE_NORMAL);
+        ASSUME(GetMoveType(MOVE_BITE) == TYPE_DARK);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_OMNISCIENT | AI_FLAG_PREDICT_SWITCH | AI_FLAG_PREDICT_INCOMING_MON);
+        PLAYER(SPECIES_BLISSEY) { HP(500); MaxHP(500); Moves(MOVE_CELEBRATE); }
+        PLAYER(SPECIES_GENGAR) { HP(500); MaxHP(500); Moves(MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_SNORLAX) { Moves(MOVE_STRENGTH, MOVE_BITE); }
+    } WHEN {
+        TURN { SWITCH(player, 1); EXPECT_MOVE(opponent, MOVE_STRENGTH); SEND_OUT(player, 1); }
+        TURN { SWITCH(player, 0); EXPECT_MOVE(opponent, MOVE_BITE); SEND_OUT(player, 0); }
+        TURN { SWITCH(player, 1); EXPECT_MOVE(opponent, MOVE_STRENGTH); SEND_OUT(player, 1); }
+        TURN { SWITCH(player, 0); EXPECT_MOVE(opponent, MOVE_BITE); SEND_OUT(player, 0); }
+        TURN { SWITCH(player, 1); EXPECT_MOVE(opponent, MOVE_STRENGTH); SEND_OUT(player, 1); }
+        TURN { SWITCH(player, 0); EXPECT_MOVE(opponent, MOVE_BITE); SEND_OUT(player, 0); }
+        TURN { SWITCH(player, 1); EXPECT_MOVE(opponent, MOVE_BITE); SEND_OUT(player, 1); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON prioritizes higher value immunity ties")
+{
+    PASSES_RANDOMLY(PREDICT_SWITCH_CHANCE, 100, RNG_AI_PREDICT_SWITCH);
+    PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_SE_DEFENSIVE);
+    GIVEN {
+        ASSUME(GetMoveType(MOVE_WILD_CHARGE) == TYPE_ELECTRIC);
+        ASSUME(GetMoveType(MOVE_SURF) == TYPE_WATER);
+        ASSUME(GetMoveType(MOVE_EARTHQUAKE) == TYPE_GROUND);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_OMNISCIENT | AI_FLAG_PREDICT_SWITCH | AI_FLAG_PREDICT_INCOMING_MON);
+        PLAYER(SPECIES_PELIPPER) { HP(500); MaxHP(500); Moves(MOVE_CELEBRATE); }
+        PLAYER(SPECIES_GEODUDE) { HP(500); MaxHP(500); Moves(MOVE_CELEBRATE); }
+        PLAYER(SPECIES_RAICHU) { HP(500); MaxHP(500); Ability(ABILITY_LIGHTNING_ROD); Moves(MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_MEW) { HP(1000); MaxHP(1000); Moves(MOVE_WILD_CHARGE, MOVE_SURF, MOVE_EARTHQUAKE); }
+    } WHEN {
+        TURN { SWITCH(player, 1); SEND_OUT(player, 1); }
+        TURN { SWITCH(player, 0); SEND_OUT(player, 0); }
+        TURN { SWITCH(player, 2); SEND_OUT(player, 2); }
+        TURN { SWITCH(player, 0); SEND_OUT(player, 0); }
+        TURN { SWITCH(player, 1); SEND_OUT(player, 1); }
+        TURN { SWITCH(player, 0); SEND_OUT(player, 0); }
+        TURN { SWITCH(player, 2); SEND_OUT(player, 2); }
+        TURN { SWITCH(player, 0); SEND_OUT(player, 0); }
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_EARTHQUAKE); }
+    }
+}

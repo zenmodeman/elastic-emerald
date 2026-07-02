@@ -7587,6 +7587,23 @@ static void Cmd_getswitchedmondata(void)
     BtlController_EmitGetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_ALL_BATTLE, 1u << gBattlerPartyIndexes[battler]);
     MarkBattlerForControllerExec(battler);
 
+    if (!IsDoubleBattle() && IsOnPlayerSide(battler) && gBattleScripting.switchCase == B_SWITCH_NORMAL)
+    {
+        switch (GetMoveEffect(gCurrentMove))
+        {
+        case EFFECT_BATON_PASS:
+        case EFFECT_HIT_ESCAPE:
+        case EFFECT_PARTING_SHOT:
+        case EFFECT_TELEPORT:
+        case EFFECT_CHILLY_RECEPTION:
+        case EFFECT_SHED_TAIL:
+            gAiBattleData->playerSwitchesDuringAiStint++;
+            break;
+        default:
+            break;
+        }
+    }
+
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 

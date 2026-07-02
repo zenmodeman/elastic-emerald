@@ -68,7 +68,7 @@
 #define RISKY_AI_CRIT_THRESHOLD_GEN_1                           128 // "Stat stage" at which Risky will assume it gets a crit with gen 1 mechanics (this translates to an X / 255 % crit threshold)
 
 // AI prediction chances
-#define PREDICT_SWITCH_CHANCE                                   75 //Modified from 50 to 75 since most of the switch checks themselves are 50%
+#define PREDICT_SWITCH_CHANCE                                   50 // Primary RNG gate for AI switch prediction, including immunity-switch prediction.
 #define PREDICT_MOVE_CHANCE                                     100
 
 // AI Terastalization chances
