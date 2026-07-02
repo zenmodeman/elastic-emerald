@@ -26,6 +26,7 @@
 #include "constants/field_specials.h"
 #include "constants/heal_locations.h"
 #include "constants/rgb.h"
+#include "constants/vars.h"
 #include "constants/weather.h"
 
 /*
@@ -46,6 +47,7 @@
 #define MAPCURSOR_Y_MAX (MAPCURSOR_Y_MIN + MAP_HEIGHT - 1)
 
 #define FLYDESTICON_RED_OUTLINE 6
+#define BRINEY_LOCATION_DEWFORD 2
 
 enum {
     TAG_CURSOR,
@@ -115,6 +117,7 @@ static void SpriteCB_FlyDestIcon(struct Sprite *sprite);
 static void CB_FadeInFlyMap(void);
 static void CB_HandleFlyMapInput(void);
 static void CB_ExitFlyMap(void);
+static void TryReturnMrBrineyToDewfordAfterRoute109Fly(void);
 
 static const u16 sRegionMapCursorPal[] = INCBIN_U16("graphics/pokenav/region_map/cursor.gbapal");
 static const u32 sRegionMapCursorSmallGfxLZ[] = INCBIN_U32("graphics/pokenav/region_map/cursor_small.4bpp.smol");
@@ -2046,8 +2049,29 @@ void SetFlyDestination(struct RegionMap* regionMap)
 {
     u32 flyDestination = FilterFlyDestination(regionMap);
 
+    TryReturnMrBrineyToDewfordAfterRoute109Fly();
+
     if (flyDestination != WARP_ID_NONE)
         SetWarpDestinationToHealLocation(flyDestination);
     else
         SetWarpDestinationToMapWarp(sMapHealLocations[regionMap->mapSecId][0], sMapHealLocations[regionMap->mapSecId][1], WARP_ID_NONE);
+}
+
+static void TryReturnMrBrineyToDewfordAfterRoute109Fly(void)
+{
+    if (gSaveBlock1Ptr->location.mapGroup != MAP_GROUP(MAP_ROUTE109)
+        || gSaveBlock1Ptr->location.mapNum != MAP_NUM(MAP_ROUTE109)
+        || FlagGet(FLAG_VISITED_SLATEPORT_CITY)
+        || (FlagGet(FLAG_HIDE_ROUTE_109_MR_BRINEY) && FlagGet(FLAG_HIDE_ROUTE_109_MR_BRINEY_BOAT)))
+        return;
+
+    FlagSet(FLAG_HIDE_ROUTE_109_MR_BRINEY);
+    FlagSet(FLAG_HIDE_ROUTE_109_MR_BRINEY_BOAT);
+    FlagSet(FLAG_HIDE_ROUTE_104_MR_BRINEY);
+    FlagSet(FLAG_HIDE_ROUTE_104_MR_BRINEY_BOAT);
+    FlagSet(FLAG_HIDE_BRINEYS_HOUSE_MR_BRINEY);
+    FlagSet(FLAG_HIDE_BRINEYS_HOUSE_PEEKO);
+    FlagClear(FLAG_HIDE_MR_BRINEY_DEWFORD_TOWN);
+    FlagClear(FLAG_HIDE_MR_BRINEY_BOAT_DEWFORD_TOWN);
+    VarSet(VAR_BRINEY_LOCATION, BRINEY_LOCATION_DEWFORD);
 }
