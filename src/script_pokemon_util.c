@@ -32,6 +32,28 @@ static void CB2_ReturnFromChooseHalfParty(void);
 static void CB2_ReturnFromChooseBattleFrontierParty(void);
 static void HealPlayerBoxes(void);
 
+static const u16 sResistBerryByType[NUMBER_OF_MON_TYPES] =
+{
+    [TYPE_NORMAL]   = ITEM_CHILAN_BERRY,
+    [TYPE_FIGHTING] = ITEM_CHOPLE_BERRY,
+    [TYPE_FLYING]   = ITEM_COBA_BERRY,
+    [TYPE_POISON]   = ITEM_KEBIA_BERRY,
+    [TYPE_GROUND]   = ITEM_SHUCA_BERRY,
+    [TYPE_ROCK]     = ITEM_CHARTI_BERRY,
+    [TYPE_BUG]      = ITEM_TANGA_BERRY,
+    [TYPE_GHOST]    = ITEM_KASIB_BERRY,
+    [TYPE_STEEL]    = ITEM_BABIRI_BERRY,
+    [TYPE_FIRE]     = ITEM_OCCA_BERRY,
+    [TYPE_WATER]    = ITEM_PASSHO_BERRY,
+    [TYPE_GRASS]    = ITEM_RINDO_BERRY,
+    [TYPE_ELECTRIC] = ITEM_WACAN_BERRY,
+    [TYPE_PSYCHIC]  = ITEM_PAYAPA_BERRY,
+    [TYPE_ICE]      = ITEM_YACHE_BERRY,
+    [TYPE_DRAGON]   = ITEM_HABAN_BERRY,
+    [TYPE_DARK]     = ITEM_COLBUR_BERRY,
+    [TYPE_FAIRY]    = ITEM_ROSELI_BERRY,
+};
+
 void HealPlayerParty(void)
 {
     u32 i;
@@ -43,6 +65,23 @@ void HealPlayerParty(void)
     // Recharge Tera Orb, if possible.
     if (B_FLAG_TERA_ORB_CHARGED != 0 && CheckBagHasItem(ITEM_TERA_ORB, 1))
         FlagSet(B_FLAG_TERA_ORB_CHARGED);
+}
+
+void PopulateMonotypeResistBerriesInPC(void)
+{
+    u32 attackType;
+    enum Type monotype = GetMonoType();
+
+    if (monotype == TYPE_NONE)
+        return;
+
+    for (attackType = TYPE_NORMAL; attackType < NUMBER_OF_MON_TYPES; attackType++)
+    {
+        u16 berry = sResistBerryByType[attackType];
+
+        if (berry != ITEM_NONE && GetTypeModifier(attackType, monotype) > UQ_4_12(1.0))
+            AddPCItem(berry, 12);
+    }
 }
 
 static void HealPlayerBoxes(void)

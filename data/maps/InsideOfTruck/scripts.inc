@@ -334,6 +334,8 @@ InsideOfTruck_EventScript_SetIntroFlags_48:
 # 145 "data/maps/InsideOfTruck/scripts.pory"
 	addvar VAR_REMAINING_TUTOR, 2
 # 146 "data/maps/InsideOfTruck/scripts.pory"
+	special PopulateMonotypeResistBerriesInPC
+# 147 "data/maps/InsideOfTruck/scripts.pory"
 	setvar VAR_RESULT, 0
 	goto InsideOfTruck_EventScript_SetIntroFlags_38
 

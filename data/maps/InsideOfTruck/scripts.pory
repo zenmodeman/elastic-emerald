@@ -143,6 +143,7 @@ script InsideOfTruck_EventScript_SetIntroFlags{
             addvar(VAR_MONOTYPE, 1)
             addvar(VAR_REMAINING_RELEARNER, 2)
             addvar(VAR_REMAINING_TUTOR, 2)
+            special(PopulateMonotypeResistBerriesInPC)
             setvar(VAR_RESULT, 0)
         }
         elif (var(VAR_RESULT) ==2){
