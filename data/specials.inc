@@ -78,6 +78,7 @@ gSpecials::
 	def_special ShouldTryRematchBattle
 	def_special IsTrainerReadyForRematch
 	def_special BattleSetup_StartRematchBattle
+	def_special PopulateMonotypeResistBerriesInPC
 	def_special ShowPokemonStorageSystemPC
 	def_special HasEnoughMonsForDoubleBattle
 	def_special TurnOffTVScreen

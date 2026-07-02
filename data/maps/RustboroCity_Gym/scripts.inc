@@ -605,31 +605,12 @@ RustboroCity_Gym_EventScript_Roxanne_1:
 
 RustboroCity_Gym_EventScript_Roxanne_2:
 # 302 "data/maps/RustboroCity_Gym/scripts.pory"
-	goto_if_set FLAG_RESTRICTED_MODE, RustboroCity_Gym_EventScript_Roxanne_5
-RustboroCity_Gym_EventScript_Roxanne_4:
-# 308 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto RoxanneFirstGymBattleScript
 	goto RustboroCity_Gym_EventScript_Roxanne_1
-
-RustboroCity_Gym_EventScript_Roxanne_5:
-# 303 "data/maps/RustboroCity_Gym/scripts.pory"
-	specialvar VAR_RESULT, DoesPlayerFollowItemClause
-# 304 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_RESULT, FALSE
-	goto_if_eq RustboroCity_Gym_EventScript_Roxanne_7
-	goto RustboroCity_Gym_EventScript_Roxanne_4
-
-RustboroCity_Gym_EventScript_Roxanne_7:
-# 305 "data/maps/RustboroCity_Gym/scripts.pory"
-	goto Roxanne_Restrict_Item_Clause
-	goto RustboroCity_Gym_EventScript_Roxanne_4
 
 
 RoxanneFirstGymBattleScript::
 # 316 "data/maps/RustboroCity_Gym/scripts.pory"
-	goto_if_set FLAG_RESTRICTED_MODE, RoxanneFirstGymBattleScript_2
-RoxanneFirstGymBattleScript_1:
-# 322 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RoxanneFirstGymBattleScript_Text_0
 # 323 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RoxanneFirstGymBattleScript_Text_1
@@ -655,14 +636,6 @@ RoxanneFirstGymBattleScript_4:
 # 352 "data/maps/RustboroCity_Gym/scripts.pory"
 	release
 	end
-
-RoxanneFirstGymBattleScript_2:
-# 317 "data/maps/RustboroCity_Gym/scripts.pory"
-	specialvar VAR_RESULT, DoesPlayerFollowItemClause
-# 318 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_RESULT, FALSE
-	goto_if_eq RoxanneFirstGymBattleScript_9
-	goto RoxanneFirstGymBattleScript_1
 
 RoxanneFirstGymBattleScript_5:
 # 331 "data/maps/RustboroCity_Gym/scripts.pory"
@@ -724,11 +697,6 @@ RoxanneFirstGymBattleScript_25:
 	call RustboroCity_Gym_EventScript_RoxanneDefeated
 	goto RoxanneFirstGymBattleScript_4
 
-RoxanneFirstGymBattleScript_9:
-# 319 "data/maps/RustboroCity_Gym/scripts.pory"
-	goto Roxanne_Restrict_Item_Clause
-	goto RoxanneFirstGymBattleScript_1
-
 RoxanneFirstGymBattleScript_12:
 # 335 "data/maps/RustboroCity_Gym/scripts.pory"
 	trainerbattle_no_intro TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat
@@ -738,17 +706,6 @@ RoxanneFirstGymBattleScript_26:
 # 346 "data/maps/RustboroCity_Gym/scripts.pory"
 	trainerbattle_no_intro TRAINER_ROXANNE_1_DOUBLES, RustboroCity_Gym_Text_RoxanneDefeat
 	goto RoxanneFirstGymBattleScript_25
-
-
-Roxanne_Restrict_Item_Clause::
-# 357 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox Roxanne_Restrict_Item_Clause_Text_0
-# 358 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox Roxanne_Restrict_Item_Clause_Text_1
-# 359 "data/maps/RustboroCity_Gym/scripts.pory"
-	release
-	end
-
 
 RustboroCity_Gym_EventScript_GiveRockTomb::
 # 364 "data/maps/RustboroCity_Gym/scripts.pory"
@@ -838,13 +795,3 @@ RoxanneFirstGymBattleScript_Text_9:
 # 342 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Oh, you want a more complex battle. I'm\n"
 	.string "down!$"
-
-Roxanne_Restrict_Item_Clause_Text_0:
-# 357 "data/maps/RustboroCity_Gym/scripts.pory"
-	.string "Hello, you wish to challenge me?$"
-
-Roxanne_Restrict_Item_Clause_Text_1:
-# 358 "data/maps/RustboroCity_Gym/scripts.pory"
-	.string "As per League rules, please make sure\n"
-	.string "your team does not carry duplicate\l"
-	.string "items.$"

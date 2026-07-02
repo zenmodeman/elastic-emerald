@@ -5,6 +5,7 @@
 #include "battle_tower.h"
 #include "battle_transition.h"
 #include "main.h"
+#include "mail.h"
 #include "task.h"
 #include "safari_zone.h"
 #include "script.h"
@@ -46,6 +47,7 @@
 #include "constants/battle_frontier.h"
 #include "constants/battle_setup.h"
 #include "constants/event_objects.h"
+#include "constants/flags.h"
 #include "constants/game_stat.h"
 #include "constants/items.h"
 #include "constants/songs.h"
@@ -413,6 +415,7 @@ static void DoBattlePikeWildBattle(void)
 
 static void DoTrainerBattle(void)
 {
+    BattleSetup_EnforceRestrictedModeItemClause();
     CreateBattleStartTask(GetTrainerBattleTransition(), 0);
     IncrementGameStat(GAME_STAT_TOTAL_BATTLES);
     IncrementGameStat(GAME_STAT_TRAINER_BATTLES);
@@ -421,6 +424,8 @@ static void DoTrainerBattle(void)
 
 static void DoBattlePyramidTrainerHillBattle(void)
 {
+    BattleSetup_EnforceRestrictedModeItemClause();
+
     if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE)
         CreateBattleStartTask(GetSpecialBattleTransition(B_TRANSITION_GROUP_B_PYRAMID), 0);
     else
@@ -579,6 +584,56 @@ static void DowngradeBadPoison(void)
     {
         if (GetMonData(&gPlayerParty[i], MON_DATA_SANITY_HAS_SPECIES) && GetMonData(&gPlayerParty[i], MON_DATA_STATUS) == STATUS1_TOXIC_POISON)
             SetMonData(&gPlayerParty[i], MON_DATA_STATUS, &status);
+    }
+}
+
+static void StoreDuplicateHeldItem(u16 item)
+{
+    if (!AddBagItem(item, 1))
+        AddPCItem(item, 1);
+}
+
+static bool32 PartyHasEarlierHeldItem(u32 partyIndex, u16 item)
+{
+    u32 i;
+
+    for (i = 0; i < partyIndex; i++)
+    {
+        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
+
+        if (species != SPECIES_NONE
+         && species != SPECIES_EGG
+         && GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM) == item)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+void BattleSetup_EnforceRestrictedModeItemClause(void)
+{
+    u32 i;
+    u16 noItem = ITEM_NONE;
+
+    if (!FlagGet(FLAG_RESTRICTED_MODE))
+        return;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
+        u16 item = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
+
+        if (species == SPECIES_NONE || species == SPECIES_EGG || item == ITEM_NONE)
+            continue;
+
+        if (PartyHasEarlierHeldItem(i, item))
+        {
+            StoreDuplicateHeldItem(item);
+            if (MonHasMail(&gPlayerParty[i]))
+                TakeMailFromMon(&gPlayerParty[i]);
+            else
+                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &noItem);
+        }
     }
 }
 

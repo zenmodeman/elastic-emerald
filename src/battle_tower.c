@@ -1959,6 +1959,8 @@ static void Task_StartBattleAfterTransition(u8 taskId)
 {
     if (IsBattleTransitionDone() == TRUE)
     {
+        if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+            BattleSetup_EnforceRestrictedModeItemClause();
         gMain.savedCallback = HandleSpecialTrainerBattleEnd;
         SetMainCallback2(CB2_InitBattle);
         DestroyTask(taskId);

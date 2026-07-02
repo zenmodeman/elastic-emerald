@@ -464,12 +464,6 @@ script DewfordTown_Gym_EventScript_Brawly {
     lock
 	faceplayer
     if (!flag(FLAG_RECEIVED_TM_LOW_KICK)){
-        if (flag(FLAG_RESTRICTED_MODE)) {
-            specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
-            if (var(VAR_RESULT) == FALSE) {
-                goto(Brawly_Restrict_Item_Clause)
-            }
-        }
         goto(BrawlyFirstGymBattleScript)
     }
     msgbox(DewfordTown_Gym_Text_BrawlyPostBattle)
@@ -516,12 +510,6 @@ script BrawlyFirstGymBattleScript {
 		}
         call(DewfordTown_Gym_EventScript_BrawlyDefeated)
     }
-    release
-    end
-}
-
-script Brawly_Restrict_Item_Clause {
-    msgbox(format("I'd love to fight, but League rules say I can't if you carry duplicate items."))
     release
     end
 }

@@ -937,24 +937,8 @@ DewfordTown_Gym_EventScript_Brawly_1:
 
 DewfordTown_Gym_EventScript_Brawly_2:
 # 467 "data/maps/DewfordTown_Gym/scripts.pory"
-	goto_if_set FLAG_RESTRICTED_MODE, DewfordTown_Gym_EventScript_Brawly_5
-DewfordTown_Gym_EventScript_Brawly_4:
-# 473 "data/maps/DewfordTown_Gym/scripts.pory"
 	goto BrawlyFirstGymBattleScript
 	goto DewfordTown_Gym_EventScript_Brawly_1
-
-DewfordTown_Gym_EventScript_Brawly_5:
-# 468 "data/maps/DewfordTown_Gym/scripts.pory"
-	specialvar VAR_RESULT, DoesPlayerFollowItemClause
-# 469 "data/maps/DewfordTown_Gym/scripts.pory"
-	compare VAR_RESULT, FALSE
-	goto_if_eq DewfordTown_Gym_EventScript_Brawly_7
-	goto DewfordTown_Gym_EventScript_Brawly_4
-
-DewfordTown_Gym_EventScript_Brawly_7:
-# 470 "data/maps/DewfordTown_Gym/scripts.pory"
-	goto Brawly_Restrict_Item_Clause
-	goto DewfordTown_Gym_EventScript_Brawly_4
 
 
 BrawlyFirstGymBattleScript::
@@ -1071,15 +1055,6 @@ BrawlyFirstGymBattleScript_25:
 	trainerbattle_no_intro TRAINER_BRAWLY_1_DOUBLES, DewfordTown_Gym_Text_BrawlyDefeat
 	goto BrawlyFirstGymBattleScript_24
 
-
-Brawly_Restrict_Item_Clause::
-# 524 "data/maps/DewfordTown_Gym/scripts.pory"
-	msgbox Brawly_Restrict_Item_Clause_Text_0
-# 525 "data/maps/DewfordTown_Gym/scripts.pory"
-	release
-	end
-
-
 DewfordTown_Gym_EventScript_GiveLowKick::
 # 530 "data/maps/DewfordTown_Gym/scripts.pory"
 	compare VAR_MONOTYPE, 0
@@ -1180,11 +1155,6 @@ BrawlyFirstGymBattleScript_Text_10:
 BrawlyFirstGymBattleScript_Text_11:
 # 507 "data/maps/DewfordTown_Gym/scripts.pory"
 	.string "Two on Two? You'll see our pair training!$"
-
-Brawly_Restrict_Item_Clause_Text_0:
-# 524 "data/maps/DewfordTown_Gym/scripts.pory"
-	.string "I'd love to fight, but League rules say\n"
-	.string "I can't if you carry duplicate items.$"
 
 DewfordTown_Gym_EventScript_GiveLowKick_Text_0:
 # 548 "data/maps/DewfordTown_Gym/scripts.pory"

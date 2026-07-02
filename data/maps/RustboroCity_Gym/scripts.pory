@@ -299,12 +299,6 @@ script RustboroCity_Gym_EventScript_Roxanne {
     lock
 	faceplayer
     if (!flag(FLAG_RECEIVED_TM_ROCK_TOMB)){
-        if (flag(FLAG_RESTRICTED_MODE)) {
-            specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
-            if (var(VAR_RESULT) == FALSE) {
-                goto(Roxanne_Restrict_Item_Clause)
-            }
-        }
         goto(RoxanneFirstGymBattleScript)
     }
     msgbox(RustboroCity_Gym_Text_RoxannePostBattle)
@@ -313,12 +307,6 @@ script RustboroCity_Gym_EventScript_Roxanne {
 }
 
 script RoxanneFirstGymBattleScript {
-    if (flag(FLAG_RESTRICTED_MODE)) {
-        specialvar(VAR_RESULT, DoesPlayerFollowItemClause)
-        if (var(VAR_RESULT) == FALSE) {
-            goto(Roxanne_Restrict_Item_Clause)
-        }
-    }
     msgbox(format("Hello, I am Roxanne, the Rustboro City POKéMON Gym Leader."))
     msgbox(format("After battling with my Gym Trainers, your Pokémon must be exhausted."))
     msgbox(format("Here, let me heal them for you."))
@@ -349,13 +337,6 @@ script RoxanneFirstGymBattleScript {
 		}
         call(RustboroCity_Gym_EventScript_RoxanneDefeated)
     }
-    release
-    end
-}
-
-script Roxanne_Restrict_Item_Clause {
-    msgbox(format("Hello, you wish to challenge me?"))
-    msgbox(format("As per League rules, please make sure your team does not carry duplicate items."))
     release
     end
 }
