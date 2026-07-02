@@ -5546,14 +5546,16 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
 
                 if (param == 0) // Rare Candy
                 {
-                    dataUnsigned = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES, NULL)].growthRate][GetMonData(mon, MON_DATA_LEVEL, NULL) + 1];
+                    u8 level = GetMonData(mon, MON_DATA_LEVEL, NULL);
+
+                    if (!FlagGet(FLAG_LEVEL_CAP) || level < GetCurrentLevelCap(CANDY_CAP))
+                        dataUnsigned = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES, NULL)].growthRate][level + 1];
                 }
                 else if (param - 1 < ARRAY_COUNT(sExpCandyExperienceTable)) // EXP Candies
                 {
                     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
                     dataUnsigned = sExpCandyExperienceTable[param - 1] + GetMonData(mon, MON_DATA_EXP, NULL);
 
-                    // if (B_RARE_CANDY_CAP && B_EXP_CAP_TYPE == EXP_CAP_HARD)
                     if (FlagGet(FLAG_LEVEL_CAP))
                     {
                         u32 currentLevelCap = GetCurrentLevelCap(CANDY_CAP);

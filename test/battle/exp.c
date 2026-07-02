@@ -27,6 +27,24 @@ WILD_BATTLE_TEST("Pokemon gain experience after catching a Pokemon (Gen6+)")
     }
 }
 
+WILD_BATTLE_TEST("Zenmodeman: Hard level caps prevent battle exp at the current cap")
+{
+    GIVEN {
+        FLAG_SET(FLAG_LEVEL_CAP);
+        PLAYER(SPECIES_WOBBUFFET) { Level(8); }
+        OPPONENT(SPECIES_CATERPIE) { Level(100); HP(1); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH); }
+    } SCENE {
+        MESSAGE("Wobbuffet used Scratch!");
+        MESSAGE("The wild Caterpie fainted!");
+        NOT EXPERIENCE_BAR(player);
+    } THEN {
+        EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_LEVEL), 8);
+        EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_EXP), gExperienceTables[gSpeciesInfo[SPECIES_WOBBUFFET].growthRate][8]);
+    }
+}
+
 WILD_BATTLE_TEST("Higher leveled Pokemon give more exp", s32 exp)
 {
     u8 level = 0;

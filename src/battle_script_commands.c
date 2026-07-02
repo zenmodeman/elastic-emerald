@@ -64,6 +64,7 @@
 #include "constants/trainers.h"
 #include "test/battle.h"
 #include "battle_util.h"
+#include "constants/opponents.h"
 #include "constants/pokemon.h"
 #include "config/battle.h"
 #include "data/battle_move_effects.h"
@@ -4722,6 +4723,36 @@ static bool32 BattleTypeAllowsExp(void)
         return TRUE;
 }
 
+static bool32 IsLevelCapExpExceptionTrainer(u16 trainerId)
+{
+    switch (trainerId)
+    {
+    case TRAINER_SIDNEY:
+    case TRAINER_PHOEBE:
+    case TRAINER_GLACIA:
+    case TRAINER_DRAKE:
+    case TRAINER_WALLACE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+static bool32 ShouldApplyLevelCapToBattleExp(void)
+{
+    if (!FlagGet(FLAG_LEVEL_CAP))
+        return FALSE;
+
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+        return TRUE;
+
+    if (IsLevelCapExpExceptionTrainer(TRAINER_BATTLE_PARAM.opponentA)
+     || IsLevelCapExpExceptionTrainer(TRAINER_BATTLE_PARAM.opponentB))
+        return FALSE;
+
+    return TRUE;
+}
+
 static u32 GetMonHoldEffect(struct Pokemon *mon)
 {
     enum HoldEffect holdEffect;
@@ -4866,6 +4897,12 @@ static void Cmd_getexp(void)
                 if (B_MAX_LEVEL_EV_GAINS >= GEN_5)
                     MonGainEVs(&gPlayerParty[*expMonId], gBattleMons[gBattlerFainted].species);
             }
+            else if (ShouldApplyLevelCapToBattleExp()
+                  && GetMonData(&gPlayerParty[*expMonId], MON_DATA_LEVEL) >= GetCurrentLevelCap(HARD_CAP))
+            {
+                gBattleScripting.getexpState = 5;
+                gBattleStruct->battlerExpReward = 0;
+            }
             else
             {
                 // Music change in a wild battle after fainting opposing pokemon.
@@ -4883,28 +4920,37 @@ static void Cmd_getexp(void)
                 if (IsValidForBattle(&gPlayerParty[*expMonId]))
                 {
                     if (wasSentOut)
-                        gBattleStruct->battlerExpReward = GetSoftLevelCapExpValue(gPlayerParty[*expMonId].level, gBattleStruct->expValue);
+                        gBattleStruct->battlerExpReward = gBattleStruct->expValue;
                     else
                         gBattleStruct->battlerExpReward = 0;
 
                     if ((holdEffect == HOLD_EFFECT_EXP_SHARE || IsGen6ExpShareEnabled())
                         && (B_SPLIT_EXP < GEN_6 || gBattleStruct->battlerExpReward == 0)) // only give exp share bonus in later gens if the mon wasn't sent out
                     {
-                        gBattleStruct->battlerExpReward += GetSoftLevelCapExpValue(gPlayerParty[*expMonId].level, gBattleStruct->expShareExpValue);
+                        gBattleStruct->battlerExpReward += gBattleStruct->expShareExpValue;
                     }
 
                     ApplyExperienceMultipliers(&gBattleStruct->battlerExpReward, *expMonId, gBattlerFainted);
 
-                    if (B_EXP_CAP_TYPE == EXP_CAP_HARD && gBattleStruct->battlerExpReward != 0)
+                    if (ShouldApplyLevelCapToBattleExp() && gBattleStruct->battlerExpReward != 0)
                     {
                         enum GrowthRate growthRate = gSpeciesInfo[GetMonData(&gPlayerParty[*expMonId], MON_DATA_SPECIES)].growthRate;
                         u32 currentExp = GetMonData(&gPlayerParty[*expMonId], MON_DATA_EXP);
                         u32 levelCap = GetCurrentLevelCap(HARD_CAP);
+                        u32 levelCapExp = gExperienceTables[growthRate][levelCap];
 
                         if (GetMonData(&gPlayerParty[*expMonId], MON_DATA_LEVEL) >= levelCap)
                             gBattleStruct->battlerExpReward = 0;
-                        else if (gExperienceTables[growthRate][levelCap] < currentExp + gBattleStruct->battlerExpReward)
-                            gBattleStruct->battlerExpReward = gExperienceTables[growthRate][levelCap] - currentExp;
+                        else if (currentExp >= levelCapExp)
+                            gBattleStruct->battlerExpReward = 0;
+                        else if (levelCapExp < currentExp + gBattleStruct->battlerExpReward)
+                            gBattleStruct->battlerExpReward = levelCapExp - currentExp;
+                    }
+
+                    if (gBattleStruct->battlerExpReward == 0)
+                    {
+                        gBattleScripting.getexpState = 5;
+                        break;
                     }
 
                     if (IsTradedMon(&gPlayerParty[*expMonId]))

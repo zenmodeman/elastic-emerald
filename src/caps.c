@@ -4,9 +4,6 @@
 #include "caps.h"
 #include "pokemon.h"
 
-/*
-if isHardCap is true, the level cap is for gaining experience; otherwise, it's for rare candies / exp candies
-*/
 u32 GetCurrentLevelCap(bool32 isHardCap)
 {
     static const u32 sLevelCapFlagMap[][2] =
@@ -27,33 +24,21 @@ u32 GetCurrentLevelCap(bool32 isHardCap)
     };
 
     u32 i;
-    u32 candyCap;
 
-    if (!FlagGet(FLAG_LEVEL_CAP)){
+    (void)isHardCap;
+
+    if (!FlagGet(FLAG_LEVEL_CAP))
         return MAX_LEVEL;
-    }
-
 
     for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMap); i++)
     {
-        if (!FlagGet(sLevelCapFlagMap[i][0])){
-            candyCap = sLevelCapFlagMap[i][1];
-            if (isHardCap){
-                if (sLevelCapFlagMap[i][0] == FLAG_IS_CHAMPION){
-                    //To DO: make this + 0 outside the Pokemon League map areas and make it +3 inside the map areas
-                    return candyCap + 3;
-                }
-                return candyCap + 1;
-            }
-            return candyCap;
-        }
-
+        if (!FlagGet(sLevelCapFlagMap[i][0]))
+            return sLevelCapFlagMap[i][1];
     }
 
-    // else if (B_LEVEL_CAP_TYPE == LEVEL_CAP_VARIABLE)
-    // {
-    //     return VarGet(B_LEVEL_CAP_VARIABLE);
-    // }
+    // Expansion variable cap support can be restored here if needed.
+    // if (B_LEVEL_CAP_TYPE == LEVEL_CAP_VARIABLE)
+    //     return min(VarGet(B_LEVEL_CAP_VARIABLE), MAX_LEVEL);
 
     return MAX_LEVEL;
 }
