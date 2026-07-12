@@ -123,20 +123,26 @@ script TechHouse_Psychic_NicheAbilities{
     msgbox(format("Would you like you give it a try with one of your Pokemon?"), MSGBOX_YESNO)
     if (var(VAR_RESULT) == 1){
         call(AbilityTutor_ChooseMon)
-        //Get a return of an ability, or ABILITY_NONE (0)
+        //Get a return of the number of tutor ability options available.
         specialvar(VAR_RESULT, GetTutorAbility)
         if(var(VAR_RESULT) == 0){
             goto(AbilityTutor_NotValid)
-        }else{
+        }elif(var(VAR_RESULT) == 1){
             msgbox(format("{STR_VAR_1} can unlock the ability {STR_VAR_2}. Would you like to?"), MSGBOX_YESNO)
             if (var(VAR_RESULT) == 0){
                 goto(AbilityTutor_NotInterested)
             }
-            special(SetTutorAbility)
-            playfanfare(MUS_LEVEL_UP)
-		    waitfanfare
-            msgbox(format("Your Pokemon's Potential has been unlocked!"))
+        }else{
+            msgbox(format("{STR_VAR_1} can unlock more than one ability. Which potential should I draw out?"))
+            dynmultichoice(0, 100, FALSE, 2, 0, DYN_MULTICHOICE_CB_NONE, "{STR_VAR_2}", "{STR_VAR_3}")
+            if (var(VAR_RESULT) == MULTI_B_PRESSED){
+                goto(AbilityTutor_NotInterested)
+            }
         }
+        special(SetTutorAbility)
+        playfanfare(MUS_LEVEL_UP)
+        waitfanfare
+        msgbox(format("Your Pokemon's Potential has been unlocked!"))
     }else{
         goto(AbilityTutor_NotInterested)
     }
@@ -163,8 +169,6 @@ script AbilityTutor_ChooseMon{
 }
 
 script AbilityTutor_NotInterested{
-    //Clear 0x8009 in case SetAbilityTutor isn't reached
-    setvar(VAR_0x8009, 0)
     msgbox(format("Not interested? Come back if you change your mind."))
     waitmessage
     release

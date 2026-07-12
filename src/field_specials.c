@@ -4412,73 +4412,110 @@ u8 TrainMaxIV(void){
 }
 
 
-static bool32 IsAbilityTutorViable(u16 ability){
+struct TutorAbilityException
+{
+    u16 species;
+    u16 ability;
+};
+
+static u8 sTutorAbilitySlots[NUM_ABILITY_SLOTS];
+static u8 sTutorAbilityCount;
+
+static const struct TutorAbilityException sTutorAbilitySpeciesExceptions[] =
+{
+    // Add species/ability pairs here when an ability is only niche for a specific Pokemon.
+    {SPECIES_PYROAR, ABILITY_MOXIE},
+    {SPECIES_LITLEO, ABILITY_MOXIE},
+};
+
+static bool32 IsAbilityTutorViable(u16 species, u16 ability){
+    u8 i;
+
     switch (ability){
         case ABILITY_KEEN_EYE:
         case ABILITY_BIG_PECKS:
         case ABILITY_LONG_REACH:
-        case ABILITY_ILLUMINATE:
         case ABILITY_STALWART:
         case ABILITY_PROPELLER_TAIL:
         case ABILITY_KLUTZ:
         case ABILITY_LIGHT_METAL:
         case ABILITY_STAKEOUT:
         case ABILITY_RIVALRY:
+        case ABILITY_UNNERVE:
             return TRUE;
-        default:
-            return FALSE;
     }
+
+    for (i = 0; sTutorAbilitySpeciesExceptions[i].species != SPECIES_NONE; i++)
+    {
+        if (sTutorAbilitySpeciesExceptions[i].species == species
+            && sTutorAbilitySpeciesExceptions[i].ability == ability)
+            return TRUE;
+    }
+
+    return FALSE;
 }
 
-//Note: Any context where this function is used, gSpecialVar_0x8009 should be cleared somewhere, such as with SetTutorAbility
 u16 GetTutorAbility(){
     struct Pokemon *mon = &gPlayerParty[gSpecialVar_0x8004];
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
+    u16 currentAbility;
+    u8 i;
 
-    //Checking ability1 slot
-    if (abilityNum != 0){
-        u16 ability1 = gSpeciesInfo[species].abilities[0];
-        //In the future, may want to have specific exception logic, such as if I make Poliwag and Poliwhirl have HA Damp
-        if (IsAbilityTutorViable(ability1)){
-            gSpecialVar_0x8009 = 0;
-            GetMonNickname(mon, gStringVar1);
-            StringCopy(gStringVar2, gAbilitiesInfo[ability1].name);
-            return ability1;
-        }
-    }
-    if (abilityNum != 1){
-        u16 ability2 = gSpeciesInfo[species].abilities[1];
-        if (IsAbilityTutorViable(ability2)){
-            gSpecialVar_0x8009 = 1;
-            GetMonNickname(mon, gStringVar1);
-            StringCopy(gStringVar2, gAbilitiesInfo[ability2].name);
-            return ability2;
-        }
+    sTutorAbilityCount = 0;
+    GetMonNickname(mon, gStringVar1);
+    StringCopy(gStringVar2, COMPOUND_STRING(""));
+    StringCopy(gStringVar3, COMPOUND_STRING(""));
 
+    if (abilityNum >= NUM_ABILITY_SLOTS)
+        return sTutorAbilityCount;
+
+    currentAbility = gSpeciesInfo[species].abilities[abilityNum];
+
+    for (i = 0; i < NUM_ABILITY_SLOTS; i++)
+    {
+        u16 ability = gSpeciesInfo[species].abilities[i];
+
+        if (i == abilityNum || ability == ABILITY_NONE || ability == currentAbility)
+            continue;
+
+        if (sTutorAbilityCount > 0
+            && ability == gSpeciesInfo[species].abilities[sTutorAbilitySlots[0]])
+            continue;
+
+        if (!IsAbilityTutorViable(species, ability))
+            continue;
+
+        sTutorAbilitySlots[sTutorAbilityCount] = i;
+        if (sTutorAbilityCount == 0)
+            StringCopy(gStringVar2, gAbilitiesInfo[ability].name);
+        else
+            StringCopy(gStringVar3, gAbilitiesInfo[ability].name);
+
+        sTutorAbilityCount++;
+        if (sTutorAbilityCount >= ARRAY_COUNT(sTutorAbilitySlots))
+            break;
     }
-    
-    if (abilityNum !=2){
-        u16 hiddenAbility = gSpeciesInfo[species].abilities[2];
-        if (IsAbilityTutorViable(hiddenAbility)){
-            gSpecialVar_0x8009 = 2;
-            GetMonNickname(mon, gStringVar1);
-            StringCopy(gStringVar2, gAbilitiesInfo[hiddenAbility].name);
-            return hiddenAbility;
-        }
-    }
-    return ABILITY_NONE;
+
+    return sTutorAbilityCount;
 }
 
-//Relies on gSpecialVar_0x8009 set by GetTutorAbility
 void SetTutorAbility(){
     u16 species = GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPECIES, NULL);
+    u8 choice = sTutorAbilityCount == 1 ? 0 : gSpecialVar_Result;
+    u8 abilityNum;
+
+    if (choice >= sTutorAbilityCount)
+        return;
+
+    abilityNum = sTutorAbilitySlots[choice];
+
     //Safety guard for non-existent ability
-    if (gSpeciesInfo[species].abilities[gSpecialVar_0x8009] == ABILITY_NONE){
+    if (gSpeciesInfo[species].abilities[abilityNum] == ABILITY_NONE){
         return;
     }
-    SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &gSpecialVar_0x8009);   
-    gSpecialVar_0x8009 = 0; 
+    SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &abilityNum);
+    sTutorAbilityCount = 0;
 }
 
 
