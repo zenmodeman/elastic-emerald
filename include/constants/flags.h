@@ -1225,7 +1225,7 @@
 #define FLAG_ITEM_OLDALE_RUINS_1F_ABILITY_CAPSULE                   0x493 // Formerly un used flag
 #define FLAG_ITEM_PETALBURG_GROVE_BALM_MUSHROOM                     0x494 // Formerly un used flag
 #define FLAG_ITEM_SANDFRONT_ICY_ROCK                                0x495 // Formerly un used flag
-#define FLAG_ITEM_GRANITE_ROCK_GEMS                                 0x496 // Unused Flag
+#define FLAG_ITEM_GRANITE_ROCK_GEMS                                 0x496 // Formerly un used flag
 #define FLAG_HIDE_PETALBURG_GROVE_BIRCH                             0x497 // Formerly un used flag
 #define FLAG_UNUSED_0x498                                           0x498 // Unused Flag
 #define FLAG_UNUSED_0x499                                           0x499 // Unused Flag
