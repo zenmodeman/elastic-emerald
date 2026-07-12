@@ -1,5 +1,6 @@
 raw`
 .set LOCALID_WANDERING_WOMAN, 1
+.set LOCALID_PETALBURG_GROVE_BIRCH, 3
 PetalburgGrove_MapScripts::
 	.byte 0
 `
@@ -12,5 +13,49 @@ script PetalburgGrove_WanderingWoman{
 	applymovement(LOCALID_WANDERING_WOMAN, Common_Movement_FaceOriginalDirection)
 	waitmovement(0)
     releaseall
+    end
+}
+
+script PetalburgGrove_ProfessorBirch{
+    lock
+    faceplayer
+    msgbox(format("PROF. BIRCH: Oh, {PLAYER}{KUN}!\pTake a look at this grove. Isn't it lively?\pVULPIX lives right alongside GRASS-type POKéMON like CHIKORITA and BULBASAUR.\pI see you've earned your first BADGE, too. Congratulations!\pYour next stop is elsewhere, but you came here to observe this place anyway.\pThat's the spirit! POKéMON are everywhere. Habitats like this are full of discoveries.\pWell, my field notes are done. I'd better get back to the LAB.\pBest of luck on your adventure!"))
+    closemessage
+    setflag(FLAG_HIDE_PETALBURG_GROVE_BIRCH)
+    removeobject(LOCALID_PETALBURG_GROVE_BIRCH)
+    releaseall
+    end
+}
+
+script PetalburgGrove_Bulbasaur{
+    lock
+    faceplayer
+    waitse
+    playmoncry(SPECIES_BULBASAUR, CRY_MODE_NORMAL)
+    msgbox(format("BULBASAUR is resting in a cool patch of grass."))
+    waitmoncry
+    release
+    end
+}
+
+script PetalburgGrove_Chikorita{
+    lock
+    faceplayer
+    waitse
+    playmoncry(SPECIES_CHIKORITA, CRY_MODE_NORMAL)
+    msgbox(format("CHIKORITA sways its leaf towards the flowers."))
+    waitmoncry
+    release
+    end
+}
+
+script PetalburgGrove_Vulpix{
+    lock
+    faceplayer
+    waitse
+    playmoncry(SPECIES_VULPIX, CRY_MODE_NORMAL)
+    msgbox(format("VULPIX is curled up with its tails tucked neatly around it."))
+    waitmoncry
+    release
     end
 }
