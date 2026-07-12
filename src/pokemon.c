@@ -10206,7 +10206,7 @@ u8 GetMonTierPoints(struct Pokemon *mon){
     }
 }
 
-static bool32 IsFreeCenterTutorTierException(u16 species)
+static bool32 IsFreeMoveRelearnerTierException(u16 species)
 {
     switch (species)
     {
@@ -10217,7 +10217,23 @@ static bool32 IsFreeCenterTutorTierException(u16 species)
     }
 }
 
-static bool32 DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(struct Pokemon *mon, u16 species)
+static bool32 IsFreeCenterTutorTierException(u16 species)
+{
+    switch (species)
+    {
+    //Currently redundant but keeping this check until
+    //I have identified a mon that has a conditional 2-point ability variation    
+    case SPECIES_BEEDRILL:
+        return TRUE;
+    default:
+        //Because MoveRelearner Tier points are more lenient, they naturally apply here
+        return IsFreeMoveRelearnerTierException(species);
+    }
+}
+
+
+
+static bool32 DoesSpeciesOrEvolutionExceedTierPointThreshold(struct Pokemon *mon, u16 species, u8 threshold)
 {
     u32 i;
     u8 abilityNum;
@@ -10232,7 +10248,7 @@ static bool32 DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(struct Pokemon *mon
             continue;
 
         SetMonData(&tempMon, MON_DATA_ABILITY_NUM, &abilityNum);
-        if (GetMonTierPoints(&tempMon) > 1)
+        if (GetMonTierPoints(&tempMon) > threshold)
             return TRUE;
     }
 
@@ -10247,7 +10263,7 @@ static bool32 DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(struct Pokemon *mon
         if (targetSpecies == SPECIES_NONE)
             continue;
 
-        if (DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(mon, targetSpecies))
+        if (DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, targetSpecies, threshold))
             return TRUE;
     }
 
@@ -10268,7 +10284,7 @@ bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon)
     if (IsFreeCenterTutorTierException(species))
         return FALSE;
 
-    return !DoesSpeciesOrEvolutionHaveMoreThanOneTierPoint(mon, species);
+    return !DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, species, 1);
 }
 
 bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon)
@@ -10280,6 +10296,34 @@ bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon)
         return TRUE;
 
     return IsMonFreeCenterTutorEligible(mon);
+}
+
+bool32 IsMonFreeMoveRelearnerEligible(struct Pokemon *mon)
+{
+    u16 species;
+
+    if (mon == NULL || GetMonData(mon, MON_DATA_IS_EGG))
+        return FALSE;
+
+    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    if (species == SPECIES_NONE || GetMonTierPoints(mon) > 2)
+        return FALSE;
+
+    if (IsFreeMoveRelearnerTierException(species))
+        return FALSE;
+
+    return !DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, species, 2);
+}
+
+bool32 CanMonUseMoveRelearnerWithCurrentResources(struct Pokemon *mon)
+{
+    if (GetNumberOfRelearnableMoves(mon) == 0)
+        return FALSE;
+
+    if (!FlagGet(FLAG_RESOURCE_MODE) || VarGet(VAR_REMAINING_RELEARNER) > 0)
+        return TRUE;
+
+    return IsMonFreeMoveRelearnerEligible(mon);
 }
 
 //Get the points of the party other than the mon to replace.

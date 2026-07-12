@@ -18,6 +18,7 @@
 #include "menu_specialized.h"
 #include "overworld.h"
 #include "palette.h"
+#include "pokemon.h"
 #include "pokemon_summary_screen.h"
 #include "script.h"
 #include "sound.h"
@@ -368,6 +369,7 @@ static s32 GetCurrentSelectedMove(void);
 static void FreeMoveRelearnerResources(void);
 static void RemoveScrollArrows(void);
 static void HideHeartSpritesAndShowTeachMoveText(bool8);
+static void TryDepleteMoveRelearnerPoint(void);
 
 static void VBlankCB_MoveRelearner(void)
 {
@@ -563,12 +565,9 @@ static void DoMoveRelearnerMain(void)
             {
                 if (GiveMoveToMon(&gPlayerParty[sMoveRelearnerStruct->partyMon], GetCurrentSelectedMove()) != MON_HAS_MAX_MOVES)
                 {
-                    u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
                     gSpecialVar_0x8004 = TRUE;
-                if (remainingRelearner > 0){
-                    VarSet(VAR_REMAINING_RELEARNER, remainingRelearner -1);
-                }
+                    TryDepleteMoveRelearnerPoint();
                     sMoveRelearnerStruct->state = MENU_STATE_PRINT_TEXT_THEN_FANFARE;
                 }
                 else
@@ -797,7 +796,6 @@ static void DoMoveRelearnerMain(void)
             {
                 u16 move = GetMonData(&gPlayerParty[sMoveRelearnerStruct->partyMon], MON_DATA_MOVE1 + sMoveRelearnerStruct->moveSlot);
                 u8 originalPP = GetMonData(&gPlayerParty[sMoveRelearnerStruct->partyMon], MON_DATA_PP1 + sMoveRelearnerStruct->moveSlot);
-                u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
                 StringCopy(gStringVar3, GetMoveName(move));
                 RemoveMonPPBonus(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->moveSlot);
                 SetMonMoveSlot(&gPlayerParty[sMoveRelearnerStruct->partyMon], GetCurrentSelectedMove(), sMoveRelearnerStruct->moveSlot);
@@ -809,9 +807,7 @@ static void DoMoveRelearnerMain(void)
                 PrintMessageWithPlaceholders(gText_MoveRelearnerAndPoof);
                 sMoveRelearnerStruct->state = MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE;
 
-                if (remainingRelearner > 0){
-                    VarSet(VAR_REMAINING_RELEARNER, remainingRelearner -1);
-                }
+                TryDepleteMoveRelearnerPoint();
                 gSpecialVar_0x8004 = TRUE;
             }
         }
@@ -858,6 +854,18 @@ static void FreeMoveRelearnerResources(void)
     FreeAllSpritePalettes();
 }
 
+static void TryDepleteMoveRelearnerPoint(void)
+{
+    u8 remainingRelearner = VarGet(VAR_REMAINING_RELEARNER);
+
+    if (FlagGet(FLAG_RESOURCE_MODE)
+     && remainingRelearner > 0
+     && !IsMonFreeMoveRelearnerEligible(&gPlayerParty[sMoveRelearnerStruct->partyMon]))
+    {
+        VarSet(VAR_REMAINING_RELEARNER, remainingRelearner - 1);
+    }
+}
+
 // Note: The hearts are already made invisible by MoveRelearnerShowHideHearts,
 // which is called whenever the cursor in either list changes.
 static void HideHeartSpritesAndShowTeachMoveText(bool8 onlyHideSprites)
@@ -869,11 +877,20 @@ static void HideHeartSpritesAndShowTeachMoveText(bool8 onlyHideSprites)
 
     if (!onlyHideSprites)
     {
-        if (FlagGet(FLAG_RESOURCE_MODE)){
+        if (FlagGet(FLAG_RESOURCE_MODE)
+         && VarGet(VAR_REMAINING_RELEARNER) == 0
+         && IsMonFreeMoveRelearnerEligible(&gPlayerParty[sMoveRelearnerStruct->partyMon]))
+        {
+            StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_FreeRelearner);
+        }
+        else if (FlagGet(FLAG_RESOURCE_MODE))
+        {
             ConvertIntToDecimalStringN(gStringVar2, VarGet(VAR_REMAINING_RELEARNER), STR_CONV_MODE_LEFT_ALIGN, 1);
             StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_Resource);
-        }else{
-            StringExpandPlaceholders(gStringVar2, gText_TeachWhichMoveToPkmn);
+        }
+        else
+        {
+            StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn);
         }
         FillWindowPixelBuffer(RELEARNERWIN_MSG, 0x11);
         AddTextPrinterParameterized(RELEARNERWIN_MSG, FONT_NORMAL, gStringVar4, 0, 1, 0, NULL);
@@ -946,10 +963,19 @@ static void ShowTeachMoveText(bool8 shouldDoNothingInstead)
 
     if (shouldDoNothingInstead == FALSE)
     {
-        if (FlagGet(FLAG_RESOURCE_MODE)){
-            ConvertIntToDecimalStringN(gStringVar3, VarGet(VAR_REMAINING_RELEARNER), STR_CONV_MODE_LEFT_ALIGN, 1);
+        if (FlagGet(FLAG_RESOURCE_MODE)
+         && VarGet(VAR_REMAINING_RELEARNER) == 0
+         && IsMonFreeMoveRelearnerEligible(&gPlayerParty[sMoveRelearnerStruct->partyMon]))
+        {
+            StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_FreeRelearner);
+        }
+        else if (FlagGet(FLAG_RESOURCE_MODE))
+        {
+            ConvertIntToDecimalStringN(gStringVar2, VarGet(VAR_REMAINING_RELEARNER), STR_CONV_MODE_LEFT_ALIGN, 1);
             StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_Resource);
-        }else{
+        }
+        else
+        {
             StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn);
         }
         FillWindowPixelBuffer(RELEARNERWIN_MSG, 0x11);

@@ -941,5 +941,7 @@ u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies);
 u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum);
 bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon);
 bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon);
+bool32 IsMonFreeMoveRelearnerEligible(struct Pokemon *mon);
+bool32 CanMonUseMoveRelearnerWithCurrentResources(struct Pokemon *mon);
 
 #endif // GUARD_POKEMON_H

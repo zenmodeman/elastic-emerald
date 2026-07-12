@@ -1128,6 +1128,9 @@ static void DisplayPartyPokemonDataForRelearner(u8 slot)
         break;
     }
 
+    if (hasMoves)
+        hasMoves = CanMonUseMoveRelearnerWithCurrentResources(mon);
+
     u32 desc = (hasMoves ? PARTYBOX_DESC_ABLE_2 : PARTYBOX_DESC_NOT_ABLE_2);
     DisplayPartyPokemonDescriptionData(slot, desc);
 }
@@ -2905,7 +2908,8 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
     if (P_PARTY_MOVE_RELEARNER
      && (GetMonData(&mons[slotId], MON_DATA_SPECIES)
      && (HasRelearnerLevelUpMoves(&mons[slotId]) || HasRelearnerEggMoves(&mons[slotId])
-     || HasRelearnerTMMoves(&mons[slotId]) || HasRelearnerTutorMoves(&mons[slotId]))))
+     || HasRelearnerTMMoves(&mons[slotId]) || HasRelearnerTutorMoves(&mons[slotId])))
+     && CanMonUseMoveRelearnerWithCurrentResources(&mons[slotId]))
         AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUB_MOVES);
 
     // Add field moves to action list
@@ -2925,7 +2929,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
     {
         if (GetMonData(&mons[1], MON_DATA_SPECIES) != SPECIES_NONE)
             AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SWITCH);
-        if (GetNumberOfRelearnableMoves(&mons[slotId]) != 0 && (!FlagGet(FLAG_RESOURCE_MODE) || (FlagGet(FLAG_RESOURCE_MODE) && VarGet(VAR_REMAINING_RELEARNER)) > 0))
+        if (CanMonUseMoveRelearnerWithCurrentResources(&mons[slotId]))
         {
             AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_MOVES);
         }
@@ -3112,7 +3116,10 @@ static void CursorCb_Moves(u8 taskId)
     PlaySE(SE_SELECT);
     FlagSet(FLAG_PARTY_MOVES);
     gSpecialVar_0x8004 = gPartyMenu.slotId;
-    gSpecialVar_0x8005 = GetNumberOfRelearnableMoves(&gPlayerParty[gSpecialVar_0x8004]);
+    if (CanMonUseMoveRelearnerWithCurrentResources(&gPlayerParty[gSpecialVar_0x8004]))
+        gSpecialVar_0x8005 = GetNumberOfRelearnableMoves(&gPlayerParty[gSpecialVar_0x8004]);
+    else
+        gSpecialVar_0x8005 = 0;
     DisplayPartyPokemonDataForRelearner(gSpecialVar_0x8004);
     TeachMoveRelearnerMove();
     sPartyMenuInternal->exitCallback = TeachMoveRelearnerMove;
@@ -8127,6 +8134,10 @@ static void CB2_ChooseMonForMoveRelearner(void)
     if (gSpecialVar_0x8004 >= PARTY_SIZE)
     {
         gSpecialVar_0x8004 = PARTY_NOTHING_CHOSEN;
+    }
+    else if (!CanMonUseMoveRelearnerWithCurrentResources(&gPlayerParty[gSpecialVar_0x8004]))
+    {
+        gSpecialVar_0x8005 = 0;
     }
     else
     {
