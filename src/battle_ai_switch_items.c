@@ -266,6 +266,169 @@ static inline bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32
     return FALSE;
 }
 
+static bool32 MoveCanLowerOwnDefensiveStat(u32 move, u32 stat)
+{
+    u32 i;
+
+    if (GetMoveEffect(move) == EFFECT_SHELL_SMASH && (stat == STAT_DEF || stat == STAT_SPDEF))
+        return TRUE;
+
+    for (i = 0; i < GetMoveAdditionalEffectCount(move); i++)
+    {
+        const struct AdditionalEffect *additionalEffect = GetMoveAdditionalEffectById(move, i);
+
+        if (!additionalEffect->self)
+            continue;
+
+        switch (additionalEffect->moveEffect)
+        {
+        case MOVE_EFFECT_DEF_MINUS_1:
+        case MOVE_EFFECT_DEF_MINUS_2:
+        case MOVE_EFFECT_ATK_DEF_DOWN:
+            if (stat == STAT_DEF)
+                return TRUE;
+            break;
+        case MOVE_EFFECT_SP_DEF_MINUS_1:
+        case MOVE_EFFECT_SP_DEF_MINUS_2:
+            if (stat == STAT_SPDEF)
+                return TRUE;
+            break;
+        case MOVE_EFFECT_V_CREATE:
+        case MOVE_EFFECT_DEF_SPDEF_DOWN:
+            if (stat == STAT_DEF || stat == STAT_SPDEF)
+                return TRUE;
+            break;
+        default:
+            break;
+        }
+    }
+
+    return FALSE;
+}
+
+static bool32 BattlerCanLowerOwnDefensiveStat(u32 battler, u32 stat)
+{
+    u32 i;
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        u32 move = gBattleMons[battler].moves[i];
+
+        if (move != MOVE_NONE && move != MOVE_UNAVAILABLE && MoveCanLowerOwnDefensiveStat(move, stat))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+static enum Ability GetBattlerCleanStateAbility(u32 battler)
+{
+    return GetMonAbility(GetBattlerMon(battler));
+}
+
+// Fast-KO switching should only react to damage that was available before the player
+// applied type/ability changes, immunity bypasses, grounding, or defensive stat drops.
+//This is to avoid applying fast KO switches for tech moves the player should be incentivized to use such as Screech or Soak.
+static s32 GetCleanStateDamage(u32 move, u32 battlerAtk, u32 battlerDef)
+{
+    u32 i;
+    u32 savedFieldStatuses = gFieldStatuses;
+    bool32 savedAiCalcInProgress = gAiLogicData->aiCalcInProgress;
+    enum Ability savedAbilities[2] =
+    {
+        gAiLogicData->abilities[battlerAtk],
+        gAiLogicData->abilities[battlerDef],
+    };
+    u16 savedItems[2] =
+    {
+        gAiLogicData->items[battlerAtk],
+        gAiLogicData->items[battlerDef],
+    };
+    u16 savedHoldEffects[2] =
+    {
+        gAiLogicData->holdEffects[battlerAtk],
+        gAiLogicData->holdEffects[battlerDef],
+    };
+    struct BattlePokemon savedBattleMons[2] =
+    {
+        gBattleMons[battlerAtk],
+        gBattleMons[battlerDef],
+    };
+    struct DisableStruct savedDisableStructs[MAX_BATTLERS_COUNT];
+    struct SimulatedDamage damage;
+    uq4_12_t effectiveness;
+    u32 battlers[2] = {battlerAtk, battlerDef};
+
+    memcpy(savedDisableStructs, gDisableStructs, sizeof(savedDisableStructs));
+
+    for (i = 0; i < ARRAY_COUNT(battlers); i++)
+    {
+        u32 battler = battlers[i];
+        u32 species = GetMonData(GetBattlerMon(battler), MON_DATA_SPECIES);
+        enum Ability ability = GetBattlerCleanStateAbility(battler);
+
+        gBattleMons[battler].types[0] = GetSpeciesType(species, 0);
+        gBattleMons[battler].types[1] = GetSpeciesType(species, 1);
+        gBattleMons[battler].types[2] = TYPE_MYSTERY;
+        gBattleMons[battler].ability = ability;
+        gBattleMons[battler].volatiles.gastroAcid = FALSE;
+        gAiLogicData->abilities[battler] = ability;
+    }
+
+    if (gBattleMons[battlerDef].statStages[STAT_DEF] < DEFAULT_STAT_STAGE
+     && !BattlerCanLowerOwnDefensiveStat(battlerDef, STAT_DEF))
+        gBattleMons[battlerDef].statStages[STAT_DEF] = DEFAULT_STAT_STAGE;
+    if (gBattleMons[battlerDef].statStages[STAT_SPDEF] < DEFAULT_STAT_STAGE
+     && !BattlerCanLowerOwnDefensiveStat(battlerDef, STAT_SPDEF))
+        gBattleMons[battlerDef].statStages[STAT_SPDEF] = DEFAULT_STAT_STAGE;
+
+    gBattleMons[battlerDef].volatiles.foresight = FALSE;
+    gBattleMons[battlerDef].volatiles.miracleEye = FALSE;
+    gBattleMons[battlerDef].volatiles.smackDown = FALSE;
+    gBattleMons[battlerDef].volatiles.root = FALSE;
+    gBattleMons[battlerDef].volatiles.telekinesis = FALSE;
+    gBattleMons[battlerDef].volatiles.magnetRise = FALSE;
+    gDisableStructs[battlerDef].tarShot = FALSE;
+    gDisableStructs[battlerDef].roostActive = FALSE;
+    gFieldStatuses &= ~STATUS_FIELD_GRAVITY;
+
+    // These items are only ignored for their immunity-bypass/grounding effects.
+    // Other current item changes remain part of the clean-state calculation.
+    if (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_RING_TARGET
+     || gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_IRON_BALL)
+    {
+        gBattleMons[battlerDef].item = ITEM_NONE;
+        gAiLogicData->items[battlerDef] = ITEM_NONE;
+        gAiLogicData->holdEffects[battlerDef] = HOLD_EFFECT_NONE;
+    }
+
+    for (i = 0; i < MAX_BATTLERS_COUNT; i++)
+        gDisableStructs[i].neutralizingGas = FALSE;
+
+    damage = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK, AI_GetWeather());
+
+    gFieldStatuses = savedFieldStatuses;
+    memcpy(gDisableStructs, savedDisableStructs, sizeof(savedDisableStructs));
+    gBattleMons[battlerAtk] = savedBattleMons[0];
+    gBattleMons[battlerDef] = savedBattleMons[1];
+    gAiLogicData->abilities[battlerAtk] = savedAbilities[0];
+    gAiLogicData->abilities[battlerDef] = savedAbilities[1];
+    gAiLogicData->items[battlerAtk] = savedItems[0];
+    gAiLogicData->items[battlerDef] = savedItems[1];
+    gAiLogicData->holdEffects[battlerAtk] = savedHoldEffects[0];
+    gAiLogicData->holdEffects[battlerDef] = savedHoldEffects[1];
+    gAiLogicData->aiCalcInProgress = savedAiCalcInProgress;
+
+    return damage.median;
+}
+
+static bool32 IsOriginalTrainerLead(u32 battler)
+{
+    struct AiPartyMon *partyMon = &gAiPartyData->mons[GetBattlerSide(battler)][gBattlerPartyIndexes[battler]];
+
+    return gBattlerPartyIndexes[battler] == 0 && partyMon->switchInCount == 1;
+}
+
 // Note that as many return statements as possible are INTENTIONALLY put after all of the loops;
 // the function can take a max of about 0.06s to run, and this prevents the player from identifying
 // whether the mon will switch or not by seeing how long the delay is before they select a move
@@ -284,7 +447,9 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     s32 damageTaken;
     s32 maxDamageDealt = 0;
     s32 maxSurmisedDamageTaken = 0;
-    s32 maxRevealedDamageTaken = 0;
+    // s32 maxRevealedDamageTaken = 0; // Current-state reference; fast-KO checks now use clean-state revealed damage.
+    s32 maxCleanSurmisedDamageTaken = 0;
+    s32 maxCleanRevealedDamageTaken = 0;
     bool32 getsSurmisedOneShot = FALSE;
     bool32 getsRevealedOneShot = FALSE;
     bool32 useSurmisedOneShot;
@@ -367,12 +532,18 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
                 bestPlayerMove = playerMove;
             }
 
+            if (!AI_DoesChoiceEffectBlockMove(opposingBattler, playerMove))
+                maxCleanSurmisedDamageTaken = max(maxCleanSurmisedDamageTaken, GetCleanStateDamage(playerMove, opposingBattler, battler));
+
             if (revealedMove != MOVE_NONE && revealedMove != MOVE_UNAVAILABLE
              && !IsBattleMoveStatus(revealedMove)
              && GetMoveEffect(revealedMove) != EFFECT_FOCUS_PUNCH
-             && !AI_DoesChoiceEffectBlockMove(opposingBattler, revealedMove)
-             && damageTaken > maxRevealedDamageTaken)
-                maxRevealedDamageTaken = damageTaken;
+             && !AI_DoesChoiceEffectBlockMove(opposingBattler, revealedMove))
+            {
+                // s32 revealedDamageTaken = AI_GetDamage(opposingBattler, battler, i, AI_DEFENDING, gAiLogicData);
+                // maxRevealedDamageTaken = max(maxRevealedDamageTaken, revealedDamageTaken);
+                maxCleanRevealedDamageTaken = max(maxCleanRevealedDamageTaken, GetCleanStateDamage(revealedMove, opposingBattler, battler));
+            }
         }
         else if (playerMove != MOVE_NONE && playerMove != MOVE_UNAVAILABLE)
         {
@@ -382,19 +553,21 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
 
     // Check if mon gets one shot
     hasFocusSash = (gItemsInfo[gBattleMons[battler].item].holdEffect == HOLD_EFFECT_FOCUS_SASH);
-    hasSturdy = (!IsMoldBreakerTypeAbility(opposingBattler, gBattleMons[opposingBattler].ability) && GetConfig(B_STURDY) >= GEN_5 && aiAbility == ABILITY_STURDY);
-    if(maxSurmisedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy))
+    hasSturdy = (!IsMoldBreakerTypeAbility(opposingBattler, GetBattlerCleanStateAbility(opposingBattler))
+              && GetConfig(B_STURDY) >= GEN_5
+              && GetBattlerCleanStateAbility(battler) == ABILITY_STURDY);
+    if (maxCleanSurmisedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy))
     {
         getsSurmisedOneShot = TRUE;
     }
-    if (maxRevealedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy)){
+    if (maxCleanRevealedDamageTaken > gBattleMons[battler].hp && !(hasFocusSash || hasSturdy)){
         getsRevealedOneShot = TRUE;
     }
 
     //Use unrevealed STAB estimates for either quad effective possibilities or when the AI mon has led
 
-    if (gDisableStructs[battler].isFirstTurn || HasSTABTypeWithMinEffectiveness(opposingBattler, battler, UQ_4_12(4.0))){
-        //The First turn check is to better preserve leads that could otherwise be trivially OHKO'd
+    if (IsOriginalTrainerLead(battler) || HasSTABTypeWithMinEffectiveness(opposingBattler, battler, UQ_4_12(4.0))){
+        //The literal lead check is to better preserve leads that could otherwise be trivially OHKO'd
         //Note that later logic also checks that the player's battler is also in its first turn
         useSurmisedOneShot = TRUE;
     }else{
@@ -404,7 +577,8 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         useSurmisedOneShot = FALSE;
     }
 
-    DEBUG_DAMAGE("getsRevealedOneShot=%d getsSurmisedOneShot=%d effectiveOneShot=%d",
+    DEBUG_DAMAGE("currentSurmised=%d cleanSurmised=%d cleanRevealed=%d getsRevealedOneShot=%d getsSurmisedOneShot=%d effectiveOneShot=%d",
+                 maxSurmisedDamageTaken, maxCleanSurmisedDamageTaken, maxCleanRevealedDamageTaken,
                  getsRevealedOneShot, getsSurmisedOneShot, useSurmisedOneShot ? getsSurmisedOneShot : getsRevealedOneShot);
 
     canBattlerWinMatchup = CanBattlerWin1v1(

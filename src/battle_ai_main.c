@@ -464,12 +464,11 @@ void Ai_InitPartyStruct(void)
     if (IsDoubleBattle())
         CopyBattlerDataToAIParty(B_POSITION_PLAYER_RIGHT, B_SIDE_PLAYER);
 
-    // If player's partner is AI, save opponent mons
-    if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)
-    {
-        CopyBattlerDataToAIParty(B_POSITION_OPPONENT_LEFT, B_SIDE_OPPONENT);
+    // Track the initially deployed opponent mons too. Besides partner-AI knowledge,
+    // this lets switching logic distinguish a literal trainer lead from later slot-0 re-entry.
+    CopyBattlerDataToAIParty(B_POSITION_OPPONENT_LEFT, B_SIDE_OPPONENT);
+    if (IsDoubleBattle())
         CopyBattlerDataToAIParty(B_POSITION_OPPONENT_RIGHT, B_SIDE_OPPONENT);
-    }
 
     // Find fainted mons
     for (i = 0; i < gAiPartyData->count[B_SIDE_PLAYER]; i++)
