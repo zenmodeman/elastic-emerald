@@ -323,6 +323,11 @@ static EWRAM_DATA struct DebugMenuListData *sDebugMenuListData = NULL;
 EWRAM_DATA bool8 gIsDebugBattle = FALSE;
 EWRAM_DATA u64 gDebugAIFlags = 0;
 
+bool8 IsDebugModeEnabled(void)
+{
+    return gSaveBlock2Ptr != NULL && gSaveBlock2Ptr->optionsDebugMode;
+}
+
 // *******************************
 // Define functions
 static void Debug_ShowMenu(DebugFunc HandleInput, const struct DebugMenuOption *items);

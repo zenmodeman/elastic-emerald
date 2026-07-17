@@ -242,7 +242,7 @@ void BattleAI_SetupFlags(void)
     else
         gAiThinkingStruct->aiFlags[B_POSITION_PLAYER_LEFT] = 0; // player has no AI
 
-    if (DEBUG_OVERWORLD_MENU && gIsDebugBattle)
+    if (IsDebugModeEnabled() && gIsDebugBattle)
     {
         gAiThinkingStruct->aiFlags[B_POSITION_OPPONENT_LEFT] = gDebugAIFlags;
         gAiThinkingStruct->aiFlags[B_POSITION_OPPONENT_RIGHT] = gDebugAIFlags;

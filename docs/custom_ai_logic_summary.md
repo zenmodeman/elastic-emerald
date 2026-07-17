@@ -3,7 +3,7 @@
 ## Documentation status
 
 - **Last documented code commit:** `4547aff533` (2026-07-17, "Add extra condition for STAB quadeffective surmise checks, to only trigger if an equivalent coverage move wouldn't KO").
-- **Uncommitted AI changes covered by this document:** None at the time of this update.
+- **Uncommitted AI changes covered by this document:** Runtime debug-mode gating now controls whether debug battles can override normal trainer AI flags with the flags selected in the debug menu. With debug mode off, the battle Select menu remains available as a read-only reference; its AI damage view shows min-max rolls for every species ability slot without exposing AI scores or the AI's inferred player ability. These are access and presentation changes and do not alter ordinary battle-AI decisions.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -151,6 +151,10 @@ Key commits: `2a278a5a56`, `9335949404`.
 
 Category-based debug output can independently trace switch decisions, reasons, candidate evaluation, type matchups, damage, hazards, statuses, abilities, player prediction, and trainer items.
 
+Player-facing debug features are controlled by a saved runtime Option-menu setting in both debug and non-debug builds. Debug battles apply their menu-selected AI flags only while that setting is enabled; ordinary battles retain the normal AI-flag setup path. Compiler debug logging remains a build-time facility.
+
+When runtime debug mode is disabled, the in-battle Select menu is read-only and omits AI flags, AI knowledge, AI party state, miscellaneous mutation controls, and instant victory. Its reduced `AI Dmg` page calculates minimum and maximum damage against each of the player's species ability slots independently. It snapshots and restores battler and calculation state for every hypothetical ability and deliberately avoids displaying AI scores or using the AI's inferred player ability as the sole result.
+
 Key commit: `7ee8501957`.
 
 ## 4. Doubles coordination
@@ -289,5 +293,3 @@ Key commits: `7fdbe2f144`, `bd8658f64c`, `10f438d2f0`, `7829b03a9c`.
 - Singles and doubles concerns are interleaved in large scoring functions.
 - Knowledge policy is not completely uniform: held items are currently fully known while moves, abilities, and party information remain graduated.
 - Many heuristics combine hard rejection, additive scoring, and probability gates, making global behavior difficult to reason about compositionally.
-
-

@@ -326,7 +326,7 @@ static void BuildStartMenuActions(void)
     }
     else
     {
-        if (DEBUG_OVERWORLD_MENU == TRUE && DEBUG_OVERWORLD_IN_MENU == TRUE)
+        if (IsDebugModeEnabled() && DEBUG_OVERWORLD_IN_MENU == TRUE)
             BuildDebugStartMenu();
         else
             BuildNormalStartMenu();
@@ -821,7 +821,7 @@ static bool8 StartMenuDebugCallback(void)
     RemoveExtraStartMenuWindows();
     HideStartMenuDebug(); // Hide start menu without enabling movement
 
-    if (DEBUG_OVERWORLD_MENU)
+    if (IsDebugModeEnabled())
     {
         FreezeObjectEvents();
         Debug_ShowMainMenu();

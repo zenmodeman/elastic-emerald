@@ -11,6 +11,7 @@
 #include "contest_effect.h"
 #include "data.h"
 #include "daycare.h"
+#include "debug.h"
 #include "decompress.h"
 #include "dynamic_placeholder_text_util.h"
 #include "event_data.h"
@@ -1810,7 +1811,7 @@ static void Task_HandleInput(u8 taskId)
             BeginCloseSummaryScreen(taskId);
         }
         #endif
-        else if (DEBUG_POKEMON_SPRITE_VISUALIZER && JOY_NEW(SELECT_BUTTON) && !gMain.inBattle)
+        else if (IsDebugModeEnabled() && JOY_NEW(SELECT_BUTTON) && !gMain.inBattle)
         {
             sMonSummaryScreen->callback = CB2_Pokemon_Sprite_Visualizer;
             StopPokemonAnimations();
