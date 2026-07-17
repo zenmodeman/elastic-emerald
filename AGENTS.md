@@ -4,6 +4,45 @@ When working with the elastic-emerald project, avoid doing build checks unless e
 
 Any new tests created for this project should use the `Zenmodeman: ` prefix in the test name, to distinguish these tests from Expansion native tests.
 
+## Skill selection and autodetection
+
+Load and follow a skill whenever the request names it or the work matches the cases below. Announce the selected skill before acting.
+
+### Elastic Emerald AI logic skill
+
+Use the project skill at `skills/modify-elastic-emerald-ai-logic/SKILL.md` when implementing, diagnosing, reviewing, or documenting battle-AI behavior. Autodetect it for work involving:
+
+- move scoring, viability, damage comparison, target selection, switching, switch-in ranking, trainer items, or doubles coordination;
+- revealed, inferred, predicted, or omniscient opponent information;
+- AI damage, Speed, type, ability, item, status, field, or gimmick simulations;
+- temporary mutation and restoration of battle state during AI calculations;
+- AI support for a new or changed move, ability, item, battle mechanic, or Terastalization behavior;
+- battle-AI regressions or tests under `test/battle/ai`.
+
+### Merge upgrade helper
+
+Use the project skill at `skills/merge-upgrade-helper/SKILL.md` automatically when resolving or auditing an upstream merge or version upgrade. Trigger cases include:
+
+- unresolved conflict markers or files reported as unmerged;
+- post-merge compiler, assembler, linker, or generated-file failures;
+- stale APIs, renamed constants or struct fields, duplicate enum members, duplicate cases, or interleaved brace/switch structure after an upgrade;
+- adapting local custom behavior to a newer upstream API or data layout;
+- checking whether custom gameplay, AI, scripts, UI, save data, or generated content survived a merge even when conflicts are already resolved;
+- repeated merge rediscovery that should be captured in the upgrade dossier.
+
+For Elastic Emerald merge audits, read `docs/merge-upgrade-helper/README.md` as directed by the skill. If merge work touches battle AI, use both skills: apply the merge helper for conflict resolution and upstream adaptation, then the Elastic Emerald AI logic skill for behavioral intent, simulation safety, AI/runtime parity, tests, and summary updates.
+
+## AI documentation maintenance
+
+When changing battle-AI behavior, update `docs/custom_ai_logic_summary.md` in the same work so its behavioral description and key-commit references remain current.
+
+Maintain the document's `Documentation status` section as follows:
+
+- Record the newest commit whose applicable AI changes have actually been reviewed and documented.
+- If the AI changes being documented are not committed yet, identify them explicitly as uncommitted; do not attribute them to an older commit or invent a future hash.
+- Whenever later work modifies `custom_ai_logic_summary.md`, check `git status`, the relevant diff, and recent history to determine whether previously documented uncommitted AI changes now have a commit. If so, replace the uncommitted marker with the real commit and advance the last-documented commit as appropriate.
+- Do not advance the recorded commit past AI changes that have not yet been reviewed for inclusion in the summary.
+
 ## Map and script editing notes
 
 When editing map scripts, prefer changing the source `.pory` file and regenerating the corresponding `.inc` with `tools/poryscript/poryscript`. A quick static check can compile the single script to `/tmp` with the same `-fc tools/poryscript/font_config.json` and `-cc tools/poryscript/command_config.json` arguments used by the Makefile.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merge Upgrade Helper"
+  short_description: "Resolve merge conflicts and upgrade regressions"
+  default_prompt: "Use $merge-upgrade-helper to resolve merge conflicts, clean stale upgrade code, and audit functionality regressions."

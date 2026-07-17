@@ -1,5 +1,12 @@
 # Custom Battle AI Logic Summary
 
+## Documentation status
+
+- **Last documented code commit:** `4547aff533` (2026-07-17, "Add extra condition for STAB quadeffective surmise checks, to only trigger if an equivalent coverage move wouldn't KO").
+- **Uncommitted AI changes covered by this document:** None at the time of this update.
+
+The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
+
 ## Scope and reading guidance
 
 This document summarizes the main battle-AI work introduced through my commits from January 2024 through July 2026. Merge commits, trainer-team-only edits, mechanical formatting changes, and tests that did not introduce behavior are omitted. Later "restore" commits are treated as continuations of the original feature rather than separate features.
@@ -100,17 +107,23 @@ Key commits: `93531a3cea`, `6e5f7576f7`.
 Smart switching evaluates whether the active battler can win the immediate matchup rather than switching from type disadvantage alone. Important inputs include:
 
 - revealed versus merely inferred incoming damage;
-- speed order and priority damage;
-- first-turn or lead preservation;
+- current and clean-state speed order, plus priority damage;
+- literal trainer-lead preservation;
 - explicitly revealed KOs;
 - inferred quad-effective STAB KOs;
 - the active battler's own progress and KO potential;
 - Focus Sash, Sturdy, Regenerator, HP, and available switch-ins;
 - switch-in hazards and trapping.
 
-The inferred OHKO response is limited primarily to the opponent's first turn, reducing oscillation and preventing uncertain hidden information from forcing repeated switches. Dig/free-turn switching and broad type-matchup switching were removed or disabled after testing because they produced poor or exploitable behavior.
+Fast-KO switching requires the same candidate move to KO in both the actual battle state and a clean-state simulation. The clean state restores regular species typing and original abilities; removes temporary immunity bypasses, grounding, ability suppression, and effects such as Soak, added types, Tar Shot, Foresight, Miracle Eye, Smack Down, Gastro Acid, and Neutralizing Gas; and ignores Ring Target and Iron Ball when they provide the relevant bypass or grounding. Active Terastalization and ordinary item changes remain meaningful.
 
-Key commits: `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, `efda8256b3`.
+Negative Defense and Special Defense stages are removed from the clean calculation unless a matching self-debuff move has depleted PP, which is treated as evidence that the battler attempted a move such as Superpower, Close Combat, V-create, Shell Smash, or Scale Shot. The speed gate likewise requires the player to be faster in both actual and clean states. Clean speed removes negative Speed stages unless a PP-depleted self-drop move such as Hammer Arm, V-create, or Curse can explain them. These paired checks allow player-applied tech moves such as Screech and Scary Face without making the AI ignore a KO or speed advantage that genuinely exists in both states.
+
+The fast-KO response is no longer restricted to the opponent's first turn. Inferred-move policy instead distinguishes a literal trainer lead—party slot zero during its first field stint—from later battlers. Outside that lead case, quad-effective hidden-STAB surmising is used only when the estimated move KOs from full HP in both actual and clean states while dealing less than 1.5 times max HP. This approximates the window where STAB is necessary for the KO; at 1.5 times max HP or above, equivalent non-STAB coverage would also KO, so the special quad-effective surmise is unnecessary. More conservative cases rely on explicitly revealed moves.
+
+Dig/free-turn switching and broad type-matchup switching were removed or disabled after testing because they produced poor or exploitable behavior.
+
+Key commits: `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, `efda8256b3`, `6f1d67a6f4`, `8d856e4bcf`, `4547aff533`.
 
 ### Absorption and immunity switches
 
@@ -276,6 +289,5 @@ Key commits: `7fdbe2f144`, `bd8658f64c`, `10f438d2f0`, `7829b03a9c`.
 - Singles and doubles concerns are interleaved in large scoring functions.
 - Knowledge policy is not completely uniform: held items are currently fully known while moves, abilities, and party information remain graduated.
 - Many heuristics combine hard rejection, additive scoring, and probability gates, making global behavior difficult to reason about compositionally.
-
 
 
