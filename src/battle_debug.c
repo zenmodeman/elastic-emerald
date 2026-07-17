@@ -108,6 +108,7 @@ enum
     LIST_ITEM_VOLATILE,
     LIST_ITEM_HAZARDS,
     LIST_ITEM_SIDE_STATUS,
+    LIST_ITEM_PLAYER_DMG,
     LIST_ITEM_AI,
     LIST_ITEM_AI_MOVES_PTS,
     LIST_ITEM_AI_INFO,
@@ -433,6 +434,7 @@ static const struct ListMenuItem sMainListItems[] =
     {COMPOUND_STRING("Volatiles"),    LIST_ITEM_VOLATILE},
     {COMPOUND_STRING("Hazards"),      LIST_ITEM_HAZARDS},
     {COMPOUND_STRING("Side Status"),  LIST_ITEM_SIDE_STATUS},
+    {COMPOUND_STRING("Player Dmg"),   LIST_ITEM_PLAYER_DMG},
     {COMPOUND_STRING("AI"),           LIST_ITEM_AI},
     {COMPOUND_STRING("AI Pts/Dmg"),   LIST_ITEM_AI_MOVES_PTS},
     {COMPOUND_STRING("AI Info"),      LIST_ITEM_AI_INFO},
@@ -454,6 +456,7 @@ static const struct ListMenuItem sReadOnlyMainListItems[] =
     {COMPOUND_STRING("Volatiles"),   LIST_ITEM_VOLATILE},
     {COMPOUND_STRING("Hazards"),     LIST_ITEM_HAZARDS},
     {COMPOUND_STRING("Side Status"), LIST_ITEM_SIDE_STATUS},
+    {COMPOUND_STRING("Player Dmg"),  LIST_ITEM_PLAYER_DMG},
     {COMPOUND_STRING("AI Dmg"),      LIST_ITEM_AI_MOVES_PTS},
 };
 
@@ -799,6 +802,7 @@ static bool32 TryMoveDigit(struct BattleDebugModifyArrows *modArrows, bool32 mov
 static void SwitchToDebugView(u8 taskId);
 static void SwitchToDebugViewFromAiParty(u8 taskId);
 static void SwitchToReadOnlyAiDamageView(u8 taskId);
+static void SwitchToPlayerDamageView(u8 taskId);
 
 static struct BattleDebugMenu *sReadOnlyMenuData;
 
@@ -1059,6 +1063,78 @@ static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
     CopyWindowToVram(data->aiMovesWindowId, COPYWIN_FULL);
 }
 
+static struct SimulatedDamage CalcPlayerDisplayedDamage(u32 move, u32 battlerAtk, u32 battlerDef)
+{
+    enum Ability savedAiAbilityAtk = gAiLogicData->abilities[battlerAtk];
+    enum Ability savedAiAbilityDef = gAiLogicData->abilities[battlerDef];
+    struct BattlePokemon savedAttacker = gBattleMons[battlerAtk];
+    struct BattlePokemon savedDefender = gBattleMons[battlerDef];
+    bool32 savedAiCalcInProgress = gAiLogicData->aiCalcInProgress;
+    u32 savedDynamicMoveType = gBattleStruct->dynamicMoveType;
+    bool32 savedSwapDamageCategory = gBattleStruct->swapDamageCategory;
+    u32 savedMagnitudeBasePower = gBattleStruct->magnitudeBasePower;
+    u32 savedPresentBasePower = gBattleStruct->presentBasePower;
+    u32 savedMultiHitCounter = gMultiHitCounter;
+    uq4_12_t effectiveness;
+    struct SimulatedDamage damage;
+
+    // This is player-owned information, so use the battlers' actual current
+    // abilities rather than the AI's inferred or predicted ability state.
+    gAiLogicData->abilities[battlerAtk] = gBattleMons[battlerAtk].ability;
+    gAiLogicData->abilities[battlerDef] = gBattleMons[battlerDef].ability;
+    damage = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK, AI_GetWeather());
+
+    gBattleMons[battlerAtk] = savedAttacker;
+    gBattleMons[battlerDef] = savedDefender;
+    gAiLogicData->abilities[battlerAtk] = savedAiAbilityAtk;
+    gAiLogicData->abilities[battlerDef] = savedAiAbilityDef;
+    gAiLogicData->aiCalcInProgress = savedAiCalcInProgress;
+    gBattleStruct->dynamicMoveType = savedDynamicMoveType;
+    gBattleStruct->swapDamageCategory = savedSwapDamageCategory;
+    gBattleStruct->magnitudeBasePower = savedMagnitudeBasePower;
+    gBattleStruct->presentBasePower = savedPresentBasePower;
+    gMultiHitCounter = savedMultiHitCounter;
+    return damage;
+}
+
+static void PutPlayerDamageText(struct BattleDebugMenu *data)
+{
+    u32 moveSlot, battlerDef, count;
+    u8 text[32];
+
+    FillWindowPixelBuffer(data->aiMovesWindowId, 0x11);
+    for (moveSlot = 0; moveSlot < MAX_MON_MOVES; moveSlot++)
+    {
+        u32 move = gBattleMons[data->battlerId].moves[moveSlot];
+
+        StringCopyN(text, GetMoveName(move), 12)[0] = EOS;
+        AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 0, 15 + moveSlot * 18, 0, NULL, 0, 0);
+        for (count = 0, battlerDef = 0; battlerDef < gBattlersCount; battlerDef++)
+        {
+            u8 *end;
+            struct SimulatedDamage damage;
+
+            if (data->spriteIds.aiIconSpriteIds[battlerDef] == 0xFF)
+                continue;
+            if (move == MOVE_NONE)
+            {
+                StringCopy(text, COMPOUND_STRING("-"));
+            }
+            else
+            {
+                damage = CalcPlayerDisplayedDamage(move, data->battlerId, battlerDef);
+                end = ConvertIntToDecimalStringN(text, damage.minimum, STR_CONV_MODE_LEFT_ALIGN, 5);
+                *end++ = CHAR_HYPHEN;
+                ConvertIntToDecimalStringN(end, damage.maximum, STR_CONV_MODE_LEFT_ALIGN, 5);
+            }
+            AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 84 + count * 70, 15 + moveSlot * 18, 0, NULL, 0, 0);
+            count++;
+        }
+    }
+
+    CopyWindowToVram(data->aiMovesWindowId, COPYWIN_FULL);
+}
+
 static void CleanUpAiInfoWindow(u8 taskId)
 {
     u32 i;
@@ -1183,9 +1259,12 @@ static void Task_ShowReadOnlyAiDamage(u8 taskId)
         HideBg(0);
         ShowBg(1);
 
-        data->aiBattlerId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
-        if (!IsBattlerAlive(data->aiBattlerId) && IsDoubleBattle())
-            data->aiBattlerId = GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
+        if (IsOnPlayerSide(data->aiBattlerId) || !IsBattlerAlive(data->aiBattlerId))
+        {
+            data->aiBattlerId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
+            if (!IsBattlerAlive(data->aiBattlerId) && IsDoubleBattle())
+                data->aiBattlerId = GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
+        }
 
         if (!IsOnPlayerSide(data->battlerId) || !IsBattlerAlive(data->battlerId))
         {
@@ -1220,12 +1299,14 @@ static void Task_ShowReadOnlyAiDamage(u8 taskId)
     case 2:
         if (JOY_NEW(R_BUTTON | L_BUTTON) && IsDoubleBattle())
         {
-            CleanUpAiInfoWindow(taskId);
-            do
+            u32 opposingPartner = BATTLE_PARTNER(data->aiBattlerId);
+
+            if (!IsOnPlayerSide(opposingPartner) && IsBattlerAlive(opposingPartner))
             {
-                data->battlerId ^= BIT_FLANK;
-            } while (!IsOnPlayerSide(data->battlerId) || !IsBattlerAlive(data->battlerId));
-            data->aiViewState = 0;
+                CleanUpAiInfoWindow(taskId);
+                data->aiBattlerId = opposingPartner;
+                data->aiViewState = 0;
+            }
         }
         else if (JOY_NEW(SELECT_BUTTON | B_BUTTON))
         {
@@ -1239,7 +1320,93 @@ static void Task_ShowReadOnlyAiDamage(u8 taskId)
 
 static void SwitchToReadOnlyAiDamageView(u8 taskId)
 {
+    struct BattleDebugMenu *data = GetStructPtr(taskId);
+
+    if (!IsOnPlayerSide(data->battlerId) && IsBattlerAlive(data->battlerId))
+        data->aiBattlerId = data->battlerId;
+    else
+        data->aiBattlerId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
     gTasks[taskId].func = Task_ShowReadOnlyAiDamage;
+    data->aiViewState = 0;
+}
+
+static void Task_ShowPlayerDamage(u8 taskId)
+{
+    u32 i, count;
+    struct WindowTemplate winTemplate;
+    struct BattleDebugMenu *data = GetStructPtr(taskId);
+    struct Pokemon *mon;
+
+    switch (data->aiViewState)
+    {
+    case 0:
+        HideBg(0);
+        ShowBg(1);
+
+        if (!IsOnPlayerSide(data->battlerId) || !IsBattlerAlive(data->battlerId))
+        {
+            data->battlerId = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+            if (!IsBattlerAlive(data->battlerId) && IsDoubleBattle())
+                data->battlerId = GetBattlerAtPosition(B_POSITION_PLAYER_RIGHT);
+        }
+
+        LoadMonIconPalettes();
+        for (count = 0, i = 0; i < MAX_BATTLERS_COUNT; i++)
+        {
+            if (!IsOnPlayerSide(i) && IsBattlerAlive(i))
+            {
+                data->spriteIds.aiIconSpriteIds[i] = CreateMonIcon(gBattleMons[i].species,
+                                                                   SpriteCallbackDummy,
+                                                                   110 + count * 70, 17, 0, 0);
+                gSprites[data->spriteIds.aiIconSpriteIds[i]].data[0] = i;
+                count++;
+            }
+            else
+            {
+                data->spriteIds.aiIconSpriteIds[i] = 0xFF;
+            }
+        }
+
+        mon = GetBattlerMon(data->battlerId);
+        data->aiMonSpriteId = CreateMonPicSprite(gBattleMons[data->battlerId].species,
+                                                 GetMonData(mon, MON_DATA_IS_SHINY),
+                                                 gBattleMons[data->battlerId].personality,
+                                                 FALSE,
+                                                 39, 135, 15, TAG_NONE);
+        data->aiViewState++;
+        break;
+    case 1:
+        winTemplate = CreateWindowTemplate(1, 0, 4, 30, 14, 15, 0x200);
+        data->aiMovesWindowId = AddWindow(&winTemplate);
+        PutWindowTilemap(data->aiMovesWindowId);
+        PutPlayerDamageText(data);
+        data->aiViewState++;
+        break;
+    case 2:
+        if (JOY_NEW(R_BUTTON | L_BUTTON) && IsDoubleBattle())
+        {
+            u32 partner = BATTLE_PARTNER(data->battlerId);
+
+            if (IsOnPlayerSide(partner) && IsBattlerAlive(partner))
+            {
+                CleanUpAiInfoWindow(taskId);
+                data->battlerId = partner;
+                data->aiViewState = 0;
+            }
+        }
+        else if (JOY_NEW(SELECT_BUTTON | B_BUTTON))
+        {
+            SwitchToDebugView(taskId);
+            HideBg(1);
+            ShowBg(0);
+        }
+        break;
+    }
+}
+
+static void SwitchToPlayerDamageView(u8 taskId)
+{
+    gTasks[taskId].func = Task_ShowPlayerDamage;
     GetStructPtr(taskId)->aiViewState = 0;
 }
 
@@ -1540,7 +1707,12 @@ static void Task_DebugMenuProcessInput(u8 taskId)
         listItemId = ListMenu_ProcessInput(data->mainListTaskId);
         if (listItemId != LIST_CANCEL && listItemId != LIST_NOTHING_CHOSEN && listItemId < LIST_ITEM_COUNT)
         {
-            if (listItemId == LIST_ITEM_AI_MOVES_PTS && JOY_NEW(A_BUTTON))
+            if (listItemId == LIST_ITEM_PLAYER_DMG && JOY_NEW(A_BUTTON))
+            {
+                SwitchToPlayerDamageView(taskId);
+                return;
+            }
+            else if (listItemId == LIST_ITEM_AI_MOVES_PTS && JOY_NEW(A_BUTTON))
             {
                 if (data->readOnly)
                     SwitchToReadOnlyAiDamageView(taskId);
@@ -1781,6 +1953,7 @@ static void CreateSecondaryListMenu(struct BattleDebugMenu *data)
         useReadOnlyRenderer = data->readOnly;
         break;
     case LIST_ITEM_INSTANT_WIN:
+    case LIST_ITEM_PLAYER_DMG:
     case LIST_ITEM_AI_MOVES_PTS:
     case LIST_ITEM_AI_INFO:
         return;

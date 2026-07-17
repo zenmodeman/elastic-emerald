@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `dea75e5c6d` (2026-07-17, "Initial addition of the debug option and a non-debug info menu").
-- **Uncommitted AI changes covered by this document:** The read-only battle information pages now present PP, stats, statuses, volatiles, hazards, and side conditions as player-facing values. RNG-dependent Sleep and Confusion durations remain hidden, while public deterministic counters remain visible. This is an information-presentation change and does not alter ordinary battle-AI decisions.
+- **Last documented code commit:** `dc794373b3` (2026-07-17, "Adjust the display off the non-debug battle info screen to show trackable information properly.").
+- **Uncommitted AI changes covered by this document:** Both battle-information menu variants now include a `Player Dmg` view that shows min-max rolls from an active player battler to each living opponent and supports switching player attackers in doubles. The read-only `AI Dmg` view preserves an opposing battler selected in the main menu and allows L/R to switch opposing attackers in doubles. These are information-presentation changes and do not alter ordinary battle-AI decisions.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -156,6 +156,10 @@ Player-facing debug features are controlled by a saved runtime Option-menu setti
 When runtime debug mode is disabled, the in-battle Select menu is read-only and omits AI flags, AI knowledge, AI party state, miscellaneous mutation controls, and instant victory. Its reduced `AI Dmg` page calculates minimum and maximum damage against each of the player's species ability slots independently. It snapshots and restores battler and calculation state for every hypothetical ability and deliberately avoids displaying AI scores or using the AI's inferred player ability as the sole result.
 
 The read-only property pages use player-facing values rather than editor fields: PP is shown as current/maximum, stats use named numeric values, hazards show layers or presence, and statuses show `Active`/`Inactive`. Editor-only bulk actions such as the Moves and Stat Stages `All` entries are omitted. Their detail pages temporarily replace the complete main-list pane with a full-width, normal-font overlay, keeping labels on the left and right-aligning values within the visible screen bounds. Randomly determined remaining durations such as Sleep and Confusion are deliberately reduced to presence only. Public deterministic counters, including Toxic progression and fixed-duration effects such as Encore and Heal Block, remain visible.
+
+Both full-debug and read-only menus provide a `Player Dmg` page. It calculates minimum and maximum rolls for the active player's moves against every living opposing battler using actual current battler abilities rather than AI-inferred ability state. Doubles show both opposing targets and allow L/R to change the active player attacker. The calculation snapshots and restores battler and shared damage-calculation state.
+
+In the read-only `AI Dmg` page, the opposing attacker defaults to the opposing battler selected before opening the page, including battler 3. In doubles, L/R switches between living opposing attackers without changing the selected player defender.
 
 Key commit: `7ee8501957`.
 
