@@ -524,6 +524,58 @@ static const struct ListMenuItem sVolatileStatusListItems[] =
     {COMPOUND_STRING("Merry"),              VOLATILE_MERRY},
 };
 
+#define READ_ONLY_VOLATILE_ENCORE 0x100
+#define READ_ONLY_SECONDARY_LEFT  1
+#define READ_ONLY_SECONDARY_WIDTH 28
+#define READ_ONLY_SECONDARY_HEIGHT 13
+#define READ_ONLY_BATTLER_BASE_BLOCK 0x1D9
+#define READ_ONLY_VALUE_RIGHT_X   (READ_ONLY_SECONDARY_WIDTH * 8 - 4)
+
+static const struct ListMenuItem sReadOnlyVolatileStatusListItems[] =
+{
+    {COMPOUND_STRING("Encore"),             READ_ONLY_VOLATILE_ENCORE},
+    {COMPOUND_STRING("Confusion"),          VOLATILE_CONFUSION},
+    {COMPOUND_STRING("Flinched"),           VOLATILE_FLINCHED},
+    {COMPOUND_STRING("Torment"),            VOLATILE_TORMENT},
+    {COMPOUND_STRING("Powder"),             VOLATILE_POWDER},
+    {COMPOUND_STRING("Defense Curl"),       VOLATILE_DEFENSE_CURL},
+    {COMPOUND_STRING("Rage"),               VOLATILE_RAGE},
+    {COMPOUND_STRING("Destiny Bond"),       VOLATILE_DESTINY_BOND},
+    {COMPOUND_STRING("Escape Prevention"),  VOLATILE_ESCAPE_PREVENTION},
+    {COMPOUND_STRING("Cursed"),             VOLATILE_CURSED},
+    {COMPOUND_STRING("Foresight"),          VOLATILE_FORESIGHT},
+    {COMPOUND_STRING("Dragon Cheer"),       VOLATILE_DRAGON_CHEER},
+    {COMPOUND_STRING("Focus Energy"),       VOLATILE_FOCUS_ENERGY},
+    {COMPOUND_STRING("Electrified"),        VOLATILE_ELECTRIFIED},
+    {COMPOUND_STRING("Mud Sport"),          VOLATILE_MUD_SPORT},
+    {COMPOUND_STRING("Water Sport"),        VOLATILE_WATER_SPORT},
+    {COMPOUND_STRING("Infinite Confusion"), VOLATILE_INFINITE_CONFUSION},
+    {COMPOUND_STRING("Salt Cure"),          VOLATILE_SALT_CURE},
+    {COMPOUND_STRING("Syrup Bomb"),         VOLATILE_SYRUP_BOMB},
+    {COMPOUND_STRING("Glaive Rush"),        VOLATILE_GLAIVE_RUSH},
+    {COMPOUND_STRING("Leech Seed"),         VOLATILE_LEECH_SEED},
+    {COMPOUND_STRING("Lock On"),            VOLATILE_LOCK_ON},
+    {COMPOUND_STRING("Perish Song"),        VOLATILE_PERISH_SONG},
+    {COMPOUND_STRING("Minimize"),           VOLATILE_MINIMIZE},
+    {COMPOUND_STRING("Charge"),             VOLATILE_CHARGE_TIMER},
+    {COMPOUND_STRING("Root"),               VOLATILE_ROOT},
+    {COMPOUND_STRING("Yawn"),               VOLATILE_YAWN},
+    {COMPOUND_STRING("Imprison"),           VOLATILE_IMPRISON},
+    {COMPOUND_STRING("Grudge"),             VOLATILE_GRUDGE},
+    {COMPOUND_STRING("Gastro Acid"),        VOLATILE_GASTRO_ACID},
+    {COMPOUND_STRING("Embargo"),            VOLATILE_EMBARGO},
+    {COMPOUND_STRING("Smack Down"),         VOLATILE_SMACK_DOWN},
+    {COMPOUND_STRING("Telekinesis"),        VOLATILE_TELEKINESIS},
+    {COMPOUND_STRING("Miracle Eye"),        VOLATILE_MIRACLE_EYE},
+    {COMPOUND_STRING("Magnet Rise"),        VOLATILE_MAGNET_RISE},
+    {COMPOUND_STRING("Heal Block"),         VOLATILE_HEAL_BLOCK},
+    {COMPOUND_STRING("Aqua Ring"),          VOLATILE_AQUA_RING},
+    {COMPOUND_STRING("Laser Focus"),        VOLATILE_LASER_FOCUS},
+    {COMPOUND_STRING("Power Trick"),        VOLATILE_POWER_TRICK},
+    {COMPOUND_STRING("Drain Douse"),        VOLATILE_DRAIN_DOUSE},
+    {COMPOUND_STRING("Merry"),              VOLATILE_MERRY},
+};
+
 static const struct ListMenuItem sHazardsListItems[] =
 {
     {COMPOUND_STRING("Spikes"),       LIST_SIDE_SPIKES},
@@ -734,6 +786,7 @@ static void PrintOnBattlerWindow(u8 windowId, u8 battlerId);
 static void UpdateWindowsOnChangedBattler(struct BattleDebugMenu *data);
 static void CreateSecondaryListMenu(struct BattleDebugMenu *data);
 static void PrintSecondaryEntries(struct BattleDebugMenu *data);
+static void PrintReadOnlyListValue(u8 windowId, u32 itemId, u8 y);
 static void DestroyModifyArrows(struct BattleDebugMenu *data);
 static void PrintDigitChars(struct BattleDebugMenu *data);
 static void SetUpModifyArrows(struct BattleDebugMenu *data);
@@ -746,6 +799,8 @@ static bool32 TryMoveDigit(struct BattleDebugModifyArrows *modArrows, bool32 mov
 static void SwitchToDebugView(u8 taskId);
 static void SwitchToDebugViewFromAiParty(u8 taskId);
 static void SwitchToReadOnlyAiDamageView(u8 taskId);
+
+static struct BattleDebugMenu *sReadOnlyMenuData;
 
 // code
 static struct BattleDebugMenu *GetStructPtr(u8 taskId)
@@ -785,6 +840,7 @@ void CB2_BattleDebugMenu(void)
 {
     u8 taskId;
     struct BattleDebugMenu *data;
+    struct WindowTemplate battlerWindowTemplate;
 
     switch (gMain.state)
     {
@@ -825,7 +881,10 @@ void CB2_BattleDebugMenu(void)
         data->readOnly = !IsDebugModeEnabled();
 
         data->battlerId = gBattleStruct->debugBattler;
-        data->battlerWindowId = AddWindow(&sBattlerWindowTemplate);
+        battlerWindowTemplate = sBattlerWindowTemplate;
+        if (data->readOnly)
+            battlerWindowTemplate.baseBlock = READ_ONLY_BATTLER_BASE_BLOCK;
+        data->battlerWindowId = AddWindow(&battlerWindowTemplate);
         PutWindowTilemap(data->battlerWindowId);
         PrintOnBattlerWindow(data->battlerWindowId, data->battlerId);
 
@@ -1523,14 +1582,19 @@ static void Task_DebugMenuProcessInput(u8 taskId)
             DestroyListMenuTask(data->secondaryListTaskId, NULL, NULL);
             ClearStdWindowAndFrameToTransparent(data->secondaryListWindowId, TRUE);
             RemoveWindow(data->secondaryListWindowId);
+            if (data->readOnly)
+            {
+                PutWindowTilemap(data->mainListWindowId);
+                CopyWindowToVram(data->mainListWindowId, COPYWIN_FULL);
+            }
             data->activeWindow = ACTIVE_WIN_MAIN;
             data->secondaryListTaskId = 0xFF;
         }
         else if (listItemId != LIST_NOTHING_CHOSEN)
         {
-            data->currentSecondaryListItemId = listItemId;
             if (data->readOnly)
                 return;
+            data->currentSecondaryListItemId = listItemId;
             data->modifyWindowId = AddWindow(&sModifyWindowTemplate);
             PutWindowTilemap(data->modifyWindowId);
             CopyWindowToVram(data->modifyWindowId, COPYWIN_FULL);
@@ -1647,6 +1711,7 @@ static void CreateSecondaryListMenu(struct BattleDebugMenu *data)
     struct WindowTemplate winTemplate;
     struct ListMenuTemplate listTemplate;
     u8 itemsCount = 1;
+    bool32 useReadOnlyRenderer = FALSE;
 
     winTemplate = sSecondaryListWindowTemplate;
     listTemplate = sSecondaryListTemplate;
@@ -1663,26 +1728,38 @@ static void CreateSecondaryListMenu(struct BattleDebugMenu *data)
         itemsCount = 3;
         break;
     case LIST_ITEM_MOVES:
-        itemsCount = 5;
+        itemsCount = data->readOnly ? MAX_MON_MOVES : MAX_MON_MOVES + 1;
         break;
     case LIST_ITEM_PP:
         itemsCount = 4;
+        useReadOnlyRenderer = data->readOnly;
         break;
     case LIST_ITEM_STATS:
         listTemplate.items = sStatsListItems;
         itemsCount = ARRAY_COUNT(sStatsListItems);
+        useReadOnlyRenderer = data->readOnly;
         break;
     case LIST_ITEM_STAT_STAGES:
-        itemsCount = 8;
+        itemsCount = data->readOnly ? NUM_BATTLE_STATS - 1 : NUM_BATTLE_STATS;
         break;
     case LIST_ITEM_STATUS1:
         listTemplate.items = sStatus1ListItems;
         itemsCount = ARRAY_COUNT(sStatus1ListItems);
         data->bitfield = sStatus1Bitfield;
+        useReadOnlyRenderer = data->readOnly;
         break;
     case LIST_ITEM_VOLATILE:
-        listTemplate.items = sVolatileStatusListItems;
-        itemsCount = ARRAY_COUNT(sVolatileStatusListItems);
+        if (data->readOnly)
+        {
+            listTemplate.items = sReadOnlyVolatileStatusListItems;
+            itemsCount = ARRAY_COUNT(sReadOnlyVolatileStatusListItems);
+        }
+        else
+        {
+            listTemplate.items = sVolatileStatusListItems;
+            itemsCount = ARRAY_COUNT(sVolatileStatusListItems);
+        }
+        useReadOnlyRenderer = data->readOnly;
         break;
     case LIST_ITEM_AI:
         listTemplate.items = sAIListItems;
@@ -1696,10 +1773,12 @@ static void CreateSecondaryListMenu(struct BattleDebugMenu *data)
     case LIST_ITEM_HAZARDS:
         listTemplate.items = sHazardsListItems;
         itemsCount = ARRAY_COUNT(sHazardsListItems);
+        useReadOnlyRenderer = data->readOnly;
         break;
     case LIST_ITEM_SIDE_STATUS:
         listTemplate.items = sSideStatusListItems;
         itemsCount = ARRAY_COUNT(sSideStatusListItems);
+        useReadOnlyRenderer = data->readOnly;
         break;
     case LIST_ITEM_INSTANT_WIN:
     case LIST_ITEM_AI_MOVES_PTS:
@@ -1708,11 +1787,24 @@ static void CreateSecondaryListMenu(struct BattleDebugMenu *data)
     }
 
     data->secondaryListItemCount = itemsCount;
+    if (useReadOnlyRenderer)
+    {
+        winTemplate.tilemapLeft = READ_ONLY_SECONDARY_LEFT;
+        winTemplate.width = READ_ONLY_SECONDARY_WIDTH;
+        winTemplate.height = READ_ONLY_SECONDARY_HEIGHT;
+    }
     data->secondaryListWindowId = AddWindow(&winTemplate);
 
+    if (useReadOnlyRenderer)
+    {
+        sReadOnlyMenuData = data;
+        listTemplate.itemPrintFunc = PrintReadOnlyListValue;
+    }
     listTemplate.totalItems = itemsCount;
     listTemplate.maxShowed = itemsCount;
-    if (listTemplate.maxShowed > 7 && !sHasChangeableEntries[data->currentMainListItemId])
+    if (useReadOnlyRenderer && listTemplate.maxShowed > 6)
+        listTemplate.maxShowed = 6;
+    else if (listTemplate.maxShowed > 7 && !sHasChangeableEntries[data->currentMainListItemId])
         listTemplate.maxShowed = 7;
     listTemplate.windowId = data->secondaryListWindowId;
 
@@ -1734,6 +1826,170 @@ static void PadString(const u8 *src, u8 *dst)
 }
 
 static const u8 sTextAll[] = _("All");
+static const u8 sTextActive[] = _("Active");
+static const u8 sTextInactive[] = _("Inactive");
+
+static void FormatTurns(u8 *text, u32 turns)
+{
+    u8 *end = ConvertIntToDecimalStringN(text, turns, STR_CONV_MODE_LEFT_ALIGN, 2);
+
+    StringCopy(end, turns == 1 ? COMPOUND_STRING(" turn") : COMPOUND_STRING(" turns"));
+}
+
+static void PrintReadOnlyListValue(u8 windowId, u32 itemId, u8 y)
+{
+    struct BattleDebugMenu *data = sReadOnlyMenuData;
+    struct BattlePokemon *battleMon = &gBattleMons[data->battlerId];
+    u8 text[32];
+    u32 value = 0;
+    bool32 showTurns = FALSE;
+
+    switch (data->currentMainListItemId)
+    {
+    case LIST_ITEM_PP:
+    {
+        u32 move = battleMon->moves[itemId];
+        u8 *end;
+
+        AddTextPrinterParameterized(windowId, FONT_NORMAL, GetMoveName(move), 8, y, TEXT_SKIP_DRAW, NULL);
+        end = ConvertIntToDecimalStringN(text, battleMon->pp[itemId], STR_CONV_MODE_LEFT_ALIGN, 2);
+        *end++ = CHAR_SLASH;
+        ConvertIntToDecimalStringN(end, CalculatePPWithBonus(move, battleMon->ppBonuses, itemId), STR_CONV_MODE_LEFT_ALIGN, 2);
+        AddTextPrinterParameterized(windowId, FONT_NORMAL, text,
+                                    GetStringRightAlignXOffset(FONT_NORMAL, text, READ_ONLY_VALUE_RIGHT_X),
+                                    y, TEXT_SKIP_DRAW, NULL);
+        return;
+    }
+    case LIST_ITEM_STATS:
+        switch (itemId)
+        {
+        case LIST_STAT_HP_CURRENT: value = battleMon->hp; break;
+        case LIST_STAT_HP_MAX:     value = battleMon->maxHP; break;
+        case LIST_STAT_ATTACK:     value = battleMon->attack; break;
+        case LIST_STAT_DEFENSE:    value = battleMon->defense; break;
+        case LIST_STAT_SPEED:      value = battleMon->speed; break;
+        case LIST_STAT_SP_ATK:     value = battleMon->spAttack; break;
+        case LIST_STAT_SP_DEF:     value = battleMon->spDefense; break;
+        }
+        ConvertIntToDecimalStringN(text, value, STR_CONV_MODE_LEFT_ALIGN, 4);
+        break;
+    case LIST_ITEM_STATUS1:
+        if (itemId == LIST_STATUS1_TOXIC_COUNTER)
+        {
+            if (battleMon->status1 & STATUS1_TOXIC_POISON)
+            {
+                u8 *end = StringCopy(text, COMPOUND_STRING("Stage "));
+                value = (battleMon->status1 & STATUS1_TOXIC_COUNTER) >> 8;
+                ConvertIntToDecimalStringN(end, value, STR_CONV_MODE_LEFT_ALIGN, 2);
+            }
+            else
+            {
+                StringCopy(text, sTextInactive);
+            }
+        }
+        else
+        {
+            static const u32 sStatusMasks[] =
+            {
+                [LIST_STATUS1_SLEEP] = STATUS1_SLEEP,
+                [LIST_STATUS1_POISON] = STATUS1_POISON,
+                [LIST_STATUS1_BURN] = STATUS1_BURN,
+                [LIST_STATUS1_FREEZE] = STATUS1_FREEZE,
+                [LIST_STATUS1_PARALYSIS] = STATUS1_PARALYSIS,
+                [LIST_STATUS1_TOXIC_POISON] = STATUS1_TOXIC_POISON,
+                [LIST_STATUS1_FROSTBITE] = STATUS1_FROSTBITE,
+            };
+
+            StringCopy(text, battleMon->status1 & sStatusMasks[itemId] ? sTextActive : sTextInactive);
+        }
+        break;
+    case LIST_ITEM_VOLATILE:
+        switch (itemId)
+        {
+        case READ_ONLY_VOLATILE_ENCORE:
+            value = gDisableStructs[data->battlerId].encoreTimer;
+            showTurns = TRUE;
+            break;
+        case VOLATILE_PERISH_SONG:
+            value = gDisableStructs[data->battlerId].perishSongTimer;
+            showTurns = TRUE;
+            break;
+        case VOLATILE_CHARGE_TIMER:
+        case VOLATILE_YAWN:
+        case VOLATILE_LOCK_ON:
+            value = GetBattlerVolatile(data->battlerId, itemId);
+            showTurns = TRUE;
+            break;
+        case VOLATILE_EMBARGO:
+            value = gDisableStructs[data->battlerId].embargoTimer;
+            showTurns = TRUE;
+            break;
+        case VOLATILE_TELEKINESIS:
+            value = gDisableStructs[data->battlerId].telekinesisTimer;
+            showTurns = TRUE;
+            break;
+        case VOLATILE_MAGNET_RISE:
+            value = gDisableStructs[data->battlerId].magnetRiseTimer;
+            showTurns = TRUE;
+            break;
+        case VOLATILE_HEAL_BLOCK:
+            value = gDisableStructs[data->battlerId].healBlockTimer;
+            showTurns = TRUE;
+            break;
+        case VOLATILE_LASER_FOCUS:
+            value = gDisableStructs[data->battlerId].laserFocusTimer;
+            showTurns = TRUE;
+            break;
+        case VOLATILE_SYRUP_BOMB:
+            value = gDisableStructs[data->battlerId].syrupBombTimer;
+            showTurns = TRUE;
+            break;
+        default:
+            value = GetBattlerVolatile(data->battlerId, itemId);
+            break;
+        }
+        if (showTurns && value != 0)
+            FormatTurns(text, value);
+        else
+            StringCopy(text, value != 0 ? sTextActive : sTextInactive);
+        break;
+    case LIST_ITEM_HAZARDS:
+    {
+        u8 savedItemId = data->currentSecondaryListItemId;
+
+        data->currentSecondaryListItemId = itemId;
+        value = GetHazardsValue(data);
+        data->currentSecondaryListItemId = savedItemId;
+        if ((itemId == LIST_SIDE_SPIKES || itemId == LIST_SIDE_TOXIC_SPIKES) && value != 0)
+        {
+            u8 *end = ConvertIntToDecimalStringN(text, value, STR_CONV_MODE_LEFT_ALIGN, 1);
+            StringCopy(end, value == 1 ? COMPOUND_STRING(" layer") : COMPOUND_STRING(" layers"));
+        }
+        else
+            StringCopy(text, value != 0 ? sTextActive : sTextInactive);
+        break;
+    }
+    case LIST_ITEM_SIDE_STATUS:
+    {
+        u8 savedItemId = data->currentSecondaryListItemId;
+
+        data->currentSecondaryListItemId = itemId;
+        value = *GetSideStatusValue(data, FALSE, FALSE);
+        data->currentSecondaryListItemId = savedItemId;
+        if (value != 0)
+            FormatTurns(text, value);
+        else
+            StringCopy(text, sTextInactive);
+        break;
+    }
+    default:
+        return;
+    }
+
+    AddTextPrinterParameterized(windowId, FONT_NORMAL, text,
+                                GetStringRightAlignXOffset(FONT_NORMAL, text, READ_ONLY_VALUE_RIGHT_X),
+                                y, TEXT_SKIP_DRAW, NULL);
+}
 
 static void PrintSecondaryEntries(struct BattleDebugMenu *data)
 {
@@ -1741,6 +1997,16 @@ static void PrintSecondaryEntries(struct BattleDebugMenu *data)
     s32 i;
     struct TextPrinterTemplate printer;
     u8 yMultiplier;
+
+    // Read-only information is rendered by the list callback so values scroll
+    // with their labels and never need the editor's selection controls.
+    if (data->readOnly && (data->currentMainListItemId == LIST_ITEM_PP
+                       || data->currentMainListItemId == LIST_ITEM_STATS
+                       || data->currentMainListItemId == LIST_ITEM_STATUS1
+                       || data->currentMainListItemId == LIST_ITEM_VOLATILE
+                       || data->currentMainListItemId == LIST_ITEM_HAZARDS
+                       || data->currentMainListItemId == LIST_ITEM_SIDE_STATUS))
+        return;
 
     // Do not print entries if they are not changing.
     if (!sHasChangeableEntries[data->currentMainListItemId])
@@ -1771,7 +2037,7 @@ static void PrintSecondaryEntries(struct BattleDebugMenu *data)
             AddTextPrinter(&printer, 0, NULL);
         }
         // Allow changing all moves at once. Useful for testing in wild doubles.
-        if (data->currentMainListItemId == LIST_ITEM_MOVES)
+        if (data->currentMainListItemId == LIST_ITEM_MOVES && !data->readOnly)
         {
             PadString(sTextAll, text);
             printer.currentY = printer.y = (i * yMultiplier) + sSecondaryListTemplate.upText_Y;
@@ -1819,10 +2085,13 @@ static void PrintSecondaryEntries(struct BattleDebugMenu *data)
             printer.currentY = printer.y = (i * yMultiplier) + sSecondaryListTemplate.upText_Y;
             AddTextPrinter(&printer, 0, NULL);
         }
-        // Allow changing all stat stages at once.
-        PadString(sTextAll, text);
-        printer.currentY = printer.y = (i * yMultiplier) + sSecondaryListTemplate.upText_Y;
-        AddTextPrinter(&printer, 0, NULL);
+        // Allow changing all stat stages at once in the full debug editor.
+        if (!data->readOnly)
+        {
+            PadString(sTextAll, text);
+            printer.currentY = printer.y = (i * yMultiplier) + sSecondaryListTemplate.upText_Y;
+            AddTextPrinter(&printer, 0, NULL);
+        }
         break;
     }
 }
