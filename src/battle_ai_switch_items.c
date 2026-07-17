@@ -498,6 +498,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
     bool32 getsRevealedOneShot = FALSE;
     bool32 surmisedMoveKOsCurrentAndClean = FALSE;
     bool32 revealedMoveKOsCurrentAndClean = FALSE;
+    bool32 surmisedMoveNeedsStabToKo = FALSE;
     bool32 useSurmisedOneShot;
     bool32 opponentFasterCurrent;
     bool32 opponentFasterClean;
@@ -584,8 +585,13 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
                 s32 cleanDamageTaken = GetCleanStateDamage(playerMove, opposingBattler, battler);
 
                 maxCleanSurmisedDamageTaken = max(maxCleanSurmisedDamageTaken, cleanDamageTaken);
-                if (damageTaken > gBattleMons[battler].hp && cleanDamageTaken > gBattleMons[battler].hp)
+                if (damageTaken >= gBattleMons[battler].hp && cleanDamageTaken >= gBattleMons[battler].hp)
                     surmisedMoveKOsCurrentAndClean = TRUE;
+                if (damageTaken >= gBattleMons[battler].maxHP
+                 && cleanDamageTaken >= gBattleMons[battler].maxHP
+                 && damageTaken * 2 < gBattleMons[battler].maxHP * 3
+                 && cleanDamageTaken * 2 < gBattleMons[battler].maxHP * 3)
+                    surmisedMoveNeedsStabToKo = TRUE;
             }
 
             if (revealedMove != MOVE_NONE && revealedMove != MOVE_UNAVAILABLE
@@ -598,7 +604,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
 
                 maxRevealedDamageTaken = max(maxRevealedDamageTaken, revealedDamageTaken);
                 maxCleanRevealedDamageTaken = max(maxCleanRevealedDamageTaken, cleanRevealedDamageTaken);
-                if (revealedDamageTaken > gBattleMons[battler].hp && cleanRevealedDamageTaken > gBattleMons[battler].hp)
+                if (revealedDamageTaken >= gBattleMons[battler].hp && cleanRevealedDamageTaken >= gBattleMons[battler].hp)
                     revealedMoveKOsCurrentAndClean = TRUE;
             }
         }
@@ -622,21 +628,24 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         getsRevealedOneShot = TRUE;
     }
 
-    //Use unrevealed STAB estimates for either quad effective possibilities or when the AI mon has led
-
-    if (IsOriginalTrainerLead(battler) || HasSTABTypeWithMinEffectiveness(opposingBattler, battler, UQ_4_12(4.0))){
+    // Use unrevealed STAB estimates for literal leads, or when a quad-effective move
+    // KOs at full HP only because of STAB. At 1.5x max HP or above, equivalent
+    // non-STAB coverage would also KO, so the quad-effective surmise is unnecessary.
+    if (IsOriginalTrainerLead(battler)
+     || (HasSTABTypeWithMinEffectiveness(opposingBattler, battler, UQ_4_12(4.0))
+      && surmisedMoveNeedsStabToKo)){
         //The literal lead check is to better preserve leads that could otherwise be trivially OHKO'd
         useSurmisedOneShot = TRUE;
     }else{
         //For more conservative cases, only use explicit information
         //Justification logic: non-quad effective KOs are less certain with imperfect information, so the opponent won't make that assumption
-        //Justification logic: A Pokemon hasn't gotten any value on its first turn, compared to other turns
         useSurmisedOneShot = FALSE;
     }
 
-    DEBUG_DAMAGE("currentSurmised=%d currentRevealed=%d cleanSurmised=%d cleanRevealed=%d getsRevealedOneShot=%d getsSurmisedOneShot=%d effectiveOneShot=%d",
+    DEBUG_DAMAGE("currentSurmised=%d currentRevealed=%d cleanSurmised=%d cleanRevealed=%d needsStabToKo=%d getsRevealedOneShot=%d getsSurmisedOneShot=%d effectiveOneShot=%d",
                  maxSurmisedDamageTaken, maxRevealedDamageTaken, maxCleanSurmisedDamageTaken, maxCleanRevealedDamageTaken,
-                 getsRevealedOneShot, getsSurmisedOneShot, useSurmisedOneShot ? getsSurmisedOneShot : getsRevealedOneShot);
+                 surmisedMoveNeedsStabToKo, getsRevealedOneShot, getsSurmisedOneShot,
+                 useSurmisedOneShot ? getsSurmisedOneShot : getsRevealedOneShot);
 
     canBattlerWinMatchup = CanBattlerWin1v1(
         GetNoOfHitsToKOBattlerDmg(maxSurmisedDamageTaken, battler),
