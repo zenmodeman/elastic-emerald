@@ -1,0 +1,865 @@
+# Curated Tera Type Distribution
+In Elastic Emerald, "Curated Tera Types" is an optional mode that gives Pokemon handpicked tera types, as an additional way to distinguish Pokemon of similar typings.
+
+This list covers only Pokemon that are permitted to Tera in Restricted Mode (i.e. generally have Tier Point values of 3 or less; see [Tier Points](tier-points.md) for more information). Most other Pokemon do not have curated teras assigned, and  in non-Restricted Mode, they would just have randomly generated tera types based on the Pokemon's personality type.
+
+As listed below, some Pokemon can only Tera based on ability.
+## Bug Types
+- Tera Bug
+	- Main: Shuckle
+	- Other: Burmy, Karrablast
+- Tera Dark
+	- Main: Beedrill, {Centiskorch, Sizzlipede}
+	- Other: Dewpider, Skorupi
+- Tera Dragon
+	- Main: {Leavanny, Sewaddle, Swadloon}
+- Tera Electric
+	- Main: Mothim, Volbeat
+	- Other: {Caterpie, Metapod}, Grubbin
+- Tera Fairy
+	- Main: Illumise, {Ledian, Ledyba}, 
+	- Other: Surskit
+- Tera Fighting
+	- Main: Pinsir
+	- Other: Larvesta
+- Tera Fire
+	- Main: Rabsca
+- Tera Flying:
+	- Main: Butterfree, {Frosmoth, Snom}, {Kricketune, Kricketot}
+	- Other: Silcoon
+- Tera Ghost:
+	- Main: Wormadam-Plant, {Yanmega, Yanma}
+	- Other: Nincada
+- Tera Grass:
+	- Main: {Vivillon, Spewpa, Scatterbug}, {Vikavolt, Charjabug}
+- Tera Ground: 
+	- Main: Beautifly, {Parasect, Paras},  {Scolipede, Whirlipede, Venipede}, {Crustle, Dwebble} 
+	- Other: Rellor 
+- Tera Ice:
+	- Main: Ninjask, Wormadam-Trash
+- Tera Normal:
+	- Main: {Armaldo, Anorith} 
+- Tera Poison:
+	- Main: Accelgor, {Ariados, Spinarak}, {Galvantula, Joltik}
+	- Other: {Kakuna, Weedle}, Cascoon
+- Tera Psychic:
+	- Main: {Ribombee,Cutiefly}, {Venomoth, Venonat}
+	- Other: Blipbug
+- Tera Rock:
+	- Wormadam-Sandy
+- Steel:
+	- Main:  {Vespiquen, Combee}, {Orbeetle, Dottler}
+	- Other: Shelmet, Pineco
+- Stellar:
+	- Main: {Spidops, Tarountula}
+	- Other: Wurmple
+- Water:
+	- Main: Masquerain
+
+## Dark Types
+- Tera Bug
+	- Main: {Grimmsnarl, Morgrem, Impidimp}, {Raticate-Alola, Rattata-Alola}
+- Tera Dark
+	- Main: Cacturne, Pangoro
+- Tera Dragon
+	- Main: {Scrafty, Scraggy}
+- Tera Electric
+	- Main: {Mabosstiff, Maschiff}
+- Tera Fairy
+	- Main: Absol
+- Tera Fighting
+	- Main: {Honchkrow, Murkrow}
+	- Other: {Deino, Zweilous}, Nuzleaf, Pawniard
+- Tera Fire
+	- Main: {Thievul, Nickit}, {Skuntank, Stunky}
+- Tera Flying 
+	- Main: Shiftry
+- Tera Ghost
+	- Main: {Mightyena, Poochyena}, Spiritomb
+	- Other: Sneasel
+- Tera Grass 
+	- Main: {Persian-Alola, Meowth-Alola}
+- Tera Ground
+	- Main: Guzzlord
+- Tera Ice
+	- Main: {Overqwil, Qwilfish-Hisui}
+- Tera Normal
+	- Main: Bombirdier
+- Tera Poison
+	- Main: Crawdaunt, {Linoone-Galar, Zigzagoon-Galar}
+- Tera Psychic:
+	- Main: {Houndoom, Houndour}, {Sharpedo, Carvanha} 
+	- Other: Carvanha
+- Tera Rock
+	- Main: Vullaby
+- Tera Steel
+	- Main: Sableye
+- Tera Stellar
+	- Main: {Liepard, Purrloin}, Morpeko
+- Tera Water
+	- Main: {Malamar, Inkay}
+	- Other: {Krokorok, Sandile}
+
+
+## Dragon Types
+
+- Tera Bug
+	- Main: {Flygon, Vibrava}
+	- Other: {Fraxure, Axew}, Applin
+- Tera Dark
+	- Main: Zygarde 10%
+	- Other: {Frigibax, Arctibax}, Hakamo-o
+- Tera Dragon
+	- Main: **None**
+- Tera Electric
+	- Main: Duraludon
+	- Other: Noibat
+- Tera Fairy
+	- Main: Druddigon
+- Tera Fighting
+	- Main: Appletun
+	- Other: {Deino, Zweilous}, Jangmo-o
+- Tera Fire
+	- Main: Drampa
+	- Other: {Bagon, Shelgon}, {Gible, Gabite}
+- Tera Flying
+	- Main: Flapple
+- Tera Ghost
+	- Main: **None**
+- Tera Grass
+	- Main: Altaria
+- Tera Ground
+	- Main: Guzzlord
+- Tera Ice
+	- Main: Tatsugiri
+- Tera Normal
+	- Main: **None**
+- Tera Poison
+	- Main: Tyrantrum
+- Tera Psychic
+	- Main: Exeggutor-Alola
+- Tera Rock
+	- Main: Sliggoo-Hisui
+- Tera Steel
+	- Main: Turtonator
+- Tera Stellar
+	- Main: **None**
+- Tera Water
+	- Main: Dragalge
+	- Other: {Dragonair, Dratini}, {Drakloak, Dreepy}, {Sliggoo, Goomy}
+
+
+
+## Electric Types
+- Tera Bug
+	- Main: {Electrode-Hisui, Voltorb-Hisui}, {Lanturn, Chinchou}
+	- Other: Magnemite
+- Tera Dark
+	- Main:   {Electivire, Electabuzz, Elekid} 
+- Tera Dragon
+	- Main: {Ampharos, Flaaffy, Mareep}
+- Tera Electric
+	- Main: Plusle, Rotom
+- Tera Fairy
+	- Main: Oricorio Pom Pom, Pachirisu, 
+- Tera Fighting
+	- Main: {Luxray, Luxio, Shinx}
+	- Other: Pawmi
+- Tera Fire
+	- Main: {Golem-Alola, Graveller-Alola, Geodude-Alola}, Jolteon
+- Tera Flying
+	- Main: {Zebstrika, Blitzle}
+- Tera Ghost
+	- Main: {Rotom-Fan, Rotom-Frost, Rotom-Heat, Rotom-Mow}
+- Tera Grass
+	- Main: Minun, {Vikavolt, Charjabug}
+- Tera Ground
+	- Main: Dedenne
+	- Other: Pawmo
+- Tera Ice
+	- Main: {Manectric, Electrike}
+- Tera Normal
+	- Main: Toxtricity, Raichu-Alola
+- Tera Poison
+	- Main: {Galvantula, Joltik}, Pincurchin
+- Tera Psychic
+	- Main: {Boltund, Yamper}
+- Tera Rock
+	- Main: Arctozolt
+- Tera Steel
+	- Main: {Electrode, Voltorb}, Stunfisk, Emolga
+- Tera Stellar
+	- Main: {Eelektross, Eelektrik, Tynamo}, Morpeko
+	- Other: Toxel
+- Tera Water
+	- Main: {Heliolisk, Helioptile}, {Kilowattrel, Wattrel}, {Raichu, Pikachu, Pichu}
+	- Other: Tadbulb
+
+## Fairy Types
+
+- Tera Bug
+	- Main: {Grimmsnarl, Impidimp, Morgrem}
+- Tera Dark
+	- Main: Mawile
+- Tera Dragon
+	- Main: {Rapidash-Galar, Ponyta-Galar}
+- Tera Electric
+	- Main: {Mr. Mime, Mime Jr.}
+- Tera Fairy
+	- Main: **None**
+- Tera Fire
+	- Main: {Alcremie, Milcery}
+- Tera Fighting
+	- Main: {Granbull, Snubbull}
+- Tera Flying
+	- Other: Togepi
+- Tera Ghost
+	- Main: Carbink
+- Tera Grass
+	- Main: Comfey
+	- Other: Cottonee, {Flabebe, Floette}, {Kirlia, Ralts}
+- Tera Ground
+	- Main: {Azumarill, Marill} **(Restricted Mode Azumarill can only tera if its ability is Thick Fat)**, Dedenne
+- Tera Ice
+	- Main: {Dachsbun, Fidough}
+- Tera Normal
+	- Other: Togetic, {Clefairy, Cleffa}
+- Tera Poison
+	- Main: Ninetales-Alola
+- Tera Psychic
+	- Main: {Ribombee, Cutiefly}
+- Tera Rock
+	- Main: Weezing-Galar
+- Tera Steel
+	- Main: {Wigglytuff, Jigglypuff, Igglypuff}
+- Tera Stellar
+	- Main: {Aromatisse, Spritzee}
+- Tera Water
+	- Main: {Shiinotic, Morelull}
+	- Other: Azurill
+
+## Fighting Types
+- Tera Bug
+	- Main: Breloom
+	- Other: Mienfoo
+- Tera Dark
+	- Main: Grapploct, {Pangoro, Pancham}
+	- Other: Hakamo-o
+- Tera Dragon
+	- Main: {Scrafty, Scraggy}
+- Tera Electric
+	- Main: {Toxicroak, Coragunk}
+- Tera Fairy
+	- Main: Hitmontop
+- Tera Fighting
+	- Other: Kubfu, Tyrogue
+- Tera Fire
+	- Main: Throh
+- Tera Flying
+	- Main: Virizion, {Blaziken, Combusken} (**Restricted Mode Blaziken can only tera if it isn't Speed Boost**)
+	- Other: Mankey
+- Tera Ghost
+	- Main: Decidueye-Hisui
+- Tera Grass
+	- Main: {Sirfetch'd, Farfetch'd-Galar}
+- Tera Ground
+	- Main: {Hariyama, Makuhita}, Poliwrath
+	- Other: Pawmo
+- Tera Ice
+	- Main: Crabrawler, {Medicham, Meditite} (**Restricted Mode Medicham can only tera when it does not have Pure Power**)
+- Tera Normal
+	- Main: Hitmonlee
+- Tera Poison
+	- Main: Passimian
+	- Other: Monferno
+- Tera Psychic
+	- Main: Poliwrath
+- Tera Rock
+	- Main: Emboar
+	- Other: {Gurdurr, Timburr}
+- Tera Steel
+	- Main: Hitmonchan
+	- Other: Riolu
+- Tera Stellar
+	- Main: {Machamp, Machoke, Machop}
+- Tera Water
+	- Main: Crabominable
+	- Other: Clobbopus
+## Fire Types 
+- Tera Bug
+	- Main: Torkoal
+	- Other: {Torracat, Litten}, Fletchinder
+- Tera Dark
+	- Main: {Centiskorch, Sizzlipede}
+	- Other: {Lampent, Litwick}
+- Tera Dragon
+	- Main: Scovillain
+	- Other: {Charmeleon, Charmander}
+- Tera Electric
+	- Main: {Magmortar, Magmar, Magby}
+- Tera Fairy
+	- Main: Oricorio-Baile, {Rapidash, Ponyta}
+- Tera Fighting
+	- Main: **None**
+	- Other: Chimchar, Larvesta
+- Tera Fire
+	- Main: **None**
+	- Other: Charcadet
+- Tera Flying
+	- Main: {Pyroar, Litleo}
+	- Other: Combusken
+- Tera Ghost
+	- Main: Rotom-Heat, {Ninetales, Vulpix}
+	- Other: {Crocalor, Fuecoco}
+- Tera Grass
+	- Main: Heatmor, Magcargo
+- Tera Ground
+	- Other: {Quilava, Cyndaquil}
+- Tera Ice
+	- Main: **None**
+- Tera Normal
+	- Main: Flareon
+	- Other:  {Raboot, Scorbunny}
+- Tera Poison
+	- Main: **None**
+	- Other: Salandit
+- Tera Psychic
+	- Main: {Darmanitan-Zen-Mode, Darumaka}, {Houndoom, Houndour}
+	- Other: {Braixen, Fennekin}
+- Tera Rock
+	- Main: {Emboar, Pignite, Tepig}
+	- Other: Slugma
+- Tera Steel
+	- Main: Turtonator
+	- Other:  Growlithe, Growlithe-Hisui
+- Tera Stellar
+	- Main: Castform-Sunny, {Simisear, Pansear}
+- Tera Water:
+	- Main: {Camerupt, Numel}
+	- Other: Carkol
+## Flying Types
+ - Tera Bug
+	 - Main: {Fearow, Spearow}, Gligar
+	 - Other: Fletchinder
+ - Tera Dark
+	 - Main: {Xatu, Natu}, {Unfezant, Tranquill, Pidove}
+	 - Other: Taillow
+- Tera Dragon
+	- Main:  {Drifblim, Drifloon}
+	- Other: Swablu
+- Tera Electric
+	- Main: Mothim, Squawkabilly
+	- Other: Noibat
+- Tera Fairy
+	- Main: {Swanna, Ducklett}, {Noctowl, Hoothoot}, {Ledian, Ledyba}, Oricorio
+- Tera Fighting
+	- Main: {Braviary, Rufflet}, {Honchkrow, Murkrow}
+- Tera Fire
+	- Main: Pidgeot, Tropius
+	- Other: Fletchling
+- Tera Flying
+	- Main: Butterfree, {Jumpluff, Skiploom, Hoppip}
+- Tera Ghost
+	- Main: Rotom-Fan, {Yanmega, Yanma} 
+	- Other: {Dartrix, Rowlet}, {Golbat, Zubat}
+- Tera Grass
+	- Main: Altaria, Vivillon
+- Tera Ground
+	- Main: Beautifly, {Dodrio, Doduo}
+- Tera Ice
+	- Main: {Mantine, Mantyke}, Ninjask
+	- Other: {Staravia, Starly}
+- Tera Normal
+	- Main: Braviary-Hisui,  Bombirdier, Farfetch'd, Togetic
+	- Other: {Pidgeotto, Pidgey}
+- Tera Poison
+	- Main: Cramorant, Sigilyph
+- Tera Psychic
+	- Main: {Swoobat, Woobat}
+- Tera Rock
+	- Main: Articuno, Vullaby,  {Toucannon, Trumbeak, Pikipek}
+- Tera Steel
+	- Main: Chatot, {Vespiquen, Combee}, Emolga
+	- Other: {Corvisquire, Rookidee}
+- Tera Stellar
+	- Main: Delibird, Minior
+- Tera Water
+	- Main: {Kilowattrel, Wattrel}, Masquerain
+## Ghost Types
+- Tera Bug
+	- Main: {Brambleghast, Bramblin}
+- Tera Dark
+	- Main: {Banette, Shuppet}
+	- Other: {Lampent, Litwick}
+- Tera Dragon
+	- Main: {Drifblim, Drifloon}
+- Tera Electric
+	- Main: Rotom
+	- Other: {Haunter, Gastly}
+- Tera Fairy
+	- Main: Oricorio-Sensu
+	- Other: Misdreavus
+- Tera Fighting
+	- Main: {Dusknoir, Dusclops, Duskull}, {Golurk, Golett}
+- Tera Fire
+	- Main: {Gougeist, Pumpkaboo}
+- Tera Flying
+	- Main: Decidueye
+- Tera Ghost
+	- Main: Spiritomb
+	- Other: Zorua-Hisui
+- Tera Grass
+	- Main: {Palossand, Sandygast}, {Polteageist, Sinistea} **(Restricted Mode Polteageist can only tera if it doesn't have Weak Armor)**
+- Tera Ground
+	- Main:  {Trevenant, Phantump}
+- Tera Ice
+	- Main: {Jellicent, Frillish}
+- Tera Normal
+	- Main: {Cursola, Corsola-Galar}, Froslass
+- Tera Poison
+	- Main: {Cofagrigus, Yamask}
+- Tera Psychic
+	- Main: {Sinistcha, Poltchageist}
+- Tera Rock
+	- Main: {Runerigus, Yamask-Galar}, {Doublade, Honedge}
+- Tera Steel
+	- Main: Sableye
+- Tera Stellar
+	- {Houndstone, Greavard}
+- Tera Water
+	- Main:  Dhelmise
+	- Other: {Drakloak, Dreepy}
+
+## Grass Types
+- Tera Bug
+	- Main: {Electrode-Hisui, Voltorb-Hisui}, {Brambleghast, Bramblin}, {Breloom, Shroomish}
+	- Other: {Budew, Roselia}, Applin, Gossifleur
+- Tera Dark
+	- Main: {Victreebel, Weepinbell, Bellsprout}, Cacturne, {Lurantis, Fomantis}
+	- Other: Ferroseed, {Turtwig, Grotle}
+- Tera Dragon
+	- Main: {Abomasnow, Snover}, {Meganium, Bayleef, Chikorita}, {Leavanny, Swadloon, Sewaddle}, Scovillain
+- Tera Electric
+	- Main: {Sceptile, Grovyle, Treecko}
+- Tera Fairy
+	- Main: Vileplume, {Lilligant, Petilil}
+- Tera Fighting
+	- Main: Appletun, {Exeggutor, Exeggcute}, Gogoat
+	- Other: Nuzleaf
+- Tera Fire
+	- Main: {Cherrim, Cherubi}, {Gourgeist, Pumpkaboo}, Tropius, 
+	- Other: Capsakid
+- Tera Flying
+	- Main: Decidueye, {Jumpluff, Skiploom, Hoppip}, {Shiftry, Seedot}, Virizion, Flapple
+- Tera Ghost
+	- Main: {Decidueye-Hisui, Dartrix, Rowlet}, Rotom-Mow, Wormadam-Plant
+- Tera Grass
+	- Main: Calyrex
+	- Other: Cottonee
+- Tera Ground
+	- Main: {Trevenant, Phantump}, Leafeon, {Parasect, Paras}, {Sunflora, Sunkern}
+	- Other: {Ivysaur, Bulbasaur}, {Dolliv, Smoliv}
+- Tera Ice
+	- Main: {Tsareena, Steenee, Bounsweet}
+- Tera Normal
+	- Main: {Serperior, Servine, Snivy}, {Ludicolo, Lombre, Lotad}
+	- Other: {Thwackey, Grookey}
+- Tera Poison
+	- Main: Belossom, {Cradily, Lileep}, {Toedscool, Toedscruel}
+	- Other: Cacnea, {Gloom, Oddish}
+- Tera Psychic
+	- Main: {Sinistcha, Poltchageist}, Exeggutor-Alola
+	- Other: {Floragato, Sprigatito}
+- Tera Rock
+	- Main: Maractus, Tangela
+	- Other: {Quilladin, Chespin}
+- Tera Steel
+	- Main: Carnivine
+- Tera Stellar
+	- Main: {Simisage, Pansage}, Belossom
+	- Other: Foongus
+- Tera Water
+	- Main: {Sawsbuck, Deerling}, Dhelmise, {Shiinotic, Morelull}
+## Ground Types
+
+- Tera Bug
+	- Main: {Flygon, Vibrava, Trapinch}, Gligar, Gastrodon
+- Tera Dark
+	- Main: Zygarde 10%
+	- Other: {Larvitar, Pupitar}
+- Tera Dragon
+	- Main: {Sandaconda, Silicobra}
+	- Other: Onix
+- Tera Electric
+	- Main: {Claydol, Baltoy}
+- Tera Fairy
+	- Main: {Sandslash, Sandshrew}
+- Tera Fighting
+	- Main: {Seismitoad, Palpitoad}, {Golurk, Golett}, Nidoqueen, Diggersby **(Restricted Mode Diggersby can only tera if it doesn't have Huge Power)**
+	- Other: Cubone
+- Tera Fire
+	- Main: {Donphan, Phanpy}
+	- Other: {Gabite, Gible}
+- Tera Flying
+	- Main: {Dugtrio, Diglett}
+	- Other: {Piloswine, Swinub}
+- Tera Ghost
+	- Main: Stunfisk-Galar
+	- Other: Nincada
+- Tera Grass
+	- Main: {Palossand, Sandygast}
+- Tera Ground
+	- Main: **None**
+- Tera Ice
+	- Main: {Quagsire, Wooper}
+- Tera Normal
+	- Main: **None**
+	- Other: Rhyhorn
+- Tera Poison
+	- Main: {Toedscruel, Toedscool}
+- Tera Psychic
+	- Main: Gastrodon
+- Tera Rock
+	- Main: {Runerigus, Yamask-Galar}, Wormadam-Sandy
+	- Other: Marshtomp, Mudray, Wooper-Paldea
+- Tera Steel
+	- Main: Stunfisk, {Golem, Graveler, Geodude}
+	- Other: Drilbur
+- Tera Stellar
+	- Main: {Whiscash, Barboach}
+- Tera Water
+	- Main: {Camerupt, Numel}
+	- Other: Hippopotas, {Krokorok, Sandile}, Diglett-Alola
+## Ice Types
+- Tera Bug
+	- Main: Dewgong
+- Tera Dark
+	- Other: {Arctibax, Frigibax}
+- Tera Dragon
+	- Main: {Abomasnow, Snover}
+- Tera Electric
+	- Main: {Aurorus, Amaura}, Regice
+- Tera Fairy
+	- Main: Glaceon, {Jynx, Smoochum}
+	- Other: Vulpix-Alola
+- Tera Fire
+	- Main: Cryogonal
+- Tera Fighting
+	- Main: {Beartic, Cubchoo}, {Sandslash-Alola, Sandshrew-Alola}
+- Tera Flying
+	- Main: {Frosmoth,Snom},  {Mamoswine, Piloswine, Swinub}
+- Tera Ghost
+	- Main: Rotom-Frost, Sneasel
+- Tera Grass
+	- Main: {Mr. Rime, Mr. Mime Galar}
+- Tera Ground
+	- Main: {Glalie, Snorunt}, {Walrein, Sealeo, Spheal}
+- Tera Ice
+	- Main: {Avalugg, Bergmite}
+- Tera Normal
+	- Main: Froslass
+	- Other: Darumaka-Galar
+- Tera Poison
+	- Main: {Vanilluxe, Vanillish, Vanillite}, Ninetales-Alola
+- Tera Rock
+	- Main: Arctovish, Arctozolt, Articuno
+- Tera Steel
+	- Main: {Cetitan, Cetoddle}fros
+- Tera Stellar
+	- Main: Delibird, Castform-Snowy
+- Tera Water
+	- Main: Crabominable, Eiscue
+
+## Normal Types
+
+- Tera Bug
+	- Main: Bouffalant, {Fearow, Spearow}, {Purugly, Glameow}, {Raticate-Alola, Rattata-Alola}
+	- Other: Teddiursa
+- Tera Dark
+	- Main: {Unfezant, Tranquill, Pidove}
+	- Other: Aipom, Taillow
+- Tera Dragon
+	- Main: {Dudunsparce, Dunsparce}
+	- Other: Swablu
+- Tera Electric
+	- Main: Squawkabilly
+	- Other: Porygon
+- Tera Fairy
+	- Main: {Furret, Sentret}, {Stoutland, Herdier, Lillipup}, {Noctowl, Hoothoot}, Miltank
+- Tera Fighting
+	- Main: {Braviary, Rufflet}, {Greedent, Skwovet}, Kangaskhan, Regigigas, {Diggersby} **(Restricted Mode Diggersby can only tera if it doesn't have Huge Power)**
+- Tera Fire
+	- Main: Drampa, {Exploud, Loudred, Whismur}, Pidgeot
+	- Other: Fletchling
+- Tera Flying
+	- Main: {Persian, Meowth}, {Pyroar, Litleo}, {Lopunny, Buneary}, {Grafaiai, Shroodle}, {Dubwool, Wooloo}
+- Tera Ghost
+	- Main: Kecleon, Smeargle
+	- Other: Zorua-Hisui
+- Tera Grass
+	- Main: Oranguru, Stantler, Munchlax
+	- Other: Tandemaus
+- Tera Ground
+	- Main: Bibarel, {Dodrio, Doduo}, {Oinkologne, Lechonk}, {Dolliv, Smoliv}, Wyrdeer
+	- Other: {Vigoroth, Slakoth}
+- Tera Ice
+	- Main: {Raticate, Rattata}
+	- Other: Happiny, {Staravia, Starly}
+- Tera Normal
+	- Main: Audino, {Delcatty, Skitty}, {Linoone, Zigzagoon}, Farfetch'd
+	- Other: Eevee, {Pidgeotto, Pidgey}
+- Tera Poison
+	- Main: Komala, {Linoone-Galar, Zigzagoon-Galar}
+- Tera Psychic
+	- Main: Spinda, {Watchog, Spinda}
+- Tera Rock
+	- Main: {Toucannon, Trumbeak, Pikipek}
+	- Other: Stufful
+- Tera Steel
+	- Main: Chatot, {Gumshoos, Yungoos}, {Wigglytuff, Jigglypuff, Igglypuff}
+- Tera Stellar
+	- Main: Castform, {Lickilicky, Lickitung}, Type:Null, Ditto
+- Tera Water
+	- Main: {Sawsbuck, Deerling}, Girafarig, Furfrou, {Heliolisk, Helioptile}
+	- Other: Minccino, Azurill
+
+## Poison Types
+- Tera Bug
+	- Main: {Roselia, Budew}
+- Tera Dark
+	- Main: Beedrill, {Victreebel, Weepinbell, Bellsprout}
+	- Other: Mareanie, Skorupi
+- Tera Dragon
+	- Main: {Arbok, Ekans}
+- Tera Electric
+	- Main: {Toxicroak, Croagunk}
+	- Other: {Haunter, Gastly}, Skrelp
+- Tera Fairy
+	- Main: Vileplume
+- Tera Fighting
+	- Main: Nidoqueen, {Tentacruel, Tentacool}
+- Tera Fire
+	- Main: {Skuntank, Stunky}, {Weezing, Koffing}
+- Tera Flying
+	- Main: {Grafaiai, Shroodle}
+- Tera Ghost
+	- Main: {Golbat, Zubat}
+- Tera Grass
+	- Main: {Swalot, Gulpin}
+- Tera Ground
+	- Main: {Revavroom, Varoom}, {Scolipede, Whirlipede, Venipede} 
+	- Other: Glimmet, {Ivysaur, Bulbasaur}, {Nidoran-F, Nidorina},  {Nidoran-M, Nidorino}
+- Tera Ice
+	- Main: {Overqwil, Qwilfish-Hisui}
+- Tera Normal
+	- Main: Toxtricity
+- Tera Poison
+	- Main: {Ariados, Spinarak}, Qwilfish
+	- Other: {Kakuna, Weedle}, {Gloom, Oddish}, Salandit
+- Tera Psychic
+	- Main: {Venomoth, Venonat}
+- Tera Rock
+	- Main: Weezing-Galar
+	- Other: Wooper-Paldea
+- Tera Steel
+	- Main: {Garbodor, Trubbish}
+- Tera Stellar
+	- Main: Seviper
+	- Other: Toxel, Foongus
+- Tera Water
+	- Main: Dragalge, {Muk, Grimer}
+
+## Psychic Types
+
+- Tera Bug
+	- Main: {Gothitelle, Gothorita, Gothita}
+	- Other: Ponyta-Galar
+- Tera Dark
+	- Main: {Xatu, Natu}, Vezula
+	- Other: {Hattrem, Hatenna}
+- Tera Dragon
+	- Main: Rapidash-Galar, Deoxys-Defense
+- Tera Electric
+	- Main: {Claydol, Baltoy}, {Mr.Mime, Mime Jr.}
+- Tera Fairy
+	- Main: {Jynx, Smoochum}, Lunatone, Oricorio-Pau, 
+- Tera Fighting
+	- Main: {Hypno, Drowzee}, {Exeggutor, Exeggcute}, Mesprit
+- Tera Fire
+	- Main: Rabsca, Solrock
+- Tera Flying
+	- Main: {Espathra, Flittle} 
+- Tera Ghost
+	- Main: Uxie
+	- Other: {Kadabra, Abra}
+- Tera Grass
+	- Main: Calyrex, Oranguru, Meowstic-M, {Mr. Rime, Mr. Mime-Galar}
+	- Other: Bronzor, {Kirlia, Ralts}, Slowpoke
+- Tera Ground
+	- Main: {Grumpig, Spoink}, Wyrdeer
+- Tera Ice
+	- Main: Bruxish, {Medicham, Meditite} **(Restricted Mode Medicham can only Tera when it doesn't have Pure Power)**
+- Tera Normal
+	- Main: Braviary-Hisui, {Orbeetle, Dottler} {Wobbuffet, Wynaut}, Raichu-Alola
+	- {Metang, Beldum
+- Tera Poison
+	- Main: Sigilyph
+	- Other: Slowpoke-Galar
+- Tera Psychic
+	- Main: Darmanitan-Zen-Mode, Meowstic-F, {Swoobat, Woobat}
+- Tera Rock
+	- Main: {Musharna, Munna}
+- Tera Steel
+	- Main: {Chimecho, Chingling}
+- Tera Stellar
+	- Main: {Beheeyem, Elgyem}, Unown
+	- Other: Espurr
+- Tera Water
+	- Main: {Malamar, Inkay}, Girafarig
+	- Other: {Duosion, Solosis}
+
+## Rock Types
+- Tera Bug
+	- Main: Shuckle, {Kabutops, Kabuto} 
+- Tera Dark
+	- Main: {Bastiodon, Shieldon}
+	- Other: {Pupitar, Larvitar}
+- Tera Dragon
+	- Main: Lycanroc-Dusk, {Carracosta, Tirtouga}
+	- Other: Onix
+- Tera Electric
+	- Main: {Aurorus, Amaura}, {Probopass, Nosepass}, {Omastar, Omanyte}
+- Tera Fairy
+	- Main: Lunatone
+- Tera Fighting
+	- Main: {Barbaracle, Binacle}, 
+- Tera Fire
+	- Main: {Golem-Alola, Graveler-Alola, Geodude-Alola}, Solrock
+	- Other: Rolycoly
+- Tera Flying
+	- Main: Lycanroc-Midday
+- Tera Ghost
+	- Main: Lycanroc-Midnight, Carbink
+	- Other: Archen
+- Tera Grass
+	- Main: {Sudowoodo, Bonsly}, Magcargo, Corsola
+- Tera Ground
+	- Main: Stonjourner,  {Crustle, Dwebble} 
+	- Other: Glimmet
+- Tera Ice
+	- Main: Regirock
+- Tera Normal
+	- Main:  {Aron, Lairon, Aggron}, {Armaldo, Anorith} 
+	- Other: Rhyhorn, Rockruff
+- Tera Poison
+	- Main: {Cradily, Lileep}, {Tyrantrum, Tyrunt}
+- Tera Psychic
+	- Main: {Rampardos, Cranidos}
+- Tera Rock
+	- Main: Relicanth
+- Tera Steel
+	- Main: {Golem, Graveler, Geodude}
+	- Other: Growlithe-Hisui
+- Tera Stellar
+	- Main: {Gigalith, Boldore, Roggenrola} (**Restricted Mode Gigalith can only Tera if it doesn't have Sand Stream**), Minior
+- Tera Water
+	- Main: Klawf 
+	- Other: Carkol
+
+## Steel Types
+- Tera Bug
+	- Main: **None**
+	- Other: Magnemite
+- Tera Dark
+	- Main: {Ferrothorn, Shieldon}, Mawile
+	- Other: Ferroseed
+- Tera Dragon
+	- Main: **None**
+- Tera Electric
+	- Main: Duraludon, Probopass
+- Tera Fairy
+	- Main: **None**
+- Tera Fighting
+	- Main: {Sandslash-Alola, Sandshrew-Alola}
+	- Other: Pawniard
+- Tera Flying
+	- Main: {Klinklang, Klang, Klink}
+- Tera Fire
+	- Main: {Copperajah, Cufant}
+- Tera Ghost
+	- Main: Stunfisk-Galar
+- Tera Grass
+	- Main: **None**
+	- Other: Bronzor
+- Tera Ground
+	- Main: {Revavroom, Varoom}
+- Tera Ice
+	- Main: Wormadam-Trash
+- Tera Normal
+	- Main: {Aron, Lairon, Aggron}
+	- Other: {Metang, Beldum}
+- Tera Poison
+	- Main: **None**
+- Tera Psychic
+	- Main: **None**
+- Tera Rock
+	- Main: **None**
+	- Other: {Doublade, Honedge}, Sliggoo-Hisui
+- Tera Steel
+	- Main: **None**
+- Tera Stellar
+	- Main: **None**
+- Tera Water
+	- Main: **None**
+	- Other: Diglett-Alola
+
+## Water Types
+- Tera Bug
+	- Main: Dewgong, Gorebyss, {Lanturn, Chinchou}
+	- Other: Kabuto, Shellos
+- Tera Dark
+	- Main: {Blastoise, Wartortle, Squirtle}, Veluza, 
+	- Other: Dewpider, Mareanie, 
+- Tera Dragon
+	- Main: {Carracosta, Tirtouga}
+	- Other: {Drizzile, Sobble}, Magikarp
+- Tera Electric
+	- Main: {Omastar, Omanyte} 
+	- Other: Feebas, Skrelp
+- Tera Fairy
+	- Main: {Swanna, Ducklett}, Luvdisc, Politoed
+	- Other: Surskit
+- Tera Fighting
+	- Main: {Barbaracle, Binacle}, {Clawitzer, Clauncher}, {Seismitoad, Palpitoad}, {Tentacruel, Tentacool}
+- Tera Fire
+	- Main: Huntail
+- Tera Flying
+	- Main: {Seaking, Goldeen}
+- Tera Ghost
+	- Main: Golduck
+	- Other: Buizel
+- Tera Grass
+	- Main: Corsola, {Wailord, Wailmer}
+	- Other: Slowpoke
+- Tera Ground
+	- Main: Wishiwashi, {Walrein, Sealeo, Spheal}, Bibarel, {Azumarill, Marill} **(Restricted Mode Azumarill can only tera if its ability is Thick Fat)**
+- Tera Ice
+	- Main: {Jellicent, Frillish}, Bruxish, {Mantine, Mantyke}, {Quagsire, Wooper}, Tatsugiri
+	- Other: {Frogadier, Froakie}, {Prinplup, Piplup}, Shellder
+- Tera Normal
+	- Main: {Ludicolo, Lombre, Lotad}, Octillery
+	- Other: {Poliwhirl, Poliwag}, Remoraid, Staryu
+- Tera Poison
+	- Main: Cramorant, Crawdaunt, Qwilfish
+- Tera Psychic
+	- Main: Gastrodon, Poliwrath, {Feraligatr, Croconaw, Totodile}, {Sharpedo, Carvanha} 
+	- Other: Psyduck
+- Tera Rock
+	- Main: Arctovish, {Kingler, Krabby}, Relicanth
+	- Other: Marshtomp
+- Tera Steel
+	- Main: {Wugtrio, Wiglett}
+- Tera Stellar
+	- Main: {Whiscash, Barboach}, Castform-Rainy,  {Lumineon, Finneon}, {Simipour, Panpour}
+- Tera Water
+	- Main: Phione

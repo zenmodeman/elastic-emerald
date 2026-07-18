@@ -58,3 +58,9 @@ tools/aif2pcm/aif2pcm
 *.fastSmol
 *.smolTM
 __pycache__
+
+# Local credentials used by the Elastic Emerald spreadsheet helpers.
+/tools/elastic_emerald_helpers/SecretKey.json
+/tools/elastic_emerald_helpers/secretKey.json
+/tools/elastic_emerald_helpers/*credentials*.json
+/tools/elastic_emerald_helpers/ElasticMovesets.csv
