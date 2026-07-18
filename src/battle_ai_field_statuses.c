@@ -165,6 +165,69 @@ static bool32 DoesAbilityBenefitFromWeather(enum Ability ability, u32 weather)
     return FALSE;
 }
 
+static bool32 DoesMoveBenefitFromWeather(u32 move, u32 weather)
+{
+    enum BattleMoveEffects effect = GetMoveEffect(move);
+    enum Type moveType = GetMoveType(move);
+
+    if (effect == EFFECT_WEATHER_BALL)
+        return TRUE;
+
+    if (weather & B_WEATHER_SUN)
+    {
+        if ((GetMovePower(move) > 0 && moveType == TYPE_FIRE)
+         || IsLightSensitiveMove(move)
+         || effect == EFFECT_HYDRO_STEAM)
+            return TRUE;
+    }
+    else if (weather & B_WEATHER_RAIN)
+    {
+        if ((GetMovePower(move) > 0 && moveType == TYPE_WATER)
+         || MoveAlwaysHitsInRain(move)
+         || move == MOVE_ELECTRO_SHOT)
+            return TRUE;
+    }
+    else if (weather & B_WEATHER_SANDSTORM)
+    {
+        if (effect == EFFECT_SHORE_UP)
+            return TRUE;
+    }
+    else if (weather & B_WEATHER_ICY_ANY)
+    {
+        if (MoveAlwaysHitsInHailSnow(move) || effect == EFFECT_AURORA_VEIL)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+bool32 DoesPartyMonBenefitFromWeather(struct Pokemon *mon, u32 weather)
+{
+    u32 i;
+    u32 species = GetMonData(mon, MON_DATA_SPECIES);
+    enum Type type1 = GetSpeciesType(species, 0);
+    enum Type type2 = GetSpeciesType(species, 1);
+
+    if (DoesAbilityBenefitFromWeather(GetMonAbility(mon), weather))
+        return TRUE;
+
+    if (((weather & B_WEATHER_SUN) && (type1 == TYPE_FIRE || type2 == TYPE_FIRE))
+     || ((weather & B_WEATHER_RAIN) && (type1 == TYPE_WATER || type2 == TYPE_WATER))
+     || ((weather & B_WEATHER_SANDSTORM) && (type1 == TYPE_ROCK || type2 == TYPE_ROCK))
+     || ((weather & B_WEATHER_ICY_ANY) && (type1 == TYPE_ICE || type2 == TYPE_ICE)))
+        return TRUE;
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        u32 move = GetMonData(mon, MON_DATA_MOVE1 + i);
+
+        if (move != MOVE_NONE && DoesMoveBenefitFromWeather(move, weather))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 static bool32 DoesAbilityBenefitFromFieldStatus(enum Ability ability, u32 fieldStatus)
 {
     switch (ability)
@@ -493,5 +556,3 @@ static enum FieldEffectOutcome BenefitsFromTrickRoom(u32 battler)
 
     return FIELD_EFFECT_POSITIVE;
 }
-
-

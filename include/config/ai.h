@@ -17,7 +17,6 @@
 #define SHOULD_SWITCH_TRAPPER_PERCENTAGE                            100
 #define SHOULD_SWITCH_FREE_TURN_PERCENTAGE                          50
 #define STAY_IN_ABSORBING_PERCENTAGE                                66  // Chance to stay in if outgoing mon has super effective move against player, will prevent switching out for an absorber with this likelihood
-#define SHOULD_SWITCH_HASBADODDS_PERCENTAGE                         50
 #define SHOULD_SWITCH_ENCORE_STATUS_PERCENTAGE                      100
 #define SHOULD_SWITCH_ENCORE_DAMAGE_PERCENTAGE                      50
 #define SHOULD_SWITCH_CHOICE_LOCKED_PERCENTAGE                      100 // Only if locked into status move

@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `dc794373b3` (2026-07-17, "Adjust the display off the non-debug battle info screen to show trackable information properly.").
-- **Uncommitted AI changes covered by this document:** Both battle-information menu variants now include a `Player Dmg` view that shows min-max rolls from an active player battler to each living opponent and supports switching player attackers in doubles. The read-only `AI Dmg` view preserves an opposing battler selected in the main menu and allows L/R to switch opposing attackers in doubles. These are information-presentation changes and do not alter ordinary battle-AI decisions.
+- **Last documented code commit:** `3ee4fe2a78` (2026-07-17, "Added a player damage battle debug menu, and modiifed the AI Dmg option to enable both opposing battlers in doubles.").
+- **Uncommitted AI changes covered by this document:** General fast-KO switching has been replaced by contextual preservation of ability-based weather setters. Weather-party synergy checks were extended to benched party Pokemon. The abandoned clean-state, literal-lead, and revealed-versus-surmised fast-KO machinery was removed.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -102,28 +102,28 @@ Key commits: `93531a3cea`, `6e5f7576f7`.
 
 ## 3. Imperfect-information switching and counterplay
 
-### Bad-odds and fast-KO switching
+### Weather-setter preservation
 
-Smart switching evaluates whether the active battler can win the immediate matchup rather than switching from type disadvantage alone. Important inputs include:
+General fast-KO switching is disabled. The remaining contextual rule applies in singles to smart-switching trainers whose active Pokemon has Drizzle, Drought, Sand Stream, or Snow Warning. If the setter would act after the opponent and an actual-state damage calculation using the opponent's revealed moves plus Hidden STAB inference finds a KO, the AI may preserve the setter.
 
-- revealed versus merely inferred incoming damage;
-- current and clean-state speed order, plus priority damage;
-- literal trainer-lead preservation;
-- explicitly revealed KOs;
-- inferred quad-effective STAB KOs;
-- the active battler's own progress and KO potential;
-- Focus Sash, Sturdy, Regenerator, HP, and available switch-ins;
-- switch-in hazards and trapping.
+Preservation additionally requires the setter to retain at least 75% of its maximum HP, at least three other living Pokemon in that trainer's party to benefit from the setter's weather, and a viable standard switch candidate. The HP gate limits preservation to setters with enough longevity to contribute again after returning. A party Pokemon counts once if any of the following apply:
 
-Fast-KO switching requires the same candidate move to KO in both the actual battle state and a clean-state simulation. The clean state restores regular species typing and original abilities; removes temporary immunity bypasses, grounding, ability suppression, and effects such as Soak, added types, Tar Shot, Foresight, Miracle Eye, Smack Down, Gastro Acid, and Neutralizing Gas; and ignores Ring Target and Iron Ball when they provide the relevant bypass or grounding. Active Terastalization and ordinary item changes remain meaningful.
+- it has a directly encouraged type: Fire in sun, Water in rain, Rock in sand, or Ice in hail/snow;
+- it has a positively weather-interacting ability already recognized by the field-status AI;
+- it has a weather-boosted Fire or Water attack;
+- it has an applicable weather move interaction, including Solar Beam-style sun effects, rain/hail accuracy effects, weather-enabled two-turn attacks, Weather Ball, Hydro Steam, Aurora Veil, or Shore Up.
 
-Negative Defense and Special Defense stages are removed from the clean calculation unless a matching self-debuff move has depleted PP, which is treated as evidence that the battler attempted a move such as Superpower, Close Combat, V-create, Shell Smash, or Scale Shot. The speed gate likewise requires the player to be faster in both actual and clean states. Clean speed removes negative Speed stages unless a PP-depleted self-drop move such as Hammer Arm, V-create, or Curse can explain them. These paired checks allow player-applied tech moves such as Screech and Scary Face without making the AI ignore a KO or speed advantage that genuinely exists in both states.
+When every gate passes, the AI has a 50% chance to switch to the standard most-suitable party Pokemon. The KO check respects current battle conditions and survival effects such as Focus Sash and Sturdy. It does not use the abandoned clean-state model.
 
-The fast-KO response is no longer restricted to the opponent's first turn. Inferred-move policy instead distinguishes a literal trainer lead—party slot zero during its first field stint—from later battlers. Outside that lead case, quad-effective hidden-STAB surmising is used only when the estimated move KOs from full HP in both actual and clean states while dealing less than 1.5 times max HP. This approximates the window where STAB is necessary for the KO; at 1.5 times max HP or above, equivalent non-STAB coverage would also KO, so the special quad-effective surmise is unnecessary. More conservative cases rely on explicitly revealed moves.
+This replacement is currently uncommitted.
 
-Dig/free-turn switching and broad type-matchup switching were removed or disabled after testing because they produced poor or exploitable behavior.
+### Scrapped generalized fast-KO experiments
 
-Key commits: `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, `efda8256b3`, `6f1d67a6f4`, `8d856e4bcf`, `4547aff533`.
+Earlier versions attempted broad fast-KO preservation based on revealed versus inferred damage, literal-lead recognition, quad-effective Hidden STAB windows, and a clean-state simulation that removed player-created type, ability, grounding, immunity-bypass, defensive-stage, and Speed-stage changes. That approach was removed because its complexity produced little payoff and could over-penalize ordinary offensive Pokemon and player tech moves. The concise history is retained here in case parts are revisited later.
+
+The original bad-odds and fast-KO progression is represented by commits `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, and `efda8256b3`. Clean-state and literal-lead work was introduced in `6f1d67a6f4`, refined in `8d856e4bcf`, and given its final quad-effective Hidden STAB window in `4547aff533` before being scrapped by the current uncommitted replacement.
+
+Dig/free-turn switching and broad type-matchup switching were also removed or disabled after testing because they produced poor or exploitable behavior.
 
 ### Absorption and immunity switches
 

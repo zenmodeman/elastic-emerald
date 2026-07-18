@@ -4,6 +4,8 @@
 #include "battle_ai_main.h"
 #include "battle_ai_util.h"
 
+struct Pokemon;
+
 enum FieldEffectOutcome
 {
     FIELD_EFFECT_POSITIVE,
@@ -13,6 +15,7 @@ enum FieldEffectOutcome
 };
 
 bool32 WeatherChecker(u32 battler, u32 weather, enum FieldEffectOutcome desiredResult);
+bool32 DoesPartyMonBenefitFromWeather(struct Pokemon *mon, u32 weather);
 bool32 FieldStatusChecker(u32 battler, u32 fieldStatus, enum FieldEffectOutcome desiredResult);
 
 #endif //GUARD_BATTLE_AI_FIELD_STATUSES_H

@@ -22,6 +22,49 @@ AI_SINGLE_BATTLE_TEST("AI gets baited by Protect Switch tactics") // This behavi
 }
 
 // General switching behaviour
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter switches from inferred fast KO for three weather allies")
+{
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_PRESERVE_WEATHER_SETTER);
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
+        PLAYER(SPECIES_BLASTOISE) { Level(100); Speed(100); Moves(MOVE_HYDRO_PUMP); }
+        OPPONENT(SPECIES_NINETALES) { Level(1); Speed(1); Ability(ABILITY_DROUGHT); Moves(MOVE_EMBER); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HYDRO_PUMP); EXPECT_SWITCH(opponent, 1); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in without three weather allies")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
+        PLAYER(SPECIES_BLASTOISE) { Level(100); Speed(100); Moves(MOVE_HYDRO_PUMP); }
+        OPPONENT(SPECIES_NINETALES) { Level(1); Speed(1); Ability(ABILITY_DROUGHT); Moves(MOVE_EMBER); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_NATURAL_CURE); Moves(MOVE_TACKLE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HYDRO_PUMP); EXPECT_MOVE(opponent, MOVE_EMBER); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in below 75 percent HP")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
+        PLAYER(SPECIES_BLASTOISE) { Level(100); Speed(100); Moves(MOVE_HYDRO_PUMP); }
+        OPPONENT(SPECIES_NINETALES) { Level(100); HP(74); MaxHP(100); Speed(1); Ability(ABILITY_DROUGHT); Moves(MOVE_EMBER); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_BLISSEY) { Level(100); Ability(ABILITY_CHLOROPHYLL); Moves(MOVE_TACKLE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HYDRO_PUMP); EXPECT_MOVE(opponent, MOVE_EMBER); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("AI switches if Perish Song is about to kill")
 {
     PASSES_RANDOMLY(SHOULD_SWITCH_PERISH_SONG_PERCENTAGE, 100, RNG_AI_SWITCH_PERISH_SONG);
@@ -812,25 +855,6 @@ AI_SINGLE_BATTLE_TEST("AI will trap player using Trace if player has a trapper")
     }
 }
 
-AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI will switch out if mon would be OKHO'd and they have a good switchin 50% of the time")
-{
-    PASSES_RANDOMLY(SHOULD_SWITCH_HASBADODDS_PERCENTAGE, 100, RNG_AI_SWITCH_HASBADODDS);
-    GIVEN {
-        ASSUME(GetSpeciesType(SPECIES_RHYDON, 0) == TYPE_GROUND);
-        ASSUME(GetSpeciesType(SPECIES_PELIPPER, 0) == TYPE_WATER);
-        ASSUME(GetSpeciesType(SPECIES_PELIPPER, 1) == TYPE_FLYING);
-        ASSUME(GetMoveType(MOVE_THUNDERBOLT) == TYPE_ELECTRIC);
-        ASSUME(GetMoveType(MOVE_EARTHQUAKE) == TYPE_GROUND);
-
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
-        PLAYER(SPECIES_ELECTRODE) { Moves(MOVE_THUNDERBOLT, MOVE_THUNDER_WAVE, MOVE_THUNDER_SHOCK); }
-        OPPONENT(SPECIES_PELIPPER) { Moves(MOVE_EARTHQUAKE); }
-        OPPONENT(SPECIES_RHYDON) { Moves(MOVE_EARTHQUAKE); Ability(ABILITY_ROCK_HEAD); }
-    } WHEN {
-        TURN { MOVE(player, MOVE_THUNDERBOLT) ; EXPECT_SWITCH(opponent, 1); }
-    }
-}
-
 AI_SINGLE_BATTLE_TEST("Switch AI: AI will switch out if it can't deal damage to a mon with Wonder Guard")
 {
     PASSES_RANDOMLY(SHOULD_SWITCH_WONDER_GUARD_PERCENTAGE, 100, RNG_AI_SWITCH_WONDER_GUARD);
@@ -1501,65 +1525,6 @@ AI_SINGLE_BATTLE_TEST("Switch AI: AI will use pivot move to activate Palafin's Z
     }
 }
 
-AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI won't send out defensive mon that can lose 1v1, or switch out a mon that can win 1v1 even with bad type matchup")
-{
-    PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_HASBADODDS);
-    GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
-        PLAYER(SPECIES_PANPOUR) {
-            Level(15);
-            Moves(MOVE_WATER_PULSE, MOVE_PLAY_NICE, MOVE_FURY_SWIPES, MOVE_LICK);
-            Item(ITEM_MYSTIC_WATER);
-            Ability(ABILITY_GLUTTONY);
-            Nature(NATURE_MODEST);
-            HPIV(31);
-            AttackIV(31);
-            DefenseIV(31);
-            SpAttackIV(31);
-            SpDefenseIV(31);
-            SpeedIV(31); }
-        OPPONENT(SPECIES_RHYHORN) {
-            Level(14);
-            Moves(MOVE_ROCK_TOMB, MOVE_HORN_ATTACK, MOVE_BULLDOZE, MOVE_ROCK_SMASH);
-            Item(ITEM_RINDO_BERRY);
-            Ability(ABILITY_LIGHTNING_ROD);
-            Nature(NATURE_ADAMANT);
-            HPIV(31);
-            AttackIV(31);
-            DefenseIV(31);
-            SpAttackIV(31);
-            SpDefenseIV(31);
-            SpeedIV(31); }
-        OPPONENT(SPECIES_GLIGAR) {
-            Level(15);
-            Moves(MOVE_WING_ATTACK, MOVE_QUICK_ATTACK, MOVE_BULLDOZE);
-            Item(ITEM_ORAN_BERRY);
-            Ability(ABILITY_SAND_VEIL);
-            Nature(NATURE_ADAMANT);
-            HPIV(31);
-            AttackIV(31);
-            DefenseIV(31);
-            SpAttackIV(31);
-            SpDefenseIV(31);
-            SpeedIV(31); }
-        OPPONENT(SPECIES_WOOPER_PALDEA) {
-            Level(15);
-            Moves(MOVE_MUD_SHOT, MOVE_ACID_SPRAY, MOVE_YAWN, MOVE_SANDSTORM);
-            Item(ITEM_ORAN_BERRY);
-            Ability(ABILITY_WATER_ABSORB);
-            Nature(NATURE_MODEST);
-            HPIV(31);
-            AttackIV(31);
-            DefenseIV(31);
-            SpAttackIV(31);
-            SpDefenseIV(31);
-            SpeedIV(31); }
-    } WHEN {
-        TURN { MOVE(player, MOVE_WATER_PULSE); EXPECT_MOVE(opponent, MOVE_BULLDOZE); EXPECT_SEND_OUT(opponent, 1); }
-        TURN { MOVE(player, MOVE_WATER_PULSE); EXPECT_MOVE(opponent, MOVE_BULLDOZE); }
-    }
-}
-
 AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI considers 0 hits to KO as losing a 1v1")
 {
     GIVEN {
@@ -1637,19 +1602,6 @@ AI_DOUBLE_BATTLE_TEST("AI_FLAG_SMART_MON_CHOICES: AI will properly consider immu
     }
 }
 
-AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI won't switch out due to bad odds if it can OHKO with a priority move")
-{
-    PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_HASBADODDS);
-    GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
-        OPPONENT(SPECIES_CETODDLE) { Level(14); HP(30); Speed(1); Moves(MOVE_ICE_FANG, MOVE_ROCK_SMASH, MOVE_BULLDOZE, MOVE_ICE_SHARD); }
-        OPPONENT(SPECIES_SPHEAL) { Level(14); Speed(1); Ability(ABILITY_THICK_FAT); Moves(MOVE_ICY_WIND, MOVE_BRINE, MOVE_HIDDEN_POWER, MOVE_SIGNAL_BEAM); }
-        PLAYER(SPECIES_LITTEN) { Level(15); HP(1); Speed(2); Ability(ABILITY_BLAZE); Moves(MOVE_FIRE_FANG, MOVE_EMBER, MOVE_LICK, MOVE_FAKE_OUT); }
-    } WHEN {
-        TURN { MOVE(player, MOVE_FIRE_FANG); EXPECT_MOVE(opponent, MOVE_ICE_SHARD); }
-    }
-}
-
 AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_MON_CHOICES: AI will consider player's priority when evaluating switchin candidates")
 {
     GIVEN {
@@ -1660,19 +1612,6 @@ AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_MON_CHOICES: AI will consider player's prio
         PLAYER(SPECIES_KINGAMBIT) { Speed(2); Moves(MOVE_SUCKER_PUNCH, MOVE_KNOCK_OFF); }
     } WHEN {
         TURN { MOVE(player, MOVE_KNOCK_OFF); EXPECT_MOVE(opponent, MOVE_HEADBUTT); EXPECT_SEND_OUT(opponent, 1); }
-    }
-}
-
-AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI will consider player's priority when evaluating Bad Odds 1v1")
-{
-    PASSES_RANDOMLY(SHOULD_SWITCH_HASBADODDS_PERCENTAGE, 100, RNG_AI_SWITCH_HASBADODDS);
-    GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
-        OPPONENT(SPECIES_GENGAR) { Speed(10); Moves(MOVE_FOCUS_BLAST); }
-        OPPONENT(SPECIES_SCRAFTY) { Speed(5); Moves(MOVE_DRAIN_PUNCH); }
-        PLAYER(SPECIES_KINGAMBIT) { Speed(2); Moves(MOVE_SUCKER_PUNCH, MOVE_KNOCK_OFF); }
-    } WHEN {
-        TURN { MOVE(player, MOVE_KNOCK_OFF); EXPECT_SWITCH(opponent, 1); }
     }
 }
 
