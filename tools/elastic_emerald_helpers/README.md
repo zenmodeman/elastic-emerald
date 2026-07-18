@@ -13,6 +13,10 @@ The spreadsheet updater can also be launched directly from this directory:
 python update_moves_spreadsheet.py --dry-run --start 0 --end 2
 ```
 
+## Trainer documentation
+
+`sync_trainer_docs.py` updates only explicitly tagged generated regions in `docs/gameplay/trainers.md`; it never imports untagged or work-in-progress trainer parties. Manual notes outside those regions are preserved. Use `--check` for a non-writing stale-content check.
+
 The spreadsheet updater reads current learnsets and tutor lists from `src/data/pokemon`. Stable species numbers, the complete TM list, and all progression split definitions remain in `spreadsheet_config.py`. At runtime, the updater finds each current row from Columns A and B, so inserting or moving spreadsheet rows does not require configuration changes. Columns D–M cover every split from Gym 1 through post-game; each column receives only the level-up, tutor, and TM/HM moves introduced during that split. The dedicated egg-move column receives the complete egg-move list.
 
 ## Google credentials

@@ -1887,14 +1887,11 @@ void CustomTrainerPartyAssignMoves(struct Pokemon *mon, const struct TrainerMon 
 
     for (j = 0; j < MAX_MON_MOVES; ++j)
     {
-        u32 pp = GetMovePP(partyEntry->moves[j]);
-        //Hardcoded PP maxing until PPUp values are added to the trainer struct
-        if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_DARREN && partyEntry->moves[j] == MOVE_SECRET_POWER){
-            pp = 32;
-        }
+        u32 pp = CalculatePPWithBonus(partyEntry->moves[j], partyEntry->ppBonuses, j);
         SetMonData(mon, MON_DATA_MOVE1 + j, &partyEntry->moves[j]);
         SetMonData(mon, MON_DATA_PP1 + j, &pp);
     }
+    SetMonData(mon, MON_DATA_PP_BONUSES, &partyEntry->ppBonuses);
 }
 
 static u32 GetNPCMonLevelIncrease(u16 opponent){

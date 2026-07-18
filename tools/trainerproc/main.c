@@ -90,6 +90,9 @@ struct Pokemon
     int moves_n;
     int move1_line;
 
+    int pp_ups[MAX_MON_MOVES];
+    int pp_ups_line;
+
     struct String tags[MAX_MON_TAGS];
     int tags_n;
     int tags_line;
@@ -961,6 +964,38 @@ static bool token_stats(struct Parser *p, const struct Token *t, struct Stats *s
     return true;
 }
 
+static bool token_pp_ups(struct Parser *p, const struct Token *t, int pp_ups[MAX_MON_MOVES])
+{
+    struct Source source = {
+        .path = p->source->path,
+        .buffer = p->source->buffer,
+        .buffer_n = t->end,
+    };
+    struct Parser p_ = {
+        .source = &source,
+        .location = t->location,
+        .offset = t->begin,
+    };
+
+    for (int i = 0; i < MAX_MON_MOVES; i++)
+    {
+        skip_whitespace(&p_);
+        if (!match_int(&p_, &pp_ups[i]) || pp_ups[i] < 0 || pp_ups[i] > 3)
+            return set_parse_error(p, p_.location, "expected a PP Up count from 0 to 3");
+        skip_whitespace(&p_);
+        if (i + 1 < MAX_MON_MOVES)
+        {
+            if (!match_exact(&p_, "/"))
+                return set_parse_error(p, p_.location, "expected four '/'-separated PP Up counts");
+        }
+        else if (!match_eof(&p_))
+        {
+            return set_parse_error(p, p_.location, "expected exactly four PP Up counts");
+        }
+    }
+    return true;
+}
+
 // '/'-separated strings.
 static bool token_human_identifiers(struct Parser *p, const struct Token *t, struct String *ids, int *ids_n, int max_ids_n)
 {
@@ -1416,6 +1451,14 @@ static bool parse_trainer(struct Parser *p, const struct Parsed *parsed, struct 
                 if (!token_stats(p, &value, &pokemon->ivs, parsed->default_ivs_off))
                     any_error = !show_parse_error(p);
             }
+            else if (is_literal_token(&key, "PP Ups"))
+            {
+                if (pokemon->pp_ups_line)
+                    any_error = !set_show_parse_error(p, key.location, "duplicate 'PP Ups'");
+                pokemon->pp_ups_line = value.location.line;
+                if (!token_pp_ups(p, &value, pokemon->pp_ups))
+                    any_error = !show_parse_error(p);
+            }
             else if (is_literal_token(&key, "Ability"))
             {
                 if (pokemon->ability_line)
@@ -1494,7 +1537,7 @@ static bool parse_trainer(struct Parser *p, const struct Parsed *parsed, struct 
             }
             else
             {
-                any_error = !set_show_parse_error(p, key.location, "expected one of 'EVs', 'IVs', 'Ability', 'Level', 'Ball', 'Happiness', 'Nature', 'Shiny', 'Dynamax Level', 'Gigantamax', or 'Tera Type'");
+                any_error = !set_show_parse_error(p, key.location, "expected one of 'EVs', 'IVs', 'PP Ups', 'Ability', 'Level', 'Ball', 'Happiness', 'Nature', 'Shiny', 'Dynamax Level', 'Gigantamax', or 'Tera Type'");
             }
         }
 
@@ -2091,6 +2134,13 @@ static void fprint_trainers(const char *output_path, FILE *f, struct Parsed *par
                     fprintf(f, ",\n");
                 }
                 fprintf(f, "            },\n");
+            }
+
+            if (pokemon->pp_ups_line)
+            {
+                fprintf(f, "#line %d\n", pokemon->pp_ups_line);
+                fprintf(f, "            .ppBonuses = TRAINER_PARTY_PP_UPS(%d, %d, %d, %d),\n",
+                        pokemon->pp_ups[0], pokemon->pp_ups[1], pokemon->pp_ups[2], pokemon->pp_ups[3]);
             }
 
             fprintf(f, "            },\n");

@@ -753,7 +753,8 @@ AI: Smart Trainer
 Scraggy @ Eject Button  
 Ability: Intimidate  
 Level: 12  
-EVs: 12 HP / 28 Spe  
+EVs: 12 HP / 28 Spe 
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe  
 Jolly Nature  
 - Fake Out  
 - Beat Up  
@@ -2792,6 +2793,7 @@ Level: 13
 EVs: 28 HP / 12 SpD  
 Careful Nature  
 IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+PP Ups: 0 / 0 / 0 / 3
 - Stockpile  
 - Swallow  
 - Double Team  

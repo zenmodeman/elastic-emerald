@@ -53,6 +53,8 @@ struct TrainerBacksprite
 #define GET_MON_COORDS_HEIGHT(size) ((size & 0xF) * 8)
 #define TRAINER_PARTY_IVS(hp, atk, def, speed, spatk, spdef) (hp | (atk << 5) | (def << 10) | (speed << 15) | (spatk << 20) | (spdef << 25))
 #define TRAINER_PARTY_EVS(hp, atk, def, speed, spatk, spdef) ((const u8[6]){hp,atk,def,spatk,spdef,speed})
+// PP Ups use the same packed two-bits-per-move format as Pokemon::ppBonuses.
+#define TRAINER_PARTY_PP_UPS(move1, move2, move3, move4) ((move1) | ((move2) << 2) | ((move3) << 4) | ((move4) << 6))
 
 // Shared by both trainer and frontier mons
 // See CreateNPCTrainerPartyFromTrainer and CreateFacilityMon
@@ -62,6 +64,7 @@ struct TrainerMon
     const u8 *ev;
     u32 iv;
     u16 moves[4];
+    u8 ppBonuses;
     u16 species;
     u16 heldItem;
     enum Ability ability;
