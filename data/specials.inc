@@ -348,6 +348,7 @@ gSpecials::
 	def_special GetContestMultiplayerId
 	def_special ScriptGetPartyMonSpecies
 	def_special IsSelectedMonEgg
+	def_special HasMovesToRelearn
 	def_special TryInitBattleTowerAwardManObjectEvent
 	def_special MoveOutOfSecretBaseFromOutside
 	def_special LoadPlayerBag
@@ -502,7 +503,6 @@ gSpecials::
 	def_special StartMirageTowerDisintegration
 	def_special StartMirageTowerShake
 	def_special StartMirageTowerFossilFallAndSink
-	def_special ChangeBoxPokemonNickname
 	def_special GetPCBoxToSendMon
 	def_special ShouldShowBoxWasFullMessage
 	def_special SetMatchCallRegisteredFlag
@@ -577,6 +577,7 @@ gSpecials::
 	def_special SetTutorAbility
 	def_special SetHiddenNature
 	def_special SetAbility
+	def_special CanTeachMoveBoxMon
 	def_special ObjectEventInteractionGetApricornTreeData
 	def_special ObjectEventInteractionPickApricornTree
 	def_special Script_BufferChosenMonTriumph

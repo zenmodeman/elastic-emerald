@@ -1,6 +1,7 @@
 #include "global.h"
 #include "battle.h"
 #include "battle_anim.h"
+#include "battle_controllers.h"
 #include "battle_message.h"
 #include "main.h"
 #include "menu.h"
@@ -54,8 +55,8 @@ struct BattleDebugModifyArrows
 
 struct BattleDebugMenu
 {
-    u8 battlerId:2;
-    u8 aiBattlerId:2;
+    enum BattlerId battlerId:3;
+    enum BattlerId aiBattlerId:3;
 
     u8 battlerWindowId;
 
@@ -785,7 +786,7 @@ static const u16 sBgColor[] = {RGB_WHITE};
 static void Task_DebugMenuFadeOut(u8 taskId);
 static void Task_DebugMenuProcessInput(u8 taskId);
 static void Task_DebugMenuFadeIn(u8 taskId);
-static void PrintOnBattlerWindow(u8 windowId, u8 battlerId);
+static void PrintOnBattlerWindow(u8 windowId, enum BattlerId battler);
 static void UpdateWindowsOnChangedBattler(struct BattleDebugMenu *data);
 static void CreateSecondaryListMenu(struct BattleDebugMenu *data);
 static void PrintSecondaryEntries(struct BattleDebugMenu *data);
@@ -874,8 +875,8 @@ void CB2_BattleDebugMenu(void)
         gMain.state++;
         break;
     case 3:
-        LoadPalette(sBgColor, 0, 2);
-        LoadPalette(GetOverworldTextboxPalettePtr(), 0xf0, 16);
+        LoadPalette(sBgColor, BG_PLTT_ID(0), 2);
+        LoadPalette(GetOverworldTextboxPalettePtr(), BG_PLTT_ID(15), PLTT_SIZEOF(8));
         gMain.state++;
         break;
     case 4:
@@ -1000,7 +1001,7 @@ static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32
     // ability, or no ability when the current ability is publicly suppressed.
     gAiLogicData->abilities[battlerDef] = abilityDef;
     gBattleMons[battlerDef].ability = abilityDef;
-    damage = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK, AI_GetWeather());
+    damage = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK, AI_GetWeather(), gFieldStatuses);
 
     gBattleMons[battlerAtk] = savedAttacker;
     gBattleMons[battlerDef] = savedDefender;
@@ -1018,7 +1019,7 @@ static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
 {
     bool32 hasSuppressedAbility = GetBattlerAbilityIgnoreMoldBreaker(data->battlerId) == ABILITY_NONE
                                && gBattleMons[data->battlerId].ability != ABILITY_NONE;
-    bool32 hasOverwrittenAbility = gDisableStructs[data->battlerId].overwrittenAbility != ABILITY_NONE;
+    bool32 hasOverwrittenAbility = gBattleMons[data->battlerId].volatiles.overwrittenAbility != ABILITY_NONE;
     bool32 hasFixedAbility = hasSuppressedAbility || hasOverwrittenAbility;
     u32 abilityCount = hasFixedAbility ? 1 : NUM_ABILITY_SLOTS;
     u32 moveSlot, abilitySlot;
@@ -1106,7 +1107,7 @@ static struct SimulatedDamage CalcPlayerDisplayedDamage(u32 move, u32 battlerAtk
     // abilities rather than the AI's inferred or predicted ability state.
     gAiLogicData->abilities[battlerAtk] = gBattleMons[battlerAtk].ability;
     gAiLogicData->abilities[battlerDef] = gBattleMons[battlerDef].ability;
-    damage = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK, AI_GetWeather());
+    damage = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK, AI_GetWeather(), gFieldStatuses);
 
     gBattleMons[battlerAtk] = savedAttacker;
     gBattleMons[battlerDef] = savedDefender;
@@ -1455,14 +1456,14 @@ static void PutAiInfoText(struct BattleDebugMenu *data)
     }
 
     // items info
-    for (i = 0; i < gBattlersCount; i++)
+    for (enum BattlerId battler = 0; battler < gBattlersCount; battler++)
     {
-        if (IsOnPlayerSide(i) && IsBattlerAlive(i))
+        if (IsOnPlayerSide(battler) && IsBattlerAlive(battler))
         {
-            enum Ability ability = gAiLogicData->abilities[i];
-            enum HoldEffect holdEffect = gAiLogicData->holdEffects[i];
-            u16 item = gAiLogicData->items[i];
-            u8 x = (i == B_POSITION_PLAYER_LEFT) ? 83 + (i) * 75 : 83 + (i-1) * 75;
+            enum Ability ability = gAiLogicData->abilities[battler];
+            enum HoldEffect holdEffect = gAiLogicData->holdEffects[battler];
+            enum Item item = gAiLogicData->items[battler];
+            u8 x = (GetBattlerPosition(battler) == B_POSITION_PLAYER_LEFT) ? 83 + battler * 75 : 83 + (battler - 1) * 75;
             AddTextPrinterParameterized(data->aiMovesWindowId, FONT_SMALL, gAbilitiesInfo[ability].name, x, 0, 0, NULL);
             AddTextPrinterParameterized(data->aiMovesWindowId, FONT_SMALL, GetItemName(item), x, 15, 0, NULL);
             AddTextPrinterParameterized(data->aiMovesWindowId, FONT_SMALL, GetHoldEffectName(holdEffect), x, 30, 0, NULL);
@@ -1867,15 +1868,15 @@ static void Task_DebugMenuFadeOut(u8 taskId)
     }
 }
 
-static void PrintOnBattlerWindow(u8 windowId, u8 battlerId)
+static void PrintOnBattlerWindow(u8 windowId, enum BattlerId battler)
 {
     u8 text[POKEMON_NAME_LENGTH + 10];
 
-    text[0] = CHAR_0 + battlerId;
+    text[0] = CHAR_0 + battler;
     text[1] = CHAR_SPACE;
     text[2] = CHAR_HYPHEN;
     text[3] = CHAR_SPACE;
-    StringCopy(&text[4], gBattleMons[battlerId].nickname);
+    StringCopy(&text[4], gBattleMons[battler].nickname);
 
     FillWindowPixelBuffer(windowId, 0x11);
     AddTextPrinterParameterized(windowId, FONT_NORMAL, text, 0, 0, 0, NULL);
@@ -2104,11 +2105,11 @@ static void PrintReadOnlyListValue(u8 windowId, u32 itemId, u8 y)
         switch (itemId)
         {
         case READ_ONLY_VOLATILE_ENCORE:
-            value = gDisableStructs[data->battlerId].encoreTimer;
+            value = battleMon->volatiles.encoreTimer;
             showTurns = TRUE;
             break;
         case VOLATILE_PERISH_SONG:
-            value = gDisableStructs[data->battlerId].perishSongTimer;
+            value = battleMon->volatiles.perishSongTimer;
             showTurns = TRUE;
             break;
         case VOLATILE_CHARGE_TIMER:
@@ -2118,27 +2119,27 @@ static void PrintReadOnlyListValue(u8 windowId, u32 itemId, u8 y)
             showTurns = TRUE;
             break;
         case VOLATILE_EMBARGO:
-            value = gDisableStructs[data->battlerId].embargoTimer;
+            value = battleMon->volatiles.embargoTimer;
             showTurns = TRUE;
             break;
         case VOLATILE_TELEKINESIS:
-            value = gDisableStructs[data->battlerId].telekinesisTimer;
+            value = battleMon->volatiles.telekinesisTimer;
             showTurns = TRUE;
             break;
         case VOLATILE_MAGNET_RISE:
-            value = gDisableStructs[data->battlerId].magnetRiseTimer;
+            value = battleMon->volatiles.magnetRiseTimer;
             showTurns = TRUE;
             break;
         case VOLATILE_HEAL_BLOCK:
-            value = gDisableStructs[data->battlerId].healBlockTimer;
+            value = battleMon->volatiles.healBlockTimer;
             showTurns = TRUE;
             break;
         case VOLATILE_LASER_FOCUS:
-            value = gDisableStructs[data->battlerId].laserFocusTimer;
+            value = battleMon->volatiles.laserFocusTimer;
             showTurns = TRUE;
             break;
         case VOLATILE_SYRUP_BOMB:
-            value = gDisableStructs[data->battlerId].syrupBombTimer;
+            value = battleMon->volatiles.syrupBombTimer;
             showTurns = TRUE;
             break;
         default:
@@ -2211,14 +2212,15 @@ static void PrintSecondaryEntries(struct BattleDebugMenu *data)
 
     yMultiplier = (GetFontAttribute(sSecondaryListTemplate.fontId, 1) + sSecondaryListTemplate.itemVerticalPadding);
 
+    printer.type = WINDOW_TEXT_PRINTER;
     printer.windowId = data->secondaryListWindowId;
     printer.fontId = 1;
-    printer.unk = 0;
     printer.letterSpacing = 0;
     printer.lineSpacing = 1;
-    printer.fgColor = 2;
-    printer.bgColor = 1;
-    printer.shadowColor = 3;
+    printer.color.accent = 1;
+    printer.color.foreground = 2;
+    printer.color.background = 1;
+    printer.color.shadow = 3;
     printer.x = sSecondaryListTemplate.item_X;
     printer.currentX = sSecondaryListTemplate.item_X;
     printer.currentChar = text;
@@ -2447,7 +2449,7 @@ static void ValueToCharDigits(u8 *charDigits, u32 newValue, u8 maxDigits)
 
 static void ChangeHazardsValue(struct BattleDebugMenu *data)
 {
-    u32 side = GetBattlerSide(data->battlerId);
+    enum BattleSide side = GetBattlerSide(data->battlerId);
 
     switch (data->currentSecondaryListItemId)
     {
@@ -2743,12 +2745,14 @@ static void SetUpModifyArrows(struct BattleDebugMenu *data)
         }
         else if (data->currentSecondaryListItemId == VARIOUS_SUBSTITUTE_HP)
         {
+            u32 subHp = gBattleMons[data->battlerId].volatiles.substituteHP;
             data->modifyArrows.minValue = 0;
             data->modifyArrows.maxValue = 255;
             data->modifyArrows.maxDigits = 3;
-            data->modifyArrows.modifiedValPtr = &gDisableStructs[data->battlerId].substituteHP;
+            data->modifyArrows.modifiedValPtr = &subHp;
+            gBattleMons[data->battlerId].volatiles.substituteHP = subHp;
             data->modifyArrows.typeOfVal = VAR_SUBSTITUTE;
-            data->modifyArrows.currValue = gDisableStructs[data->battlerId].substituteHP;
+            data->modifyArrows.currValue = gBattleMons[data->battlerId].volatiles.substituteHP;
         }
         else if (data->currentSecondaryListItemId == VARIOUS_IN_LOVE)
         {
@@ -2962,10 +2966,8 @@ static const u8 *const sHoldEffectNames[HOLD_EFFECT_COUNT] =
     [HOLD_EFFECT_LUCKY_EGG]        = COMPOUND_STRING("Lucky Egg"),
     [HOLD_EFFECT_SCOPE_LENS]       = COMPOUND_STRING("Scope Lens"),
     [HOLD_EFFECT_LEFTOVERS]        = COMPOUND_STRING("Leftovers"),
-    [HOLD_EFFECT_DRAGON_SCALE]     = COMPOUND_STRING("Dragon Scale"),
     [HOLD_EFFECT_LIGHT_BALL]       = COMPOUND_STRING("Light Ball"),
     [HOLD_EFFECT_TYPE_POWER]       = COMPOUND_STRING("Type Power"),
-    [HOLD_EFFECT_UPGRADE]          = COMPOUND_STRING("Upgrade"),
     [HOLD_EFFECT_SHELL_BELL]       = COMPOUND_STRING("Shell Bell"),
     [HOLD_EFFECT_LUCKY_PUNCH]      = COMPOUND_STRING("Lucky Punch"),
     [HOLD_EFFECT_METAL_POWDER]     = COMPOUND_STRING("Metal Powder"),

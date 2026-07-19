@@ -15,6 +15,8 @@ description: Implement, diagnose, review, or document battle-AI behavior in Elas
 6. Implement the smallest coherent behavior change and restore every temporarily mutated state carrier.
 7. Run targeted static checks only unless the user explicitly requests a build. Update AI documentation in the same work.
 
+Before restoring older AI logic during an upgrade, check whether a newer commit deliberately removed or superseded it. Preserve the current design decision rather than reviving an abandoned heuristic merely because its old symbols still appear in history or tests. In particular, generalized clean-state/fast-KO switching is historical in this project; current weather-setter preservation is the active replacement.
+
 ## Simulation and decision guardrails
 
 - Compare the same move, battler, or switch candidate across alternate states. Do not let independent maxima from different candidates satisfy separate halves of one condition.
@@ -43,6 +45,8 @@ When adding a clean-state calculation, define its contract beside the helper. Ty
 ## Runtime and AI parity
 
 When adding AI support for a gameplay mechanic, trace the runtime implementation first. Match its type resolution, ability suppression, item negation, grounding, status immunity, move properties, and generation/config gates. If AI and runtime helpers intentionally differ because of knowledge limits, document the difference.
+
+If an upstream refactor combines or splits runtime immunity helpers, keep any compatibility query used by AI prediction behaviorally aligned with the new runtime path. Verify Soundproof/Bulletproof/Good as Gold-style blockers, side-wide priority blockers, dynamic move targets, and the distinction between check-only and script-running calls.
 
 For upgrade or merge work that touches AI, load `skills/merge-upgrade-helper/SKILL.md` first and read `docs/merge-upgrade-helper/README.md`. Then apply this skill to verify that the resolved code still represents the intended AI behavior.
 

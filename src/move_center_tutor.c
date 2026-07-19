@@ -661,7 +661,7 @@ static void DoMoveTutorMain(void)
     case MENU_STATE_SHOW_MOVE_SUMMARY_SCREEN:
         if (!gPaletteFade.active)
         {
-            ShowSelectMovePokemonSummaryScreen(gPlayerParty, sMoveTutorStruct->partyMon, gPlayerPartyCount - 1, CB2_InitLearnMoveReturnFromSelectMove, GetCurrentSelectedMove());
+            ShowSelectMovePokemonSummaryScreen(gPlayerParty, sMoveTutorStruct->partyMon, CB2_InitLearnMoveReturnFromSelectMove, GetCurrentSelectedMove());
             FreeMoveTutor();
         }
         break;

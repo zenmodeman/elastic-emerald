@@ -384,8 +384,6 @@ static const struct SpriteTemplate sSpriteTemplate_NewGameBirch =
     .oam = &sOam_64x64,
     .anims = sAnimTable_NewGameBirch,
     .images = sPicTable_NewGameBirch,
-    .affineAnims = gDummySpriteAffineAnimTable,
-    .callback = SpriteCallbackDummy
 };
 
 const struct SpritePalette gSpritePalette_PokeballGlow =
@@ -559,7 +557,6 @@ static const struct SpriteTemplate sSpriteTemplate_PokeballGlow =
     .oam = &sOam_8x8,
     .anims = sAnims_Flicker,
     .images = sPicTable_PokeballGlow,
-    .affineAnims = gDummySpriteAffineAnimTable,
     .callback = SpriteCB_PokeballGlow
 };
 
@@ -570,7 +567,6 @@ static const struct SpriteTemplate sSpriteTemplate_PokecenterMonitor =
     .oam = &sOam_16x16,
     .anims = sAnims_Flicker,
     .images = sPicTable_PokecenterMonitor,
-    .affineAnims = gDummySpriteAffineAnimTable,
     .callback = SpriteCB_PokecenterMonitor
 };
 
@@ -581,7 +577,6 @@ static const struct SpriteTemplate sSpriteTemplate_HofMonitorBig =
     .oam = &sOam_16x16,
     .anims = sAnims_HofMonitor,
     .images = sPicTable_HofMonitorBig,
-    .affineAnims = gDummySpriteAffineAnimTable,
     .callback = SpriteCB_HallOfFameMonitor
 };
 
@@ -592,7 +587,6 @@ static const struct SpriteTemplate sSpriteTemplate_HofMonitorSmall =
     .oam = &sOam_32x16,
     .anims = sAnims_HofMonitor,
     .images = sPicTable_HofMonitorSmall,
-    .affineAnims = gDummySpriteAffineAnimTable,
     .callback = SpriteCB_HallOfFameMonitor
 };
 
@@ -2461,7 +2455,7 @@ static void EscapeRopeWarpOutEffect_HideFollowerNPC(struct Task *task)
 static void EscapeRopeWarpOutEffect_Spin(struct Task *task)
 {
     struct ObjectEvent *objectEvent;
-    u8 spinDirections[5] =  {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
+    enum Direction spinDirections[5] =  {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
     if (task->tTimer != 0 && (--task->tTimer) == 0)
     {
         TryFadeOutOldMapMusic();
@@ -2522,7 +2516,7 @@ static void EscapeRopeWarpInEffect_Init(struct Task *task)
 
 static void EscapeRopeWarpInEffect_Spin(struct Task *task)
 {
-    u8 spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
+    enum Direction spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
     struct ObjectEvent *player = &gObjectEvents[gPlayerAvatar.objectEventId];
     struct ObjectEvent *follower = &gObjectEvents[GetFollowerNPCObjectId()];
 
@@ -2615,7 +2609,7 @@ static void TeleportWarpOutFieldEffect_Init(struct Task *task)
 
 static void TeleportWarpOutFieldEffect_SpinGround(struct Task *task)
 {
-    u8 spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
+    enum Direction spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
     struct ObjectEvent *objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     if (task->data[1] == 0 || (--task->data[1]) == 0)
     {
@@ -2635,7 +2629,7 @@ static void TeleportWarpOutFieldEffect_SpinGround(struct Task *task)
 
 static void TeleportWarpOutFieldEffect_SpinExit(struct Task *task)
 {
-    u8 spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
+    enum Direction spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
     struct ObjectEvent *objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     struct Sprite *sprite = &gSprites[gPlayerAvatar.spriteId];
     if ((--task->data[1]) <= 0)
@@ -2726,7 +2720,7 @@ static void TeleportWarpInFieldEffect_Init(struct Task *task)
 
 static void TeleportWarpInFieldEffect_SpinEnter(struct Task *task)
 {
-    u8 spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
+    enum Direction spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
     struct ObjectEvent *objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     struct Sprite *sprite = &gSprites[gPlayerAvatar.spriteId];
     if ((sprite->y2 += task->data[1]) >= -8)
@@ -2770,7 +2764,7 @@ static void TeleportWarpInFieldEffect_SpinGround(struct Task *task)
     struct ObjectEvent *player = &gObjectEvents[gPlayerAvatar.objectEventId];
     struct ObjectEvent *follower = &gObjectEvents[GetFollowerNPCObjectId()];
 
-    u8 spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
+    enum Direction spinDirections[5] = {DIR_SOUTH, DIR_WEST, DIR_EAST, DIR_NORTH, DIR_SOUTH};
     if ((--task->data[1]) == 0 && task->data[3] == 0)
     {
         ObjectEventTurn(player, spinDirections[player->facingDirection]);
@@ -4084,7 +4078,6 @@ static const struct SpriteTemplate sSpriteTemplate_DeoxysRockFragment =
     .oam = &sOam_8x8,
     .anims = sAnims_DeoxysRockFragment,
     .images = sImages_DeoxysRockFragment,
-    .affineAnims = gDummySpriteAffineAnimTable,
     .callback = SpriteCB_DeoxysRockFragment
 };
 
@@ -4390,7 +4383,7 @@ static const struct RockClimbRide sRockClimbMovement[] =
     [DIR_NORTHEAST] = {MOVEMENT_ACTION_WALK_FAST_DIAGONAL_UP_RIGHT, -1, 1, DIR_EAST},
 };
 
-static void RockClimbDust(struct ObjectEvent *objectEvent, u8 direction)
+static void RockClimbDust(struct ObjectEvent *objectEvent, enum Direction direction)
 {
     s8 dx = sRockClimbMovement[direction].dx;
     s8 dy = sRockClimbMovement[direction].dy;

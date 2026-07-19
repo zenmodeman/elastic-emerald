@@ -894,155 +894,186 @@ EventScript_UseDefog::
 	end
 # 448 "data/scripts/field_move_scripts.pory"
 
-EventScript_UseRockClimb::
-	lockall
-	checkfieldmove FIELD_MOVE_ROCK_CLIMB
-	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantRockClimb
-	bufferpartymonnick STR_VAR_1, VAR_RESULT
-	setfieldeffectargument 0, VAR_RESULT
-	msgbox Text_WantToRockClimb, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, EventScript_EndRockClimb
-	msgbox Text_MonUsedRockClimb, MSGBOX_DEFAULT
-	closemessage
-	dofieldeffect FLDEFF_USE_ROCK_CLIMB
-	waitstate
-	goto EventScript_EndRockClimb
-	end
-
-EventScript_CantRockClimb::
-	msgbox Text_CantRockClimb, MSGBOX_DEFAULT
-
-EventScript_EndRockClimb::
-	releaseall
-	end
-
-Text_WantToRockClimb:
-	.string "The cliff is steep.\n"
-	.string "Would you like to use Rock Climb?$"
-
-Text_MonUsedRockClimb:
-	.string "{STR_VAR_1} used Rock Climb!$"
-
-Text_CantRockClimb:
-	.string "The cliff is steep.\n"
-	.string "A POKéMON may be able to climb it.$"
-
 # 449 "data/scripts/field_move_scripts.pory"
-
+EventScript_UseRockClimb::
 # 450 "data/scripts/field_move_scripts.pory"
-@ Interact with a tree that can be shaken
-# 451 "data/scripts/field_move_scripts.pory"
-EventScript_Shake::
-# 452 "data/scripts/field_move_scripts.pory"
 	lockall
+# 451 "data/scripts/field_move_scripts.pory"
+	checkfieldmove FIELD_MOVE_ROCK_CLIMB
+# 452 "data/scripts/field_move_scripts.pory"
+	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantRockClimb
 # 453 "data/scripts/field_move_scripts.pory"
-	setfieldeffectargument 0, VAR_RESULT
+	bufferpartymonnick STR_VAR_1, VAR_RESULT
 # 454 "data/scripts/field_move_scripts.pory"
-	msgbox Text_WantToShake, MSGBOX_YESNO
+	setfieldeffectargument 0, VAR_RESULT
 # 455 "data/scripts/field_move_scripts.pory"
-	compare VAR_RESULT, NO
+	msgbox Text_WantToRockClimb, MSGBOX_YESNO
 # 456 "data/scripts/field_move_scripts.pory"
-	goto_if_eq EventScript_CancelShake
+	goto_if_eq VAR_RESULT, NO, EventScript_EndRockClimb
 # 457 "data/scripts/field_move_scripts.pory"
-	goto EventScript_ShakeTree
+	msgbox Text_MonUsedRockClimb, MSGBOX_DEFAULT
 # 458 "data/scripts/field_move_scripts.pory"
-	end
-# 459 "data/scripts/field_move_scripts.pory"
-
-# 460 "data/scripts/field_move_scripts.pory"
-EventScript_CancelShake::
-# 461 "data/scripts/field_move_scripts.pory"
 	closemessage
+# 459 "data/scripts/field_move_scripts.pory"
+	dofieldeffect FLDEFF_USE_ROCK_CLIMB
+# 460 "data/scripts/field_move_scripts.pory"
+	waitstate
+# 461 "data/scripts/field_move_scripts.pory"
+	goto EventScript_EndRockClimb
 # 462 "data/scripts/field_move_scripts.pory"
-	releaseall
+	end
 # 463 "data/scripts/field_move_scripts.pory"
-	end
+
 # 464 "data/scripts/field_move_scripts.pory"
-
+EventScript_CantRockClimb::
 # 465 "data/scripts/field_move_scripts.pory"
-EventScript_ShakeTree::
+	msgbox Text_CantRockClimb, MSGBOX_DEFAULT
 # 466 "data/scripts/field_move_scripts.pory"
-	setvar VAR_0x8004, 1  @ vertical pan
+
 # 467 "data/scripts/field_move_scripts.pory"
-	setvar VAR_0x8005, 1  @ horizontal pan
+EventScript_EndRockClimb::
 # 468 "data/scripts/field_move_scripts.pory"
-	setvar VAR_0x8006, 8  @ num shakes
-# 469 "data/scripts/field_move_scripts.pory"
-	setvar VAR_0x8007, 5  @ shake delay
-# 470 "data/scripts/field_move_scripts.pory"
-	special ShakeCamera
-# 471 "data/scripts/field_move_scripts.pory"
-	waitstate
-# 472 "data/scripts/field_move_scripts.pory"
-	special ShakeWildEncounter
-# 473 "data/scripts/field_move_scripts.pory"
-	compare VAR_RESULT, FALSE
-# 474 "data/scripts/field_move_scripts.pory"
-	goto_if_eq EventScript_EndShake
-# 475 "data/scripts/field_move_scripts.pory"
-	waitstate
-# 476 "data/scripts/field_move_scripts.pory"
-
-# 477 "data/scripts/field_move_scripts.pory"
-EventScript_EndShake::
-# 478 "data/scripts/field_move_scripts.pory"
 	releaseall
-# 479 "data/scripts/field_move_scripts.pory"
+# 469 "data/scripts/field_move_scripts.pory"
 	end
+# 470 "data/scripts/field_move_scripts.pory"
+
+# 471 "data/scripts/field_move_scripts.pory"
+Text_WantToRockClimb:
+# 472 "data/scripts/field_move_scripts.pory"
+	.string "The cliff is steep.\n"
+# 473 "data/scripts/field_move_scripts.pory"
+	.string "Would you like to use Rock Climb?$"
+# 474 "data/scripts/field_move_scripts.pory"
+
+# 475 "data/scripts/field_move_scripts.pory"
+Text_MonUsedRockClimb:
+# 476 "data/scripts/field_move_scripts.pory"
+	.string "{STR_VAR_1} used Rock Climb!$"
+# 477 "data/scripts/field_move_scripts.pory"
+
+# 478 "data/scripts/field_move_scripts.pory"
+Text_CantRockClimb:
+# 479 "data/scripts/field_move_scripts.pory"
+	.string "The cliff is steep.\n"
 # 480 "data/scripts/field_move_scripts.pory"
-
+	.string "A POKéMON may be able to climb it.$"
 # 481 "data/scripts/field_move_scripts.pory"
-Text_NoPokemonToShake:
-# 482 "data/scripts/field_move_scripts.pory"
-	.string "It's a moderate sized tree.\n"
-# 483 "data/scripts/field_move_scripts.pory"
 
+# 482 "data/scripts/field_move_scripts.pory"
+@ Interact with a tree that can be shaken
+# 483 "data/scripts/field_move_scripts.pory"
+EventScript_Shake::
 # 484 "data/scripts/field_move_scripts.pory"
-Text_WantToShake:
+	lockall
 # 485 "data/scripts/field_move_scripts.pory"
-	.string "It's a moderate sized tree.\n"
+	setfieldeffectargument 0, VAR_RESULT
 # 486 "data/scripts/field_move_scripts.pory"
+	msgbox Text_WantToShake, MSGBOX_YESNO
+# 487 "data/scripts/field_move_scripts.pory"
+	compare VAR_RESULT, NO
+# 488 "data/scripts/field_move_scripts.pory"
+	goto_if_eq EventScript_CancelShake
+# 489 "data/scripts/field_move_scripts.pory"
+	goto EventScript_ShakeTree
+# 490 "data/scripts/field_move_scripts.pory"
+	end
+# 491 "data/scripts/field_move_scripts.pory"
+
+# 492 "data/scripts/field_move_scripts.pory"
+EventScript_CancelShake::
+# 493 "data/scripts/field_move_scripts.pory"
+	closemessage
+# 494 "data/scripts/field_move_scripts.pory"
+	releaseall
+# 495 "data/scripts/field_move_scripts.pory"
+	end
+# 496 "data/scripts/field_move_scripts.pory"
+
+# 497 "data/scripts/field_move_scripts.pory"
+EventScript_ShakeTree::
+# 498 "data/scripts/field_move_scripts.pory"
+	setvar VAR_0x8004, 1  @ vertical pan
+# 499 "data/scripts/field_move_scripts.pory"
+	setvar VAR_0x8005, 1  @ horizontal pan
+# 500 "data/scripts/field_move_scripts.pory"
+	setvar VAR_0x8006, 8  @ num shakes
+# 501 "data/scripts/field_move_scripts.pory"
+	setvar VAR_0x8007, 5  @ shake delay
+# 502 "data/scripts/field_move_scripts.pory"
+	special ShakeCamera
+# 503 "data/scripts/field_move_scripts.pory"
+	waitstate
+# 504 "data/scripts/field_move_scripts.pory"
+	special ShakeWildEncounter
+# 505 "data/scripts/field_move_scripts.pory"
+	compare VAR_RESULT, FALSE
+# 506 "data/scripts/field_move_scripts.pory"
+	goto_if_eq EventScript_EndShake
+# 507 "data/scripts/field_move_scripts.pory"
+	waitstate
+# 508 "data/scripts/field_move_scripts.pory"
+
+# 509 "data/scripts/field_move_scripts.pory"
+EventScript_EndShake::
+# 510 "data/scripts/field_move_scripts.pory"
+	releaseall
+# 511 "data/scripts/field_move_scripts.pory"
+	end
+# 512 "data/scripts/field_move_scripts.pory"
+
+# 513 "data/scripts/field_move_scripts.pory"
+Text_NoPokemonToShake:
+# 514 "data/scripts/field_move_scripts.pory"
+	.string "It's a moderate sized tree.\n"
+# 515 "data/scripts/field_move_scripts.pory"
+
+# 516 "data/scripts/field_move_scripts.pory"
+Text_WantToShake:
+# 517 "data/scripts/field_move_scripts.pory"
+	.string "It's a moderate sized tree.\n"
+# 518 "data/scripts/field_move_scripts.pory"
 	.string "Would you like to shake it?$"
 
 EventScript_AskScytherToCut::
-# 490 "data/scripts/field_move_scripts.pory"
+# 522 "data/scripts/field_move_scripts.pory"
 	setvar VAR_0x8009, 1
-# 491 "data/scripts/field_move_scripts.pory"
+# 523 "data/scripts/field_move_scripts.pory"
 	bufferspeciesname 0, SPECIES_SCYTHER
-# 492 "data/scripts/field_move_scripts.pory"
+# 524 "data/scripts/field_move_scripts.pory"
 	buffermovename 1, MOVE_CUT
-# 493 "data/scripts/field_move_scripts.pory"
+# 525 "data/scripts/field_move_scripts.pory"
 	msgbox EventScript_AskScytherToCut_Text_0
-# 494 "data/scripts/field_move_scripts.pory"
+# 526 "data/scripts/field_move_scripts.pory"
 	msgbox EventScript_AskScytherToCut_Text_1, MSGBOX_YESNO
-# 495 "data/scripts/field_move_scripts.pory"
+# 527 "data/scripts/field_move_scripts.pory"
 	compare VAR_RESULT, 0
 	goto_if_eq EventScript_AskScytherToCut_2
 EventScript_AskScytherToCut_1:
-# 498 "data/scripts/field_move_scripts.pory"
+# 530 "data/scripts/field_move_scripts.pory"
 	msgbox Text_MonUsedFieldMove, MSGBOX_DEFAULT
-# 499 "data/scripts/field_move_scripts.pory"
+# 531 "data/scripts/field_move_scripts.pory"
 	closemessage
-# 500 "data/scripts/field_move_scripts.pory"
+# 532 "data/scripts/field_move_scripts.pory"
 	setvar VAR_0x8008, MOVE_CUT
-# 501 "data/scripts/field_move_scripts.pory"
+# 533 "data/scripts/field_move_scripts.pory"
 	dofieldeffect FLDEFF_USE_CUT_ON_TREE
-# 502 "data/scripts/field_move_scripts.pory"
+# 534 "data/scripts/field_move_scripts.pory"
 	waitstate
-# 503 "data/scripts/field_move_scripts.pory"
+# 535 "data/scripts/field_move_scripts.pory"
 	goto EventScript_CutTreeDown
 	end
 
 EventScript_AskScytherToCut_2:
-# 496 "data/scripts/field_move_scripts.pory"
+# 528 "data/scripts/field_move_scripts.pory"
 	goto EventScript_CancelCut
 	goto EventScript_AskScytherToCut_1
 
 
 EventScript_AskScytherToCut_Text_0:
-# 493 "data/scripts/field_move_scripts.pory"
+# 525 "data/scripts/field_move_scripts.pory"
 	.string "This tree looks like it can be cut down!$"
 
 EventScript_AskScytherToCut_Text_1:
-# 494 "data/scripts/field_move_scripts.pory"
+# 526 "data/scripts/field_move_scripts.pory"
 	.string "Call Cutter's Scyther to Cut it?$"

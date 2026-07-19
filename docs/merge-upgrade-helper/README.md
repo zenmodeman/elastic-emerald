@@ -87,6 +87,7 @@ Confirmed later-merge breakages already repaired in history:
 - Honey Gather regressed and was repaired in `23421cb46e`.
 - After `expansion/1.14.0`, monotype filtering, non-monotype modulus behavior, Tier Points catch logic, extra Suction Cups behavior, AI flags, candy cap logic, and Aqua Ring bonus-effect cleanup needed restoration in `5b2db2f453`, `448477bf2e`, `4038c36be7`, `5d34747fa5`, and `86a1b336ef`.
 - After `expansion/1.14.4`, additional minor custom-functionality patches landed in `9865fe909f` and `0cf4955fd9`.
+- During the first `expansion/1.15.0` merge portion, the new generational-config API required bare tags in `GetConfig`, level-cap calls gained an explicit hard/candy-cap argument, and variable config tags required `GetConfigInternal`. The merge also displaced Metal Rush's weight-dependent additional effect, full player held-item AI knowledge, and repeated-switch immunity prediction; these were restored as uncommitted merge work on the 1.15 runtime and AI APIs. Expansion 1.15's `HandleKOThroughBerryReduction` now provides the consumed-resist-berry follow-up damage model, so the older local temporary-hold-effect simulator should not be duplicated.
 - Binding, Wrap, and Drain Douse tests required post-merge fixes around `bd83b55fb4`, `c701193e0d`, and `be3390bd51`.
 
 Current audit status from static symbol scans:
@@ -98,7 +99,7 @@ Current audit status from static symbol scans:
 
 Likely rework candidates:
 
-- Tier Points now compute with ability awareness, but the point table itself is still hand-coded in `src/pokemon.c`; if expansion gains richer species/form metadata or if more form/ability exceptions accumulate, consider moving tier data into a structured species-side table.
+- Tier Points now compute with ability awareness, but the point table itself is still hand-coded in `src/elastic_emerald_pokemon.c`; if expansion gains richer species/form metadata or if more form/ability exceptions accumulate, consider moving tier data into a structured species-side table.
 - Curated Tera is still centralized in code; as curated lists grow, a data-driven species table would make merge conflict resolution easier than editing a large switch/list in `src/pokemon.c`.
 - Monotype exceptions and gender-forced split-evolution handling are runtime helpers in `src/wild_encounter.c`; these are stable, but they should be revisited if expansion adds native encounter filters or richer evolution-family predicates.
 - Drain Douse's current `MOVEEND_ABSORB` integration is the right post-refactor shape, but double/spread/mixed-target semantics are under-tested because several tests are commented out.
@@ -149,7 +150,8 @@ Primary anchors:
 - `data/maps/InsideOfTruck/scripts.pory`: asks about Restricted Mode, Resource Mode, curated Tera, monotype, and tier points.
 - `include/constants/flags.h`: `FLAG_RESTRICTED_MODE`, `FLAG_RESOURCE_MODE`, `FLAG_TERA_CHARGED`, `FLAG_CURATED_TERA`, `FLAG_TIERED`.
 - `include/constants/vars.h`: mode-selection vars may be touched by map scripts.
-- `src/pokemon.c`: `GetMonoType`, curated/random Tera assignment, resource checks, tier point helpers.
+- `src/elastic_emerald_pokemon.c`: `GetMonoType`, tier-point calculations, tutor-resource eligibility, party totals, and automatic party-to-PC deposits after the 1.15 core rewrite.
+- `src/pokemon.c`: curated/random Tera assignment and the upstream Pokémon core.
 - `src/battle_terastal.c`: monotype and Restricted Mode Tera legality.
 - `data/maps/*/scripts.pory`: mode-specific gifts, shops, dialogue, and progression gates.
 
@@ -166,7 +168,7 @@ Monotype runs filter and rebalance wild encounters, gifts, split evolutions, som
 
 Primary anchors:
 
-- `src/pokemon.c`: `GetMonoType`.
+- `src/elastic_emerald_pokemon.c`: `GetMonoType`.
 - `src/wild_encounter.c`: `IsMonMonotypeException`, `TryGetMonotypeWildMonIndex`, land/shaking/fishing filters, gender fixes for split-evolution lines.
 - `src/script_pokemon_util.c`: `PopulateMonotypeResistBerriesInPC`, which seeds PC resist berries during truck setup for monotypes weak to covered attacking types.
 - `src/evolution_scene.c`: Shedinja and other evolution exceptions.
@@ -190,7 +192,8 @@ Tier Points is a party-budget mode that assigns point values to Pokemon, constra
 Primary anchors:
 
 - `include/pokemon.h`: `GetMonTierPoints`, `CountPartyTierPoints`, `CalcTierPointsAfterEvolution`, `CalcTierPointsAfterAbilityChange`, `CanMonUseCenterTutorWithCurrentResources`.
-- `src/pokemon.c`: species/ability-aware tier point calculations, party total, Center Tutor exceptions, curated Tera dependencies.
+- `src/elastic_emerald_pokemon.c`: species/ability-aware tier point calculations, party total, Center Tutor exceptions, and auto-box support.
+- `src/pokemon.c`: Pokémon creation/data paths and curated Tera dependencies.
 - `src/battle_script_commands.c`: catch flow guard/auto-box behavior.
 - `src/script_pokemon_util.c`: gift Pokemon tier checks and automatic boxing.
 - `src/evolution_scene.c`: evolution and Shedinja tier checks.
@@ -215,7 +218,8 @@ Primary anchors:
 
 - `include/constants/flags.h`: `FLAG_RESTRICTED_MODE`, `FLAG_RESOURCE_MODE`.
 - `src/battle_setup.c`, `include/battle_setup.h`, `src/battle_tower.c`: `BattleSetup_EnforceRestrictedModeItemClause` removes duplicate held items from the player's party before trainer battles, sending them to bag, then PC, then discard if no storage remains.
-- `src/pokemon.c`: Restricted evolution item checks, restricted move/tutor logic, `CanMonUseCenterTutorWithCurrentResources`.
+- `src/pokemon.c`: Restricted evolution conditions and move/tutor compatibility.
+- `src/elastic_emerald_pokemon.c`: `CanMonUseCenterTutorWithCurrentResources`, free-tutor evolution-chain checks, and Resource Mode tutor/relearner eligibility.
 - `src/party_menu.c`: item use and ability-change restrictions.
 - `src/pokemon_storage_system.c`: restricted release move ownership checks.
 - `src/data/items.h`, `src/data/pokemon/item_effects.h`, `include/constants/item_effects.h`: EV acquisition items and prices.
@@ -230,6 +234,29 @@ Audit checks:
 - If a merge changes trainer-battle setup callbacks, ensure Restricted Mode item-clause enforcement still runs before standard trainer battles, Battle Pyramid/Trainer Hill battles, and Battle Tower trainer battles.
 - Restricted release logic should prevent releasing the sole owner of certain required moves.
 - Resource Mode shop/gift/tutor scripts should be audited when command names or item constants change.
+
+## Trainer Battle Preparation And Battle-End Status
+
+Recent Elastic behavior modifies both entry to trainer battles and persistence after any battle.
+
+Primary anchors:
+
+- `src/battle_setup.c`: `TryHealPlayerPartyBeforeTrainerBattle` and `RerollSleepTurnsAfterBattle`.
+- `data/scripts/trainer_battle.inc`: invokes the healing special for normal trainer battles and rematches and selects class-specific medicine dialogue.
+- `include/constants/trainers.h`: `TRAINER_PRE_BATTLE_HEAL_*` result values.
+- `docs/gameplay/trainers.md` and `tools/elastic_emerald_helpers/sync_trainer_docs.py`: source-derived trainer documentation and healing annotations.
+
+Behavioral intent:
+
+- Accomplished, professional, affluent, boss, and facility-leader classes may fully heal the player's party before an ordinary trainer battle; selected status-themed classes instead clear status with class-specific medicine flavor. Route bosses such as Aurelio force a full heal.
+- Complete healing wins when a double battle's trainers offer different healing levels. Battle Pyramid and Trainer Hill retain their own healing rules and are excluded.
+- With modern sleep turns, sleeping party members have their remaining sleep duration rerolled to two through four turns after wild, scripted wild, first, trainer, and rematch battles. Trainer-battle running remains disabled.
+
+Audit checks:
+
+- Preserve the script call before every supported trainer/rematch start, not only the C special or result constants.
+- New trainer classes default to no healing until explicitly categorized. Confirm trainer IDs/classes and generated trainer documentation together.
+- Keep battle-end sleep reroll calls on every supported callback; a refactor that updates only one exit path creates inconsistent persistent status behavior.
 
 ## Curated And Random Tera
 
@@ -263,7 +290,8 @@ Primary anchors:
 - `data/scripts/pkmn_center_tutor.pory`
 - `data/maps/OldaleTown_TechHouse/scripts.pory`
 - `src/move_center_tutor.c`
-- `src/pokemon.c`: tutor compatibility/resource checks.
+- `src/pokemon.c`: tutor-list and compatibility construction.
+- `src/elastic_emerald_pokemon.c`: tutor/relearner resource checks and free-tier exceptions.
 - `src/party_menu.c`: "not ready" messaging when tutor/evolution conditions fail.
 - `src/data/pokemon/center_tutor_moves.h`
 - `src/data/pokemon/teachable_learnsets.h`
@@ -499,6 +527,20 @@ Audit checks:
 - EV acquisition item effects and prices were standardized; check item constants, item data, and item effect arrays together.
 - Learnset helper JSON and generated learnset headers can diverge after merge conflict resolution.
 - Curated Tera comments in `src/pokemon.c` often explain why high-tier species intentionally lack curated Tera.
+
+## Expansion 1.15 First-Port Build Findings
+
+The first 1.15 merge build exposed several custom systems whose callers or data survived while their implementation hooks were lost. The port restores:
+
+- MAP/FLY start-menu labels and the Fly error script export.
+- Suction Cups fishing item rewards on a failed bite.
+- Trainer PP Ups, NPC center tutors, resource-mode relearner/tutor costs, and the item-clause party special.
+- Restricted-level and monotype evolution conditions, including a missing break that previously fell through to the region condition.
+- Tier-point calculation/party enforcement, egg/evolution auto-box support, and monotype lookup in `src/elastic_emerald_pokemon.c`, separated from the heavily rewritten upstream Pokémon core.
+- Drain Douse and Damp healing battle-script commands/flow, plus illuminating and Merry move-end effects.
+- The custom AI/runtime ability-block query used by repeated-switch immunity prediction, adapted to the 1.15 move-resolution APIs.
+
+The full modern build and a second incremental build both link successfully and produce `pokeemerald.gba`. Merge-marker and unmerged-path scans are clean. The merged upstream tree still contains pre-existing whitespace findings and CRLF normalization notices in generated map/script files.
 
 ## Tests And Static Verification Targets
 

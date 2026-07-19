@@ -16,6 +16,8 @@ description: Resolve codebase merge conflicts, post-merge build errors, and func
 7. Run static checks before staging. Avoid full builds unless explicitly requested by the user.
 8. Stage only after markers and static checks are clean, if staging is requested or appropriate for the merge workflow.
 
+When the user explicitly requests builds, continue through compilation, assembly, linking, and ROM generation; a clean C compile is not a clean build. After the first successful full build, run an incremental confirmation build to catch unstable generated dependencies.
+
 Prefer `rg` for discovery. Use `git diff --check`, targeted stale-token scans, and file-level compiler front-end checks when useful.
 
 ## References
@@ -35,6 +37,9 @@ Also load `docs/merge-upgrade-helper/README.md` before functionality regression 
 - Prefer current upstream helpers over local reimplementations when the helper now exists.
 - Keep custom scoring/gameplay logic only if it still compiles against current APIs and does not duplicate newer upstream behavior.
 - For generated files, prefer the current generator source and stage deletion of generated outputs when the repo now ignores/regenerates them.
+- Treat linker clusters of undefined custom symbols as evidence that a rewritten core file retained callers/prototypes but lost implementation bodies. Recover the real implementations and their shared state; do not satisfy the linker with behaviorless stubs.
+- Treat newly unused custom helpers as possible severed runtime hooks. Trace why the helper became unused before deleting or suppressing it.
+- When upstream heavily rewrites a large core file, a focused project-owned compatibility module can reduce future conflict surface, provided it contains coherent existing behavior and uses current public APIs.
 
 ## Functionality Regression Audits
 
@@ -44,6 +49,7 @@ Use this pass after the build is clean or when the user asks whether designed be
 - Treat documented project-specific intent in the dossier as authoritative for false-positive filtering. For example, Elastic Emerald intentionally aliases Tera Orb charged/no-cost flags so Tera has no charge cost.
 - Start from local custom symbols and systems, not only changed files: custom abilities, moves, species stat conditionals, resource/restricted modes, tier/scoring logic, bespoke AI prediction, menu flows, scripts, and config-gated behavior.
 - Trace each custom behavior through data declaration, public constants/prototypes, runtime implementation, battle scripts, UI/menu access, save/var/flag usage, and AI prediction. A behavior is suspicious when only data or AI references remain but the runtime hook is missing.
+- For enum-driven custom conditions, compile with exhaustive-switch warnings and verify every local enum member still has a runtime case. Missing cases can silently disable data-defined gameplay even when the data compiles.
 - Compare AI helper logic against the runtime helper it is modeling. If a custom ability/item/move blocks or enables an effect in AI, verify the corresponding battle-util or script path enforces the same behavior.
 - Search for semantically wrong boolean rewrites after conflict resolution, especially helper calls whose arguments became boolean expressions, temporary state saved/restored from different battler indexes, duplicated negations, and stale side indexes in switch prediction.
 - For conditional species stats, keep shared macros near the family that uses them and scan for all-caps stat identifiers referenced before definition or replaced by raw values on only one side of the condition.

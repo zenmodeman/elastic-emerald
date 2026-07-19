@@ -15,8 +15,6 @@ Start Debug Battle action is selected.
 Name: Player
 Class: Pkmn Trainer 1
 Pic: Brendan
-Gender: Male
-Music: Male
 
 Buffie (Wobbuffet)
 Brave Nature
@@ -34,8 +32,6 @@ AI: Basic Trainer
 Class: Rival
 Battle Type: Singles
 Pic: Steven
-Gender: Male
-Music: Male
 
 Metang
 Brave Nature

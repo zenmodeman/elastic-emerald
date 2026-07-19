@@ -2,7 +2,7 @@
 #include "malloc.h"
 #include "apprentice.h"
 #include "battle.h"
-#include "battle_ai_switch_items.h"
+#include "battle_ai_util.h"
 #include "battle_anim.h"
 #include "battle_controllers.h"
 #include "battle_message.h"
@@ -11,6 +11,7 @@
 #include "battle_setup.h"
 #include "battle_tower.h"
 #include "battle_z_move.h"
+#include "caps.h"
 #include "data.h"
 #include "daycare.h"
 #include "dexnav.h"
@@ -22,14 +23,15 @@
 #include "field_weather.h"
 #include "fishing.h"
 #include "follower_npc.h"
+#include "frontier_util.h"
 #include "graphics.h"
 #include "item.h"
-#include "caps.h"
 #include "link.h"
+#include "m4a.h"
 #include "main.h"
 #include "move_relearner.h"
+#include "naming_screen.h"
 #include "overworld.h"
-#include "m4a.h"
 #include "party_menu.h"
 #include "pokedex.h"
 #include "pokeblock.h"
@@ -38,6 +40,7 @@
 #include "pokemon_icon.h"
 #include "pokemon_summary_screen.h"
 #include "pokemon_storage_system.h"
+#include "pokerus.h"
 #include "random.h"
 #include "recorded_battle.h"
 #include "regions.h"
@@ -53,8 +56,8 @@
 #include "constants/abilities.h"
 #include "constants/battle_frontier.h"
 #include "constants/battle_move_effects.h"
-#include "constants/battle_script_commands.h"
 #include "constants/battle_partner.h"
+#include "constants/battle_script_commands.h"
 #include "constants/battle_string_ids.h"
 #include "constants/cries.h"
 #include "constants/event_objects.h"
@@ -63,6 +66,7 @@
 #include "constants/items.h"
 #include "constants/layouts.h"
 #include "constants/moves.h"
+#include "constants/party_menu.h"
 #include "constants/regions.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
@@ -73,12 +77,10 @@
 
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_8) ? 160 : 220)
 
-
-
 struct SpeciesItem
 {
     u16 species;
-    u16 item;
+    enum Item item;
 };
 
 static u16 CalculateBoxMonChecksum(struct BoxPokemon *boxMon);
@@ -101,11 +103,6 @@ EWRAM_DATA static u8 sTriedEvolving = 0;
 EWRAM_DATA u16 gFollowerSteps = 0;
 
 #include "data/abilities.h"
-#if P_TUTOR_MOVES_ARRAY
-#include "data/tutor_moves.h"
-#endif // P_TUTOR_MOVES_ARRAY
-
-u32 gExcessTierPoints = 0; //Global to keep track of whether Tier Points have been exceeded
 
 // Used in an unreferenced function in RS.
 // Unreferenced here and in FRLG.
@@ -825,7 +822,6 @@ static const struct SpriteTemplate sTrainerBackSpriteTemplate =
     .paletteTag = 0,
     .oam = &gOamData_BattleSpritePlayerSide,
     .anims = NULL,
-    .images = NULL,
     .affineAnims = gAffineAnims_BattleSpritePlayerSide,
     .callback = SpriteCB_BattleSpriteStartSlideLeft,
 };
@@ -915,10 +911,6 @@ static const struct SpriteTemplate sSpriteTemplate_64x64 =
     .tileTag = TAG_NONE,
     .paletteTag = TAG_NONE,
     .oam = &sOamData_64x64,
-    .anims = gDummySpriteAnimTable,
-    .images = NULL,
-    .affineAnims = gDummySpriteAffineAnimTable,
-    .callback = SpriteCallbackDummy,
 };
 
 // NOTE: Reordering this array will break compatibility with existing
@@ -970,7 +962,6 @@ STATIC_ASSERT(ARRAY_COUNT(sCompressedStatuses) <= (1 << 4), PokemonSubstruct3_co
 STATIC_ASSERT(MAX_LEVEL < (1 << 7), PokemonSubstruct3_metLevel_TooSmall);
 STATIC_ASSERT(NUM_VERSIONS < (1 << 4), PokemonSubstruct3_metGame_TooSmall);
 STATIC_ASSERT(MAX_DYNAMAX_LEVEL < (1 << 4), PokemonSubstruct3_dynamaxLevel_TooSmall);
-STATIC_ASSERT(TRIUMPH_REWARD_CLAIMED < (1 << 5), PokemonSubstruct1_triumph_TooSmall);
 STATIC_ASSERT(MAX_PER_STAT_IVS < (1 << 5), PokemonSubstruct3_ivs_TooSmall);
 STATIC_ASSERT(NUM_NATURES <= (1 << 5), BoxPokemon_hiddenNatureModifier_TooSmall);
 
@@ -999,17 +990,6 @@ void ZeroBoxMonData(struct BoxPokemon *boxMon)
     u32 i;
     for (i = 0; i < sizeof(struct BoxPokemon); i++)
         raw[i] = 0;
-}
-
-u8 GetMonoType(){
-    u8 varValue = VarGet(VAR_MONOTYPE);
-    if (varValue == 0 || varValue >= NUMBER_OF_MON_TYPES){
-        return TYPE_NONE;
-    }else if (varValue >= 10){
-        return varValue + 1;
-    }else{
-        return varValue;
-    }
 }
 
 void ZeroMonData(struct Pokemon *mon)
@@ -1044,48 +1024,108 @@ void ZeroEnemyPartyMons(void)
         ZeroMonData(&gEnemyParty[i]);
 }
 
-void CreateMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId)
+void CreateRandomMon(struct Pokemon *mon, u16 species, u8 level)
+{
+    CreateRandomMonWithIVs(mon, species, level, USE_RANDOM_IVS);
+}
+
+void CreateRandomMonWithIVs(struct Pokemon *mon, u16 species, u8 level, u8 fixedIv)
+{
+    CreateMonWithIVs(mon, species, level, Random32(), OTID_STRUCT_PLAYER_ID, fixedIv);
+    GiveMonInitialMoveset(mon);
+}
+
+void CreateMon(struct Pokemon *mon, u16 species, u8 level, u32 personality, struct OriginalTrainerId trainerId)
 {
     u32 mail;
     ZeroMonData(mon);
-    CreateBoxMon(&mon->box, species, level, fixedIV, hasFixedPersonality, fixedPersonality, otIdType, fixedOtId);
+    CreateBoxMon(&mon->box, species, level, personality, trainerId);
     SetMonData(mon, MON_DATA_LEVEL, &level);
     mail = MAIL_NONE;
     SetMonData(mon, MON_DATA_MAIL, &mail);
+}
+
+void CreateMonWithIVs(struct Pokemon *mon, u16 species, u8 level, u32 personality, struct OriginalTrainerId trainerId, u8 fixedIV)
+{
+    CreateMon(mon, species, level, personality, trainerId);
+    SetBoxMonIVs(&mon->box, fixedIV);
     CalculateMonStats(mon);
 }
 
-void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId)
+void SetBoxMonIVs(struct BoxPokemon *mon, u8 fixedIV)
 {
-    u8 speciesName[POKEMON_NAME_LENGTH + 1];
-    u32 personality = Random32();
-    u32 value;
-    u16 checksum;
-    u8 i;
+    u32 i, value;
     enum Stat availableIVs[NUM_STATS];
     enum Stat selectedIvs[NUM_STATS];
+
+    if (fixedIV < USE_RANDOM_IVS)
+    {
+        for (i = 0; i < NUM_STATS; i++)
+            SetBoxMonData(mon, MON_DATA_HP_IV + i, &fixedIV);
+        return;
+    }
+
+    u32 iv;
+    u32 ivRandom = Random32();
+    u32 species = GetBoxMonData(mon, MON_DATA_SPECIES);
+    value = (u16)ivRandom;
+
+    iv = value & MAX_IV_MASK;
+    SetBoxMonData(mon, MON_DATA_HP_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 5)) >> 5;
+    SetBoxMonData(mon, MON_DATA_ATK_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 10)) >> 10;
+    SetBoxMonData(mon, MON_DATA_DEF_IV, &iv);
+
+    value = (u16)(ivRandom >> 16);
+
+    iv = value & MAX_IV_MASK;
+    SetBoxMonData(mon, MON_DATA_SPEED_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 5)) >> 5;
+    SetBoxMonData(mon, MON_DATA_SPATK_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 10)) >> 10;
+    SetBoxMonData(mon, MON_DATA_SPDEF_IV, &iv);
+
+    if (gSpeciesInfo[species].perfectIVCount != 0)
+    {
+        iv = MAX_PER_STAT_IVS;
+        // Initialize a list of IV indices.
+        for (i = 0; i < NUM_STATS; i++)
+            availableIVs[i] = i;
+
+        // Select the IVs that will be perfected.
+        for (i = 0; i < NUM_STATS && i < gSpeciesInfo[species].perfectIVCount; i++)
+        {
+            u8 index = Random() % (NUM_STATS - i);
+            selectedIvs[i] = availableIVs[index];
+            RemoveIVIndexFromList(availableIVs, index);
+            SetBoxMonData(mon, MON_DATA_HP_IV + selectedIvs[i], &iv);
+        }
+    }
+}
+
+void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u32 personality, struct OriginalTrainerId trainerId)
+{
+    u8 speciesName[POKEMON_NAME_LENGTH + 1];
+    u32 value;
+    u16 checksum;
     bool32 isShiny;
 
     ZeroBoxMonData(boxMon);
-
     // Determine original trainer ID
-    if (otIdType == OT_ID_RANDOM_NO_SHINY)
+    if (trainerId.method == OT_ID_RANDOM_NO_SHINY)
     {
         value = Random32();
         isShiny = FALSE;
     }
-    else if (otIdType == OT_ID_PRESET)
+    else if (trainerId.method == OT_ID_PRESET)
     {
-        value = fixedOtId;
-        isShiny = GET_SHINY_VALUE(value, hasFixedPersonality ? fixedPersonality : personality) < SHINY_ODDS;
+        value = trainerId.value;
+        isShiny = GET_SHINY_VALUE(value, personality) < SHINY_ODDS;
     }
     else // Player is the OT
     {
-        value = gSaveBlock2Ptr->playerTrainerId[0]
-              | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
-              | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
-              | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
-
+        value = READ_OTID_FROM_SAVE;
         if (P_FLAG_FORCE_NO_SHINY != 0 && FlagGet(P_FLAG_FORCE_NO_SHINY))
         {
             isShiny = FALSE;
@@ -1113,18 +1153,16 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
             if (gDexNavSpecies)
                 totalRerolls += CalculateDexNavShinyRolls();
 
-            while (GET_SHINY_VALUE(value, personality) >= SHINY_ODDS && totalRerolls > 0)
+            u32 shinyPersonality = personality;
+            while (GET_SHINY_VALUE(value, shinyPersonality) >= SHINY_ODDS && totalRerolls > 0)
             {
-                personality = Random32();
+                shinyPersonality = Random32();
                 totalRerolls--;
             }
 
-            isShiny = GET_SHINY_VALUE(value, personality) < SHINY_ODDS;
+            isShiny = GET_SHINY_VALUE(value, shinyPersonality) < SHINY_ODDS;
         }
     }
-
-    if (hasFixedPersonality)
-        personality = fixedPersonality;
 
     SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);
     SetBoxMonData(boxMon, MON_DATA_OT_ID, &value);
@@ -1148,211 +1186,83 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     SetBoxMonData(boxMon, MON_DATA_POKEBALL, &value);
     SetBoxMonData(boxMon, MON_DATA_OT_GENDER, &gSaveBlock2Ptr->playerGender);
 
-    enum Type teraType = (boxMon->personality & 0x1) == 0 ? GetSpeciesType(species, 0) : GetSpeciesType(species, 1);
+    value = boxMon->personality & 0x1;
+    u32 teraType = value == 0 ? GetSpeciesType(species, 0) : GetSpeciesType(species, 1);
     SetBoxMonData(boxMon, MON_DATA_TERA_TYPE, &teraType);
-
-    if (fixedIV < USE_RANDOM_IVS)
-    {
-        SetBoxMonData(boxMon, MON_DATA_HP_IV, &fixedIV);
-        SetBoxMonData(boxMon, MON_DATA_ATK_IV, &fixedIV);
-        SetBoxMonData(boxMon, MON_DATA_DEF_IV, &fixedIV);
-        SetBoxMonData(boxMon, MON_DATA_SPEED_IV, &fixedIV);
-        SetBoxMonData(boxMon, MON_DATA_SPATK_IV, &fixedIV);
-        SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &fixedIV);
-    }
-    else
-    {
-        u32 iv;
-        u32 ivRandom = Random32();
-        value = (u16)ivRandom;
-
-        iv = value & MAX_IV_MASK;
-        SetBoxMonData(boxMon, MON_DATA_HP_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 5)) >> 5;
-        SetBoxMonData(boxMon, MON_DATA_ATK_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 10)) >> 10;
-        SetBoxMonData(boxMon, MON_DATA_DEF_IV, &iv);
-
-        value = (u16)(ivRandom >> 16);
-
-        iv = value & MAX_IV_MASK;
-        SetBoxMonData(boxMon, MON_DATA_SPEED_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 5)) >> 5;
-        SetBoxMonData(boxMon, MON_DATA_SPATK_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 10)) >> 10;
-        SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &iv);
-
-        if (gSpeciesInfo[species].perfectIVCount != 0)
-        {
-            iv = MAX_PER_STAT_IVS;
-            // Initialize a list of IV indices.
-            for (i = 0; i < NUM_STATS; i++)
-            {
-                availableIVs[i] = i;
-            }
-
-            // Select the IVs that will be perfected.
-            for (i = 0; i < NUM_STATS && i < gSpeciesInfo[species].perfectIVCount; i++)
-            {
-                u8 index = Random() % (NUM_STATS - i);
-                selectedIvs[i] = availableIVs[index];
-                RemoveIVIndexFromList(availableIVs, index);
-            }
-            for (i = 0; i < NUM_STATS && i < gSpeciesInfo[species].perfectIVCount; i++)
-            {
-                switch (selectedIvs[i])
-                {
-                case STAT_HP:
-                    SetBoxMonData(boxMon, MON_DATA_HP_IV, &iv);
-                    break;
-                case STAT_ATK:
-                    SetBoxMonData(boxMon, MON_DATA_ATK_IV, &iv);
-                    break;
-                case STAT_DEF:
-                    SetBoxMonData(boxMon, MON_DATA_DEF_IV, &iv);
-                    break;
-                case STAT_SPEED:
-                    SetBoxMonData(boxMon, MON_DATA_SPEED_IV, &iv);
-                    break;
-                case STAT_SPATK:
-                    SetBoxMonData(boxMon, MON_DATA_SPATK_IV, &iv);
-                    break;
-                case STAT_SPDEF:
-                    SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &iv);
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-    }
-
+    //using gen 3-4 ability formula, it was changed in later gens
     if (GetSpeciesAbility(species, 1))
-    {
-        value = personality & 1;
         SetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, &value);
-    }
-
-    GiveBoxMonInitialMoveset(boxMon);
 }
 
-void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature)
+static bool32 IsValidGender(u32 gender)
 {
-    u32 personality;
+    switch (gender)
+    {
+        case MON_MALE:
+        case MON_FEMALE:
+        case MON_GENDERLESS:
+        case MON_GENDER_RANDOM:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}
 
+u32 GetMonPersonality(u16 species, u8 gender, u8 nature, u8 unownLetter)
+{
+    u32 personality, actualLetter;
+
+    assertf(IsValidGender(gender), "invalid gender: %d", gender)
+    {
+        gender = MON_GENDER_RANDOM;
+    }
+
+    assertf(nature <= NATURE_RANDOM, "invalid nature: %d", nature)
+    {
+        nature = NATURE_RANDOM;
+    }
+
+    assertf(unownLetter <= NUM_UNOWN_FORMS, "invalid letter: %d", unownLetter)
+    {
+        unownLetter = RANDOM_UNOWN_LETTER;
+    }
+
+    //gender outside valid gender ratios for species is not asserted because it could be triggered by cute charm
     do
     {
         personality = Random32();
+        actualLetter = GET_UNOWN_LETTER(personality);
     }
-    while (nature != GetNatureFromPersonality(personality));
-
-    CreateMon(mon, species, level, fixedIV, TRUE, personality, OT_ID_PLAYER_ID, 0);
-}
-
-void CreateMonWithGenderNatureLetter(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 gender, u8 nature, u8 unownLetter)
-{
-    u32 personality;
-
-    if ((u8)(unownLetter - 1) < NUM_UNOWN_FORMS)
-    {
-        u16 actualLetter;
-
-        do
-        {
-            personality = Random32();
-            actualLetter = GET_UNOWN_LETTER(personality);
-        }
-        while (nature != GetNatureFromPersonality(personality)
-            || gender != GetGenderFromSpeciesAndPersonality(species, personality)
-            || actualLetter != unownLetter - 1);
-    }
-    else
-    {
-        do
-        {
-            personality = Random32();
-        }
-        while (nature != GetNatureFromPersonality(personality)
-            || gender != GetGenderFromSpeciesAndPersonality(species, personality));
-    }
-
-    CreateMon(mon, species, level, fixedIV, TRUE, personality, OT_ID_PLAYER_ID, 0);
+    while ((nature != GetNatureFromPersonality(personality) && nature != NATURE_RANDOM)
+            || (gender != GetGenderFromSpeciesAndPersonality(species, personality) && gender != MON_GENDER_RANDOM)
+            || ((actualLetter != unownLetter - 1) && unownLetter > 0));
+    return personality;
 }
 
 // This is only used to create Wally's Ralts.
 void CreateMaleMon(struct Pokemon *mon, u16 species, u8 level)
 {
-    u32 personality;
-    u32 otId;
-
-    do
-    {
-        otId = Random32();
-        personality = Random32();
-    }
-    while (GetGenderFromSpeciesAndPersonality(species, personality) != MON_MALE);
-    CreateMon(mon, species, level, USE_RANDOM_IVS, TRUE, personality, OT_ID_PRESET, otId);
+    u32 personality = GetMonPersonality(species, MON_MALE, NATURE_RANDOM, RANDOM_UNOWN_LETTER);
+    CreateMonWithIVs(mon, species, level, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
+    GiveMonInitialMoveset(mon);
 }
 
 void CreateMonWithIVsPersonality(struct Pokemon *mon, u16 species, u8 level, u32 ivs, u32 personality)
 {
-    CreateMon(mon, species, level, 0, TRUE, personality, OT_ID_PLAYER_ID, 0);
+    CreateMon(mon, species, level, personality, OTID_STRUCT_PLAYER_ID);
     SetMonData(mon, MON_DATA_IVS, &ivs);
     CalculateMonStats(mon);
-}
-
-void CreateMonWithIVsOTID(struct Pokemon *mon, u16 species, u8 level, u8 *ivs, u32 otId)
-{
-    CreateMon(mon, species, level, 0, FALSE, 0, OT_ID_PRESET, otId);
-    SetMonData(mon, MON_DATA_HP_IV, &ivs[STAT_HP]);
-    SetMonData(mon, MON_DATA_ATK_IV, &ivs[STAT_ATK]);
-    SetMonData(mon, MON_DATA_DEF_IV, &ivs[STAT_DEF]);
-    SetMonData(mon, MON_DATA_SPEED_IV, &ivs[STAT_SPEED]);
-    SetMonData(mon, MON_DATA_SPATK_IV, &ivs[STAT_SPATK]);
-    SetMonData(mon, MON_DATA_SPDEF_IV, &ivs[STAT_SPDEF]);
-    CalculateMonStats(mon);
-}
-
-void CreateMonWithEVSpread(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 evSpread)
-{
-    s32 i;
-    s32 statCount = 0;
-    u16 evAmount;
-    u8 evsBits;
-
-    CreateMon(mon, species, level, fixedIV, FALSE, 0, OT_ID_PLAYER_ID, 0);
-
-    evsBits = evSpread;
-
-    for (i = 0; i < NUM_STATS; i++)
-    {
-        if (evsBits & 1)
-            statCount++;
-        evsBits >>= 1;
-    }
-
-    evAmount = MAX_TOTAL_EVS / statCount;
-
-    evsBits = 1;
-
-    for (i = 0; i < NUM_STATS; i++)
-    {
-        if (evSpread & evsBits)
-            SetMonData(mon, MON_DATA_HP_EV + i, &evAmount);
-        evsBits <<= 1;
-    }
-
-    CalculateMonStats(mon);
+    GiveMonInitialMoveset(mon);
 }
 
 void CreateBattleTowerMon(struct Pokemon *mon, struct BattleTowerPokemon *src)
 {
     s32 i;
     u8 nickname[max(32, POKEMON_NAME_BUFFER_SIZE)];
-    u8 language;
+    enum Language language;
     u8 value;
 
-    CreateMon(mon, src->species, src->level, 0, TRUE, src->personality, OT_ID_PRESET, src->otId);
+    CreateMon(mon, src->species, src->level, src->personality, OTID_STRUCT_PRESET(src->otId));
 
     for (i = 0; i < MAX_MON_MOVES; i++)
         SetMonMoveSlot(mon, src->moves[i], i);
@@ -1404,7 +1314,7 @@ void CreateBattleTowerMon_HandleLevel(struct Pokemon *mon, struct BattleTowerPok
     s32 i;
     u8 nickname[max(32, POKEMON_NAME_BUFFER_SIZE)];
     u8 level;
-    u8 language;
+    enum Language language;
     u8 value;
 
     if (gSaveBlock2Ptr->frontier.lvlMode != FRONTIER_LVL_50)
@@ -1414,7 +1324,7 @@ void CreateBattleTowerMon_HandleLevel(struct Pokemon *mon, struct BattleTowerPok
     else
         level = src->level;
 
-    CreateMon(mon, src->species, level, 0, TRUE, src->personality, OT_ID_PRESET, src->otId);
+    CreateMon(mon, src->species, level, src->personality, OTID_STRUCT_PRESET(src->otId));
 
     for (i = 0; i < MAX_MON_MOVES; i++)
         SetMonMoveSlot(mon, src->moves[i], i);
@@ -1470,15 +1380,12 @@ void CreateApprenticeMon(struct Pokemon *mon, const struct Apprentice *src, u8 m
     u32 personality = ((gApprentices[src->id].otId >> 8) | ((gApprentices[src->id].otId & 0xFF) << 8))
                     + src->party[monId].species + src->number;
 
-    CreateMon(mon,
+    CreateMonWithIVs(mon,
               src->party[monId].species,
               GetFrontierEnemyMonLevel(src->lvlMode - 1),
-              MAX_PER_STAT_IVS,
-              TRUE,
               personality,
-              OT_ID_PRESET,
-              otId);
-
+              OTID_STRUCT_PRESET(otId),
+              MAX_PER_STAT_IVS);
     SetMonData(mon, MON_DATA_HELD_ITEM, &src->party[monId].item);
     for (i = 0; i < MAX_MON_MOVES; i++)
         SetMonMoveSlot(mon, src->party[monId].moves[i], i);
@@ -1493,47 +1400,13 @@ void CreateApprenticeMon(struct Pokemon *mon, const struct Apprentice *src, u8 m
     CalculateMonStats(mon);
 }
 
-void CreateMonWithEVSpreadNatureOTID(struct Pokemon *mon, u16 species, u8 level, u8 nature, u8 fixedIV, u8 evSpread, u32 otId)
-{
-    s32 i;
-    s32 statCount = 0;
-    u8 evsBits;
-    u16 evAmount;
-
-    // i is reused as personality value
-    do
-    {
-        i = Random32();
-    } while (nature != GetNatureFromPersonality(i));
-
-    CreateMon(mon, species, level, fixedIV, TRUE, i, OT_ID_PRESET, otId);
-    evsBits = evSpread;
-    for (i = 0; i < NUM_STATS; i++)
-    {
-        if (evsBits & 1)
-            statCount++;
-        evsBits >>= 1;
-    }
-
-    evAmount = MAX_TOTAL_EVS / statCount;
-    evsBits = 1;
-    for (i = 0; i < NUM_STATS; i++)
-    {
-        if (evSpread & evsBits)
-            SetMonData(mon, MON_DATA_HP_EV + i, &evAmount);
-        evsBits <<= 1;
-    }
-
-    CalculateMonStats(mon);
-}
-
 void ConvertPokemonToBattleTowerPokemon(struct Pokemon *mon, struct BattleTowerPokemon *dest)
 {
     s32 i;
     u16 heldItem;
 
-    dest->species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, NULL);
+    dest->species = GetMonData(mon, MON_DATA_SPECIES);
+    heldItem = GetMonData(mon, MON_DATA_HELD_ITEM);
 
     if (heldItem == ITEM_ENIGMA_BERRY_E_READER)
         heldItem = ITEM_NONE;
@@ -1541,38 +1414,38 @@ void ConvertPokemonToBattleTowerPokemon(struct Pokemon *mon, struct BattleTowerP
     dest->heldItem = heldItem;
 
     for (i = 0; i < MAX_MON_MOVES; i++)
-        dest->moves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, NULL);
+        dest->moves[i] = GetMonData(mon, MON_DATA_MOVE1 + i);
 
-    dest->level = GetMonData(mon, MON_DATA_LEVEL, NULL);
-    dest->ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES, NULL);
-    dest->otId = GetMonData(mon, MON_DATA_OT_ID, NULL);
-    dest->hpEV = GetMonData(mon, MON_DATA_HP_EV, NULL);
-    dest->attackEV = GetMonData(mon, MON_DATA_ATK_EV, NULL);
-    dest->defenseEV = GetMonData(mon, MON_DATA_DEF_EV, NULL);
-    dest->speedEV = GetMonData(mon, MON_DATA_SPEED_EV, NULL);
-    dest->spAttackEV = GetMonData(mon, MON_DATA_SPATK_EV, NULL);
-    dest->spDefenseEV = GetMonData(mon, MON_DATA_SPDEF_EV, NULL);
-    dest->friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
-    dest->hpIV = GetMonData(mon, MON_DATA_HP_IV, NULL);
-    dest->attackIV = GetMonData(mon, MON_DATA_ATK_IV, NULL);
-    dest->defenseIV = GetMonData(mon, MON_DATA_DEF_IV, NULL);
-    dest->speedIV  = GetMonData(mon, MON_DATA_SPEED_IV, NULL);
-    dest->spAttackIV  = GetMonData(mon, MON_DATA_SPATK_IV, NULL);
-    dest->spDefenseIV  = GetMonData(mon, MON_DATA_SPDEF_IV, NULL);
-    dest->abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
-    dest->personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    dest->level = GetMonData(mon, MON_DATA_LEVEL);
+    dest->ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);
+    dest->otId = GetMonData(mon, MON_DATA_OT_ID);
+    dest->hpEV = GetMonData(mon, MON_DATA_HP_EV);
+    dest->attackEV = GetMonData(mon, MON_DATA_ATK_EV);
+    dest->defenseEV = GetMonData(mon, MON_DATA_DEF_EV);
+    dest->speedEV = GetMonData(mon, MON_DATA_SPEED_EV);
+    dest->spAttackEV = GetMonData(mon, MON_DATA_SPATK_EV);
+    dest->spDefenseEV = GetMonData(mon, MON_DATA_SPDEF_EV);
+    dest->friendship = GetMonData(mon, MON_DATA_FRIENDSHIP);
+    dest->hpIV = GetMonData(mon, MON_DATA_HP_IV);
+    dest->attackIV = GetMonData(mon, MON_DATA_ATK_IV);
+    dest->defenseIV = GetMonData(mon, MON_DATA_DEF_IV);
+    dest->speedIV  = GetMonData(mon, MON_DATA_SPEED_IV);
+    dest->spAttackIV  = GetMonData(mon, MON_DATA_SPATK_IV);
+    dest->spDefenseIV  = GetMonData(mon, MON_DATA_SPDEF_IV);
+    dest->abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM);
+    dest->personality = GetMonData(mon, MON_DATA_PERSONALITY);
     GetMonData(mon, MON_DATA_NICKNAME10, dest->nickname);
 }
 
-static void CreateEventMon(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 hasFixedPersonality, u32 fixedPersonality, u8 otIdType, u32 fixedOtId)
+static void CreateEventMon(struct Pokemon *mon, u16 species, u8 level, u32 personality, struct OriginalTrainerId otId)
 {
     bool32 isModernFatefulEncounter = TRUE;
 
-    CreateMon(mon, species, level, fixedIV, hasFixedPersonality, fixedPersonality, otIdType, fixedOtId);
+    CreateMon(mon, species, level, personality, otId);
     SetMonData(mon, MON_DATA_MODERN_FATEFUL_ENCOUNTER, &isModernFatefulEncounter);
 }
 
-u16 GetUnionRoomTrainerPic(void)
+enum TrainerPicID GetUnionRoomTrainerPic(void)
 {
     u8 linkId;
     u32 arrId;
@@ -1609,7 +1482,10 @@ void CreateEnemyEventMon(void)
     s32 itemId = gSpecialVar_0x8006;
 
     ZeroEnemyPartyMons();
-    CreateEventMon(&gEnemyParty[0], species, level, USE_RANDOM_IVS, FALSE, 0, OT_ID_PLAYER_ID, 0);
+
+    CreateEventMon(&gEnemyParty[0], species, level, Random32(), OTID_STRUCT_PLAYER_ID);
+    SetBoxMonIVs(&gEnemyParty[0].box, USE_RANDOM_IVS);
+    GiveMonInitialMoveset(&gEnemyParty[0]);
     if (itemId)
     {
         u8 heldItem[2];
@@ -1657,14 +1533,14 @@ static u16 CalculateBoxMonChecksumReencrypt(struct BoxPokemon *boxMon)
 
 void CalculateMonStats(struct Pokemon *mon)
 {
-    s32 oldMaxHP = GetMonData(mon, MON_DATA_MAX_HP, NULL);
-    s32 currentHP = GetMonData(mon, MON_DATA_HP, NULL);
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    u8 friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
+    s32 oldMaxHP = GetMonData(mon, MON_DATA_MAX_HP);
+    s32 currentHP = GetMonData(mon, MON_DATA_HP);
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    u8 friendship = GetMonData(mon, MON_DATA_FRIENDSHIP);
     s32 level = GetLevelFromMonExp(mon);
     s32 newMaxHP;
 
-    u8 nature = GetMonData(mon, MON_DATA_HIDDEN_NATURE, NULL);
+    u8 nature = GetMonData(mon, MON_DATA_HIDDEN_NATURE);
 
     SetMonData(mon, MON_DATA_LEVEL, &level);
 
@@ -1738,7 +1614,7 @@ void BoxMonToMon(const struct BoxPokemon *src, struct Pokemon *dest)
 {
     u32 value = 0;
     dest->box = *src;
-    dest->status = GetBoxMonData(&dest->box, MON_DATA_STATUS, NULL);
+    dest->status = GetBoxMonData(&dest->box, MON_DATA_STATUS);
     dest->hp = 0;
     dest->maxHP = 0;
     value = MAIL_NONE;
@@ -1751,8 +1627,8 @@ void BoxMonToMon(const struct BoxPokemon *src, struct Pokemon *dest)
 
 u8 GetLevelFromMonExp(struct Pokemon *mon)
 {
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    u32 exp = GetMonData(mon, MON_DATA_EXP, NULL);
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    u32 exp = GetMonData(mon, MON_DATA_EXP);
     s32 level = 1;
 
     while (level <= MAX_LEVEL && gExperienceTables[gSpeciesInfo[species].growthRate][level] <= exp)
@@ -1763,8 +1639,8 @@ u8 GetLevelFromMonExp(struct Pokemon *mon)
 
 u8 GetLevelFromBoxMonExp(struct BoxPokemon *boxMon)
 {
-    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
-    u32 exp = GetBoxMonData(boxMon, MON_DATA_EXP, NULL);
+    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES);
+    u32 exp = GetBoxMonData(boxMon, MON_DATA_EXP);
     s32 level = 1;
 
     while (level <= MAX_LEVEL && gExperienceTables[gSpeciesInfo[species].growthRate][level] <= exp)
@@ -1773,17 +1649,17 @@ u8 GetLevelFromBoxMonExp(struct BoxPokemon *boxMon)
     return level - 1;
 }
 
-u16 GiveMoveToMon(struct Pokemon *mon, u16 move)
+u16 GiveMoveToMon(struct Pokemon *mon, enum Move move)
 {
     return GiveMoveToBoxMon(&mon->box, move);
 }
 
-u16 GiveMoveToBoxMon(struct BoxPokemon *boxMon, u16 move)
+u16 GiveMoveToBoxMon(struct BoxPokemon *boxMon, enum Move move)
 {
     s32 i;
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        u16 existingMove = GetBoxMonData(boxMon, MON_DATA_MOVE1 + i, NULL);
+        enum Move existingMove = GetBoxMonData(boxMon, MON_DATA_MOVE1 + i);
         if (existingMove == MOVE_NONE)
         {
             u32 pp = GetMovePP(move);
@@ -1797,7 +1673,7 @@ u16 GiveMoveToBoxMon(struct BoxPokemon *boxMon, u16 move)
     return MON_HAS_MAX_MOVES;
 }
 
-u16 GiveMoveToBattleMon(struct BattlePokemon *mon, u16 move)
+u16 GiveMoveToBattleMon(struct BattlePokemon *mon, enum Move move)
 {
     s32 i;
 
@@ -1814,17 +1690,22 @@ u16 GiveMoveToBattleMon(struct BattlePokemon *mon, u16 move)
     return MON_HAS_MAX_MOVES;
 }
 
-void SetMonMoveSlot(struct Pokemon *mon, u16 move, u8 slot)
+void SetMonMoveSlot(struct Pokemon *mon, enum Move move, u8 slot)
 {
-    SetMonData(mon, MON_DATA_MOVE1 + slot, &move);
-    u32 pp = GetMovePP(move);
-    SetMonData(mon, MON_DATA_PP1 + slot, &pp);
+    SetBoxMonMoveSlot(&mon->box, move, slot);
 }
 
-static void SetMonMoveSlot_KeepPP(struct Pokemon *mon, u16 move, u8 slot)
+void SetBoxMonMoveSlot(struct BoxPokemon *mon, enum Move move, u8 slot)
 {
-    u8 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES, NULL);
-    u8 currPP = GetMonData(mon, MON_DATA_PP1 + slot, NULL);
+    SetBoxMonData(mon, MON_DATA_MOVE1 + slot, &move);
+    u32 pp = GetMovePP(move);
+    SetBoxMonData(mon, MON_DATA_PP1 + slot, &pp);
+}
+
+static void SetMonMoveSlot_KeepPP(struct Pokemon *mon, enum Move move, u8 slot)
+{
+    u8 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);
+    u8 currPP = GetMonData(mon, MON_DATA_PP1 + slot);
     u8 newPP = CalculatePPWithBonus(move, ppBonuses, slot);
     u16 finalPP = min(currPP, newPP);
 
@@ -1832,7 +1713,7 @@ static void SetMonMoveSlot_KeepPP(struct Pokemon *mon, u16 move, u8 slot)
     SetMonData(mon, MON_DATA_PP1 + slot, &finalPP);
 }
 
-void SetBattleMonMoveSlot(struct BattlePokemon *mon, u16 move, u8 slot)
+void SetBattleMonMoveSlot(struct BattlePokemon *mon, enum Move move, u8 slot)
 {
     mon->moves[slot] = move;
     mon->pp[slot] = GetMovePP(move);
@@ -1845,10 +1726,10 @@ void GiveMonInitialMoveset(struct Pokemon *mon)
 
 void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon) //Credit: AsparagusEduardo
 {
-    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES);
     s32 level = GetLevelFromBoxMonExp(boxMon);
     s32 i;
-    u16 moves[MAX_MON_MOVES] = {MOVE_NONE};
+    enum Move moves[MAX_MON_MOVES] = {MOVE_NONE};
     u8 addedMoves = 0;
     const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
 
@@ -1894,10 +1775,48 @@ void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon) //Credit: AsparagusEdua
     }
 }
 
-u16 MonTryLearningNewMoveAtLevel(struct Pokemon *mon, bool32 firstMove, u32 level)
+void GiveMonDefaultMove(struct Pokemon *mon, u32 slot)
 {
-    u32 retVal = MOVE_NONE;
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    GiveBoxMonDefaultMove(&mon->box, slot);
+}
+
+void GiveBoxMonDefaultMove(struct BoxPokemon *boxMon, u32 slot)
+{
+    enum Move move = MOVE_NONE;
+    u32 species = GetBoxMonData(boxMon, MON_DATA_SPECIES);
+    const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
+    s32 level = GetLevelFromBoxMonExp(boxMon);
+    for (u32 i = 0; learnset[i].move != LEVEL_UP_MOVE_END; i++)
+    {
+        s32 j;
+        bool32 alreadyKnown = FALSE;
+
+        if (learnset[i].level > level)
+            break;
+        if (learnset[i].level == 0)
+            continue;
+
+        for (j = 0; j < slot; j++)
+        {
+            if (GetBoxMonData(boxMon, MON_DATA_MOVE1 + j) == learnset[i].move)
+            {
+                alreadyKnown = TRUE;
+                break;
+            }
+        }
+        if (!alreadyKnown)
+            move = learnset[i].move;
+    }
+
+    SetBoxMonData(boxMon, MON_DATA_MOVE1 + slot, &move);
+    u32 pp = GetMovePP(move);
+    SetBoxMonData(boxMon, MON_DATA_PP1 + slot, &pp);
+}
+
+enum Move MonTryLearningNewMoveAtLevel(struct Pokemon *mon, bool32 firstMove, u32 level)
+{
+    enum Move retVal = MOVE_NONE;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
     const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
 
     // since you can learn more than one move per level
@@ -1945,25 +1864,25 @@ u16 MonTryLearningNewMoveAtLevel(struct Pokemon *mon, bool32 firstMove, u32 leve
     return retVal;
 }
 
-u16 MonTryLearningNewMove(struct Pokemon *mon, bool8 firstMove)
+enum Move MonTryLearningNewMove(struct Pokemon *mon, bool8 firstMove)
 {
-    return MonTryLearningNewMoveAtLevel(mon, firstMove, GetMonData(mon, MON_DATA_LEVEL, NULL));
+    return MonTryLearningNewMoveAtLevel(mon, firstMove, GetMonData(mon, MON_DATA_LEVEL));
 }
 
-void DeleteFirstMoveAndGiveMoveToMon(struct Pokemon *mon, u16 move)
+void DeleteFirstMoveAndGiveMoveToMon(struct Pokemon *mon, enum Move move)
 {
     s32 i;
-    u16 moves[MAX_MON_MOVES];
+    enum Move moves[MAX_MON_MOVES];
     u8 pp[MAX_MON_MOVES];
     u8 ppBonuses;
 
     for (i = 0; i < MAX_MON_MOVES - 1; i++)
     {
-        moves[i] = GetMonData(mon, MON_DATA_MOVE2 + i, NULL);
-        pp[i] = GetMonData(mon, MON_DATA_PP2 + i, NULL);
+        moves[i] = GetMonData(mon, MON_DATA_MOVE2 + i);
+        pp[i] = GetMonData(mon, MON_DATA_PP2 + i);
     }
 
-    ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES, NULL);
+    ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);
     ppBonuses >>= 2;
     moves[MAX_MON_MOVES - 1] = move;
     pp[MAX_MON_MOVES - 1] = GetMovePP(move);
@@ -1977,20 +1896,20 @@ void DeleteFirstMoveAndGiveMoveToMon(struct Pokemon *mon, u16 move)
     SetMonData(mon, MON_DATA_PP_BONUSES, &ppBonuses);
 }
 
-void DeleteFirstMoveAndGiveMoveToBoxMon(struct BoxPokemon *boxMon, u16 move)
+void DeleteFirstMoveAndGiveMoveToBoxMon(struct BoxPokemon *boxMon, enum Move move)
 {
     s32 i;
-    u16 moves[MAX_MON_MOVES];
+    enum Move moves[MAX_MON_MOVES];
     u8 pp[MAX_MON_MOVES];
     u8 ppBonuses;
 
     for (i = 0; i < MAX_MON_MOVES - 1; i++)
     {
-        moves[i] = GetBoxMonData(boxMon, MON_DATA_MOVE2 + i, NULL);
-        pp[i] = GetBoxMonData(boxMon, MON_DATA_PP2 + i, NULL);
+        moves[i] = GetBoxMonData(boxMon, MON_DATA_MOVE2 + i);
+        pp[i] = GetBoxMonData(boxMon, MON_DATA_PP2 + i);
     }
 
-    ppBonuses = GetBoxMonData(boxMon, MON_DATA_PP_BONUSES, NULL);
+    ppBonuses = GetBoxMonData(boxMon, MON_DATA_PP_BONUSES);
     ppBonuses >>= 2;
     moves[MAX_MON_MOVES - 1] = move;
     pp[MAX_MON_MOVES - 1] = GetMovePP(move);
@@ -2004,9 +1923,9 @@ void DeleteFirstMoveAndGiveMoveToBoxMon(struct BoxPokemon *boxMon, u16 move)
     SetBoxMonData(boxMon, MON_DATA_PP_BONUSES, &ppBonuses);
 }
 
-u8 CountAliveMonsInBattle(u8 caseId, u32 battler)
+u8 CountAliveMonsInBattle(u8 caseId, enum BattlerId battler)
 {
-    u32 i;
+    enum BattlerId i;
     u32 retVal = 0;
 
     switch (caseId)
@@ -2037,7 +1956,7 @@ u8 CountAliveMonsInBattle(u8 caseId, u32 battler)
     return retVal;
 }
 
-u8 GetDefaultMoveTarget(u8 battlerId)
+u8 GetDefaultMoveTarget(enum BattlerId battlerId)
 {
     u8 opposing = BATTLE_OPPOSITE(GetBattlerSide(battlerId));
 
@@ -2070,8 +1989,8 @@ u8 GetMonGender(struct Pokemon *mon)
 
 u8 GetBoxMonGender(struct BoxPokemon *boxMon)
 {
-    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
-    u32 personality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
+    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES);
+    u32 personality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY);
 
     switch (gSpeciesInfo[species].genderRatio)
     {
@@ -2117,7 +2036,7 @@ u32 GetUnownSpeciesId(u32 personality)
     return unownLetter + SPECIES_UNOWN_B - 1;
 }
 
-void SetMultiuseSpriteTemplateToPokemon(u16 speciesTag, u8 battlerPosition)
+void SetMultiuseSpriteTemplateToPokemon(u16 speciesTag, enum BattlerPosition battlerPosition)
 {
     if (gMonSpritesGfxPtr != NULL)
         gMultiuseSpriteTemplate = gMonSpritesGfxPtr->templates[battlerPosition];
@@ -2144,7 +2063,7 @@ void SetMultiuseSpriteTemplateToPokemon(u16 speciesTag, u8 battlerPosition)
     }
 }
 
-void SetMultiuseSpriteTemplateToTrainerBack(u16 trainerPicId, u8 battlerPosition)
+void SetMultiuseSpriteTemplateToTrainerBack(enum TrainerPicID trainerPicId, enum BattlerPosition battlerPosition)
 {
     gMultiuseSpriteTemplate.paletteTag = trainerPicId;
     if (battlerPosition == B_POSITION_PLAYER_LEFT || battlerPosition == B_POSITION_PLAYER_RIGHT)
@@ -2163,7 +2082,7 @@ void SetMultiuseSpriteTemplateToTrainerBack(u16 trainerPicId, u8 battlerPosition
     }
 }
 
-void SetMultiuseSpriteTemplateToTrainerFront(u16 trainerPicId, u8 battlerPosition)
+void SetMultiuseSpriteTemplateToTrainerFront(enum TrainerPicID trainerPicId, enum BattlerPosition battlerPosition)
 {
     if (gMonSpritesGfxPtr != NULL)
         gMultiuseSpriteTemplate = gMonSpritesGfxPtr->templates[battlerPosition];
@@ -2244,21 +2163,6 @@ u32 GetMonData3(struct Pokemon *mon, s32 field, u8 *data)
     case MON_DATA_SPDEF:
         ret = mon->spDefense;
         break;
-    case MON_DATA_ATK2:
-        ret = mon->attack;
-        break;
-    case MON_DATA_DEF2:
-        ret = mon->defense;
-        break;
-    case MON_DATA_SPEED2:
-        ret = mon->speed;
-        break;
-    case MON_DATA_SPATK2:
-        ret = mon->spAttack;
-        break;
-    case MON_DATA_SPDEF2:
-        ret = mon->spDefense;
-        break;
     case MON_DATA_MAIL:
         ret = mon->mail;
         break;
@@ -2283,1643 +2187,6 @@ union EvolutionTracker
         u16 tracker2: 5;
     };
 };
-
-
-static u32 getCuratedOrRandomTeraType(u16 species, u32 personality){
-
-    u32 monotype = GetMonoType();
-    //Get a value of 0 to TYPE_FAIRY - 1; add 1 since 0 is TYPE_NONE, to get values between TYPE_NORMAL and TYPE_FAIRY
-    u32 randomTeraType = (personality % TYPE_FAIRY) + 1;
-
-    //Easiest way to deal with TYPE_MYSTERY is to just replace it with Stellar
-    if (randomTeraType == TYPE_MYSTERY){
-        randomTeraType = TYPE_STELLAR;
-    }
-
-    if (!FlagGet(FLAG_CURATED_TERA)){
-        return randomTeraType;
-    }
-
-    //In monotype mode, bypass curated tera considerations if the random type is Monotype compatible
-    //Note that because of a different check in `CanTerastallize`, this will only apply to Pokemon that don't exceed the Tier Points cap
-    if (monotype != TYPE_NONE){
-        if (randomTeraType == TYPE_STELLAR || randomTeraType == monotype){
-            return randomTeraType;
-        }
-    }
-/*
-List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground Flying Psychic Bug Rock Ghost Dragon Dark Steel Fairy Stellar
-*/
-
-
-    //Standardize species for certain forms
-    if (species >= SPECIES_ALCREMIE_STRAWBERRY_RUBY_CREAM && species <= SPECIES_ALCREMIE_STRAWBERRY_RAINBOW_SWIRL){
-        species = SPECIES_ALCREMIE;
-    }
-    if (species >= SPECIES_ALCREMIE_BERRY_VANILLA_CREAM && species <= SPECIES_ALCREMIE_RIBBON_RAINBOW_SWIRL){
-        species = SPECIES_ALCREMIE;
-    }
-    if (species >= SPECIES_MINIOR_ORANGE && species <= SPECIES_MINIOR_CORE_VIOLET){
-        species = SPECIES_MINIOR;
-    }
-    if (species >= SPECIES_SILVALLY_FIGHTING && species <= SPECIES_SILVALLY_FAIRY){
-        species = SPECIES_SILVALLY;
-    }
-
-    switch(species){
-        //Pure Water Tera Types
-        /*Not given a Tera Type because of points: Vaporeon, Suicune, Milotic, Floatzel, Manaphy, Greninja, Inteleon, Dondozo, Palafin
-        */
-
-        case SPECIES_SQUIRTLE: case SPECIES_WARTORTLE: case SPECIES_BLASTOISE:
-            return TYPE_DARK; //Dark Pulse; Steel might be a little too good
-        case SPECIES_PSYDUCK:
-            return TYPE_PSYCHIC;
-        case SPECIES_GOLDUCK:
-            return TYPE_GHOST;
-        case SPECIES_POLIWAG: case SPECIES_POLIWHIRL:
-            return TYPE_NORMAL;
-        case SPECIES_POLITOED:
-            return TYPE_FAIRY;
-        case SPECIES_SHELLDER:
-            return TYPE_ICE;
-        case SPECIES_KRABBY: case SPECIES_KINGLER:
-            return TYPE_ROCK;
-        case SPECIES_GOLDEEN: case SPECIES_SEAKING:
-            return TYPE_FLYING;
-        case SPECIES_STARYU:
-            return TYPE_NORMAL;
-        case SPECIES_MAGIKARP:
-            return TYPE_DRAGON;
-        case SPECIES_TOTODILE: case SPECIES_CROCONAW: case SPECIES_FERALIGATR:
-            return TYPE_PSYCHIC; //Psychic Fangs
-        case SPECIES_REMORAID: case SPECIES_OCTILLERY:
-            return TYPE_NORMAL; //Wring Out
-        case SPECIES_WAILMER: case SPECIES_WAILORD:
-            return TYPE_GRASS;
-        case SPECIES_CASTFORM_RAINY:
-            return TYPE_STELLAR;
-        case SPECIES_FEEBAS:
-            return TYPE_ELECTRIC;
-        case SPECIES_LUVDISC:
-            return TYPE_FAIRY;
-        case SPECIES_HUNTAIL:
-            return TYPE_FIRE;
-        case SPECIES_GOREBYSS:
-            return TYPE_BUG;
-        case SPECIES_PIPLUP: case SPECIES_PRINPLUP:
-            return TYPE_ICE;
-        case SPECIES_BUIZEL:
-            return TYPE_GHOST;
-        case SPECIES_SHELLOS:
-            return TYPE_BUG;
-        case SPECIES_FINNEON: case SPECIES_LUMINEON:
-            return TYPE_STELLAR;
-        case SPECIES_PHIONE:
-            return TYPE_WATER;
-        case SPECIES_PANPOUR: case SPECIES_SIMIPOUR:
-            return TYPE_STELLAR;
-        case SPECIES_FROAKIE: case SPECIES_FROGADIER:
-            return TYPE_ICE;
-        case SPECIES_CLAUNCHER: case SPECIES_CLAWITZER:
-            return TYPE_FIGHTING;
-        case SPECIES_WISHIWASHI:
-            return TYPE_GROUND;
-        case SPECIES_SOBBLE: case SPECIES_DRIZZILE:
-            return TYPE_DRAGON;
-        case SPECIES_WIGLETT: case SPECIES_WUGTRIO: //Maybe do Tera Water Dugtrio-Alola as a complement
-            return TYPE_STEEL;
-
-        //Pure Normal Tera Types
-        /*Not given a Tera Type because of points: Chansey, Blissey, Tauros (Rock if returned), Porygon2, PorygonZ, Snorlax,
-         Ursaring (Fighting if returned), Ambipom, Zangoose, Cinccino, Maushold
-        */
-        case SPECIES_RATTATA: case SPECIES_RATICATE:
-            return TYPE_ICE; //Ice Beam or Tera Blast; but mainly to keep the Fighting weakness. Was Bug for U-Turn beforehand
-            //Wanted to tone down the Tera type because of 3-point shakiness
-        case SPECIES_MEOWTH: case SPECIES_PERSIAN:
-            return TYPE_FLYING; //Technician Aerial Ace
-        case SPECIES_LICKITUNG: case SPECIES_LICKILICKY:
-            return TYPE_STELLAR; //Various coverage and giving a one-time boost to Wring Out
-        case SPECIES_HAPPINY:
-            return TYPE_ICE;
-        case SPECIES_KANGASKHAN:
-            return TYPE_FIGHTING;
-        case SPECIES_DITTO:
-            return TYPE_STELLAR;
-        case SPECIES_EEVEE:
-            return TYPE_NORMAL;
-        case SPECIES_PORYGON:
-            return TYPE_ELECTRIC;
-        case SPECIES_MUNCHLAX:
-            return TYPE_GRASS; //Thick Fat and Seed Bomb
-        case SPECIES_SENTRET: case SPECIES_FURRET:
-            return TYPE_FAIRY;
-        case SPECIES_STANTLER:
-            return TYPE_GRASS; //Sap Sipper and Energy Ball + Trailblaze
-        case SPECIES_DUNSPARCE: case SPECIES_DUDUNSPARCE:
-            return TYPE_DRAGON; //Scale Shot, Dragon Tail, e.t.c.
-        //Teddiursa line pivots the curated Tera Type
-        case SPECIES_TEDDIURSA:
-            return TYPE_BUG;
-        case SPECIES_AIPOM:
-            return TYPE_DARK; //Technician Beat Up for the earlier game
-        case SPECIES_SMEARGLE:
-            return TYPE_GHOST; //Immunity for frailness
-        case SPECIES_MILTANK:
-            return TYPE_FAIRY; //Play Rough
-        case SPECIES_ZIGZAGOON: case  SPECIES_LINOONE:
-            return TYPE_NORMAL;
-        case SPECIES_SLAKOTH: case SPECIES_VIGOROTH:
-        case SPECIES_SLAKING: //Keeping the Tera Type for Stomping Tantrum & Truant synergy purposes though it cannot tera in Restricted Mode
-            return TYPE_GROUND;
-        case SPECIES_WHISMUR: case SPECIES_LOUDRED: case SPECIES_EXPLOUD:
-            return TYPE_FIRE; //Overheat
-        case SPECIES_SKITTY: case SPECIES_DELCATTY:
-            return TYPE_NORMAL; //To double-up with Normalize
-        case SPECIES_SPINDA:
-            return TYPE_PSYCHIC; //Psybeam and Psychic
-        case SPECIES_CASTFORM:
-            return TYPE_STELLAR;
-        case SPECIES_KECLEON:
-            return TYPE_GHOST;
-        case SPECIES_BUNEARY: case SPECIES_LOPUNNY:
-            return TYPE_FLYING; //Bounce and Acrobatics
-        case SPECIES_GLAMEOW: case SPECIES_PURUGLY:
-            return TYPE_BUG; //U-Turn
-        case SPECIES_REGIGIGAS:
-            return TYPE_FIGHTING; //Hammer Arm
-        case SPECIES_WATCHOG: case SPECIES_PATRAT:
-            return TYPE_PSYCHIC; //Potential also for Stellar
-        case SPECIES_MINCCINO:
-            return TYPE_WATER; //Aqua Tail
-        case SPECIES_LILLIPUP: case SPECIES_HERDIER: case SPECIES_STOUTLAND:
-            return TYPE_FAIRY; //Play Rough
-        case SPECIES_AUDINO:
-            return TYPE_NORMAL; //More damage output
-        case SPECIES_BOUFFALANT:
-            return TYPE_BUG; //Megahorn
-        case SPECIES_FURFROU:
-            return TYPE_WATER; //Defensive Type + Surf
-        case SPECIES_YUNGOOS: case SPECIES_GUMSHOOS:
-            return TYPE_STEEL; //with Iron Head and Iron Tail, and will probably give it Hard Press
-        case SPECIES_KOMALA:
-            return TYPE_POISON; //Poison Jab and Gunk Shot
-        case SPECIES_TYPE_NULL: case SPECIES_SILVALLY:
-            return TYPE_STELLAR;
-        case SPECIES_SKWOVET: case SPECIES_GREEDENT:
-            return TYPE_FIGHTING; //Body Press which synergizes with Stuff Cheeks
-        case SPECIES_DUBWOOL: case SPECIES_WOOLOO:
-            return TYPE_FLYING; //Bounce
-        case SPECIES_LECHONK:  case SPECIES_OINKOLOGNE: case SPECIES_OINKOLOGNE_F:
-            return TYPE_GROUND; //High Horsepower and Dig
-        case SPECIES_TANDEMAUS:
-            return TYPE_GRASS; //Technican Bullet Seed
-
-        //Pure Grass
-        /*
-        Not given a Tera Type because of points: Tangrowth, Shaymin, Rillaboom, Eldagoss, Ogerpon
-        */
-        case SPECIES_TANGELA:
-            return TYPE_ROCK; //Ancient Power, Rock Slide, Rock Tomb
-        case SPECIES_CHIKORITA: case SPECIES_BAYLEEF: case SPECIES_MEGANIUM:
-            return TYPE_DRAGON; //Dragon Tail and Outrage
-        case SPECIES_BELLOSSOM:
-            return TYPE_STELLAR;
-        case SPECIES_SUNKERN: case SPECIES_SUNFLORA:
-            return TYPE_GROUND; //Earth Power
-        case SPECIES_TREECKO: case SPECIES_GROVYLE: case SPECIES_SCEPTILE:
-            return TYPE_ELECTRIC; //Thunder Punch; adjacency to mega evolving Lightning Rod
-        case SPECIES_SEEDOT:
-            return TYPE_FLYING;
-        case SPECIES_SHROOMISH:
-            return TYPE_BUG;
-        case SPECIES_CACNEA:
-            return TYPE_POISON;
-        case SPECIES_TURTWIG: case SPECIES_GROTLE:
-            return TYPE_DARK; //Crunch
-        case SPECIES_CHERUBI: case SPECIES_CHERRIM: case SPECIES_CHERRIM_SUNSHINE:
-            return TYPE_FIRE;
-        case SPECIES_CARNIVINE:
-            return TYPE_STEEL; //Levitate synergy
-        case SPECIES_LEAFEON:
-            return TYPE_GROUND; //Dig
-        case SPECIES_SNIVY: case SPECIES_SERVINE: case SPECIES_SERPERIOR:
-            return TYPE_NORMAL; //For Wring Out, but Water is an alternative
-        case SPECIES_PANSAGE: case SPECIES_SIMISAGE:
-            return TYPE_STELLAR;
-        case SPECIES_PETILIL: case SPECIES_LILLIGANT:
-            return TYPE_FAIRY;
-        case SPECIES_MARACTUS:
-            return TYPE_ROCK; //Water Absorb/Storm Drain synergy
-        case SPECIES_CHESPIN: case SPECIES_QUILLADIN:
-            return TYPE_ROCK;
-        case SPECIES_GOGOAT:
-            return TYPE_FIGHTING; //Body Press
-        case SPECIES_FOMANTIS: case SPECIES_LURANTIS:
-            return TYPE_DARK; //Knock Off, Fling, Night Slash
-        case SPECIES_BOUNSWEET: case SPECIES_STEENEE: case SPECIES_TSAREENA:
-            return TYPE_ICE; //Triple Axel; resisting Ice beam and being immune to freeze at the same time is pretty nice
-        case SPECIES_GROOKEY: case SPECIES_THWACKEY:
-            return TYPE_NORMAL;
-        case SPECIES_GOSSIFLEUR:
-            return TYPE_BUG;
-        case SPECIES_SPRIGATITO: case SPECIES_FLORAGATO:
-            return TYPE_PSYCHIC;
-        case SPECIES_CAPSAKID:
-            return TYPE_FIRE; //Until it evolves
-        case SPECIES_OGERPON:
-            return TYPE_GRASS; //The Tera is banned in restricted mode, but defining this because it's necessary for Ogerpon
-
-        //Pure Psychic
-        /*
-        Not given a Tera Type because of points: Alakazam, Mew, Espeon, Azelf, Cresselia, Reuniclus, Necrozma
-        */
-        case SPECIES_ABRA: case SPECIES_KADABRA:
-            return TYPE_GHOST; //Shadow Ball
-        case SPECIES_DROWZEE: case SPECIES_HYPNO:
-            return TYPE_FIGHTING;
-        case SPECIES_UNOWN:
-            return TYPE_STELLAR;
-        case SPECIES_WYNAUT: case SPECIES_WOBBUFFET:
-            return TYPE_NORMAL;
-        case SPECIES_SPOINK: case SPECIES_GRUMPIG:
-            return TYPE_GROUND;
-        case SPECIES_CHINGLING: case SPECIES_CHIMECHO:
-            return TYPE_STEEL; //Levitate synergy
-        case SPECIES_DEOXYS_DEFENSE:
-            return TYPE_DRAGON;
-        case SPECIES_UXIE:
-            return TYPE_GHOST; //Change that doesn't alter its weaknesses
-        case SPECIES_MESPRIT:
-            return TYPE_FIGHTING; //Drain Punch and newly gained Revenge
-        case SPECIES_MUNNA: case SPECIES_MUSHARNA:
-            return TYPE_ROCK;
-        case SPECIES_GOTHITA: case SPECIES_GOTHORITA: case SPECIES_GOTHITELLE:
-            return TYPE_BUG; //type distribution coverage
-        case SPECIES_SOLOSIS: case SPECIES_DUOSION:
-            return TYPE_WATER;
-        case SPECIES_ELGYEM: case SPECIES_BEHEEYEM:
-            return TYPE_STELLAR;
-        case SPECIES_ESPURR:
-            return TYPE_STELLAR; //Pivot type
-        case SPECIES_MEOWSTIC:
-            return TYPE_GRASS; //Energy Ball + Defensive Type
-        case SPECIES_MEOWSTIC_F:
-            return TYPE_PSYCHIC; //Extra damage
-        case SPECIES_PONYTA_GALAR:
-            return TYPE_DRAGON;
-        case SPECIES_SLOWPOKE_GALAR:
-            return TYPE_POISON; //Because of evos
-        case SPECIES_HATENNA: case SPECIES_HATTREM:
-            return TYPE_DARK;
-        case SPECIES_FLITTLE: case SPECIES_ESPATHRA:
-            return TYPE_FLYING; //Brave Bird physical option
-
-        //Pure Fire
-        /*
-        Not given a Tera Type because of points: Arcanine, Typhlosion, Entei, Cinderace
-        */
-        case SPECIES_CHARMANDER: case SPECIES_CHARMELEON:
-            return TYPE_DRAGON;
-        case SPECIES_VULPIX: case SPECIES_NINETALES:
-            return TYPE_GHOST; //One of the rare Pure Fires to get Shadow Ball
-        case SPECIES_GROWLITHE:
-            return TYPE_STEEL; //Iron Head and Iron Tail
-        case SPECIES_PONYTA: case SPECIES_RAPIDASH:
-            return TYPE_FAIRY; //Play Rough
-        case SPECIES_FLAREON:
-            return TYPE_NORMAL; //For Facade Guts
-        case SPECIES_MAGBY: case SPECIES_MAGMAR: case SPECIES_MAGMORTAR:
-            return TYPE_ELECTRIC; //Thunderbolt
-        case SPECIES_CYNDAQUIL: case SPECIES_QUILAVA:
-            return TYPE_GROUND;
-        case SPECIES_SLUGMA:
-            return TYPE_ROCK; //To get Rock STAB before evolution
-        case SPECIES_TORKOAL:
-            return TYPE_BUG; //For type distributions
-        case SPECIES_CASTFORM_SUNNY:
-            return TYPE_STELLAR;
-        case SPECIES_CHIMCHAR:
-            return TYPE_FIGHTING; //Fighting STAB before Evo
-        case SPECIES_TEPIG:
-            return TYPE_ROCK;
-        case SPECIES_PANSEAR: case SPECIES_SIMISEAR:
-            return TYPE_STELLAR;
-        case SPECIES_DARUMAKA: case SPECIES_DARMANITAN:
-            return TYPE_PSYCHIC; //Tera exception for Zen Mode
-        case SPECIES_HEATMOR:
-            return TYPE_GRASS; //Giga Drain; and Flash Fire synergy
-        case SPECIES_FENNEKIN: case SPECIES_BRAIXEN:
-            return TYPE_PSYCHIC; //For Evo
-        case SPECIES_LITTEN: case SPECIES_TORRACAT:
-            return TYPE_BUG;
-        case SPECIES_SCORBUNNY: case SPECIES_RABOOT:
-            return TYPE_NORMAL;
-        case SPECIES_FUECOCO: case SPECIES_CROCALOR:
-            return TYPE_GHOST; //For Evo
-        case SPECIES_CHARCADET:
-            return TYPE_FIRE; //Extra power until it evolves
-
-        //Pure Electric
-        /*
-        Not given a Tera Type because of points: Raikou, Xurkitree, Zeraora, Regieleki, Bellibolt
-        */
-        case SPECIES_PICHU: case SPECIES_PIKACHU: case SPECIES_RAICHU:
-            return TYPE_WATER; //Surf
-        case SPECIES_VOLTORB: case SPECIES_ELECTRODE:
-            return TYPE_STEEL; //Gains Flash Cannon; doesn't invert the weakness, but enables lead Volt Switch Tera into later pivoting
-        case SPECIES_JOLTEON:
-            return TYPE_FIRE;
-        case SPECIES_ELEKID: case SPECIES_ELECTABUZZ: case SPECIES_ELECTIVIRE:
-            return TYPE_DARK; //Darkest Lariat
-        case SPECIES_MAREEP: case SPECIES_FLAAFFY: case SPECIES_AMPHAROS:
-            return TYPE_DRAGON; //Dragon Pulse, Mega
-        case SPECIES_ELECTRIKE: case SPECIES_MANECTRIC:
-            return TYPE_ICE; //Ice Fang and Tera Blast; would be Tera Fire if it weren't for the Overheat plan
-        case SPECIES_PLUSLE:
-            return TYPE_ELECTRIC; //Damage output
-        case SPECIES_MINUN:
-            return TYPE_GRASS; //Grass Knot
-        case SPECIES_SHINX: case SPECIES_LUXIO: case SPECIES_LUXRAY:
-            return TYPE_FIGHTING; //Superpower
-        case SPECIES_PACHIRISU:
-            return TYPE_FAIRY; //Mainly defensive
-        case SPECIES_BLITZLE: case SPECIES_ZEBSTRIKA:
-            return TYPE_FLYING; //Bounce
-        case SPECIES_TYNAMO: case SPECIES_EELEKTRIK: case SPECIES_EELEKTROSS:
-            return TYPE_STELLAR; //Coverage machine
-        case SPECIES_YAMPER: case SPECIES_BOLTUND:
-            return TYPE_PSYCHIC; //Psychic Fangs
-        case SPECIES_PINCURCHIN:
-            return TYPE_POISON; //Poison Jab
-        case SPECIES_PAWMI:
-            return TYPE_FIGHTING; //Pre-evo typing grant
-        case SPECIES_TADBULB:
-            return TYPE_WATER;
-
-        //Pure Fighting
-        case SPECIES_MANKEY:
-        // case SPECIES_PRIMEAPE:
-            return TYPE_FLYING; //Acrobatics
-        case SPECIES_MACHOP: case SPECIES_MACHOKE: case SPECIES_MACHAMP:
-            return TYPE_STELLAR; //Ideally I'd want to do Fighting, but that seems too insane with Machamp's stats, so opting for Stellar instead
-        case SPECIES_TYROGUE:
-            return TYPE_FIGHTING;
-        case SPECIES_HITMONLEE:
-            return TYPE_NORMAL; //Reckless Double-Edge
-        case SPECIES_HITMONCHAN:
-            return TYPE_STEEL; //Good Defensive typing; Bullet Punch Iron Fist; also pairs nicely with the Meteor Mash addition
-        case SPECIES_HITMONTOP:
-            return TYPE_FAIRY; //Technician Covet
-        case SPECIES_MAKUHITA: case SPECIES_HARIYAMA:
-            return TYPE_GROUND; //Headlong Rush and Thick Fat
-        case SPECIES_RIOLU:
-            return TYPE_STEEL; //for evo type
-        case SPECIES_TIMBURR: case SPECIES_GURDURR:
-            return TYPE_ROCK;
-        // case SPECIES_CONKELDURR:
-            // return TYPE_STEEL; //Hard Press
-        case SPECIES_THROH:
-            return TYPE_FIRE; //Fire Punch
-        // case SPECIES_SAWK:
-        //     return TYPE_ROCK; //Rock Slide
-        case SPECIES_MIENFOO:
-            return TYPE_BUG; //U-Turn
-        // case SPECIES_MIENSHAO:
-        // return TYPE_FIRE; //Blaze Kick
-        case SPECIES_PANCHAM:
-            return TYPE_DARK; //Evo type
-        case SPECIES_CRABRAWLER:
-            return TYPE_ICE; //Evo type
-        case SPECIES_PASSIMIAN:
-            return TYPE_POISON; //Gunk Shot
-        case SPECIES_CLOBBOPUS:
-            return TYPE_WATER; //Liquidation and new move of Aqua Jet
-        case SPECIES_GRAPPLOCT:
-            return TYPE_DARK; //Technician Beat Up
-        case SPECIES_FARFETCHD_GALAR: case SPECIES_SIRFETCHD:
-            return TYPE_GRASS; //Leek Leaf Blade
-        // case SPECIES_FALINKS:
-        //     return TYPE_BUG; //First Impression, Lunge, Megahorn
-        case SPECIES_KUBFU:
-            return TYPE_FIGHTING; //Just a buff
-        // case SPECIES_TAUROS_PALDEA_COMBAT:
-        //     return TYPE_PSYCHIC; //Zen Headbutt
-
-        //Normal/Flying
-        case SPECIES_PIDGEY: case SPECIES_PIDGEOTTO:
-            return TYPE_NORMAL; //Uproar
-        case SPECIES_PIDGEOT:
-            return TYPE_FIRE; //Heat Wave
-        case SPECIES_SPEAROW: case SPECIES_FEAROW:
-            return TYPE_BUG; //U-Turn
-        case SPECIES_FARFETCHD:
-            return TYPE_NORMAL; //Extra power
-        case SPECIES_DODUO: case SPECIES_DODRIO:
-            return TYPE_GROUND; //Stomping Tantrum; will also get High Horsepower by Tutor
-        case SPECIES_HOOTHOOT: case SPECIES_NOCTOWL:
-            return TYPE_FAIRY; //Moonblast
-        case SPECIES_TAILLOW:
-            return TYPE_DARK; //Pursuit
-        // case SPECIES_SWELLOW:
-            // return TYPE_WATER; //Filler Tera
-        case SPECIES_SWABLU:
-            return TYPE_DRAGON; //Evo type
-        case SPECIES_STARLY: case SPECIES_STARAVIA:
-        // case SPECIES_STARAPTOR:
-            return TYPE_ICE; //Retains weakness to Rock
-        case SPECIES_CHATOT:
-            return TYPE_STEEL; //Get a lot of resistances
-        case SPECIES_PIDOVE: case SPECIES_TRANQUILL: case SPECIES_UNFEZANT:
-            return TYPE_DARK; //Night Slash
-        case SPECIES_RUFFLET: case SPECIES_BRAVIARY:
-            return TYPE_FIGHTING; //Superpower / Close Combat
-        case SPECIES_FLETCHLING:
-            return TYPE_FIRE;
-        case SPECIES_PIKIPEK: case SPECIES_TRUMBEAK: case SPECIES_TOUCANNON:
-            return TYPE_ROCK; //Rock Blast
-        case SPECIES_SQUAWKABILLY: case SPECIES_SQUAWKABILLY_BLUE: case SPECIES_SQUAWKABILLY_WHITE: case SPECIES_SQUAWKABILLY_YELLOW:
-            return TYPE_ELECTRIC;
-
-        //Pure Bug
-        case SPECIES_CATERPIE: case SPECIES_METAPOD:
-            return TYPE_ELECTRIC; //Electroweb
-        case SPECIES_PINSIR:
-            return TYPE_FIGHTING; //Abundant fighting moves
-        case SPECIES_PINECO:
-            return TYPE_STEEL; //Evo type
-        case SPECIES_WURMPLE:
-            return TYPE_STELLAR; //Neutral type
-        case SPECIES_SILCOON:
-            return TYPE_FLYING; //Evo type
-        case SPECIES_CASCOON:
-            return TYPE_POISON; //Evo type
-        case SPECIES_VOLBEAT:
-            return TYPE_ELECTRIC; //Thunderbolt
-        case SPECIES_ILLUMISE:
-            return TYPE_FAIRY; //Draining Kiss
-        case SPECIES_KRICKETOT: case SPECIES_KRICKETUNE:
-            return TYPE_FLYING; //Aerial Ace
-        case SPECIES_BURMY: case SPECIES_BURMY_SANDY: case SPECIES_BURMY_TRASH:
-            return TYPE_BUG;
-        case SPECIES_KARRABLAST:
-            return TYPE_BUG;
-        case SPECIES_SHELMET:
-            return TYPE_STEEL;
-        case SPECIES_ACCELGOR:
-            return TYPE_POISON; //Sludge Bomb
-        case SPECIES_SCATTERBUG: case SPECIES_SPEWPA:
-            return TYPE_GRASS; //To align with Vivillon
-        case SPECIES_GRUBBIN:
-            return TYPE_ELECTRIC; //Evo type
-        case SPECIES_BLIPBUG:
-            return TYPE_PSYCHIC; //Evo type
-        case SPECIES_TAROUNTULA: case SPECIES_SPIDOPS:
-            return TYPE_STELLAR; //Boosted First Impression, Sucker Punch, Revenge, and so forth
-        case SPECIES_RELLOR:
-            return TYPE_GROUND;
-
-        //Pure Fairy
-        /*Excluded because of Tier Points: Clefable, Florges, Sylveon
-        */
-        case SPECIES_CLEFFA: case SPECIES_CLEFAIRY: case SPECIES_CLEFABLE:
-            return TYPE_NORMAL;
-        case SPECIES_TOGEPI:
-            return TYPE_FLYING; //Evo type
-        case SPECIES_SNUBBULL: case SPECIES_GRANBULL:
-            return TYPE_FIGHTING; //Close
-        case SPECIES_MILCERY: case SPECIES_ALCREMIE:
-            return TYPE_FIRE;
-        case SPECIES_FLABEBE: case SPECIES_FLABEBE_BLUE: case SPECIES_FLABEBE_ORANGE:
-        case SPECIES_FLABEBE_WHITE: case SPECIES_FLABEBE_YELLOW: case SPECIES_FLOETTE: case SPECIES_FLOETTE_BLUE:
-        case SPECIES_FLOETTE_ORANGE: case SPECIES_FLOETTE_WHITE: case SPECIES_FLOETTE_YELLOW:
-            return TYPE_GRASS;
-        case SPECIES_SPRITZEE: case SPECIES_AROMATISSE:
-            return TYPE_STELLAR;
-        case SPECIES_COMFEY:
-            return TYPE_GRASS;
-            // return TYPE_FLYING; //Has acrobatics, though doesn't have the Atk to use it
-        case SPECIES_FIDOUGH: case SPECIES_DACHSBUN:
-            return TYPE_ICE; //Ice Fang and Well Baked Body synergy
-
-        //Pure Ice
-        case SPECIES_CASTFORM_SNOWY:
-            return TYPE_STELLAR;
-        case SPECIES_SNORUNT: case SPECIES_GLALIE:
-            return TYPE_GROUND;
-        case SPECIES_REGICE:
-            return TYPE_ELECTRIC;
-        case SPECIES_GLACEON:
-            return TYPE_FAIRY;
-        case SPECIES_VANILLITE: case SPECIES_VANILLISH:  case SPECIES_VANILLUXE:
-            return TYPE_POISON;
-        case SPECIES_CUBCHOO: case SPECIES_BEARTIC:
-            return TYPE_FIGHTING;
-        case SPECIES_CRYOGONAL:
-            return TYPE_FIRE;
-        case SPECIES_BERGMITE: case SPECIES_AVALUGG:
-            return TYPE_ICE;
-        case SPECIES_VULPIX_ALOLA:
-            return TYPE_FAIRY;
-        case SPECIES_DARUMAKA_GALAR: case SPECIES_DARMANITAN_GALAR:
-            return TYPE_NORMAL; //Tera banned in Restricted mode
-        case SPECIES_EISCUE: case SPECIES_EISCUE_NOICE:
-            return TYPE_WATER;
-        case SPECIES_GLASTRIER:
-            return TYPE_DARK;
-        case SPECIES_CETODDLE: case SPECIES_CETITAN:
-            return TYPE_STEEL;
-
-        //Pure Ground
-        case SPECIES_SANDSHREW: case SPECIES_SANDSLASH:
-            return TYPE_FAIRY;
-        case SPECIES_DIGLETT: case SPECIES_DUGTRIO:
-            return TYPE_FLYING; //Aerial Ace
-        case SPECIES_CUBONE: case SPECIES_MAROWAK:
-            return TYPE_FIGHTING; //Low Kick, Brick Break
-        case SPECIES_PHANPY: case SPECIES_DONPHAN:
-            return TYPE_FIRE;
-        case SPECIES_TRAPINCH:
-            return TYPE_BUG;
-        case SPECIES_HIPPOPOTAS: case SPECIES_HIPPOWDON:
-            return TYPE_WATER; //Muddy Water and such
-        case SPECIES_DRILBUR:
-            return TYPE_STEEL; //Evo type
-        case SPECIES_MUDBRAY: case SPECIES_MUDSDALE:
-            return TYPE_ROCK; //Rock coverage
-        case SPECIES_SILICOBRA: case SPECIES_SANDACONDA:
-            return TYPE_DRAGON; //Scale Shot, Outrage, Dragon Rush
-
-        //Pure Rock
-        case SPECIES_BONSLY: case SPECIES_SUDOWOODO:
-            return TYPE_GRASS;
-        case SPECIES_NOSEPASS:
-            return TYPE_ELECTRIC;
-        case SPECIES_REGIROCK:
-            return TYPE_ICE; //Ice Punch; Regice
-        case SPECIES_CRANIDOS: case SPECIES_RAMPARDOS:
-            return TYPE_PSYCHIC; //Zen Headbutt
-        case SPECIES_ROGGENROLA: case SPECIES_BOLDORE: case SPECIES_GIGALITH:
-            return TYPE_STELLAR;
-        case SPECIES_ROCKRUFF: case SPECIES_ROCKRUFF_OWN_TEMPO:
-            return TYPE_NORMAL;
-        case SPECIES_LYCANROC_MIDDAY:
-            return TYPE_FLYING;
-        case SPECIES_LYCANROC_DUSK:
-            return TYPE_DRAGON; //Outrage
-        case SPECIES_LYCANROC_MIDNIGHT:
-            return TYPE_GHOST; //Shadow Claw
-        case SPECIES_ROLYCOLY:
-            return TYPE_FIRE; //Evo Type
-        case SPECIES_STONJOURNER:
-            return TYPE_GROUND; //standard ground moves
-        case SPECIES_KLAWF:
-            return TYPE_WATER; //Crabhammer
-
-        //Pure Ghost
-        case SPECIES_MISDREAVUS: case SPECIES_MISMAGIUS:
-            return TYPE_FAIRY; //Flutter Mane basis
-        case SPECIES_SHUPPET: case SPECIES_BANETTE:
-            return TYPE_DARK; //covering both its weaknesses and STAB Knock Off + Sucker Punch
-        case SPECIES_DUSKULL: case SPECIES_DUSCLOPS: case SPECIES_DUSKNOIR:
-            return TYPE_FIGHTING; //Leech Life
-        case SPECIES_YAMASK:
-        case SPECIES_COFAGRIGUS:
-            return TYPE_POISON;
-        case SPECIES_CORSOLA_GALAR: case SPECIES_CURSOLA:
-            return TYPE_NORMAL;
-        case SPECIES_SINISTEA: case SPECIES_SINISTEA_ANTIQUE: case SPECIES_POLTEAGEIST: case SPECIES_POLTEAGEIST_ANTIQUE:
-            return TYPE_GRASS; //Giga Drain
-        case SPECIES_GREAVARD: case SPECIES_HOUNDSTONE:
-            return TYPE_STELLAR;
-
-        //Pure Poison
-        case SPECIES_EKANS: case SPECIES_ARBOK:
-            return TYPE_DRAGON; //Breaking Swipe and Scale Shot
-        case SPECIES_NIDORAN_M: case SPECIES_NIDORAN_F: case SPECIES_NIDORINO: case SPECIES_NIDORINA:
-            return TYPE_GROUND; //Evo basis
-        case SPECIES_GRIMER: case SPECIES_MUK:
-            return TYPE_WATER; //Also giving it Dive
-        case SPECIES_KOFFING: case SPECIES_WEEZING:
-            return TYPE_FIRE;
-        case SPECIES_GULPIN: case SPECIES_SWALOT:
-            return TYPE_GRASS; //Giga Drain
-        case SPECIES_SEVIPER:
-            return TYPE_STELLAR;
-        case SPECIES_GARBODOR: case SPECIES_TRUBBISH:
-            return TYPE_STEEL; //Also give it Hard Press
-
-        //Pure Dark
-        case SPECIES_UMBREON:
-            return TYPE_POISON; //Alongside Acid Spray
-        case SPECIES_POOCHYENA: case SPECIES_MIGHTYENA:
-            return TYPE_GHOST; //Get Fighting Immunity
-        case SPECIES_ABSOL:
-            return TYPE_FAIRY; //Play Rough
-        case SPECIES_PURRLOIN: case SPECIES_LIEPARD:
-            return TYPE_STELLAR;
-        case SPECIES_ZORUA: case SPECIES_ZOROARK:
-            return TYPE_PSYCHIC; //Psychic(move)
-        case SPECIES_MEOWTH_ALOLA: case SPECIES_PERSIAN_ALOLA:
-            return TYPE_GRASS; //Seed Bomb
-        case SPECIES_NICKIT: case SPECIES_THIEVUL:
-            return TYPE_FIRE; //Burning Jealousy
-        case SPECIES_MASCHIFF: case SPECIES_MABOSSTIFF:
-            return TYPE_ELECTRIC; //Wild Charge
-
-        //Bug/Flying
-
-        case SPECIES_BUTTERFREE:
-            return TYPE_FLYING; //Really strong Compoundeyes Hurricanes
-        case SPECIES_SCYTHER:
-            return TYPE_NORMAL; //Technician Double Hit
-        case SPECIES_LEDYBA: case SPECIES_LEDIAN:
-            return TYPE_FAIRY; //Gets a Dark resistance for Rattled; also is added Dazzling Gleam by tutor.
-        case SPECIES_YANMA: case SPECIES_YANMEGA:
-            return TYPE_GHOST;
-        case SPECIES_BEAUTIFLY:
-            return TYPE_GROUND; //Great type synergy but reliant on Tera Blast; also given Mud-Slap for slightly more utility.
-        case SPECIES_MASQUERAIN:
-            return TYPE_WATER; //Regain its Water type
-        case SPECIES_NINJASK:
-            return TYPE_ICE; //Night Slash
-        case SPECIES_MOTHIM:
-            return TYPE_ELECTRIC; //Electroweb
-        case SPECIES_COMBEE: case SPECIES_VESPIQUEN:
-            return TYPE_STEEL; //Defensive typing
-        case SPECIES_VIVILLON:
-            return TYPE_GRASS;
-
-        //Grass/Poison
-        case SPECIES_BULBASAUR: case SPECIES_IVYSAUR: case SPECIES_VENUSAUR:
-            return TYPE_GROUND;
-        case SPECIES_ODDISH: case SPECIES_GLOOM:
-            return TYPE_POISON; //Keep going with the poison theme
-        case SPECIES_VILEPLUME:
-            return TYPE_FAIRY;
-        case SPECIES_BELLSPROUT: case SPECIES_WEEPINBELL: case SPECIES_VICTREEBEL:
-            return TYPE_DARK;
-        case SPECIES_BUDEW: case SPECIES_ROSELIA: case SPECIES_ROSERADE:
-            return TYPE_BUG; //Technician Pin Missile
-        case SPECIES_FOONGUS: case SPECIES_AMOONGUSS:
-            return TYPE_STELLAR; //More offensive possibility, and also as a counterbalance to Regenerator longevity
-
-        //Pure Dragon
-        /*Not included because of tier points: Haxorus, Goodra, Regidrago
-        */
-        case SPECIES_DRATINI: case SPECIES_DRAGONAIR:
-            return TYPE_WATER;
-        case SPECIES_BAGON: case SPECIES_SHELGON:
-            return TYPE_FIRE; //Fire moves
-        case SPECIES_AXEW: case SPECIES_FRAXURE:
-            return TYPE_BUG; //First Impression
-        case SPECIES_DRUDDIGON:
-            return TYPE_FAIRY; //Just for type distributions.
-        case SPECIES_GOOMY: case SPECIES_SLIGGOO:
-            return TYPE_WATER; //Hydration and several water moves
-        case SPECIES_JANGMO_O:
-            return TYPE_FIGHTING; //Evo Basis
-
-        //Pure Steel
-        case SPECIES_REGISTEEL:
-            return TYPE_ICE; //Ice Punch and Ice Spinner
-        case SPECIES_KLINK: case SPECIES_KLANG: case SPECIES_KLINKLANG:
-            return TYPE_FLYING; //Type inversion
-        case SPECIES_MELMETAL:
-            return TYPE_NORMAL;
-        case SPECIES_CUFANT: case SPECIES_COPPERAJAH:
-            return TYPE_FIRE; // Heat Crash
-        case SPECIES_PERRSERKER:
-            return TYPE_DARK; //Foul Play and Knock Off
-        case SPECIES_ORTHWORM:
-            return TYPE_ROCK; //Still gets the Earth Eater immunity to an otherwise weakness
-
-        //Bug/Poison
-        case SPECIES_WEEDLE: case SPECIES_KAKUNA:
-            return TYPE_POISON; //stronger Poison Sting
-        case SPECIES_BEEDRILL:
-            return TYPE_DARK; //Knock Off, Throat Chop, Payback, Psychic immunity
-        case SPECIES_VENONAT: case SPECIES_VENOMOTH:
-            return TYPE_PSYCHIC; //Psychic move, and Psychic resistance
-        case SPECIES_SPINARAK: case SPECIES_ARIADOS:
-            return TYPE_POISON; //Boosted Poison moves alongside Merciless
-        case SPECIES_SKORUPI:
-            return TYPE_DARK; //Evo type
-        case SPECIES_VENIPEDE: case SPECIES_WHIRLIPEDE: case SPECIES_SCOLIPEDE:
-            return TYPE_GROUND; //Stomping Tantrum and EQ
-        //Rock/Water
-        case SPECIES_OMANYTE: case SPECIES_OMASTAR:
-            return TYPE_ELECTRIC;
-        case SPECIES_KABUTO: case SPECIES_KABUTOPS:
-            return TYPE_BUG; //Leech Life
-        case SPECIES_CORSOLA:
-            return TYPE_GRASS; //dodge quad resistance
-        case SPECIES_RELICANTH:
-            return TYPE_ROCK; //Power Boost and for Rock Head Head Smash
-        case SPECIES_TIRTOUGA: case SPECIES_CARRACOSTA:
-            return TYPE_DRAGON;
-        case SPECIES_BINACLE: case SPECIES_BARBARACLE:
-            return TYPE_FIGHTING; //Mega basis
-        case SPECIES_DREDNAW:
-            return TYPE_ICE; //Ice Spinner
-
-        //Ghost/Grass
-        case SPECIES_PHANTUMP: case SPECIES_TREVENANT:
-            return TYPE_GROUND; //Earthquake
-        case SPECIES_PUMPKABOO: case SPECIES_PUMPKABOO_LARGE: case SPECIES_PUMPKABOO_SMALL: case SPECIES_PUMPKABOO_SUPER:
-        case SPECIES_GOURGEIST: case SPECIES_GOURGEIST_LARGE: case SPECIES_GOURGEIST_SMALL: case SPECIES_GOURGEIST_SUPER:
-            return TYPE_FIRE; //Flamethrower, Flame Charge
-        case SPECIES_DECIDUEYE:
-            return TYPE_FLYING; //Mimic former flying type
-        case SPECIES_DHELMISE:
-            return TYPE_WATER; //Liquidation
-        case SPECIES_BRAMBLIN: case SPECIES_BRAMBLEGHAST:
-            return TYPE_BUG; //Pounce and Skitter Smack
-        case SPECIES_POLTCHAGEIST: case SPECIES_POLTCHAGEIST_ARTISAN:
-        case SPECIES_SINISTCHA: case SPECIES_SINISTCHA_MASTERPIECE:
-            return TYPE_PSYCHIC; //Filler type
-
-        //Rock/Ground
-        case SPECIES_GEODUDE: case SPECIES_GRAVELER: case SPECIES_GOLEM:
-            return TYPE_STEEL;
-        case SPECIES_ONIX:
-            return TYPE_DRAGON; //Dragon Breath; could also be Steel depending on overlap factors
-        case SPECIES_RHYHORN: case SPECIES_RHYDON: case SPECIES_RHYPERIOR:
-            return TYPE_NORMAL; //Rock Head Double-Edge
-        case SPECIES_LARVITAR: case SPECIES_PUPITAR:
-            return TYPE_DARK; //Evo basis
-
-        //Steel/Psychic
-        case SPECIES_BELDUM: case SPECIES_METANG: case SPECIES_METAGROSS:
-            return TYPE_NORMAL; //Take Down for Beldum; Explosion for Metang
-        case SPECIES_JIRACHI:
-            return TYPE_FAIRY; //Moonblast
-        case SPECIES_BRONZOR: case SPECIES_BRONZONG:
-            return TYPE_GRASS; //Heatproof synergy
-        case SPECIES_IRON_CROWN:
-            return TYPE_FIGHTING; //Filler type
-
-        //Water/Ground
-        case SPECIES_WOOPER: case SPECIES_QUAGSIRE:
-            return TYPE_ICE; //Avalanche
-        case SPECIES_MARSHTOMP: case SPECIES_SWAMPERT:
-            return TYPE_ROCK; //Rock Slide and such
-        case SPECIES_GASTRODON:
-            return TYPE_PSYCHIC;
-        case SPECIES_PALPITOAD: case SPECIES_SEISMITOAD:
-            return TYPE_FIGHTING; //Drain Punch
-        case SPECIES_BARBOACH: case SPECIES_WHISCASH:
-            return TYPE_STELLAR; //Additional Power boost
-
-        //Psychic/Flying
-        case SPECIES_NATU: case SPECIES_XATU:
-            return TYPE_DARK; //Sucker Punch and Foul Play
-        case SPECIES_WOOBAT: case SPECIES_SWOOBAT:
-            return TYPE_PSYCHIC; //Extra damage
-        case SPECIES_SIGILYPH:
-            return TYPE_POISON;
-        case SPECIES_ORICORIO_PAU:
-            return TYPE_FAIRY; //Make all Oricorios Fairy type since forms can be swapped
-        case SPECIES_ARTICUNO_GALAR:
-            return TYPE_ICE;
-        case SPECIES_BRAVIARY_HISUI:
-            return TYPE_NORMAL; //Regular Braviary homage
-
-        //Psychic/Fairy
-        /*Tier points exclusion: Gardevoir, Hatterene, Tapu Lele, Scream Tail
-        */
-        case SPECIES_MIME_JR:  case SPECIES_MR_MIME:
-            return TYPE_ELECTRIC; //Thunderbolt, Technician Charge Beam
-        case SPECIES_RALTS: case SPECIES_KIRLIA:
-            return TYPE_GRASS; //Energy Ball
-        case SPECIES_RAPIDASH_GALAR:
-            return TYPE_DRAGON;
-
-        //Ghost/Fire
-        case SPECIES_LITWICK: case SPECIES_LAMPENT: case SPECIES_CHANDELURE:
-            return TYPE_DARK; //Dark Pulse
-
-        //The below is whatever since these are all restricted mode banned.
-        case SPECIES_MAROWAK_ALOLA:
-            return TYPE_DRAGON; //Outrage
-        case SPECIES_TYPHLOSION_HISUI:
-            return TYPE_GROUND;
-        case SPECIES_SKELEDIRGE:
-            return TYPE_FAIRY;
-        case SPECIES_CERULEDGE:
-            return TYPE_FIGHTING;
-        //Not bothering with Blacephalon since it's probably not available
-
-        //Water/Flying
-        case SPECIES_GYARADOS:
-            return TYPE_DARK; //Mega basis
-        case SPECIES_MANTYKE: case SPECIES_MANTINE:
-            return TYPE_ICE; //Blizzard
-        case SPECIES_DUCKLETT: case SPECIES_SWANNA:
-            return TYPE_FAIRY; //Alluring Voice
-        case SPECIES_CRAMORANT:
-            return TYPE_POISON; //Belch
-
-        //Water/Ice
-        case SPECIES_DEWGONG:
-            return TYPE_BUG; //Megahorn
-        case SPECIES_CLOYSTER:
-            return TYPE_NORMAL; //Spike Cannon; potential Tier Points 4+ mon, but currently not yet
-        case SPECIES_LAPRAS:
-            return TYPE_PSYCHIC; //Psychic Noise
-        case SPECIES_SPHEAL: case SPECIES_SEALEO: case SPECIES_WALREIN:
-            return TYPE_GROUND; //Earthquake/Stomping Tantrum
-        case SPECIES_ARCTOVISH:
-            return TYPE_ROCK; //Rock Blast
-
-        //Dark/Flying
-        /*Not included because of Tier Points: Mandibuzz, Moltres-Galar, Iron Jugulis
-        */
-        case SPECIES_MURKROW: case SPECIES_HONCHKROW:
-            return TYPE_FIGHTING; //Superpower
-        case SPECIES_VULLABY:
-            return TYPE_ROCK; //More power in Monotype
-        case SPECIES_BOMBIRDIER:
-            return TYPE_NORMAL; //Rocky Payload
-        //Not including Yveltal
-
-        //Poison/Dark
-        case SPECIES_STUNKY: case SPECIES_SKUNTANK:
-            return TYPE_FIRE; //Temper Flare, Fire Blast
-        case SPECIES_DRAPION:
-            return TYPE_BUG; //pre-evo basis
-        case SPECIES_MUK_ALOLA:
-            return TYPE_ROCK; //Rock Slide
-        case SPECIES_QWILFISH_HISUI: case SPECIES_OVERQWIL:
-            return TYPE_ICE;
-
-        //Steel/Rock
-        case SPECIES_ARON: case SPECIES_LAIRON: case SPECIES_AGGRON:
-            return TYPE_NORMAL; //Rock Head
-        case SPECIES_SHIELDON: case SPECIES_BASTIODON:
-            return TYPE_DARK; //Foul Play boost
-        case SPECIES_PROBOPASS:
-            return TYPE_ELECTRIC; //A lot of electric moves
-
-        //Steel/Fairy
-        case SPECIES_MAWILE:
-            return TYPE_DARK; //Sucker Punch
-        case SPECIES_KLEFKI:
-            return TYPE_ELECTRIC;
-        case SPECIES_MAGEARNA:
-            return TYPE_PSYCHIC;
-        case SPECIES_TINKATON:
-            return TYPE_ROCK;
-
-        //Fire/Fighting
-        case SPECIES_COMBUSKEN:  case SPECIES_BLAZIKEN:
-            return TYPE_FLYING; //Brave Bird
-        case SPECIES_MONFERNO: case SPECIES_INFERNAPE:
-            return TYPE_POISON; //Gunk Shot
-        case SPECIES_EMBOAR:
-            return TYPE_ROCK; //Reckless Head Smash
-        case SPECIES_TAUROS_PALDEA_BLAZE:
-            return TYPE_NORMAL; //Regular Tauros basis
-
-        //Grass/Flying
-        case SPECIES_HOPPIP: case SPECIES_SKIPLOOM: case SPECIES_JUMPLUFF:
-            return TYPE_FLYING; //More power
-        case SPECIES_TROPIUS:
-            return TYPE_FIRE; //Sun Weather Ball
-        case SPECIES_SHAYMIN_SKY:
-            return TYPE_BUG;
-        case SPECIES_ROWLET: case SPECIES_DARTRIX:
-            return TYPE_GHOST; // Evo basis
-
-        //Grass/Dragon
-        /*Not included because of Tier Points: Dipplin, Hydrapple
-        */
-        case SPECIES_EXEGGUTOR_ALOLA:
-            return TYPE_PSYCHIC; //Exeggcute basis
-        case SPECIES_FLAPPLE:
-            return TYPE_FLYING; //Acrobatics and Fly
-        case SPECIES_APPLIN:
-            return TYPE_BUG;
-        case SPECIES_APPLETUN:
-            return TYPE_FIGHTING; //Body Press and Superpower
-
-        //Grass/Dark
-        case SPECIES_CACTURNE:
-            return TYPE_DARK; //Boosted Payback and Sucker Punch
-            //Water Absorb + Shedding the Grass Type makes it quite good against Water types with Ice moves
-        case SPECIES_NUZLEAF:
-            return TYPE_FIGHTING;
-        case SPECIES_SHIFTRY:
-            return TYPE_FLYING; //Air Slash and Hurricane Shiftry
-        case SPECIES_ZARUDE:
-            return TYPE_NORMAL; //Filler type
-        case SPECIES_MEOWSCARADA:
-            return TYPE_ELECTRIC; //Not much thought put into it since it can't tera in restricted mode
-        case SPECIES_BRUTE_BONNET:
-            return TYPE_FIGHTING;
-        case SPECIES_WO_CHIEN:
-            return TYPE_POISON;
-
-        //Electric/Flying
-        /*Not included because of tier points: Zapdos, Thundurus
-        */
-        case SPECIES_ROTOM_FAN:
-            return TYPE_GHOST;
-        case SPECIES_EMOLGA:
-            return TYPE_STEEL; //Resists both of the types SE against it
-        case SPECIES_ORICORIO_POM_POM:
-            return TYPE_FAIRY; //ALl Oricorios will have the same type
-        case SPECIES_WATTREL: case SPECIES_KILOWATTREL:
-            return TYPE_WATER; //Rain Dance synergy
-
-        //Normal/Psychic
-        case SPECIES_GIRAFARIG: case SPECIES_FARIGIRAF:
-            return TYPE_WATER;
-        case SPECIES_MELOETTA:
-            return TYPE_GHOST;
-        case SPECIES_ORANGURU:
-            return TYPE_GRASS; //Energy Ball
-        case SPECIES_WYRDEER:
-            return TYPE_GROUND; //Sap Sipper synergy
-        case SPECIES_INDEEDEE_F: case SPECIES_INDEEDEE_M:
-            return TYPE_FIGHTING;
-
-        //Ghost/Ground
-        case SPECIES_GOLETT: case SPECIES_GOLURK:
-            return TYPE_FIGHTING; //Iron Fist
-        case SPECIES_SANDYGAST: case SPECIES_PALOSSAND:
-            return TYPE_GRASS; //Giga Drain and Water Compaction synergy
-        case SPECIES_YAMASK_GALAR: case SPECIES_RUNERIGUS:
-            return TYPE_ROCK;
-
-        //Ground/Dragon
-        /*Not included because of Tier points: Garchomp, Zygarde
-        */
-        case SPECIES_VIBRAVA: case SPECIES_FLYGON:
-            return TYPE_BUG; //Based on all of Flygon's bug moves
-        case SPECIES_GIBLE: case SPECIES_GABITE:
-            return TYPE_FIRE;
-        case SPECIES_ZYGARDE_10:
-            return TYPE_DARK; //Crunch
-
-        //Bug/Rock
-        case SPECIES_SHUCKLE:
-            return TYPE_BUG; //Choosing to not give Shuckle a new defensive type
-        case SPECIES_ANORITH: case SPECIES_ARMALDO:
-            return TYPE_NORMAL;
-        case SPECIES_DWEBBLE: case SPECIES_CRUSTLE:
-            return TYPE_GROUND;
-        case SPECIES_KLEAVOR:
-            return TYPE_FLYING; //Scyther basis
-
-        //Bug/Steel
-        case SPECIES_FORRETRESS:
-            return TYPE_GROUND;
-        case SPECIES_SCIZOR:
-            return TYPE_ROCK; //Kleavor basis
-        case SPECIES_WORMADAM_TRASH:
-            return TYPE_ICE; //Retains the fire weakness
-        case SPECIES_ESCAVALIER:
-            return TYPE_WATER; //Razor Shell
-        case SPECIES_DURANT:
-            return TYPE_DARK;
-        case SPECIES_GENESECT:
-            return TYPE_ROCK;
-
-        //Bug/Grass
-        case SPECIES_PARAS: case SPECIES_PARASECT:
-            return TYPE_GROUND; //Dry Skin synergy
-        case SPECIES_WORMADAM_PLANT:
-            return TYPE_GHOST; //Shadow Ball
-        case SPECIES_SEWADDLE: case SPECIES_SWADLOON: case SPECIES_LEAVANNY:
-            return TYPE_DRAGON;
-
-        //Steel/Ground
-        /*Not included because of Tier Points: Steelix, Excadrill, Dugtrio-Alola, Iron Treads
-        */
-        case SPECIES_DIGLETT_ALOLA:
-            return TYPE_WATER; //Relation to Wugtrio
-        case SPECIES_STUNFISK_GALAR:
-            return TYPE_GHOST; //Payback and Crunch
-
-        //Fire/Flying
-        /*Not included because of Tier Points: Charizard, Moltres, Talonflame
-        */
-        case SPECIES_FLETCHINDER:
-            return TYPE_BUG; //U-Turn
-        case SPECIES_ORICORIO_BAILE:
-            return TYPE_FAIRY; //Same tera type for each Oricorio form
-
-        //Water/Poison
-        /*Not included because of Tier Points: Toxapex
-        */
-        case SPECIES_TENTACOOL: case SPECIES_TENTACRUEL:
-            return TYPE_FIGHTING; //Mainly just choosing a type that isn't the most useful; keeps Psychic weakness
-        case SPECIES_QWILFISH:
-            return TYPE_POISON; //Extra damage output compared to Qwilfish-Hisui
-        case SPECIES_SKRELP:
-            return TYPE_ELECTRIC; //Thunderbolt
-        case SPECIES_MAREANIE:
-            return TYPE_DARK;
-
-        //Water/Psychic
-        /*Not included because of Tier Points: Slowbro, Slowking, Starmie,
-        */
-        case SPECIES_SLOWPOKE:
-            return TYPE_GRASS; //Grass Knot
-        case SPECIES_BRUXISH:
-            return TYPE_ICE; //Strong Jaw boosted Ice Fang
-        case SPECIES_VELUZA:
-            return TYPE_DARK; //Sharpness Night Slash
-
-        //Water/Dragon
-        /*Not included because of Tier Points: Kingdra, Palkia, Dracovish, Walking Wake
-        */
-        case SPECIES_TATSUGIRI: case SPECIES_TATSUGIRI_DROOPY: case SPECIES_TATSUGIRI_STRETCHY:
-            return TYPE_ICE; //boosted Icy Wind
-
-        //Water/Dark
-        /*Not included because of Tier Points: Greninja, Samurott-Hisui
-        */
-        case SPECIES_CARVANHA: case SPECIES_SHARPEDO:
-            return TYPE_PSYCHIC; //Zen Headbutt
-        case SPECIES_CRAWDAUNT:
-            return TYPE_POISON; //Increase the incentive to use Sludge Bomb or Sludge Wave
-
-        //Grass/Fairy
-        /*Not included because of Tier Points: Whimsicott, Tapu Bulu
-        */
-        case SPECIES_COTTONEE:
-            return TYPE_GRASS; //Power boost and parallel with Petilil
-        case SPECIES_MORELULL:
-        case SPECIES_SHIINOTIC:
-            return TYPE_WATER; //Rain Dish Weather Ball
-
-        //Dragon/Flying
-        /*Not included because of Tier Points: Dragonite, Salamence, Noivern
-        */
-        case SPECIES_NOIBAT:
-            return TYPE_ELECTRIC; //WIld Charge
-        case SPECIES_ALTARIA:
-            return TYPE_GRASS; //Solarbeam
-
-        //Normal/Grass
-        /*Not included because of Tier Points: Arboliva
-        */
-        case SPECIES_DEERLING: case SPECIES_DEERLING_AUTUMN: case SPECIES_DEERLING_SUMMER: case SPECIES_DEERLING_WINTER:
-        case SPECIES_SAWSBUCK: case SPECIES_SAWSBUCK_AUTUMN: case SPECIES_SAWSBUCK_SUMMER: case SPECIES_SAWSBUCK_WINTER:
-            return TYPE_WATER; //Sap Sipper synergy
-        case SPECIES_SMOLIV: case SPECIES_DOLLIV:
-            return TYPE_GROUND;
-
-        //Normal/Fairy
-        case SPECIES_IGGLYBUFF: case SPECIES_JIGGLYPUFF: case SPECIES_WIGGLYTUFF:
-            return TYPE_STEEL; //Gyro Ball and Steel Roller
-        case SPECIES_AZURILL:
-            return TYPE_WATER; //Evo basis
-
-        //Poison/Fighting
-        /*Not included because of Tier Points: Sneasler, Okidogi
-        */
-        case SPECIES_CROAGUNK: case SPECIES_TOXICROAK:
-            return TYPE_ELECTRIC; //Thunder Punch
-
-        //Bug/Water
-        /*Not included because of Tier Points: Araquanid, Golisopod
-        */
-        case SPECIES_SURSKIT:
-            return TYPE_FAIRY;
-        case SPECIES_DEWPIDER:
-            return TYPE_DARK; //Bite
-
-        //Steel/Dragon
-        /*Not included because of Tier Points: Goodra-Hisui, Archaludon
-        */
-        case SPECIES_DURALUDON:
-            return TYPE_ELECTRIC;
-        case SPECIES_SLIGGOO_HISUI:
-            return TYPE_ROCK; //Keeps the same weaknesses
-
-
-        //Fire/Rock
-        /*Not included because of Tier Points: Coalossal and Arcanine-Hisui
-        */
-        case SPECIES_MAGCARGO:
-            return TYPE_GRASS; //Defensive type, though there's also Solarbeam
-        case SPECIES_CARKOL:
-            return TYPE_WATER; //Scald
-        case SPECIES_GROWLITHE_HISUI:
-            return TYPE_STEEL;
-
-        //Water/Fighting
-        /*Not included because of Tier Points: Urshifu-Rapid, Tauros-Paldea-Aqua, Quaquaval, Keldeo
-        */
-        case SPECIES_POLIWRATH:
-            return TYPE_PSYCHIC; //For Fighting-type Tera coverage
-
-        //Grass/Fighting
-        /*/*Not included because of Tier Points: Chesnaught, Lilligant-Hisui,
-        */
-        case SPECIES_BRELOOM:
-            return TYPE_BUG;
-        case SPECIES_VIRIZION:
-            return TYPE_FLYING; //Slightly stronger Aerial Ace
-        case SPECIES_DECIDUEYE_HISUI:
-            return TYPE_GHOST; //Leveraging a lot of the Ghost moves the Rowlet line can learn
-
-        //Grass/Psychic
-        /*/*Not included because of Tier Points: Celebi, Iron Leaves
-        */
-        case SPECIES_EXEGGCUTE: case SPECIES_EXEGGUTOR:
-            return TYPE_FIGHTING; //Low Kick
-        case SPECIES_CALYREX:
-            return TYPE_GRASS; //extra power
-
-        //Ice/Psychic
-        case SPECIES_SMOOCHUM: case SPECIES_JYNX:
-            return TYPE_FAIRY; //Draining Kiss and also give Alluring Voice
-        case SPECIES_MR_MIME_GALAR: case SPECIES_MR_RIME:
-            return TYPE_GRASS; //Grass Knot
-
-        //All Dragon/Electric mons are currently 4+ points so no curated teras included
-
-        //Normal/Dark
-        /*Not included because of Tier Points: Obstagoon
-        */
-        case SPECIES_RATTATA_ALOLA: case SPECIES_RATICATE_ALOLA:
-            return TYPE_BUG; //Resists Fighting and Thick Fat basis
-        case SPECIES_ZIGZAGOON_GALAR: case SPECIES_LINOONE_GALAR:
-            return TYPE_POISON; //Gunk Shot and Cross Poison
-
-        //Dark/Dragon
-        /*Not included because of Tier Points: Hydreigon, Roaring Moon
-        */
-        case SPECIES_DEINO: case SPECIES_ZWEILOUS:
-            return TYPE_FIGHTING; //Superpower
-        case SPECIES_GUZZLORD:
-            return TYPE_GROUND; //Earthquake
-
-        //Normal/Fighting
-        /*Not included because of Tier Points: Bewear, Meloetta-Pirouette
-        */
-        case SPECIES_STUFFUL:
-            return TYPE_ROCK; //Rock Slide and Fluffy synergy
-
-        //Fighting/Psychic
-        /*Not included because of Tier Points: Gallade
-        */
-        case SPECIES_MEDITITE: case SPECIES_MEDICHAM:
-            return TYPE_ICE; //Ice Punch; Medicham is only applicable in Restricted Mode if it has Telepathy
-
-
-        //Poison/Ground
-        /*Not included because of Tier Points: Nidoking, Clodsire
-        */
-        case SPECIES_NIDOQUEEN:
-            return TYPE_FIGHTING; //Superpower
-        case SPECIES_WOOPER_PALDEA:
-            return TYPE_ROCK;
-
-        //Ground/Dark
-        /*Not included because of Tier Points: Krookodile, Ting-Lu
-        */
-        case SPECIES_SANDILE: case SPECIES_KROKOROK:
-            return TYPE_WATER; //Aqua Tail
-
-        //Rock/Flying
-        /*Not included because of Tier Points: Aerodactyl, Archeops
-        */
-        case SPECIES_ARCHEN:
-            return TYPE_GHOST;
-        case SPECIES_MINIOR:
-            return TYPE_STELLAR;
-
-        //Rock/Electric
-        /*Not included because of Tier Points: Iron Thorns
-        */
-        case SPECIES_GEODUDE_ALOLA: case SPECIES_GRAVELER_ALOLA: case SPECIES_GOLEM_ALOLA:
-            return TYPE_FIRE; //Fire Punch
-
-        //All Bug/Fighting mons exceed the curated tera tier points
-
-        //Bug/Fire
-        /*Not included because of Tier Points: Volcarona
-        */
-        case SPECIES_LARVESTA:
-            return TYPE_FIGHTING; //Slither Wing basis
-        case SPECIES_SIZZLIPEDE: case SPECIES_CENTISKORCH:
-            return TYPE_DARK; //Knock Off and Crunch
-
-        //Bug/Electric
-        case SPECIES_JOLTIK: case SPECIES_GALVANTULA:
-            return TYPE_POISON;
-        case SPECIES_CHARJABUG: case SPECIES_VIKAVOLT:
-            return TYPE_GRASS; //Energy Ball
-
-        //Ghost/Poison
-        /*Not included because of Tier Points: Gengar and Pecharunt
-        */
-        case SPECIES_GASTLY: case SPECIES_HAUNTER:
-            return TYPE_ELECTRIC; //Thunderbolt
-
-        //Ghost/Dragon
-        /*Not included because of Tier Points: Dragapult
-        */
-        case SPECIES_DREEPY: case SPECIES_DRAKLOAK:
-            return TYPE_WATER; //Dive
-
-        //Steel/Ghost
-        /*Not included because of Tier Points: Aegislash and Gholdengo
-        */
-        case SPECIES_HONEDGE: case SPECIES_DOUBLADE:
-            return TYPE_ROCK; //Couples with the Head Smash addition, which pairs with No Guard
-
-        //Dragon/Fire
-        /*Not included because of Tier Points: Gouging Fire
-        */
-        case SPECIES_TURTONATOR:
-            return TYPE_STEEL;
-
-        //Water/Grass
-        case SPECIES_LOTAD: case SPECIES_LOMBRE: case SPECIES_LUDICOLO:
-            return TYPE_NORMAL; //Hyper Voice
-        case SPECIES_OGERPON_WELLSPRING:
-            return TYPE_WATER; //A necessity for Wellspring, but it can't tera in Restricted mode
-
-        //Water/Fairy
-        /*Not included because of Tier Points: Primarina and Tapu Fini
-        */
-        case SPECIES_MARILL: //Dig
-        case SPECIES_AZUMARILL: //Only permitted for the Thick Fat exception
-            return TYPE_GROUND;
-
-        //Electric/Steel
-        /*Not included because of Tier Points: Magneton, Magnezone, Togedemaru
-        */
-        case SPECIES_MAGNEMITE:
-            return TYPE_BUG;
-
-        //All Psychic/Ghost mons exceed the Tier Points threshold
-
-        //Fire/Psychic
-        /*Not included because of Tier Points: Victini, Delphox, Armarouge
-        */
-        case SPECIES_DARMANITAN_ZEN:
-            return TYPE_PSYCHIC; //Gets an extra power boost
-
-        //Dark/Fighting
-        /*Not included because of Tier Points: Urshifu-Single-Strike
-        */
-        case SPECIES_SCRAGGY: case SPECIES_SCRAFTY:
-            return TYPE_DRAGON; //Dragon Claw
-        case SPECIES_PANGORO:
-            return TYPE_DARK; //Extra power and shedding Fighting weaknesses
-
-        //Dark/Fire
-        /*Not included because of Tier Points: Incineroar
-        */
-        case SPECIES_HOUNDOUR: case SPECIES_HOUNDOOM:
-            return TYPE_PSYCHIC; //Psychic Fangs
-
-        //Dragon/Ice
-        /*Not included because of Tier Points: Baxcalibur
-        */
-        case SPECIES_ARCTIBAX: case SPECIES_FRIGIBAX:
-            return TYPE_DARK; //Crunch
-
-        //Fairy/Flying
-        /*Not included because of Tier Points: Togekiss and Enamorus
-        */
-        case SPECIES_TOGETIC:
-            return TYPE_NORMAL; //Old normal type basis
-
-        //Pure Flying
-        case SPECIES_ROOKIDEE: case SPECIES_CORVISQUIRE:
-            return TYPE_STEEL; //Evo basis
-
-        //Fighting/Flying mons all have excess Tier Points
-
-        //Fighting/Steel mons all have excess Tier Points
-
-        //Poison/Flying
-        /*Not included because of Tier Points: Crobat
-        */
-        case SPECIES_ZUBAT: case SPECIES_GOLBAT:
-            return TYPE_GHOST; //Astonish, Shadow Ball, and Curse
-
-        //Poison/Fire
-        /*Not included because of Tier Points: Salazzle and Iron Moth
-        */
-        case SPECIES_SALANDIT:
-            return TYPE_POISON; //Extra poison prowess
-
-        //Poison/Psychic mons all have excess Tier Points
-
-        //Poison/Dragon
-        case SPECIES_DRAGALGE:
-            return TYPE_WATER; //pre-evo basis
-
-        //Ground/Flying
-        /*Not included because of Tier Points: Gliscor and Landorus
-        */
-        case SPECIES_GLIGAR:
-            return TYPE_BUG;
-
-        //Rock/Poison
-        /*Not included because of Tier Points: Nihilego and Glimmora
-        */
-        case SPECIES_GLIMMET:
-            return TYPE_GROUND; //Earth Power
-
-        //Rock/Grass
-        case SPECIES_LILEEP: case SPECIES_CRADILY:
-            return TYPE_POISON; //Sludge Bomb
-        case SPECIES_OGERPON_CORNERSTONE:
-            return TYPE_ROCK; //Added out of necessity but not applicable for Restricted Mode
-
-        //Rock/Psychic
-        /*Not included because of Tier Points: Iron Boulder
-        */
-        case SPECIES_LUNATONE:
-            return TYPE_FAIRY; //Moonblast
-        case SPECIES_SOLROCK:
-            return TYPE_FIRE; //Flare Blitz
-
-        //Rock/Ice
-        case SPECIES_AMAURA: case SPECIES_AURORUS:
-            return TYPE_ELECTRIC; //Thunderbolt
-        case SPECIES_AVALUGG_HISUI:
-            return TYPE_ROCK;
-
-
-        //Bug/Psychic
-        case SPECIES_DOTTLER: case SPECIES_ORBEETLE:
-            return TYPE_NORMAL; //Ghost immunity
-        case SPECIES_RABSCA:
-            return TYPE_FIRE;
-
-        //Ghost/Flying
-        case SPECIES_DRIFLOON: case SPECIES_DRIFBLIM:
-            return TYPE_DRAGON; //Type Distribution purposes
-        case SPECIES_ORICORIO_SENSU:
-            return TYPE_FAIRY; //Same tera type for each Oricorio
-
-        //ALl Steel/Flying mons exceed Tier Points
-
-        //Fire/Ground
-        case SPECIES_NUMEL: case SPECIES_CAMERUPT:
-            return TYPE_WATER; //Just for type distributions
-
-        //Water/Ghost
-        /*Not included because of Tier Points: Basculegion
-        */
-        case SPECIES_FRILLISH: case SPECIES_JELLICENT:
-            return TYPE_ICE; //Ice Beam
-
-        //Water/Electric
-        /*Not included because of Tier Points: Rotom-Wash
-        */
-        case SPECIES_CHINCHOU: case SPECIES_LANTURN:
-            return TYPE_BUG; //Signal Beam
-
-        //Grass/Ground
-        /*Not included because of Tier Points: Torterra
-        */
-        case SPECIES_TOEDSCOOL: case SPECIES_TOEDSCRUEL:
-            return TYPE_POISON;
-
-        //Grass/Steel
-        /*Not included because of Tier Points: Ferrothorn, Kartana
-        */
-        case SPECIES_FERROSEED:
-            return TYPE_DARK;
-
-        //Electric/Fighting
-        /*Not included because of Tier Points: Pawmot, Iron Hands
-        */
-        case SPECIES_PAWMO:
-            return TYPE_GROUND;
-
-        //Electric/Grass
-        case SPECIES_ROTOM_MOW:
-            return TYPE_GHOST;
-        case SPECIES_VOLTORB_HISUI: case SPECIES_ELECTRODE_HISUI:
-            return TYPE_BUG; //Signal Beam
-
-        //Ice/Ground
-        case SPECIES_SWINUB: case SPECIES_PILOSWINE: case SPECIES_MAMOSWINE:
-            return TYPE_FLYING; //Thick Fat inversion - Fire becomes resisted and Ice becomes neutral
-
-        //Dragon/Fighting
-        /*Not included because of Tier Points: Kommo-o
-        */
-        case SPECIES_HAKAMO_O:
-            return TYPE_DARK;
-
-        //All Dragon/Psychic mons are above Tier Points
-
-        //Dark/Steel
-        /*Not included because of Tier Points: Bisharp, Kingambit
-        */
-        case SPECIES_PAWNIARD:
-            return TYPE_FIGHTING;
-
-        //Dark/Psychic
-        /*Not included because of Tier Points: Hoopa-Unbound
-        */
-        case SPECIES_INKAY: case SPECIES_MALAMAR:
-            return TYPE_WATER; //Liquidation
-
-        //Dark/Ice
-        /*Not included because of Tier Points: Weavile and Chien-Pao
-        */
-        case SPECIES_SNEASEL:
-            return TYPE_GHOST; //Shadow Claw
-
-        //Dark/Fairy
-        case SPECIES_IMPIDIMP: case SPECIES_MORGREM: case SPECIES_GRIMMSNARL:
-            return TYPE_BUG;
-
-        //Normal/Ground
-        /*Not included because of Tier Points: Ursaluna
-        */
-        case SPECIES_DIGGERSBY:
-            return TYPE_FIGHTING; //Superpower; note, only applicable when it doesn't have Huge Power in Restricted Mode
-
-        //Normal/Ghost
-        /*Not included because of Tier Points: Zoroark-Hisui
-        */
-        case SPECIES_ZORUA_HISUI:
-            return TYPE_GHOST;
-
-        //Normal/Dragon
-        /*Not included because of Tier Points: Cyclizar
-        */
-        case SPECIES_DRAMPA:
-            return TYPE_FIRE; //Flamethrower
-
-        //All Fighting/Ghost mons exceed Tier Points
-
-        //Poison/Normal
-        case SPECIES_SHROODLE: case SPECIES_GRAFAIAI:
-            return TYPE_FLYING; //Acrobatics
-
-        //Poison/Fairy
-        /*Not included because of Tier Points: Fezandipiti
-        */
-        case SPECIES_WEEZING_GALAR:
-            return TYPE_ROCK;
-
-        //Ground/Electric
-        /*Not included because of Tier Points: Sandy Shocks
-        */
-        case SPECIES_STUNFISK:
-            return TYPE_STEEL;
-
-        //Ground/Psychic
-        case SPECIES_BALTOY: case SPECIES_CLAYDOL:
-            return TYPE_ELECTRIC; //Levitate synergy
-
-        //All Rock/Fighting mons exceed Tier Points
-
-        //Rock/Dragon
-        case SPECIES_TYRUNT: case SPECIES_TYRANTRUM:
-            return TYPE_POISON; //Tera Poison Poison Fang Strong Jaw
-
-        //Rock/Fairy
-        /*Not included because of Tier Points: Diancie
-        */
-        case SPECIES_CARBINK:
-            return TYPE_GHOST;
-
-        //Bug/Ground
-        case SPECIES_NINCADA:
-            return TYPE_GHOST;
-        case SPECIES_WORMADAM_SANDY:
-            return TYPE_ROCK;
-
-        //Bug/Fairy
-        case SPECIES_CUTIEFLY: case SPECIES_RIBOMBEE:
-            return TYPE_PSYCHIC; //Psychic move
-
-        //All Ghost/Fairy mons exceed Tier Points
-
-        //Steel/Poison
-        case SPECIES_VAROOM: case SPECIES_REVAVROOM:
-            return TYPE_GROUND; //High Horsepower
-
-        //Normal/Fire
-        case SPECIES_LITLEO: case SPECIES_PYROAR:
-            return TYPE_FLYING; //Acrobatics for Moxie lines
-
-        //Grass/Fire
-        case SPECIES_SCOVILLAIN:
-            return TYPE_DRAGON;
-        case SPECIES_OGERPON_HEARTHFLAME:
-            return TYPE_FIRE; //Added for necessity but not available for Restricted Mode
-
-        //Grass/Ice
-        case SPECIES_SNOVER: case SPECIES_ABOMASNOW:
-            return TYPE_DRAGON; //Outrage
-
-        //Electric/Normal
-        case SPECIES_HELIOPTILE: case SPECIES_HELIOLISK:
-            return TYPE_WATER; //Surf
-
-        //Electric/Poison
-        case SPECIES_TOXEL:
-            return TYPE_STELLAR;
-        case SPECIES_TOXTRICITY_AMPED: case SPECIES_TOXTRICITY_LOW_KEY:
-            return TYPE_NORMAL; //Boomburst
-
-        //Electric/Ice
-        case SPECIES_ROTOM_FROST:
-            return TYPE_GHOST;
-        case SPECIES_ARCTOZOLT:
-            return TYPE_ROCK; //Rock Slide and Meteor Beam
-
-        //Electric/Fairy
-        /*Not included because of Tier Points: Tapu Koko
-        */
-        case SPECIES_DEDENNE:
-            return TYPE_GROUND;
-
-        //Ice/Flying
-        case SPECIES_ARTICUNO:
-            return TYPE_ROCK; //Ancient Power and weakness Inversion
-        case SPECIES_DELIBIRD:
-            return TYPE_STELLAR; //Coverage machine
-
-        //Ice/Bug
-        case SPECIES_SNOM: case SPECIES_FROSMOTH:
-            return TYPE_FLYING; //Air Slash
-
-        //Ice/Steel
-        case SPECIES_SANDSHREW_ALOLA: case SPECIES_SANDSLASH_ALOLA:
-            return TYPE_FIGHTING;
-
-        //Dark/Ghost
-        case SPECIES_SABLEYE:
-            return TYPE_STEEL; //Gyro Ball
-        case SPECIES_SPIRITOMB:
-            return TYPE_GHOST; //Power Boost
-
-        //Normal/Water
-        case SPECIES_BIBAREL:
-            return TYPE_GROUND; //Dig
-
-        //Ice/Fighting
-        case SPECIES_CRABOMINABLE:
-            return TYPE_WATER; //Crabhammer
-
-        //All Ground/Fighting mons exceed tier points
-
-        //All Rock/Dark mons exceed tier points
-
-        //All Bug/Ghost mons exceed tier points
-
-        //All Bug/Dark mons exceed tier points
-
-        //All Fire/Steel mons exceed tier points
-
-        //All Fire/Water mons exceed tier points
-
-        //All Water/Steel mons exceed tier points
-
-        //Electric/Ghost
-        case SPECIES_ROTOM:
-            return TYPE_ELECTRIC; //Power boost
-
-        //Electric/Fire
-        case SPECIES_ROTOM_HEAT:
-            return TYPE_GHOST;
-
-        //Electric/Psychic
-        case SPECIES_RAICHU_ALOLA:
-            return TYPE_NORMAL; //Fake Out and Extreme Speed
-
-        //Electric/Dark
-        case SPECIES_MORPEKO: case SPECIES_MORPEKO_HANGRY:
-            return TYPE_STELLAR; //Boosting both moves
-
-        //Ice/Ghost
-        case SPECIES_FROSLASS:
-            return TYPE_NORMAL;
-
-        //All Ice/Fire mons exceed tier points
-
-        //Ice/Fairy
-        case SPECIES_NINETALES_ALOLA:
-            return TYPE_POISON;
-
-        //Dragon/Fairy mons are mega-only
-
-        //All Fairy/Fighting mons exceed tier points
-        default:
-            return randomTeraType;
-    }
-}
 
 static ALWAYS_INLINE struct PokemonSubstruct0 *GetSubstruct0(struct BoxPokemon *boxMon)
 {
@@ -4129,6 +2396,12 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         case MON_DATA_POKERUS:
             retVal = GetSubstruct3(boxMon)->pokerus;
             break;
+        case MON_DATA_POKERUS_STRAIN:
+            retVal = ((GetSubstruct3(boxMon)->pokerus & 0xF0) >> 4);
+            break;
+        case MON_DATA_POKERUS_DAYS_LEFT:
+            retVal = (GetSubstruct3(boxMon)->pokerus & 0x0F);
+            break;
         case MON_DATA_MET_LOCATION:
             retVal = GetSubstruct3(boxMon)->metLocation;
             break;
@@ -4247,7 +2520,7 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
 
                 while (moves[i] != MOVES_COUNT)
                 {
-                    u16 move = moves[i];
+                    enum Move move = moves[i];
                     if (substruct1->move1 == move
                         || substruct1->move2 == move
                         || substruct1->move3 == move
@@ -4340,7 +2613,6 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 }
                 else if (substruct0->teraType == TYPE_NONE) // Tera Type hasn't been modified so we can just use the personality
                 {
-                    retVal = getCuratedOrRandomTeraType(substruct0->species, boxMon->personality);
                     const enum Type *types = gSpeciesInfo[substruct0->species].types;
                     retVal = (boxMon->personality & 0x1) == 0 ? types[0] : types[1];
                 }
@@ -4358,9 +2630,6 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                     .tracker2 = substruct1->evolutionTracker2,
                 }.combinedValue;
             }
-            break;
-        case MON_DATA_TRIUMPH:
-            retVal = GetSubstruct1(boxMon)->triumph;
             break;
         default:
             break;
@@ -4642,6 +2911,12 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         case MON_DATA_POKERUS:
             SET8(GetSubstruct3(boxMon)->pokerus);
             break;
+        case MON_DATA_POKERUS_STRAIN:
+            GetSubstruct3(boxMon)->pokerus = (*data << 4) | (GetSubstruct3(boxMon)->pokerus & 0x0F);
+            break;
+        case MON_DATA_POKERUS_DAYS_LEFT:
+            GetSubstruct3(boxMon)->pokerus = (GetSubstruct3(boxMon)->pokerus & 0xF0) | *data;
+            break;
         case MON_DATA_MET_LOCATION:
             SET8(GetSubstruct3(boxMon)->metLocation);
             break;
@@ -4788,9 +3063,6 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
             substruct1->evolutionTracker2 = evoTracker.tracker2;
             break;
         }
-        case MON_DATA_TRIUMPH:
-            SET8(GetSubstruct1(boxMon)->triumph);
-            break;
         default:
             break;
         }
@@ -4871,7 +3143,7 @@ void CopyMon(void *dest, void *src, size_t size)
     memcpy(dest, src, size);
 }
 
-u8 GiveMonToPlayer(struct Pokemon *mon)
+u8 GiveCapturedMonToPlayer(struct Pokemon *mon)
 {
     s32 i;
 
@@ -4881,62 +3153,16 @@ u8 GiveMonToPlayer(struct Pokemon *mon)
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL) == SPECIES_NONE)
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
             break;
     }
 
     if (i >= PARTY_SIZE)
         return CopyMonToPC(mon);
 
-    //Case for giving a mon when it exceeds points
-    if (i < PARTY_SIZE && FlagGet(FLAG_TIERED)){
-        gExcessTierPoints = 0; //Reset excess Tier Points before computing.
-        u32 tierPoints = CountPartyTierPoints();
-        tierPoints += GetMonTierPoints(mon);
-        if (tierPoints > TIER_POINTS_CAP){
-            gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
-            return CopyMonToPC(mon);
-        }
-    }
-
     CopyMon(&gPlayerParty[i], mon, sizeof(*mon));
     gPlayerPartyCount = i + 1;
     return MON_GIVEN_TO_PARTY;
-}
-
-bool8 DepositPartyMonToPC_Auto(u8 partyId)
-{
-    s32 boxNo, boxPos;
-
-    SetPCBoxToSendMon(VarGet(VAR_PC_BOX_TO_SEND_MON));
-    boxNo = StorageGetCurrentBox();
-
-    do {
-        for (boxPos = 0; boxPos < IN_BOX_COUNT; boxPos++) {
-            struct BoxPokemon *slot = GetBoxedMonPtr(boxNo, boxPos);
-            if (GetBoxMonData(slot, MON_DATA_SPECIES, NULL) == SPECIES_NONE) {
-                CopyMon(slot, &gPlayerParty[partyId].box, sizeof(gPlayerParty[partyId].box));
-
-                // Move all slots after the boxed mon back by 1 slot
-                for (u8 i = partyId; i + 1 < gPlayerPartyCount; i++)
-                    CopyMon(&gPlayerParty[i], &gPlayerParty[i + 1], sizeof(struct Pokemon));
-                ZeroMonData(&gPlayerParty[--gPlayerPartyCount]);
-
-                gSpecialVar_MonBoxId  = boxNo;
-                gSpecialVar_MonBoxPos = boxPos;
-
-                if (GetPCBoxToSendMon() != boxNo)
-                    FlagClear(FLAG_SHOWN_BOX_WAS_FULL_MESSAGE);
-                VarSet(VAR_PC_BOX_TO_SEND_MON, boxNo);
-                return TRUE;
-            }
-        }
-        boxNo++;
-        if (boxNo == TOTAL_BOXES_COUNT)
-            boxNo = 0;
-    } while (boxNo != StorageGetCurrentBox());
-
-    return FALSE;
 }
 
 u8 CopyMonToPC(struct Pokemon *mon)
@@ -4952,7 +3178,7 @@ u8 CopyMonToPC(struct Pokemon *mon)
         for (boxPos = 0; boxPos < IN_BOX_COUNT; boxPos++)
         {
             struct BoxPokemon *checkingMon = GetBoxedMonPtr(boxNo, boxPos);
-            if (GetBoxMonData(checkingMon, MON_DATA_SPECIES, NULL) == SPECIES_NONE)
+            if (GetBoxMonData(checkingMon, MON_DATA_SPECIES) == SPECIES_NONE)
             {
                 MonRestorePP(mon);
                 CopyMon(checkingMon, &mon->box, sizeof(mon->box));
@@ -4978,7 +3204,7 @@ u8 CalculatePartyCount(struct Pokemon *party)
     u32 partyCount = 0;
 
     while (partyCount < PARTY_SIZE
-        && GetMonData(&party[partyCount], MON_DATA_SPECIES, NULL) != SPECIES_NONE)
+        && GetMonData(&party[partyCount], MON_DATA_SPECIES) != SPECIES_NONE)
     {
         partyCount++;
     }
@@ -4986,13 +3212,13 @@ u8 CalculatePartyCount(struct Pokemon *party)
     return partyCount;
 }
 
-u8 CalculatePartyCountOfSide(u32 battler, struct Pokemon *party)
+u8 CalculatePartyCountOfSide(enum BattlerId battler, struct Pokemon *party)
 {
     s32 partyCount, partySize;
     GetAIPartyIndexes(battler, &partyCount, &partySize);
 
     while (partyCount < partySize
-        && GetMonData(&party[partyCount], MON_DATA_SPECIES, NULL) != SPECIES_NONE)
+        && GetMonData(&party[partyCount], MON_DATA_SPECIES) != SPECIES_NONE)
     {
         partyCount++;
     }
@@ -5012,7 +3238,7 @@ u8 CalculateEnemyPartyCount(void)
     return gEnemyPartyCount;
 }
 
-u8 CalculateEnemyPartyCountInSide(u32 battler)
+u8 CalculateEnemyPartyCountInSide(enum BattlerId battler)
 {
     return CalculatePartyCountOfSide(battler, gEnemyParty);
 }
@@ -5031,9 +3257,9 @@ u8 GetMonsStateToDoubles(void)
 
     for (i = 0; i < gPlayerPartyCount; i++)
     {
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG, NULL) != SPECIES_EGG
-         && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) != 0
-         && GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG, NULL) != SPECIES_NONE)
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG) != SPECIES_EGG
+         && GetMonData(&gPlayerParty[i], MON_DATA_HP) != 0
+         && GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG) != SPECIES_NONE)
             aliveCount++;
     }
 
@@ -5051,9 +3277,9 @@ u8 GetMonsStateToDoubles_2(void)
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG, NULL);
+        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
         if (species != SPECIES_EGG && species != SPECIES_NONE
-         && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) != 0)
+         && GetMonData(&gPlayerParty[i], MON_DATA_HP) != 0)
             aliveCount++;
     }
 
@@ -5090,8 +3316,8 @@ enum Ability GetAbilityBySpecies(u16 species, u8 abilityNum)
 
 enum Ability GetMonAbility(struct Pokemon *mon)
 {
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM);
     return GetAbilityBySpecies(species, abilityNum);
 }
 
@@ -5106,15 +3332,12 @@ void CreateSecretBaseEnemyParty(struct SecretBase *secretBaseRecord)
     {
         if (gBattleResources->secretBase->party.species[i])
         {
-            CreateMon(&gEnemyParty[i],
+            CreateMonWithIVs(&gEnemyParty[i],
                 gBattleResources->secretBase->party.species[i],
                 gBattleResources->secretBase->party.levels[i],
-                15,
-                TRUE,
                 gBattleResources->secretBase->party.personality[i],
-                OT_ID_RANDOM_NO_SHINY,
-                0);
-
+                OTID_STRUCT_RANDOM_NO_SHINY,
+                15);
             SetMonData(&gEnemyParty[i], MON_DATA_HELD_ITEM, &gBattleResources->secretBase->party.heldItems[i]);
 
             for (j = 0; j < NUM_STATS; j++)
@@ -5130,7 +3353,7 @@ void CreateSecretBaseEnemyParty(struct SecretBase *secretBaseRecord)
     }
 }
 
-u8 GetSecretBaseTrainerPicIndex(void)
+enum TrainerPicID GetSecretBaseTrainerPicIndex(void)
 {
     u8 facilityClass = sSecretBaseFacilityClasses[gBattleResources->secretBase->gender][gBattleResources->secretBase->trainerId[0] % NUM_SECRET_BASE_CLASSES];
     return gFacilityClassToPicIndex[facilityClass];
@@ -5147,7 +3370,7 @@ bool8 IsPlayerPartyAndPokemonStorageFull(void)
     s32 i;
 
     for (i = 0; i < PARTY_SIZE; i++)
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL) == SPECIES_NONE)
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
             return FALSE;
 
     return IsPokemonStorageFull();
@@ -5307,7 +3530,7 @@ const struct FormChange *GetSpeciesFormChanges(u16 species)
     return formChanges;
 }
 
-u8 CalculatePPWithBonus(u16 move, u8 ppBonuses, u8 moveIndex)
+u8 CalculatePPWithBonus(enum Move move, u8 ppBonuses, u8 moveIndex)
 {
     u8 basePP = GetMovePP(move);
     return basePP + ((basePP * 20 * ((gPPUpGetMask[moveIndex] & ppBonuses) >> (2 * moveIndex))) / 100);
@@ -5315,9 +3538,14 @@ u8 CalculatePPWithBonus(u16 move, u8 ppBonuses, u8 moveIndex)
 
 void RemoveMonPPBonus(struct Pokemon *mon, u8 moveIndex)
 {
-    u8 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES, NULL);
+    RemoveBoxMonPPBonus(&mon->box, moveIndex);
+}
+
+void RemoveBoxMonPPBonus(struct BoxPokemon *mon, u8 moveIndex)
+{
+    u8 ppBonuses = GetBoxMonData(mon, MON_DATA_PP_BONUSES);
     ppBonuses &= gPPUpClearMask[moveIndex];
-    SetMonData(mon, MON_DATA_PP_BONUSES, &ppBonuses);
+    SetBoxMonData(mon, MON_DATA_PP_BONUSES, &ppBonuses);
 }
 
 void RemoveBattleMonPPBonus(struct BattlePokemon *mon, u8 moveIndex)
@@ -5332,33 +3560,33 @@ void PokemonToBattleMon(struct Pokemon *src, struct BattlePokemon *dst)
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        dst->moves[i] = GetMonData(src, MON_DATA_MOVE1 + i, NULL);
-        dst->pp[i] = GetMonData(src, MON_DATA_PP1 + i, NULL);
+        dst->moves[i] = GetMonData(src, MON_DATA_MOVE1 + i);
+        dst->pp[i] = GetMonData(src, MON_DATA_PP1 + i);
     }
 
-    dst->species = GetMonData(src, MON_DATA_SPECIES, NULL);
-    dst->item = GetMonData(src, MON_DATA_HELD_ITEM, NULL);
-    dst->ppBonuses = GetMonData(src, MON_DATA_PP_BONUSES, NULL);
-    dst->friendship = GetMonData(src, MON_DATA_FRIENDSHIP, NULL);
-    dst->experience = GetMonData(src, MON_DATA_EXP, NULL);
-    dst->hpIV = GetMonData(src, MON_DATA_HP_IV, NULL);
-    dst->attackIV = GetMonData(src, MON_DATA_ATK_IV, NULL);
-    dst->defenseIV = GetMonData(src, MON_DATA_DEF_IV, NULL);
-    dst->speedIV = GetMonData(src, MON_DATA_SPEED_IV, NULL);
-    dst->spAttackIV = GetMonData(src, MON_DATA_SPATK_IV, NULL);
-    dst->spDefenseIV = GetMonData(src, MON_DATA_SPDEF_IV, NULL);
-    dst->personality = GetMonData(src, MON_DATA_PERSONALITY, NULL);
-    dst->status1 = GetMonData(src, MON_DATA_STATUS, NULL);
-    dst->level = GetMonData(src, MON_DATA_LEVEL, NULL);
-    dst->hp = GetMonData(src, MON_DATA_HP, NULL);
-    dst->maxHP = GetMonData(src, MON_DATA_MAX_HP, NULL);
-    dst->attack = GetMonData(src, MON_DATA_ATK, NULL);
-    dst->defense = GetMonData(src, MON_DATA_DEF, NULL);
-    dst->speed = GetMonData(src, MON_DATA_SPEED, NULL);
-    dst->spAttack = GetMonData(src, MON_DATA_SPATK, NULL);
-    dst->spDefense = GetMonData(src, MON_DATA_SPDEF, NULL);
-    dst->abilityNum = GetMonData(src, MON_DATA_ABILITY_NUM, NULL);
-    dst->otId = GetMonData(src, MON_DATA_OT_ID, NULL);
+    dst->species = GetMonData(src, MON_DATA_SPECIES);
+    dst->item = GetMonData(src, MON_DATA_HELD_ITEM);
+    dst->ppBonuses = GetMonData(src, MON_DATA_PP_BONUSES);
+    dst->friendship = GetMonData(src, MON_DATA_FRIENDSHIP);
+    dst->experience = GetMonData(src, MON_DATA_EXP);
+    dst->hpIV = GetMonData(src, MON_DATA_HP_IV);
+    dst->attackIV = GetMonData(src, MON_DATA_ATK_IV);
+    dst->defenseIV = GetMonData(src, MON_DATA_DEF_IV);
+    dst->speedIV = GetMonData(src, MON_DATA_SPEED_IV);
+    dst->spAttackIV = GetMonData(src, MON_DATA_SPATK_IV);
+    dst->spDefenseIV = GetMonData(src, MON_DATA_SPDEF_IV);
+    dst->personality = GetMonData(src, MON_DATA_PERSONALITY);
+    dst->status1 = GetMonData(src, MON_DATA_STATUS);
+    dst->level = GetMonData(src, MON_DATA_LEVEL);
+    dst->hp = GetMonData(src, MON_DATA_HP);
+    dst->maxHP = GetMonData(src, MON_DATA_MAX_HP);
+    dst->attack = GetMonData(src, MON_DATA_ATK);
+    dst->defense = GetMonData(src, MON_DATA_DEF);
+    dst->speed = GetMonData(src, MON_DATA_SPEED);
+    dst->spAttack = GetMonData(src, MON_DATA_SPATK);
+    dst->spDefense = GetMonData(src, MON_DATA_SPDEF);
+    dst->abilityNum = GetMonData(src, MON_DATA_ABILITY_NUM);
+    dst->otId = GetMonData(src, MON_DATA_OT_ID);
     dst->types[0] = GetSpeciesType(dst->species, 0);
     dst->types[1] = GetSpeciesType(dst->species, 1);
     dst->types[2] = TYPE_MYSTERY;
@@ -5374,17 +3602,17 @@ void PokemonToBattleMon(struct Pokemon *src, struct BattlePokemon *dst)
     memset(&dst->volatiles, 0, sizeof(struct Volatiles));
 }
 
-void CopyPartyMonToBattleData(u32 battler, u32 partyIndex)
+void CopyPartyMonToBattleData(enum BattlerId battler, u32 partyIndex)
 {
-    u32 side = GetBattlerSide(battler);
+    enum BattleSide side = GetBattlerSide(battler);
     struct Pokemon *party = GetSideParty(side);
     PokemonToBattleMon(&party[partyIndex], &gBattleMons[battler]);
-    gBattleStruct->hpOnSwitchout[side] = gBattleMons[battler].hp;
+    gBattleStruct->battlerState[battler].hpOnSwitchout = gBattleMons[battler].hp;
     UpdateSentPokesToOpponentValue(battler);
     ClearTemporarySpeciesSpriteData(battler, FALSE, FALSE);
 }
 
-bool8 ExecuteTableBasedItemEffect(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex)
+bool8 ExecuteTableBasedItemEffect(struct Pokemon *mon, enum Item item, u8 partyIndex, u8 moveIndex)
 {
     return PokemonUseItemEffects(mon, item, partyIndex, moveIndex, FALSE);
 }
@@ -5394,7 +3622,7 @@ bool8 ExecuteTableBasedItemEffect(struct Pokemon *mon, u16 item, u8 partyIndex, 
     if ((retVal == 0 || friendshipOnly) && !ShouldSkipFriendshipChange() && friendshipChange == 0)      \
     {                                                                                                   \
         friendshipChange = itemEffect[itemEffectParam];                                                 \
-        friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);                                        \
+        friendship = GetMonData(mon, MON_DATA_FRIENDSHIP);                                        \
         friendship += CalculateFriendshipBonuses(mon,friendshipChange,holdEffect);                      \
         if (friendship < 0)                                                                             \
             friendship = 0;                                                                             \
@@ -5414,61 +3642,11 @@ const u32 sExpCandyExperienceTable[] = {
     [EXP_30000 - 1] = 30000,
 };
 
-
-s32 GetEVStatCap(void){
-    if (!FlagGet(FLAG_EV_MODE)){
-        return 0;
-    }
-    if (FlagGet(FLAG_BADGE07_GET)){
-        return 252;
-    }else if (FlagGet(FLAG_BADGE06_GET)){
-        return 228;
-    }else if (FlagGet(FLAG_BADGE05_GET)){
-        return 192;
-    }else if (FlagGet(FLAG_BADGE04_GET)){
-        return 156;
-    }else if (FlagGet(FLAG_BADGE03_GET)){
-        return 120;
-    }else if (FlagGet(FLAG_BADGE02_GET)){
-        return 84;
-    }else if (FlagGet(FLAG_BADGE01_GET)){
-        return 48;
-    }else{
-        return 36;
-    }
-}
-
-//Returns True if the evolution is prevented by Restricted Mode conditions, False otherwise.
-//This is mainly used for cases where an alternate message should be sent.
-//For things like friendship evos, those can be handled in the direct evolution logic.
-bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, u16 item){
-    u8 level =  GetMonData(mon, MON_DATA_LEVEL, 0);
-    u32 species = GetMonData(mon, MON_DATA_SPECIES);
-
-    // DebugPrintf("DoesNotMeetRestrictedEvoConditions is called for species %d with level %d", species, level);
-
-    if (!FlagGet(FLAG_RESTRICTED_MODE)){
-        return FALSE; //Checks don't matter if not in Restricted Mode
-    }
-
-    switch (species){
-        case SPECIES_SLOWPOKE: case SPECIES_SLOWBRO_GALAR:
-        case SPECIES_KADABRA: case SPECIES_GRAVELER: case SPECIES_MACHOKE : case SPECIES_HAUNTER:
-            if (level < 32) return TRUE;
-            break;
-        case SPECIES_NIDORINO : case SPECIES_NIDORINA:
-            if (level < 25) return TRUE;
-        default:
-            return FALSE;
-    }
-    return FALSE;
-}
-
 // Returns TRUE if the item has no effect on the Pokémon, FALSE otherwise
-bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 moveIndex, bool8 usedByAI)
+bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, u8 moveIndex, bool8 usedByAI)
 {
     u32 dataUnsigned;
-    s32 dataSigned, evCap, maxEVs;
+    s32 dataSigned, evCap;
     s32 friendship;
     s32 i;
     bool8 retVal = TRUE;
@@ -5477,27 +3655,18 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
     u32 temp1, temp2;
     s8 friendshipChange = 0;
     enum HoldEffect holdEffect;
-    u8 battler = MAX_BATTLERS_COUNT;
+    enum BattlerId battler = MAX_BATTLERS_COUNT;
     bool32 friendshipOnly = FALSE;
-    u16 heldItem;
+    enum Item heldItem;
     u8 effectFlags;
     s8 evChange;
     u16 evCount;
-    u8 levelBefore;
-    bool8 didLevelUp = FALSE;
-    bool8 isLevelUpItem;
 
-    evCap = GetEVStatCap();
-
-    maxEVs = evCap == 0 ? 0 : evCap * 2 + 6;
-
-
-    evCap = GetEVStatCap();
-
-    maxEVs = evCap == 0 ? 0 : evCap * 2 + 6;
+    // Determine the EV cap to use
+    u32 maxAllowedEVs = !B_EV_ITEMS_CAP ? MAX_TOTAL_EVS : GetCurrentEVCap();
 
     // Get item hold effect
-    heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, NULL);
+    heldItem = GetMonData(mon, MON_DATA_HELD_ITEM);
     if (heldItem == ITEM_ENIGMA_BERRY_E_READER)
     #if FREE_ENIGMA_BERRY == FALSE
         holdEffect = gSaveBlock1Ptr->enigmaBerry.holdEffect;
@@ -5513,8 +3682,6 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
 
     // Get item effect
     itemEffect = GetItemEffect(item);
-    isLevelUpItem = (itemEffect[3] & ITEM3_LEVEL_UP) != 0;
-    levelBefore = GetMonData(mon, MON_DATA_LEVEL, NULL);
 
     // Do item effect
     for (i = 0; i < ITEM_EFFECT_ARG_START; i++)
@@ -5539,26 +3706,23 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
         case 3:
             // Rare Candy / EXP Candy
             if ((itemEffect[i] & ITEM3_LEVEL_UP)
-             && GetMonData(mon, MON_DATA_LEVEL, NULL) != MAX_LEVEL)
+             && GetMonData(mon, MON_DATA_LEVEL) != MAX_LEVEL)
             {
                 u8 param = GetItemHoldEffectParam(item);
                 dataUnsigned = 0;
 
                 if (param == 0) // Rare Candy
                 {
-                    u8 level = GetMonData(mon, MON_DATA_LEVEL, NULL);
-
-                    if (!FlagGet(FLAG_LEVEL_CAP) || level < GetCurrentLevelCap(CANDY_CAP))
-                        dataUnsigned = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES, NULL)].growthRate][level + 1];
+                    dataUnsigned = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES)].growthRate][GetMonData(mon, MON_DATA_LEVEL) + 1];
                 }
                 else if (param - 1 < ARRAY_COUNT(sExpCandyExperienceTable)) // EXP Candies
                 {
-                    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-                    dataUnsigned = sExpCandyExperienceTable[param - 1] + GetMonData(mon, MON_DATA_EXP, NULL);
+                    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+                    dataUnsigned = sExpCandyExperienceTable[param - 1] + GetMonData(mon, MON_DATA_EXP);
 
-                    if (FlagGet(FLAG_LEVEL_CAP))
+                    if (B_RARE_CANDY_CAP && B_EXP_CAP_TYPE == EXP_CAP_HARD)
                     {
-                        u32 currentLevelCap = GetCurrentLevelCap(CANDY_CAP);
+                        u32 currentLevelCap = GetCurrentLevelCap(HARD_CAP);
                         if (dataUnsigned > gExperienceTables[gSpeciesInfo[species].growthRate][currentLevelCap])
                             dataUnsigned = gExperienceTables[gSpeciesInfo[species].growthRate][currentLevelCap];
                     }
@@ -5572,8 +3736,6 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                 {
                     SetMonData(mon, MON_DATA_EXP, &dataUnsigned);
                     CalculateMonStats(mon);
-                    if (GetMonData(mon, MON_DATA_LEVEL, NULL) > levelBefore)
-                        didLevelUp = TRUE;
                     retVal = FALSE;
                 }
             }
@@ -5585,7 +3747,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                 retVal = FALSE;
             if ((itemEffect[i] & ITEM3_BURN) && HealStatusConditions(mon, STATUS1_BURN, battler) == 0)
                 retVal = FALSE;
-            if ((itemEffect[i] & ITEM3_FREEZE) && HealStatusConditions(mon, STATUS1_FREEZE | STATUS1_FROSTBITE, battler) == 0)
+            if ((itemEffect[i] & ITEM3_FREEZE) && HealStatusConditions(mon, STATUS1_ICY_ANY, battler) == 0)
                 retVal = FALSE;
             if ((itemEffect[i] & ITEM3_PARALYSIS) && HealStatusConditions(mon, STATUS1_PARALYSIS, battler) == 0)
                 retVal = FALSE;
@@ -5598,17 +3760,17 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
             // PP Up
             if (effectFlags & ITEM4_PP_UP)
             {
-                u32 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES, NULL);
+                u32 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);
                 effectFlags &= ~ITEM4_PP_UP;
                 dataUnsigned = (ppBonuses & gPPUpGetMask[moveIndex]) >> (moveIndex * 2);
-                temp1 = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex, NULL), ppBonuses, moveIndex);
+                temp1 = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex), ppBonuses, moveIndex);
                 if (dataUnsigned <= 2 && temp1 > 4)
                 {
                     dataUnsigned = ppBonuses + gPPUpAddValues[moveIndex];
                     SetMonData(mon, MON_DATA_PP_BONUSES, &dataUnsigned);
 
-                    dataUnsigned = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex, NULL), dataUnsigned, moveIndex) - temp1;
-                    dataUnsigned = GetMonData(mon, MON_DATA_PP1 + moveIndex, NULL) + dataUnsigned;
+                    dataUnsigned = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex), dataUnsigned, moveIndex) - temp1;
+                    dataUnsigned = GetMonData(mon, MON_DATA_PP1 + moveIndex) + dataUnsigned;
                     SetMonData(mon, MON_DATA_PP1 + moveIndex, &dataUnsigned);
                     retVal = FALSE;
                 }
@@ -5626,21 +3788,19 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                     case 1: // ITEM4_EV_ATK
                         evCount = GetMonEVCount(mon);
                         temp2 = itemEffect[itemEffectParam];
-                        dataSigned = GetMonData(mon, sGetMonDataEVConstants[temp1], NULL);
+                        dataSigned = GetMonData(mon, sGetMonDataEVConstants[temp1]);
                         evChange = temp2;
 
                         if (evChange > 0) // Increasing EV (HP or Atk)
                         {
-                            // Has EV increase limit already been reached?
-                            // Replace MAX_TOTAL_EVS with a version relative to the EV cap
-                            if (evCount >= maxEVs)
+                            // Check if the total EV limit is reached
+                            if (evCount >= maxAllowedEVs)
                                 return TRUE;
 
-                            // if (itemEffect[10] & ITEM10_IS_VITAMIN)
-                            //     evCap = EV_ITEM_RAISE_LIMIT;
-                            // else
-                            //     evCap = MAX_PER_STAT_EVS;
+                            // Ensure the increase does not exceed the max EV per stat (252)
+                            evCap = (itemEffect[10] & ITEM10_IS_VITAMIN) ? EV_ITEM_RAISE_LIMIT : MAX_PER_STAT_EVS;
 
+                            // Check if the per-stat limit is reached
                             if (dataSigned >= evCap)
                                 return TRUE;  // Prevents item use if the per-stat cap is already reached
 
@@ -5649,8 +3809,9 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                             else
                                 temp2 = evChange;
 
-                            if (evCount + temp2 > maxEVs)
-                                temp2 = maxEVs - evCount;
+                            // Ensure the total EVs do not exceed the maximum allowed (510)
+                            if (evCount + temp2 > maxAllowedEVs)
+                                temp2 = maxAllowedEVs - evCount;
 
                             // Prevent item use if no EVs can be increased
                             if (temp2 == 0)
@@ -5691,13 +3852,8 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
 
                     case 2: // ITEM4_HEAL_HP
                     {
-                        u32 currentHP = GetMonData(mon, MON_DATA_HP, NULL);
-                        u32 maxHP = GetMonData(mon, MON_DATA_MAX_HP, NULL);
-                        if (isLevelUpItem && !didLevelUp && (effectFlags & (ITEM4_REVIVE >> 2)))
-                        {
-                            itemEffectParam++;
-                            break;
-                        }
+                        u32 currentHP = GetMonData(mon, MON_DATA_HP);
+                        u32 maxHP = GetMonData(mon, MON_DATA_MAX_HP);
                         // Check use validity.
                         if ((effectFlags & (ITEM4_REVIVE >> 2) && currentHP != 0)
                               || (!(effectFlags & (ITEM4_REVIVE >> 2)) && currentHP == 0))
@@ -5747,10 +3903,11 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                             // Heal PP for all moves
                             for (temp2 = 0; (signed)(temp2) < (signed)(MAX_MON_MOVES); temp2++)
                             {
-                                u32 move, ppBonus;
-                                dataUnsigned = GetMonData(mon, MON_DATA_PP1 + temp2, NULL);
-                                move = GetMonData(mon, MON_DATA_MOVE1 + temp2, NULL);
-                                ppBonus = CalculatePPWithBonus(move, GetMonData(mon, MON_DATA_PP_BONUSES, NULL), temp2);
+                                enum Move move;
+                                u32 ppBonus;
+                                dataUnsigned = GetMonData(mon, MON_DATA_PP1 + temp2);
+                                move = GetMonData(mon, MON_DATA_MOVE1 + temp2);
+                                ppBonus = CalculatePPWithBonus(move, GetMonData(mon, MON_DATA_PP_BONUSES), temp2);
                                 if (dataUnsigned != ppBonus)
                                 {
                                     dataUnsigned += itemEffect[itemEffectParam];
@@ -5765,10 +3922,10 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         else
                         {
                             // Heal PP for one move
-                            u16 move;
-                            dataUnsigned = GetMonData(mon, MON_DATA_PP1 + moveIndex, NULL);
-                            move = GetMonData(mon, MON_DATA_MOVE1 + moveIndex, NULL);
-                            u32 ppBonus = CalculatePPWithBonus(move, GetMonData(mon, MON_DATA_PP_BONUSES, NULL), moveIndex);
+                            enum Move move;
+                            dataUnsigned = GetMonData(mon, MON_DATA_PP1 + moveIndex);
+                            move = GetMonData(mon, MON_DATA_MOVE1 + moveIndex);
+                            u32 ppBonus = CalculatePPWithBonus(move, GetMonData(mon, MON_DATA_PP_BONUSES), moveIndex);
                             if (dataUnsigned != ppBonus)
                             {
                                 dataUnsigned += itemEffect[itemEffectParam++];
@@ -5788,7 +3945,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                             bool32 canStopEvo = TRUE;
                             u32 targetSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_ITEM_USE, item, NULL, &canStopEvo, CHECK_EVO);
 
-                            if (targetSpecies != SPECIES_NONE && !DoesNotMeetRestrictedEvoItemConditions(mon, item))
+                            if (targetSpecies != SPECIES_NONE)
                             {
                                 GetEvolutionTargetSpecies(mon, EVO_MODE_ITEM_USE, item, NULL, &canStopEvo, DO_EVO);
                                 BeginEvolutionScene(mon, targetSpecies, canStopEvo, partyIndex);
@@ -5821,19 +3978,18 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                     case 3: // ITEM5_EV_SPATK
                         evCount = GetMonEVCount(mon);
                         temp2 = itemEffect[itemEffectParam];
-                        dataSigned = GetMonData(mon, sGetMonDataEVConstants[temp1 + 2], NULL);
+                        dataSigned = GetMonData(mon, sGetMonDataEVConstants[temp1 + 2]);
                         evChange = temp2;
                         if (evChange > 0) // Increasing EV
                         {
-                            // Has EV increase limit already been reached?
-                            if (evCount >= maxEVs)
+                            // Check if the total EV limit is reached
+                            if (evCount >= maxAllowedEVs)
                                 return TRUE;
 
-                            // if (itemEffect[10] & ITEM10_IS_VITAMIN)
-                            //     evCap = EV_ITEM_RAISE_LIMIT;
-                            // else
-                            //     evCap = MAX_PER_STAT_EVS;
+                            // Ensure the increase does not exceed the max EV per stat (252)
+                            evCap = (itemEffect[10] & ITEM10_IS_VITAMIN) ? EV_ITEM_RAISE_LIMIT : MAX_PER_STAT_EVS;
 
+                            // Check if the per-stat limit is reached
                             if (dataSigned >= evCap)
                                 return TRUE;  // Prevents item use if the per-stat cap is already reached
 
@@ -5842,8 +3998,9 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                             else
                                 temp2 = evChange;
 
-                            if (evCount + temp2 > maxEVs)
-                                temp2 = maxEVs - evCount;
+                            // Ensure the total EVs do not exceed the maximum allowed (510)
+                            if (evCount + temp2 > maxAllowedEVs)
+                                temp2 = maxAllowedEVs - evCount;
 
                             // Prevent item use if no EVs can be increased
                             if (temp2 == 0)
@@ -5884,9 +4041,9 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
 
                     case 4: // ITEM5_PP_MAX
                     {
-                        u32 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES, NULL);
+                        u32 ppBonuses = GetMonData(mon, MON_DATA_PP_BONUSES);
                         dataUnsigned = (ppBonuses & gPPUpGetMask[moveIndex]) >> (moveIndex * 2);
-                        temp2 = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex, NULL), ppBonuses, moveIndex);
+                        temp2 = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex), ppBonuses, moveIndex);
 
                         // Check if 3 PP Ups have been applied already, and that the move has a total PP of at least 5 (excludes Sketch)
                         if (dataUnsigned < 3 && temp2 >= 5)
@@ -5896,8 +4053,8 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                             dataUnsigned += gPPUpAddValues[moveIndex] * 3; // Apply 3 PP Ups (max)
 
                             SetMonData(mon, MON_DATA_PP_BONUSES, &dataUnsigned);
-                            dataUnsigned = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex, NULL), dataUnsigned, moveIndex) - temp2;
-                            dataUnsigned = GetMonData(mon, MON_DATA_PP1 + moveIndex, NULL) + dataUnsigned;
+                            dataUnsigned = CalculatePPWithBonus(GetMonData(mon, MON_DATA_MOVE1 + moveIndex), dataUnsigned, moveIndex) - temp2;
+                            dataUnsigned = GetMonData(mon, MON_DATA_PP1 + moveIndex) + dataUnsigned;
                             SetMonData(mon, MON_DATA_PP1 + moveIndex, &dataUnsigned);
                             retVal = FALSE;
                         }
@@ -5908,19 +4065,19 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         // how much friendship the Pokémon already has.
                         // In general, Pokémon with lower friendship receive more,
                         // and Pokémon with higher friendship receive less.
-                        if (GetMonData(mon, MON_DATA_FRIENDSHIP, NULL) < 100)
+                        if (GetMonData(mon, MON_DATA_FRIENDSHIP) < 100)
                             UPDATE_FRIENDSHIP_FROM_ITEM();
                         itemEffectParam++;
                         break;
 
                     case 6: // ITEM5_FRIENDSHIP_MID
-                        if (GetMonData(mon, MON_DATA_FRIENDSHIP, NULL) >= 100 && GetMonData(mon, MON_DATA_FRIENDSHIP, NULL) < 200)
+                        if (GetMonData(mon, MON_DATA_FRIENDSHIP) >= 100 && GetMonData(mon, MON_DATA_FRIENDSHIP) < 200)
                             UPDATE_FRIENDSHIP_FROM_ITEM();
                         itemEffectParam++;
                         break;
 
                     case 7: // ITEM5_FRIENDSHIP_HIGH
-                        if (GetMonData(mon, MON_DATA_FRIENDSHIP, NULL) >= 200)
+                        if (GetMonData(mon, MON_DATA_FRIENDSHIP) >= 200)
                             UPDATE_FRIENDSHIP_FROM_ITEM();
                         itemEffectParam++;
                         break;
@@ -5935,7 +4092,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
     return retVal;
 }
 
-bool8 HealStatusConditions(struct Pokemon *mon, u32 healMask, u8 battler)
+bool8 HealStatusConditions(struct Pokemon *mon, u32 healMask, enum BattlerId battler)
 {
     u32 status = GetMonData(mon, MON_DATA_STATUS, 0);
 
@@ -5970,7 +4127,7 @@ bool8 HealStatusConditions(struct Pokemon *mon, u32 healMask, u8 battler)
     }
 }
 
-u8 GetItemEffectParamOffset(u32 battler, u16 itemId, u8 effectByte, u8 effectBit)
+u8 GetItemEffectParamOffset(enum BattlerId battler, enum Item itemId, u8 effectByte, u8 effectBit)
 {
     const u8 *temp;
     const u8 *itemEffect;
@@ -6100,7 +4257,7 @@ static void BufferStatRoseMessage(enum Stat statIdx)
     BattleStringExpandPlaceholdersToDisplayedString(gText_DefendersStatRose);
 }
 
-u8 *UseStatIncreaseItem(u16 itemId)
+u8 *UseStatIncreaseItem(enum Item itemId)
 {
     const u8 *itemEffect;
 
@@ -6187,6 +4344,7 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
     u32 heldItem = GetMonData(mon, MON_DATA_HELD_ITEM);
     u32 gender = GetMonGender(mon);
     u32 friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, 0);
+    u32 level = GetMonData(mon, MON_DATA_LEVEL, 0);
     u32 attack = GetMonData(mon, MON_DATA_ATK, 0);
     u32 defense = GetMonData(mon, MON_DATA_DEF, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
@@ -6197,7 +4355,6 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
     u32 removeBagItem = ITEM_NONE;
     u32 removeBagItemCount = 0;
     u32 evolutionTracker = GetMonData(mon, MON_DATA_EVOLUTION_TRACKER, 0);
-    u32 level = GetMonData(mon, MON_DATA_LEVEL, 0);
     u32 partnerSpecies, partnerHeldItem;
     enum HoldEffect partnerHoldEffect;
 
@@ -6321,7 +4478,7 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
         case IF_SPECIES_IN_PARTY:
             for (j = 0; j < PARTY_SIZE; j++)
             {
-                if (GetMonData(&gPlayerParty[j], MON_DATA_SPECIES, NULL) == params[i].arg1)
+                if (GetMonData(&gPlayerParty[j], MON_DATA_SPECIES) == params[i].arg1)
                 {
                     currentCondition = TRUE;
                     break;
@@ -6349,7 +4506,7 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
         case IF_TYPE_IN_PARTY:
             for (j = 0; j < PARTY_SIZE; j++)
             {
-                u16 currSpecies = GetMonData(&gPlayerParty[j], MON_DATA_SPECIES, NULL);
+                u16 currSpecies = GetMonData(&gPlayerParty[j], MON_DATA_SPECIES);
                 if (GetSpeciesType(currSpecies, 0) == params[i].arg1
                  || GetSpeciesType(currSpecies, 1) == params[i].arg1)
                 {
@@ -6377,7 +4534,7 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
         case IF_KNOWS_MOVE_TYPE:
             for (j = 0; j < MAX_MON_MOVES; j++)
             {
-                if (GetMoveType(GetMonData(mon, MON_DATA_MOVE1 + j, NULL)) == params[i].arg1)
+                if (GetMoveType(GetMonData(mon, MON_DATA_MOVE1 + j)) == params[i].arg1)
                 {
                     currentCondition = TRUE;
                     break;
@@ -6434,8 +4591,8 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
             break;
         case IF_CURRENT_DAMAGE_GE:
         {
-            u32 currentHp = GetMonData(mon, MON_DATA_HP, NULL);
-            if (currentHp != 0 && (GetMonData(mon, MON_DATA_MAX_HP, NULL) - currentHp >= params[i].arg1))
+            u32 currentHp = GetMonData(mon, MON_DATA_HP);
+            if (currentHp != 0 && (GetMonData(mon, MON_DATA_MAX_HP) - currentHp >= params[i].arg1))
                 currentCondition = TRUE;
             break;
         }
@@ -6478,17 +4635,17 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
                     *canStopEvo = FALSE;
             }
             break;
-
-        //Elastic additional criteria
+        // Elastic Emerald additional criteria
         case IF_MIN_RESTRICTED_LEVEL:
-            if (!FlagGet(FLAG_RESTRICTED_MODE) || level >= params[i].arg1){
+            if (!FlagGet(FLAG_RESTRICTED_MODE) || level >= params[i].arg1)
                 currentCondition = TRUE;
-            }
             break;
         case IF_MONOTYPE_MATCHES_ONE_OF_TWO_TYPES:
-            if (GetMonoType() == TYPE_NONE || GetMonoType() == params[i].arg1 || GetMonoType() == params[i].arg2){
+            if (GetMonoType() == TYPE_NONE
+             || GetMonoType() == params[i].arg1
+             || GetMonoType() == params[i].arg2)
                 currentCondition = TRUE;
-            }
+            break;
         case IF_REGION:
             if (GetCurrentRegion() == params[i].arg1)
                 currentCondition = TRUE;
@@ -6707,7 +4864,7 @@ u32 GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, u16 
     // Pikachu, Meowth, Eevee and Duraludon cannot evolve if they have the
     // Gigantamax Factor. We assume that is because their evolutions
     // do not have a Gigantamax Form.
-    if (GetMonData(mon, MON_DATA_GIGANTAMAX_FACTOR, NULL)
+    if (GetMonData(mon, MON_DATA_GIGANTAMAX_FACTOR)
      && GetGMaxTargetSpecies(species) != species
      && GetGMaxTargetSpecies(targetSpecies) == targetSpecies)
     {
@@ -6968,7 +5125,7 @@ u8 GetTrainerEncounterMusicId(u16 trainerOpponentId)
     else if (InTrainerHillChallenge())
         return GetTrainerEncounterMusicIdInTrainerHill(trainerOpponentId);
     else
-        return gTrainers[difficulty][sanitizedTrainerId].encounterMusic_gender & (F_TRAINER_FEMALE - 1);
+        return gTrainers[difficulty][sanitizedTrainerId].encounterMusic;
 }
 
 u16 ModifyStatByNature(u8 nature, u16 stat, enum Stat statIndex)
@@ -7064,10 +5221,10 @@ u8 CalculateFriendshipBonuses(struct Pokemon *mon, u32 modifier, enum HoldEffect
     if (modifier == 0)
         return bonus;
 
-    if (GetMonData(mon, MON_DATA_POKEBALL, NULL) == ITEM_LUXURY_BALL)
+    if (GetMonData(mon, MON_DATA_POKEBALL) == ITEM_LUXURY_BALL)
         bonus += ITEM_FRIENDSHIP_LUXURY_BONUS;
 
-    if (GetMonData(mon, MON_DATA_MET_LOCATION, NULL) == GetCurrentRegionMapSectionId())
+    if (GetMonData(mon, MON_DATA_MET_LOCATION) == GetCurrentRegionMapSectionId())
         bonus += ITEM_FRIENDSHIP_MAPSEC_BONUS;
 
     return bonus;
@@ -7084,15 +5241,8 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
     int multiplier;
     u8 stat;
     u8 bonus;
-    s32 evCap, maxEVs;
+    u32 currentEVCap = GetCurrentEVCap();
 
-    evCap = GetEVStatCap();
-    maxEVs = evCap == 0 ? 0 : evCap * 2 + 6;
-
-    //Skip the EV check if not playing on EV mode
-    if (!FlagGet(FLAG_EV_MODE)){
-        return;
-    }
     heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, 0);
     if (heldItem == ITEM_ENIGMA_BERRY_E_READER)
     {
@@ -7121,10 +5271,10 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
 
     for (i = 0; i < NUM_STATS; i++)
     {
-        if (totalEVs >= maxEVs)
+        if (totalEVs >= currentEVCap)
             break;
 
-        if (CheckPartyHasHadPokerus(mon, 0))
+        if (CheckMonHasHadPokerus(mon))
             multiplier = 2;
         else
             multiplier = 1;
@@ -7174,12 +5324,12 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
         if (holdEffect == HOLD_EFFECT_MACHO_BRACE)
             evIncrease *= 2;
 
-        if (totalEVs + (s16)evIncrease > maxEVs)
-            evIncrease = ((s16)evIncrease + maxEVs) - (totalEVs + evIncrease);
+        if (totalEVs + (s16)evIncrease > currentEVCap)
+            evIncrease = ((s16)evIncrease + currentEVCap) - (totalEVs + evIncrease);
 
-        if (evs[i] + (s16)evIncrease > evCap)
+        if (evs[i] + (s16)evIncrease > MAX_PER_STAT_EVS)
         {
-            int val1 = (s16)evIncrease + evCap;
+            int val1 = (s16)evIncrease + MAX_PER_STAT_EVS;
             int val2 = evs[i] + evIncrease;
             evIncrease = val1 - val2;
         }
@@ -7201,152 +5351,6 @@ u16 GetMonEVCount(struct Pokemon *mon)
     return count;
 }
 
-void RandomlyGivePartyPokerus(struct Pokemon *party)
-{
-    u16 rnd = Random();
-    if (rnd == 0x4000 || rnd == 0x8000 || rnd == 0xC000)
-    {
-        struct Pokemon *mon;
-
-        do
-        {
-            rnd = Random() % PARTY_SIZE;
-            mon = &party[rnd];
-        }
-        while (!GetMonData(mon, MON_DATA_SPECIES, 0) || GetMonData(mon, MON_DATA_IS_EGG, 0));
-
-        if (!(CheckPartyHasHadPokerus(party, 1u << rnd)))
-        {
-            u8 rnd2;
-
-            do
-            {
-                rnd2 = Random();
-            }
-            while ((rnd2 & 0x7) == 0);
-
-            if (rnd2 & 0xF0)
-                rnd2 &= 0x7;
-
-            rnd2 |= (rnd2 << 4);
-            rnd2 &= 0xF3;
-            rnd2++;
-
-            SetMonData(&party[rnd], MON_DATA_POKERUS, &rnd2);
-        }
-    }
-}
-
-u8 CheckPartyPokerus(struct Pokemon *party, u8 selection)
-{
-    u8 retVal;
-
-    int partyIndex = 0;
-    unsigned curBit = 1;
-    retVal = 0;
-
-    if (selection)
-    {
-        do
-        {
-            if ((selection & 1) && (GetMonData(&party[partyIndex], MON_DATA_POKERUS, 0) & 0xF))
-                retVal |= curBit;
-            partyIndex++;
-            curBit <<= 1;
-            selection >>= 1;
-        }
-        while (selection);
-    }
-    else if (GetMonData(&party[0], MON_DATA_POKERUS, 0) & 0xF)
-    {
-        retVal = 1;
-    }
-
-    return retVal;
-}
-
-u8 CheckPartyHasHadPokerus(struct Pokemon *party, u8 selection)
-{
-    u8 retVal;
-
-    int partyIndex = 0;
-    unsigned curBit = 1;
-    retVal = 0;
-
-    if (selection)
-    {
-        do
-        {
-            if ((selection & 1) && GetMonData(&party[partyIndex], MON_DATA_POKERUS, 0))
-                retVal |= curBit;
-            partyIndex++;
-            curBit <<= 1;
-            selection >>= 1;
-        }
-        while (selection);
-    }
-    else if (GetMonData(&party[0], MON_DATA_POKERUS, 0))
-    {
-        retVal = 1;
-    }
-
-    return retVal;
-}
-
-void UpdatePartyPokerusTime(u16 days)
-{
-    int i;
-    for (i = 0; i < PARTY_SIZE; i++)
-    {
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, 0))
-        {
-            u8 pokerus = GetMonData(&gPlayerParty[i], MON_DATA_POKERUS, 0);
-            if (pokerus & 0xF)
-            {
-                if ((pokerus & 0xF) < days || days > 4)
-                    pokerus &= 0xF0;
-                else
-                    pokerus -= days;
-
-                if (pokerus == 0)
-                    pokerus = 0x10;
-
-                SetMonData(&gPlayerParty[i], MON_DATA_POKERUS, &pokerus);
-            }
-        }
-    }
-}
-
-void PartySpreadPokerus(struct Pokemon *party)
-{
-    if ((Random() % 3) == 0)
-    {
-        int i;
-        for (i = 0; i < PARTY_SIZE; i++)
-        {
-            if (GetMonData(&party[i], MON_DATA_SPECIES, 0))
-            {
-                u8 pokerus = GetMonData(&party[i], MON_DATA_POKERUS, 0);
-                u8 curPokerus = pokerus;
-                if (pokerus)
-                {
-                    if (pokerus & 0xF)
-                    {
-                        // Spread to adjacent party members.
-                        if (i != 0 && !(GetMonData(&party[i - 1], MON_DATA_POKERUS, 0) & 0xF0))
-                            SetMonData(&party[i - 1], MON_DATA_POKERUS, &curPokerus);
-                        if (i != (PARTY_SIZE - 1) && !(GetMonData(&party[i + 1], MON_DATA_POKERUS, 0) & 0xF0))
-                        {
-                            SetMonData(&party[i + 1], MON_DATA_POKERUS, &curPokerus);
-                            i++;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 bool8 TryIncrementMonLevel(struct Pokemon *mon)
 {
     u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
@@ -7357,7 +5361,7 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
         expPoints = gExperienceTables[gSpeciesInfo[species].growthRate][MAX_LEVEL];
         SetMonData(mon, MON_DATA_EXP, &expPoints);
     }
-    if (nextLevel > GetCurrentLevelCap(CANDY_CAP) || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
+    if (nextLevel > GetCurrentLevelCap(HARD_CAP) || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
     {
         return FALSE;
     }
@@ -7368,459 +5372,16 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
     }
 }
 
-static const u16 sUniversalMoves[] =
+u8 CanLearnTeachableMove(u16 species, enum Move move)
 {
-    MOVE_FRUSTRATION,
-    MOVE_NATURAL_GIFT,
-    MOVE_RAGE,
-    MOVE_RETURN,
-    MOVE_SECRET_POWER,
-    MOVE_SUBSTITUTE,
-    MOVE_TERA_BLAST,
-};
-
-u8 CanLearnTeachableMove(u16 species, u16 move)
-{
-    if (species == SPECIES_EGG)
-    {
-        return FALSE;
-    }
-    else if (species == SPECIES_MEW)
-    {
-        switch (move)
-        {
-        case MOVE_BADDY_BAD:
-        case MOVE_BOUNCY_BUBBLE:
-        case MOVE_BUZZY_BUZZ:
-        case MOVE_DRAGON_ASCENT:
-        case MOVE_FLOATY_FALL:
-        case MOVE_FREEZY_FROST:
-        case MOVE_GLITZY_GLOW:
-        case MOVE_RELIC_SONG:
-        case MOVE_SAPPY_SEED:
-        case MOVE_SECRET_SWORD:
-        case MOVE_SIZZLY_SLIDE:
-        case MOVE_SPARKLY_SWIRL:
-        case MOVE_SPLISHY_SPLASH:
-        case MOVE_VOLT_TACKLE:
-        case MOVE_ZIPPY_ZAP:
-            return FALSE;
-        default:
-            return TRUE;
-        }
-    }
-    else
-    {
-        u32 i, j;
-        const u16 *teachableLearnset = GetSpeciesTeachableLearnset(species);
-        for (i = 0; i < ARRAY_COUNT(sUniversalMoves); i++)
-        {
-            if (sUniversalMoves[i] == move)
-            {
-                if (!gSpeciesInfo[species].tmIlliterate)
-                {
-                    if (move == MOVE_TERA_BLAST && GET_BASE_SPECIES_ID(species) == SPECIES_TERAPAGOS)
-                        return FALSE;
-                    if (GET_BASE_SPECIES_ID(species) == SPECIES_PYUKUMUKU && (move == MOVE_HIDDEN_POWER || move == MOVE_RETURN || move == MOVE_FRUSTRATION))
-                        return FALSE;
-                    return TRUE;
-                }
-                else
-                {
-                    const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
-
-                    if (P_TM_LITERACY < GEN_6)
-                        return FALSE;
-
-                    for (j = 0; j < MAX_LEVEL_UP_MOVES && learnset[j].move != LEVEL_UP_MOVE_END; j++)
-                    {
-                        if (learnset[j].move == move)
-                            return TRUE;
-                    }
-                    return FALSE;
-                }
-            }
-        }
-        for (i = 0; teachableLearnset[i] != MOVE_UNAVAILABLE; i++)
-        {
-            if (teachableLearnset[i] == move)
-                return TRUE;
-        }
-        return FALSE;
-    }
-}
-
-static void QuickSortMoves(u16 *moves, s32 left, s32 right)
-{
-    if (left >= right)
-        return;
-
-    u16 pivot = moves[(left + right) / 2];
-    s32 i = left, j = right;
-
-    while (i <= j)
-    {
-        while (moves[i] != MOVE_NONE && StringCompare(GetMoveName(moves[i]), GetMoveName(pivot)) < 0)
-            i++;
-        while (moves[j] != MOVE_NONE && StringCompare(GetMoveName(moves[j]), GetMoveName(pivot)) > 0)
-            j--;
-
-        if (i <= j)
-        {
-            u16 temp = moves[i];
-            moves[i] = moves[j];
-            moves[j] = temp;
-            i++;
-            j--;
-        }
-    }
-
-    QuickSortMoves(moves, left, j);
-    QuickSortMoves(moves, i, right);
-}
-
-static void SortMovesAlphabetically(u16 *moves, u32 numMoves)
-{
-    if (numMoves > 1)
-        QuickSortMoves(moves, 0, numMoves - 1);
-}
-
-u32 GetRelearnerLevelUpMoves(struct Pokemon *mon, u16 *moves)
-{
-    u16 learnedMoves[MAX_MON_MOVES] = {0};
-    u32 numMoves = 0;
-    u32 species = GetMonData(mon, MON_DATA_SPECIES, 0);
-    u32 level = (P_ENABLE_ALL_LEVEL_UP_MOVES ? MAX_LEVEL : GetMonData(mon, MON_DATA_LEVEL, 0));
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    do
-    {
-        const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
-
-        for (u32 i = 0; i < MAX_LEVEL_UP_MOVES && learnset[i].move != LEVEL_UP_MOVE_END; i++)
-        {
-            if (learnset[i].level > level)
-                break;
-
-            u32 j;
-            for (j = 0; j < MAX_MON_MOVES; j++)
-            {
-                if (learnedMoves[j] == learnset[i].move)
-                    break;
-            }
-            if (j < MAX_MON_MOVES)
-                continue;
-
-            for (j = 0; j < numMoves; j++)
-            {
-                if (moves[j] == learnset[i].move)
-                    break;
-            }
-            if (j < numMoves)
-                continue;
-
-            moves[numMoves++] = learnset[i].move;
-        }
-
-        species = (P_PRE_EVO_MOVES ? GetSpeciesPreEvolution(species) : SPECIES_NONE);
-    } while (species != SPECIES_NONE);
-
-    if (P_SORT_MOVES)
-        SortMovesAlphabetically(moves, numMoves);
-
-    return numMoves;
-}
-
-u32 GetRelearnerEggMoves(struct Pokemon *mon, u16 *moves)
-{
-    if (!FlagGet(P_FLAG_EGG_MOVES) && !P_ENABLE_MOVE_RELEARNERS)
-        return 0;
-
-    u32 learnedMoves[MAX_MON_MOVES] = {0};
-    u32 numMoves = 0;
-    u32 species = GetMonData(mon, MON_DATA_SPECIES);
-
-    while (GetSpeciesPreEvolution(species) != SPECIES_NONE)
-        species = GetSpeciesPreEvolution(species);
-    const u16 *eggMoves = GetSpeciesEggMoves(species);
-
-    if (eggMoves == sNoneEggMoveLearnset)
-        return numMoves;
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    for (u32 i = 0; eggMoves[i] != MOVE_UNAVAILABLE; i++)
-    {
-        u32 j;
-        for (j = 0; j < MAX_MON_MOVES; j++)
-        {
-            if (learnedMoves[j] == eggMoves[i])
-                break;
-        }
-        if (j < MAX_MON_MOVES)
-            continue;
-
-        for (j = 0; j < numMoves; j++)
-        {
-            if (moves[j] == eggMoves[i])
-                break;
-        }
-        if (j < numMoves)
-            continue;
-
-        moves[numMoves++] = eggMoves[i];
-    }
-
-    if (P_SORT_MOVES)
-        SortMovesAlphabetically(moves, numMoves);
-
-    return numMoves;
-}
-
-u32 GetRelearnerTMMoves(struct Pokemon *mon, u16 *moves)
-{
-    if (!P_TM_MOVES_RELEARNER)
-        return 0;
-
-    u32 learnedMoves[MAX_MON_MOVES] = {0};
-    u32 numMoves = 0;
-    u32 species = GetMonData(mon, MON_DATA_SPECIES);
-    u16 allMoves[NUM_ALL_MACHINES];
-    u32 totalMoveCount = 0;
-
-    for (u32 i = 0; i < NUM_ALL_MACHINES; i++)
-    {
-        enum TMHMItemId item = GetTMHMItemId(i + 1);
-        u32 move = GetTMHMMoveId(i + 1);
-
-        if (move == MOVE_NONE)
-            continue;
-
-        if ((P_ENABLE_ALL_TM_MOVES || CheckBagHasItem(item, 1)) && CanLearnTeachableMove(species, move) && move != MOVE_NONE)
-            allMoves[totalMoveCount++] = move;
-    }
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    for (u32 i = 0; i < totalMoveCount; i++)
-    {
-        u32 j;
-        for (j = 0; j < MAX_MON_MOVES; j++)
-        {
-            if (learnedMoves[j] == allMoves[i])
-                break;
-        }
-        if (j < MAX_MON_MOVES)
-            continue;
-
-        for (j = 0; j < numMoves; j++)
-        {
-            if (moves[j] == allMoves[i])
-                break;
-        }
-        if (j < numMoves)
-            continue;
-
-        moves[numMoves++] = allMoves[i];
-    }
-
-    if (P_SORT_MOVES)
-        SortMovesAlphabetically(moves, numMoves);
-
-    return numMoves;
-}
-
-u32 GetRelearnerTutorMoves(struct Pokemon *mon, u16 *moves)
-{
-    if (!FlagGet(P_FLAG_TUTOR_MOVES) && !P_ENABLE_MOVE_RELEARNERS)
-        return 0;
-
-#if P_TUTOR_MOVES_ARRAY
-    u16 learnedMoves[MAX_MON_MOVES] = {0};
-    u32 numMoves = 0;
-    u32 species = GetMonData(mon, MON_DATA_SPECIES, 0);
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    for (u32 i = 0; gTutorMoves[i] != MOVE_UNAVAILABLE; i++)
-    {
-        u32 move = gTutorMoves[i];
-
-        if (!CanLearnTeachableMove(species, move))
-            continue;
-
-        u32 j;
-        for (j = 0; j < MAX_MON_MOVES; j++)
-        {
-            if (learnedMoves[j] == move)
-                break;
-        }
-        if (j < MAX_MON_MOVES)
-            continue;
-
-        for (j = 0; j < numMoves; j++)
-        {
-            if (moves[j] == move)
-                break;
-        }
-        if (j < numMoves)
-            continue;
-
-        moves[numMoves++] = move;
-    }
-
-    if (P_SORT_MOVES)
-        SortMovesAlphabetically(moves, numMoves);
-
-    return numMoves;
-#else
-    return 0;
-#endif // P_TUTOR_MOVES_ARRAY
-}
-
-static inline bool32 DoesMonHaveMove(const u16 *moves, u16 move)
-{
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-    {
-        if (moves[i] == move)
-            return TRUE;
-    }
-    return FALSE;
-}
-
-bool32 HasRelearnerLevelUpMoves(struct Pokemon *mon)
-{
-    u32 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
-
+    const u16 *teachableLearnset = GetSpeciesTeachableLearnset(species);
     if (species == SPECIES_EGG)
         return FALSE;
-
-    u16 learnedMoves[MAX_MON_MOVES];
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    u32 level = (P_ENABLE_ALL_LEVEL_UP_MOVES ? MAX_LEVEL : GetMonData(mon, MON_DATA_LEVEL, 0));
-
-    do
+    for (u32 i = 0; teachableLearnset[i] != MOVE_UNAVAILABLE; i++)
     {
-        const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
-
-        for (u32 i = 0; i < MAX_LEVEL_UP_MOVES && learnset[i].move != LEVEL_UP_MOVE_END; i++)
-        {
-            if (learnset[i].level > level)
-                break;
-
-            if (!DoesMonHaveMove(learnedMoves, learnset[i].move))
-                return TRUE;
-        }
-
-        species = (P_PRE_EVO_MOVES ? GetSpeciesPreEvolution(species) : SPECIES_NONE);
-
-    } while (species != SPECIES_NONE);
-
-    return FALSE;
-}
-
-bool32 HasRelearnerEggMoves(struct Pokemon *mon)
-{
-    if (!FlagGet(P_FLAG_EGG_MOVES) && !P_ENABLE_MOVE_RELEARNERS)
-        return FALSE;
-
-    u32 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
-
-    if (species == SPECIES_EGG)
-        return FALSE;
-
-    u16 learnedMoves[MAX_MON_MOVES];
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    while (GetSpeciesPreEvolution(species) != SPECIES_NONE)
-        species = GetSpeciesPreEvolution(species);
-
-    const u16 *eggMoves = GetSpeciesEggMoves(species);
-    if (eggMoves == sNoneEggMoveLearnset)
-        return FALSE;
-
-    for (u32 i = 0; eggMoves[i] != MOVE_UNAVAILABLE; i++)
-    {
-        if (!DoesMonHaveMove(learnedMoves, eggMoves[i]))
+        if (teachableLearnset[i] == move)
             return TRUE;
     }
-
-    return FALSE;
-}
-
-bool32 HasRelearnerTMMoves(struct Pokemon *mon)
-{
-    if (!P_TM_MOVES_RELEARNER)
-        return FALSE;
-
-    u32 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
-
-    if (species == SPECIES_EGG)
-        return FALSE;
-
-    u16 learnedMoves[MAX_MON_MOVES];
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    for (u32 i = 0; i < NUM_ALL_MACHINES; i++)
-    {
-        enum TMHMItemId item = GetTMHMItemId(i + 1);
-        u32 move = GetTMHMMoveId(i + 1);
-
-        if (move == MOVE_NONE)
-            continue;
-
-        if (!P_ENABLE_ALL_TM_MOVES && !CheckBagHasItem(item, 1))
-            continue;
-
-        if (!CanLearnTeachableMove(species, move))
-            continue;
-
-        if (!DoesMonHaveMove(learnedMoves, move))
-            return TRUE;
-    }
-
-    return FALSE;
-}
-
-bool32 HasRelearnerTutorMoves(struct Pokemon *mon)
-{
-    if (!FlagGet(P_FLAG_TUTOR_MOVES) && !P_ENABLE_MOVE_RELEARNERS)
-        return FALSE;
-
-#if P_TUTOR_MOVES_ARRAY
-    u32 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
-
-    if (species == SPECIES_EGG)
-        return FALSE;
-
-    u16 learnedMoves[MAX_MON_MOVES];
-
-    for (u32 i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    for (u32 i = 0; gTutorMoves[i] != MOVE_UNAVAILABLE; i++)
-    {
-        u32 move = gTutorMoves[i];
-
-        if (!CanLearnTeachableMove(species, move))
-            continue;
-
-        if (!DoesMonHaveMove(learnedMoves, move))
-            return TRUE;
-    }
-#endif
     return FALSE;
 }
 
@@ -7836,161 +5397,92 @@ u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves)
      return numMoves;
 }
 
-u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
+static u8 AddTutorMoves(u16 species, u16 *moves, const u16 *tutorMoves, size_t tutorMoveCount, u8 moveCount)
 {
-    u16 learnedMoves[MAX_MON_MOVES];
-    u16 moves[MAX_LEVEL_UP_MOVES];
-    u8 numMoves = 0;
-    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, 0);
-    u8 level = GetMonData(mon, MON_DATA_LEVEL, 0);
-    const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
-    int i, j, k;
-
-    if (species == SPECIES_EGG)
-        return 0;
-
-    for (i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    for (i = 0; i < MAX_LEVEL_UP_MOVES; i++)
-    {
-        u16 moveLevel;
-
-        if (learnset[i].move == LEVEL_UP_MOVE_END)
-            break;
-
-        moveLevel = learnset[i].level;
-
-        if (moveLevel <= level)
-        {
-            for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != learnset[i].move; j++)
-                ;
-
-            if (j == MAX_MON_MOVES)
-            {
-                for (k = 0; k < numMoves && moves[k] != learnset[i].move; k++)
-                    ;
-
-                if (k == numMoves)
-                    moves[numMoves++] = learnset[i].move;
-            }
-        }
-    }
-
-    return numMoves;
-}
-
-//Adds tutor moves from a tutorMoves array to an applicable moves pointer
-static u8 AddTutorMoves(u16 species, u16 *applicable_moves, const u16 *tutorMoves, size_t numTutorMoves, u8 currentNumMoves){
     u8 addedMoves = 0;
-    int i;
 
-    for (i=0; i < numTutorMoves; i++){
-        // if (species == SPECIES_SHINX && tutorMoves[i] == MOVE_MUD_SLAP){
-        //     DebugPrintf("Mud Slap Shinx case reached. The bool result is %d", CanLearnTeachableMove(species, tutorMoves[i]));
-        // }
-        if (CanLearnTeachableMove(species, tutorMoves[i])){
-            applicable_moves[currentNumMoves + addedMoves++] = tutorMoves[i];
-        }
-
+    for (u32 i = 0; i < tutorMoveCount; i++)
+    {
+        if (CanLearnTeachableMove(species, tutorMoves[i]))
+            moves[moveCount + addedMoves++] = tutorMoves[i];
     }
     return addedMoves;
 }
 
-static u8 GetCenterTutorMoveList(u16 species, u16 *applicable_moves){
-    u8 numMoves = 0;
+static u8 GetCenterTutorMoveList(u16 species, u16 *moves)
+{
+    u8 moveCount = 0;
 
-    //pre-badge one, always applies
-    numMoves += AddTutorMoves(species, applicable_moves, gPreGym1Tutor, ARRAY_COUNT(gPreGym1Tutor), numMoves);
-    //pre-badge 1 moves not available in restricted
-    if (!FlagGet(FLAG_RESTRICTED_MODE)){
-        numMoves += AddTutorMoves(species, applicable_moves, gPreGym1TutorSetup, ARRAY_COUNT(gPreGym1TutorSetup), numMoves);
-    }
+    moveCount += AddTutorMoves(species, moves, gPreGym1Tutor, ARRAY_COUNT(gPreGym1Tutor), moveCount);
+    if (!FlagGet(FLAG_RESTRICTED_MODE))
+        moveCount += AddTutorMoves(species, moves, gPreGym1TutorSetup, ARRAY_COUNT(gPreGym1TutorSetup), moveCount);
 
-    //If acquired one badge
-    if (FlagGet(FLAG_BADGE01_GET)){
-        numMoves += AddTutorMoves(species, applicable_moves, gPreGym2Tutor, ARRAY_COUNT(gPreGym2Tutor), numMoves);
-        //There are currently no moves but still including the check anyway
-        if (!FlagGet(FLAG_RESTRICTED_MODE)){
-            numMoves += AddTutorMoves(species, applicable_moves, gPreGym2TutorSetup, ARRAY_COUNT(gPreGym2TutorSetup), numMoves);
-        }
+    if (FlagGet(FLAG_BADGE01_GET))
+    {
+        moveCount += AddTutorMoves(species, moves, gPreGym2Tutor, ARRAY_COUNT(gPreGym2Tutor), moveCount);
+        if (!FlagGet(FLAG_RESTRICTED_MODE))
+            moveCount += AddTutorMoves(species, moves, gPreGym2TutorSetup, ARRAY_COUNT(gPreGym2TutorSetup), moveCount);
     }
-    if (FlagGet(FLAG_BADGE02_GET)){
-        numMoves += AddTutorMoves(species, applicable_moves, gPreGym3Tutor, ARRAY_COUNT(gPreGym3Tutor), numMoves);
-        if (!FlagGet(FLAG_RESTRICTED_MODE)){
-            numMoves += AddTutorMoves(species, applicable_moves, gPreGym3TutorSetup, ARRAY_COUNT(gPreGym3TutorSetup), numMoves);
-        }
+    if (FlagGet(FLAG_BADGE02_GET))
+    {
+        moveCount += AddTutorMoves(species, moves, gPreGym3Tutor, ARRAY_COUNT(gPreGym3Tutor), moveCount);
+        if (!FlagGet(FLAG_RESTRICTED_MODE))
+            moveCount += AddTutorMoves(species, moves, gPreGym3TutorSetup, ARRAY_COUNT(gPreGym3TutorSetup), moveCount);
     }
-    return numMoves;
+    return moveCount;
 }
 
-static u8 GetTechTutorMoveList(u16 species, u16 *applicable_moves){
-    u8 numMoves = 0;
+static u8 GetTechTutorMoveList(u16 species, u16 *moves)
+{
+    u8 moveCount = 0;
 
-    // DebugPrintf("GetTechTutorMoveList is called");
-
-    //pre-badge one, always applies
-    numMoves += AddTutorMoves(species, applicable_moves, gTechTutorAlways, ARRAY_COUNT(gTechTutorAlways), numMoves);
-
-    //If acquired one badge
-    if (FlagGet(FLAG_BADGE01_GET)){
-        numMoves += AddTutorMoves(species, applicable_moves, gTechTutor1Badge, ARRAY_COUNT(gTechTutor1Badge), numMoves);
-    }
-    return numMoves;
+    moveCount += AddTutorMoves(species, moves, gTechTutorAlways, ARRAY_COUNT(gTechTutorAlways), moveCount);
+    if (FlagGet(FLAG_BADGE01_GET))
+        moveCount += AddTutorMoves(species, moves, gTechTutor1Badge, ARRAY_COUNT(gTechTutor1Badge), moveCount);
+    return moveCount;
 }
 
-u8 GetNPCTutorMoveList(u16 species, u16 *applicable_moves){
-    if(VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER){
-        return GetCenterTutorMoveList(species, applicable_moves);
-    }else if (VarGet(VAR_TEMP_9) == MOVE_TUTOR_TECH){
-        return GetTechTutorMoveList(species, applicable_moves);
-    }
-
+static u8 GetNPCTutorMoveList(u16 species, u16 *moves)
+{
+    if (VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER)
+        return GetCenterTutorMoveList(species, moves);
+    if (VarGet(VAR_TEMP_9) == MOVE_TUTOR_TECH)
+        return GetTechTutorMoveList(species, moves);
     return 0;
 }
 
 u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
 {
-    u16 learnedMoves[4];
-    u8 numMoves = 0;
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, 0);
+    u16 learnedMoves[MAX_MON_MOVES];
+    u16 applicableTutorMoves[MAX_TUTOR_LIST] = {0};
+    u8 moveCount = 0;
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
 
-    u16 applicable_tutor_moves[MAX_TUTOR_LIST] = {0};
-
-    int i, j;
-
-    if (species == SPECIES_EGG){
+    if (species == SPECIES_EGG)
         return 0;
-    }
 
-    GetNPCTutorMoveList(species, applicable_tutor_moves);
+    u8 applicableMoveCount = GetNPCTutorMoveList(species, applicableTutorMoves);
+    for (u32 i = 0; i < MAX_MON_MOVES; i++)
+        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i);
 
-
-    for (i = 0; i < MAX_MON_MOVES; i++)
-        learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i, 0);
-
-    for (i=0; i< MAX_TUTOR_LIST; i++){
-        if (!applicable_tutor_moves[i]){
-            break;
-        }
-        for (j=0; j < MAX_MON_MOVES && learnedMoves[j] != applicable_tutor_moves[i]; j++){
+    for (u32 i = 0; i < applicableMoveCount; i++)
+    {
+        u32 j;
+        for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != applicableTutorMoves[i]; j++)
             ;
-        }
-        //If the applicable move is not in the learned moves array, add it to the moves array
-        if (j == MAX_MON_MOVES){
-            moves[numMoves++] = applicable_tutor_moves[i];
-        }
+        if (j == MAX_MON_MOVES)
+            moves[moveCount++] = applicableTutorMoves[i];
     }
-    return numMoves;
+    return moveCount;
 }
 
-//Simply use the CenterTutorableMoves number of tutorable moves
-//To compute this, since it handles move overlaps
 u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
 {
     u16 moves[MAX_TUTOR_LIST] = {0};
+
     return GetNPCTutorableMoves(mon, moves);
 }
+
 u16 SpeciesToPokedexNum(u16 species)
 {
     if (IsNationalPokedexEnabled())
@@ -8018,7 +5510,7 @@ u16 GetBattleBGM(void)
 {
     if (gBattleTypeFlags & BATTLE_TYPE_LEGENDARY)
     {
-        switch (GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, NULL))
+        switch (GetMonData(&gEnemyParty[0], MON_DATA_SPECIES))
         {
         case SPECIES_RAYQUAZA:
             return MUS_VS_RAYQUAZA;
@@ -8135,22 +5627,40 @@ static void Task_PlayMapChosenOrBattleBGM(u8 taskId)
 
 const u16 *GetMonFrontSpritePal(struct Pokemon *mon)
 {
-    u16 species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, NULL);
-    bool32 isShiny = GetMonData(mon, MON_DATA_IS_SHINY, NULL);
-    u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
-    return GetMonSpritePalFromSpeciesAndPersonality(species, isShiny, personality);
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    bool32 isShiny = GetMonData(mon, MON_DATA_IS_SHINY);
+    u32 personality = GetMonData(mon, MON_DATA_PERSONALITY);
+    bool32 isEgg = GetMonData(mon, MON_DATA_IS_EGG);
+    return GetMonSpritePalFromSpeciesAndPersonalityIsEgg(species, isShiny, personality, isEgg);
 }
 
 const u16 *GetMonSpritePalFromSpeciesAndPersonality(u16 species, bool32 isShiny, u32 personality)
 {
-    return GetMonSpritePalFromSpecies(species, isShiny, IsPersonalityFemale(species, personality));
+    return GetMonSpritePalFromSpeciesIsEgg(species, isShiny, IsPersonalityFemale(species, personality), FALSE);
+}
+
+const u16 *GetMonSpritePalFromSpeciesAndPersonalityIsEgg(u16 species, bool32 isShiny, u32 personality, bool32 isEgg)
+{
+    return GetMonSpritePalFromSpeciesIsEgg(species, isShiny, IsPersonalityFemale(species, personality), isEgg);
 }
 
 const u16 *GetMonSpritePalFromSpecies(u16 species, bool32 isShiny, bool32 isFemale)
 {
+    return GetMonSpritePalFromSpeciesIsEgg(species, isShiny, isFemale, FALSE);
+}
+
+const u16 *GetMonSpritePalFromSpeciesIsEgg(u16 species, bool32 isShiny, bool32 isFemale, bool32 isEgg)
+{
     species = SanitizeSpeciesId(species);
 
-    if (isShiny)
+    if (isEgg)
+    {
+        if (gSpeciesInfo[species].eggId != EGG_ID_NONE)
+            return gEggDatas[gSpeciesInfo[species].eggId].eggPalette;
+        else
+            return gSpeciesInfo[SPECIES_EGG].palette;
+    }
+    else if (isShiny)
     {
     #if P_GENDER_DIFFERENCES
         if (gSpeciesInfo[species].shinyPaletteFemale != NULL && isFemale)
@@ -8178,14 +5688,14 @@ const u16 *GetMonSpritePalFromSpecies(u16 species, bool32 isShiny, bool32 isFema
 
 #define OR_MOVE_IS_HM(_hm) || (move == MOVE_##_hm)
 
-bool32 IsMoveHM(u16 move)
+bool32 IsMoveHM(enum Move move)
 {
     return FALSE FOREACH_HM(OR_MOVE_IS_HM);
 }
 
 #undef OR_MOVE_IS_HM
 
-bool32 CannotForgetMove(u16 move)
+bool32 CannotForgetMove(enum Move move)
 {
     if (P_CAN_FORGET_HIDDEN_MOVE)
         return FALSE;
@@ -8198,13 +5708,13 @@ bool8 IsMonSpriteNotFlipped(u16 species)
     return gSpeciesInfo[species].noFlip;
 }
 
-s8 GetMonFlavorRelation(struct Pokemon *mon, u8 flavor)
+s8 GetMonFlavorRelation(struct Pokemon *mon, enum Flavor flavor)
 {
     u8 nature = GetNature(mon);
     return gPokeblockFlavorCompatibilityTable[nature * FLAVOR_COUNT + flavor];
 }
 
-s8 GetFlavorRelationByPersonality(u32 personality, u8 flavor)
+s8 GetFlavorRelationByPersonality(u32 personality, enum Flavor flavor)
 {
     u8 nature = GetNatureFromPersonality(personality);
     return gPokeblockFlavorCompatibilityTable[nature * FLAVOR_COUNT + flavor];
@@ -8221,11 +5731,7 @@ bool8 IsTradedMon(struct Pokemon *mon)
 
 bool8 IsOtherTrainer(u32 otId, u8 *otName)
 {
-    if (otId ==
-        (gSaveBlock2Ptr->playerTrainerId[0]
-      | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
-      | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
-      | (gSaveBlock2Ptr->playerTrainerId[3] << 24)))
+    if (otId == READ_OTID_FROM_SAVE)
     {
         int i;
         for (i = 0; otName[i] != EOS; i++)
@@ -8250,7 +5756,7 @@ void BoxMonRestorePP(struct BoxPokemon *boxMon)
     {
         if (GetBoxMonData(boxMon, MON_DATA_MOVE1 + i, 0))
         {
-            u16 move = GetBoxMonData(boxMon, MON_DATA_MOVE1 + i, 0);
+            enum Move move = GetBoxMonData(boxMon, MON_DATA_MOVE1 + i, 0);
             u16 bonus = GetBoxMonData(boxMon, MON_DATA_PP_BONUSES, 0);
             u8 pp = CalculatePPWithBonus(move, bonus, i);
             SetBoxMonData(boxMon, MON_DATA_PP1 + i, &pp);
@@ -8314,7 +5820,7 @@ void SetWildMonHeldItem(void)
 
         for (i = 0; i < count; i++)
         {
-            if (GetMonData(&gEnemyParty[i], MON_DATA_HELD_ITEM, NULL) != ITEM_NONE)
+            if (GetMonData(&gEnemyParty[i], MON_DATA_HELD_ITEM) != ITEM_NONE)
                 continue; // prevent overwriting previously set item
 
             rnd = Random() % 100;
@@ -8363,7 +5869,7 @@ void SetWildMonHeldItem(void)
 
 bool8 IsMonShiny(struct Pokemon *mon)
 {
-    return GetMonData(mon, MON_DATA_IS_SHINY, NULL);
+    return GetMonData(mon, MON_DATA_IS_SHINY);
 }
 
 const u8 *GetTrainerPartnerName(void)
@@ -8558,12 +6064,12 @@ u8 GetOpposingLinkMultiBattlerId(bool8 rightSide, u8 multiplayerId)
     return i;
 }
 
-u16 FacilityClassToPicIndex(u16 facilityClass)
+enum TrainerPicID FacilityClassToPicIndex(u16 facilityClass)
 {
     return gFacilityClassToPicIndex[facilityClass];
 }
 
-u16 PlayerGenderToFrontTrainerPicId(u8 playerGender)
+enum TrainerPicID PlayerGenderToFrontTrainerPicId(enum Gender playerGender)
 {
     if (playerGender != MALE)
         return FacilityClassToPicIndex(FACILITY_CLASS_MAY);
@@ -8824,7 +6330,7 @@ u32 GetFormChangeTargetSpecies(struct Pokemon *mon, enum FormChanges method, u32
 u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges method, u32 arg)
 {
     u32 i;
-    u32 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+    u32 species = GetBoxMonData(boxMon, MON_DATA_SPECIES);
     u32 targetSpecies = species;
     const struct FormChange *formChanges = GetSpeciesFormChanges(species);
     u16 heldItem;
@@ -8832,8 +6338,8 @@ u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges
 
     if (formChanges != NULL)
     {
-        heldItem = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM, NULL);
-        ability = GetAbilityBySpecies(species, GetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, NULL));
+        heldItem = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM);
+        ability = GetAbilityBySpecies(species, GetBoxMonData(boxMon, MON_DATA_ABILITY_NUM));
 
         for (i = 0; formChanges[i].method != FORM_CHANGE_TERMINATOR; i++)
         {
@@ -8878,7 +6384,7 @@ u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges
                             break;
                         }
 
-                        if (formChanges[i].param3 != STATUS1_NONE && GetBoxMonData(boxMon, MON_DATA_STATUS, NULL) & formChanges[i].param3)
+                        if (formChanges[i].param3 != STATUS1_NONE && GetBoxMonData(boxMon, MON_DATA_STATUS) & formChanges[i].param3)
                             pass = FALSE;
 
                         if (pass)
@@ -8909,11 +6415,10 @@ u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges
                 case FORM_CHANGE_DEPOSIT:
                 case FORM_CHANGE_FAINT:
                 case FORM_CHANGE_DAYS_PASSED:
-                case FORM_CHANGE_BEGIN_WILD_ENCOUNTER:
                     targetSpecies = formChanges[i].targetSpecies;
                     break;
                 case FORM_CHANGE_STATUS:
-                    if (GetBoxMonData(boxMon, MON_DATA_STATUS, NULL) & formChanges[i].param1)
+                    if (GetBoxMonData(boxMon, MON_DATA_STATUS) & formChanges[i].param1)
                         targetSpecies = formChanges[i].targetSpecies;
                     break;
                 case FORM_CHANGE_TIME_OF_DAY:
@@ -8942,7 +6447,7 @@ u32 GetFormChangeTargetSpeciesBoxMon(struct BoxPokemon *boxMon, enum FormChanges
 void TrySetDayLimitToFormChange(struct Pokemon *mon)
 {
     u32 i;
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
     const struct FormChange *formChanges = GetSpeciesFormChanges(species);
 
     for (i = 0; formChanges != NULL && formChanges[i].method != FORM_CHANGE_TERMINATOR; i++)
@@ -8971,8 +6476,8 @@ bool32 DoesSpeciesHaveFormChangeMethod(u16 species, enum FormChanges method)
 
 u16 MonTryLearningNewMoveEvolution(struct Pokemon *mon, bool8 firstMove)
 {
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    u8 level = GetMonData(mon, MON_DATA_LEVEL, NULL);
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
+    u8 level = GetMonData(mon, MON_DATA_LEVEL);
     const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
 
     // Since you can learn more than one move per level,
@@ -8988,12 +6493,7 @@ u16 MonTryLearningNewMoveEvolution(struct Pokemon *mon, bool8 firstMove)
         while ((learnset[sLearningMoveTableID].level == 0 || learnset[sLearningMoveTableID].level == level)
              && !(P_EVOLUTION_LEVEL_1_LEARN >= GEN_8 && learnset[sLearningMoveTableID].level == 1))
         {
-            //Hardcoding evo move override
-            if (species == SPECIES_SKELEDIRGE && FlagGet(FLAG_RESTRICTED_MODE) && learnset[sLearningMoveTableID].move == MOVE_TORCH_SONG){
-                gMoveToLearn = MOVE_INFERNO;
-            }else{
-                gMoveToLearn = learnset[sLearningMoveTableID].move;
-            }
+            gMoveToLearn = learnset[sLearningMoveTableID].move;
             sLearningMoveTableID++;
             return GiveMoveToMon(mon, gMoveToLearn);
         }
@@ -9136,10 +6636,12 @@ bool32 TryFormChange(u32 monId, enum BattleSide side, enum FormChanges method)
 
 u16 SanitizeSpeciesId(u16 species)
 {
-    if (species > NUM_SPECIES || !IsSpeciesEnabled(species))
+    assertf(species <= NUM_SPECIES && (species == SPECIES_NONE || IsSpeciesEnabled(species)), "invalid species: %d", species)
+    {
         return SPECIES_NONE;
-    else
-        return species;
+    }
+
+    return species;
 }
 
 bool32 IsSpeciesEnabled(u16 species)
@@ -9151,7 +6653,7 @@ bool32 IsSpeciesEnabled(u16 species)
 void TryToSetBattleFormChangeMoves(struct Pokemon *mon, enum FormChanges method)
 {
     int i, j;
-    u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+    u16 species = GetMonData(mon, MON_DATA_SPECIES);
     const struct FormChange *formChanges = GetSpeciesFormChanges(species);
 
     if (formChanges == NULL
@@ -9170,7 +6672,7 @@ void TryToSetBattleFormChangeMoves(struct Pokemon *mon, enum FormChanges method)
 
             for (j = 0; j < MAX_MON_MOVES; j++)
             {
-                u16 currMove = GetMonData(mon, MON_DATA_MOVE1 + j, NULL);
+                u16 currMove = GetMonData(mon, MON_DATA_MOVE1 + j);
                 if (currMove == originalMove)
                     SetMonMoveSlot_KeepPP(mon, newMove, j);
             }
@@ -9181,7 +6683,7 @@ void TryToSetBattleFormChangeMoves(struct Pokemon *mon, enum FormChanges method)
 
 u32 GetMonFriendshipScore(struct Pokemon *pokemon)
 {
-    u32 friendshipScore = GetMonData(pokemon, MON_DATA_FRIENDSHIP, NULL);
+    u32 friendshipScore = GetMonData(pokemon, MON_DATA_FRIENDSHIP);
 
     if (friendshipScore == MAX_FRIENDSHIP)
         return FRIENDSHIP_MAX;
@@ -9201,7 +6703,7 @@ u32 GetMonFriendshipScore(struct Pokemon *pokemon)
 
 u32 GetMonAffectionHearts(struct Pokemon *pokemon)
 {
-    u32 friendship = GetMonData(pokemon, MON_DATA_FRIENDSHIP, NULL);
+    u32 friendship = GetMonData(pokemon, MON_DATA_FRIENDSHIP);
 
     if (friendship == MAX_FRIENDSHIP)
         return AFFECTION_FIVE_HEARTS;
@@ -9225,9 +6727,9 @@ void UpdateMonPersonality(struct BoxPokemon *boxMon, u32 personality)
     struct PokemonSubstruct3 *old3, *new3;
     struct BoxPokemon old;
 
-    bool32 isShiny = GetBoxMonData(boxMon, MON_DATA_IS_SHINY, NULL);
-    u32 hiddenNature = GetBoxMonData(boxMon, MON_DATA_HIDDEN_NATURE, NULL);
-    enum Type teraType = GetBoxMonData(boxMon, MON_DATA_TERA_TYPE, NULL);
+    bool32 isShiny = GetBoxMonData(boxMon, MON_DATA_IS_SHINY);
+    u32 hiddenNature = GetBoxMonData(boxMon, MON_DATA_HIDDEN_NATURE);
+    enum Type teraType = GetBoxMonData(boxMon, MON_DATA_TERA_TYPE);
 
     old = *boxMon;
     old0 = &(GetSubstruct(&old, old.personality, SUBSTRUCT_TYPE_0)->type0);
@@ -9293,9 +6795,13 @@ u16 GetSpeciesPreEvolution(u16 species)
 
     for (i = SPECIES_BULBASAUR; i < NUM_SPECIES; i++)
     {
+        if (!IsSpeciesEnabled(i))
+            continue;
+
         const struct Evolution *evolutions = GetSpeciesEvolutions(i);
         if (evolutions == NULL)
             continue;
+
         for (j = 0; evolutions[j].method != EVOLUTIONS_END; j++)
         {
             if (SanitizeSpeciesId(evolutions[j].targetSpecies) == species)
@@ -9342,7 +6848,7 @@ void UpdateDaysPassedSinceFormChange(u16 days)
     }
 }
 
-enum Type CheckDynamicMoveType(struct Pokemon *mon, u32 move, u32 battler, enum MonState state)
+enum Type CheckDynamicMoveType(struct Pokemon *mon, enum Move move, enum BattlerId battler, enum MonState state)
 {
     enum Type moveType = GetDynamicMoveType(mon, move, battler, state);
     if (moveType != TYPE_NONE)
@@ -9430,919 +6936,6 @@ enum Type GetTeraTypeFromPersonality(struct Pokemon *mon)
     return (GetMonData(mon, MON_DATA_PERSONALITY) & 0x1) == 0 ? types[0] : types[1];
 }
 
-
-u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies)
-{
-    u32 total = 0;
-    struct Pokemon tempMon;
-    for (u8 i = 0; i < gPlayerPartyCount; i++) {
-        if (i == partyId) {
-            // Create temporary mon with new species to calculate points
-            tempMon = gPlayerParty[i];
-            SetMonData(&tempMon, MON_DATA_SPECIES, &newSpecies);
-            total += GetMonTierPoints(&tempMon);
-        } else {
-            total += GetMonTierPoints(&gPlayerParty[i]);
-        }
-    }
-    return total;
-}
-
-u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum)
-{
-    u32 total = 0;
-    struct Pokemon tempMon;
-    for (u8 i = 0; i < gPlayerPartyCount; i++) {
-        if (i == partyId) {
-            tempMon = gPlayerParty[i];
-            SetMonData(&tempMon, MON_DATA_ABILITY_NUM, &newAbilityNum);
-            total += GetMonTierPoints(&tempMon);
-        } else {
-            total += GetMonTierPoints(&gPlayerParty[i]);
-        }
-    }
-    return total;
-}
-
-u8 GetMonTierPoints(struct Pokemon *mon){
-    u16 species;
-    u8 abilityNum;
-    u32 ability;
-
-    if (mon == NULL){
-        return 3; //Default
-    }
-    //Treating eggs as 0 until they hatch
-    if (GetMonData(mon, MON_DATA_IS_EGG)){
-        return 0;
-    }
-    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
-    ability =  GetAbilityBySpecies(species, abilityNum);
-
-    //Start with default point value
-    u8 defaultPointValue = 3;
-    //species simplification
-    if (species >= SPECIES_SAWSBUCK_SUMMER && species <= SPECIES_SAWSBUCK_WINTER){
-        species = SPECIES_SAWSBUCK;
-    }
-    else if (species >= SPECIES_SCATTERBUG_POLAR && species <= SPECIES_SCATTERBUG_POKEBALL){
-        species = SPECIES_SCATTERBUG;
-    }
-    else if (species >= SPECIES_SPEWPA_POLAR && species <= SPECIES_SPEWPA_POKEBALL){
-        species = SPECIES_SPEWPA;
-    }
-    else if (species >= SPECIES_VIVILLON_POLAR && species <= SPECIES_VIVILLON_POKEBALL){
-        species = SPECIES_VIVILLON;
-    }else if  (species >= SPECIES_MINIOR_ORANGE && species <= SPECIES_MINIOR_CORE_VIOLET){
-        species = SPECIES_MINIOR;
-    }else if (species >= SPECIES_SILVALLY_FIGHTING && species <= SPECIES_SILVALLY_FAIRY){
-        species = SPECIES_SILVALLY;
-    }else if (species >= SPECIES_ALCREMIE_STRAWBERRY_RUBY_CREAM && species <= SPECIES_ALCREMIE_STRAWBERRY_RAINBOW_SWIRL){
-        species = SPECIES_ALCREMIE;
-    }
-    else if (species >= SPECIES_ALCREMIE_BERRY_VANILLA_CREAM && species <= SPECIES_ALCREMIE_RIBBON_RAINBOW_SWIRL){
-        species = SPECIES_ALCREMIE;
-    }else if (species >= SPECIES_SQUAWKABILLY_GREEN && species <= SPECIES_SQUAWKABILLY_WHITE){
-        species = SPECIES_SQUAWKABILLY;
-    }else if (species >= SPECIES_PUMPKABOO_SMALL && species <= SPECIES_PUMPKABOO_SUPER){
-        species = SPECIES_PUMPKABOO;
-    }else if (species >= SPECIES_GOURGEIST_SMALL && species <= SPECIES_GOURGEIST_SUPER){
-        species = SPECIES_GOURGEIST;
-    }else if (species >= SPECIES_FLABEBE_YELLOW && species <= SPECIES_FLABEBE_WHITE){
-        species = SPECIES_FLABEBE;
-    }
-    else if (species >= SPECIES_FLOETTE_YELLOW && species <= SPECIES_FLOETTE_WHITE){
-        species = SPECIES_FLOETTE;
-    }else if (species >= SPECIES_FLORGES_YELLOW && species <= SPECIES_FLORGES_WHITE){
-        species = SPECIES_FLORGES;
-    }
-
-
-    switch(species){
-        //Special Ability Logic: Drizzle
-        case SPECIES_POLITOED:
-            if (ability == ABILITY_DRIZZLE){
-                return 6;
-            }else{
-                return 3;
-            }
-        case SPECIES_PELIPPER:
-            if (ability == ABILITY_DRIZZLE){
-                return 6;
-            }else{
-                if (FlagGet(FLAG_BADGE05_GET)){
-                return 2;
-                }else{
-                return 3;
-                }
-            }
-
-        //Special Ability Logic: Drought
-        case SPECIES_VULPIX:
-            if (ability == ABILITY_DROUGHT){
-                if (FlagGet(FLAG_BADGE08_GET)){
-                    return 5;
-                }else{
-                    return 6;
-                }
-
-            }else{
-                if (FlagGet(FLAG_BADGE04_GET)){
-                    return 1;
-                }else if (FlagGet(FLAG_BADGE03_GET)){
-                    return 2;
-                }else{
-                    return 3;
-                }
-            }
-        case SPECIES_NINETALES:
-            if (ability == ABILITY_DROUGHT){
-                return 6;
-            }else{
-                return 3;
-            }
-
-
-        //6 Points Kanto
-        case SPECIES_SLOWBRO_MEGA: case SPECIES_KANGASKHAN_MEGA:
-        case SPECIES_CHARIZARD_MEGA_Y: //Inaccessible in Restricted Mode
-        case SPECIES_CHANSEY:
-
-        //6 Points Johto
-        case SPECIES_BLISSEY:
-
-        //6 Points Hoenn
-        case SPECIES_SHEDINJA: case SPECIES_SALAMENCE_MEGA: case SPECIES_METAGROSS_MEGA:
-
-        //6 Points Sinnoh
-        case SPECIES_LUCARIO_MEGA: case SPECIES_DARKRAI:
-
-        //6 Points Kalos / Regionals
-        case SPECIES_AEGISLASH: case SPECIES_GOODRA_HISUI:
-
-        //6 Points Alola
-        case SPECIES_MARSHADOW: case SPECIES_MAGEARNA: case SPECIES_MELMETAL:
-
-        //6 Points Galar
-        case SPECIES_DRAGAPULT: case SPECIES_URSHIFU_SINGLE_STRIKE: case SPECIES_URSHIFU_RAPID_STRIKE:
-
-        //6 Points Paldea
-        case SPECIES_PALAFIN: case SPECIES_ARCHALUDON: case SPECIES_ANNIHILAPE: case SPECIES_GLIMMORA: case SPECIES_IRON_HANDS:
-
-        //6 Points Past Paradox
-        case SPECIES_GOUGING_FIRE: case SPECIES_RAGING_BOLT: case SPECIES_WALKING_WAKE: case SPECIES_GREAT_TUSK: case SPECIES_ROARING_MOON:
-
-        //6 Points Future Paradox
-        case SPECIES_IRON_VALIANT:
-            return 6;
-
-        //5 Points Kanto / Regionals
-        case SPECIES_ARCANINE_HISUI: case SPECIES_SLOWBRO: case SPECIES_SNORLAX: case SPECIES_ZAPDOS: case SPECIES_DRAGONITE:
-
-        //5 Points Kanto Megas
-        case SPECIES_VENUSAUR_MEGA: case SPECIES_CHARIZARD_MEGA_X: case SPECIES_BEEDRILL_MEGA: case SPECIES_PINSIR_MEGA:
-        case SPECIES_GYARADOS_MEGA: case SPECIES_AERODACTYL_MEGA:
-        case SPECIES_ALAKAZAM_MEGA: case SPECIES_GENGAR_MEGA: //Potentially move these two to 4 points; under review
-
-        //5 Points Johto / Regionals
-        case SPECIES_TYPHLOSION_HISUI: case SPECIES_CROBAT: case SPECIES_SLOWKING: case SPECIES_SLOWKING_GALAR:
-        case SPECIES_SCIZOR: case SPECIES_STEELIX: case SPECIES_SKARMORY: case SPECIES_TYRANITAR:
-
-        //5 Points Johto Megas
-        case SPECIES_STEELIX_MEGA: case SPECIES_SCIZOR_MEGA: case SPECIES_HOUNDOOM_MEGA: case SPECIES_TYRANITAR_MEGA:
-
-        //5 Points Hoenn
-        case SPECIES_BLAZIKEN: case SPECIES_MILOTIC: case SPECIES_SALAMENCE: case SPECIES_LATIAS: case SPECIES_LATIOS:
-
-        //5 Points Hoenn Megas
-        case SPECIES_SCEPTILE_MEGA: case SPECIES_SWAMPERT_MEGA: case SPECIES_BLAZIKEN_MEGA:
-        case SPECIES_LATIAS_MEGA: case SPECIES_LATIOS_MEGA: case SPECIES_MEDICHAM_MEGA: case SPECIES_AGGRON_MEGA: case SPECIES_MAWILE_MEGA:
-        case SPECIES_SHARPEDO_MEGA: case SPECIES_SABLEYE_MEGA: case SPECIES_GARDEVOIR_MEGA:
-
-        //5 Points Sinnoh
-        case SPECIES_INFERNAPE: case SPECIES_GARCHOMP: case SPECIES_TANGROWTH: case SPECIES_TOGEKISS: case SPECIES_AZELF: case SPECIES_HEATRAN:
-        case SPECIES_MANAPHY: case SPECIES_SHAYMIN_SKY:
-
-        //5 Points Sinnoh Megas
-        case SPECIES_GARCHOMP_MEGA: case SPECIES_LOPUNNY_MEGA: case SPECIES_GALLADE_MEGA:
-
-        //5 Points Unova / Regionals
-        case SPECIES_EXCADRILL: case SPECIES_DARMANITAN: case SPECIES_DARMANITAN_GALAR: case SPECIES_DARMANITAN_GALAR_ZEN: case SPECIES_AMOONGUSS: case SPECIES_ALOMOMOLA:
-        case SPECIES_FERROTHORN: case SPECIES_VOLCARONA:
-        case SPECIES_TERRAKION: case SPECIES_TORNADUS_THERIAN: case SPECIES_LANDORUS_INCARNATE: case SPECIES_LANDORUS_THERIAN: case SPECIES_GENESECT:
-
-        //5 Points Kalos / Regionals
-        case SPECIES_GRENINJA: case SPECIES_HAWLUCHA:
-        case SPECIES_FLORGES: case SPECIES_FLORGES_BLUE: case SPECIES_FLORGES_ORANGE: case SPECIES_FLORGES_WHITE: case SPECIES_FLORGES_YELLOW:
-        case SPECIES_ZYGARDE:
-
-        //5 Points Kalos Megas
-        case SPECIES_DIANCIE_MEGA:
-
-        //5 Points Alola
-        case SPECIES_PRIMARINA: case SPECIES_TOXAPEX: case SPECIES_GOLISOPOD: case SPECIES_MIMIKYU:
-        case SPECIES_TAPU_KOKO: case SPECIES_TAPU_FINI: case SPECIES_TAPU_LELE: case SPECIES_NIHILEGO: case SPECIES_BUZZWOLE: case SPECIES_CELESTEELA: case SPECIES_ZERAORA:
-
-        //5 Points Galar
-        case SPECIES_RILLABOOM: case SPECIES_CINDERACE: case SPECIES_CORVIKNIGHT: case SPECIES_OBSTAGOON: case SPECIES_DRACOVISH:
-
-        //5 Points Hisui
-        case SPECIES_URSALUNA: case SPECIES_BASCULEGION_M: case SPECIES_BASCULEGION_F: case SPECIES_SNEASLER: case SPECIES_ENAMORUS:
-
-        //5 Points Paldea
-        case SPECIES_MEOWSCARADA: case SPECIES_SKELEDIRGE: case SPECIES_GARGANACL: case SPECIES_DONDOZO: case SPECIES_GHOLDENGO: case SPECIES_KINGAMBIT:
-        case SPECIES_IRON_MOTH: case SPECIES_BAXCALIBUR: case SPECIES_TING_LU:
-        case SPECIES_URSALUNA_BLOODMOON: case SPECIES_IRON_BOULDER: case SPECIES_IRON_CROWN: case SPECIES_PECHARUNT:
-        case SPECIES_HYDRAPPLE: case SPECIES_DIPPLIN: case SPECIES_OGERPON: case SPECIES_OGERPON_CORNERSTONE: case SPECIES_OGERPON_HEARTHFLAME: case SPECIES_OGERPON_WELLSPRING:
-        //5 Points Paldea Eviolite
-        case SPECIES_GLIMMET:
-            return 5;
-
-        //4 Points Kanto/Regionals
-        case SPECIES_VENUSAUR: case SPECIES_CHARIZARD: case SPECIES_ARCANINE: case SPECIES_SLOWBRO_GALAR: case SPECIES_CLEFABLE:
-        case SPECIES_ALAKAZAM: case SPECIES_MAROWAK: case SPECIES_MAROWAK_ALOLA:
-        case SPECIES_MUK_ALOLA: case SPECIES_GENGAR: case SPECIES_TAUROS: case SPECIES_TAUROS_PALDEA_AQUA: case SPECIES_TAUROS_PALDEA_BLAZE:
-        case SPECIES_TAUROS_PALDEA_COMBAT: case SPECIES_SCYTHER: case SPECIES_GYARADOS: case SPECIES_LAPRAS: case SPECIES_VAPOREON:
-        case SPECIES_AERODACTYL: case SPECIES_ARTICUNO_GALAR: case SPECIES_ZAPDOS_GALAR:
-        case SPECIES_MOLTRES_GALAR: case SPECIES_MOLTRES: case SPECIES_STARMIE: case SPECIES_MEW: case SPECIES_CLOYSTER:
-        //4 Points Kanto Eviolite
-        case SPECIES_PRIMEAPE: case SPECIES_MAGNETON: case SPECIES_RHYDON:
-
-        //4 Points Kanto Megas
-        case SPECIES_BLASTOISE_MEGA: case SPECIES_PIDGEOT_MEGA:
-
-        //4 Points Johto
-        case SPECIES_TYPHLOSION: case SPECIES_AZUMARILL: case SPECIES_JUMPLUFF: case SPECIES_FORRETRESS: case SPECIES_ESPEON: case SPECIES_UMBREON: case SPECIES_HERACROSS: case SPECIES_KINGDRA:
-        case SPECIES_URSARING: case SPECIES_PORYGON2: case SPECIES_RAIKOU: case SPECIES_ENTEI: case SPECIES_SUICUNE: case SPECIES_CELEBI:
-
-        //4 Points Johto Megas
-        case SPECIES_AMPHAROS_MEGA: case SPECIES_HERACROSS_MEGA:
-
-        //4 Points Hoenn
-        case SPECIES_SWAMPERT: case SPECIES_SWELLOW: case SPECIES_GARDEVOIR: case SPECIES_SLAKING:
-        case SPECIES_ZANGOOSE: case SPECIES_METAGROSS: case SPECIES_REGISTEEL: case SPECIES_JIRACHI:
-        case SPECIES_MEDICHAM:
-
-        //4 Points Hoenn Megas
-        case SPECIES_GLALIE_MEGA: case SPECIES_BANETTE_MEGA: case SPECIES_ABSOL_MEGA: case SPECIES_MANECTRIC_MEGA: case SPECIES_CAMERUPT_MEGA: case SPECIES_ALTARIA_MEGA:
-
-        //4 Points Sinnoh
-        case SPECIES_TORTERRA: case SPECIES_EMPOLEON: case SPECIES_STARAPTOR: case SPECIES_ROSERADE: case SPECIES_BRONZONG: case SPECIES_LUCARIO: case SPECIES_HIPPOWDON:
-        case SPECIES_DRAPION: case SPECIES_WEAVILE: case SPECIES_MAGNEZONE: case SPECIES_RHYPERIOR: case SPECIES_GLISCOR: case SPECIES_MAMOSWINE: case SPECIES_GALLADE:
-        case SPECIES_AMBIPOM: case SPECIES_FLOATZEL: case SPECIES_PORYGON_Z: case SPECIES_ROTOM_WASH: case SPECIES_CRESSELIA: case SPECIES_SHAYMIN:
-        case SPECIES_MISMAGIUS:
-
-        //4 Points Sinnoh Megas
-        case SPECIES_ABOMASNOW_MEGA:
-
-        //4 Points Unova/Regionals
-        case SPECIES_VICTINI: case SPECIES_SAMUROTT: case SPECIES_SAMUROTT_HISUI: case SPECIES_GIGALITH: case SPECIES_CONKELDURR: case SPECIES_SAWK:
-        case SPECIES_WHIMSICOTT: case SPECIES_LILLIGANT_HISUI: case SPECIES_KROOKODILE:
-        case SPECIES_ZOROARK: case SPECIES_ZOROARK_HISUI: case SPECIES_REUNICLUS: case SPECIES_ARCHEOPS: case SPECIES_ESCAVALIER:
-        case SPECIES_CHANDELURE: case SPECIES_HAXORUS: case SPECIES_MIENSHAO: case SPECIES_MANDIBUZZ: case SPECIES_DURANT: case SPECIES_HYDREIGON: case SPECIES_COBALION:
-        case SPECIES_CINCCINO: case SPECIES_TORNADUS: case SPECIES_KELDEO: case SPECIES_MELOETTA: case SPECIES_MELOETTA_PIROUETTE:
-        case SPECIES_BISHARP: //Eviolite basis
-
-        //4 Points Unova Megas
-        case SPECIES_AUDINO_MEGA:
-
-        //4 Points Kalos
-        case SPECIES_CHESNAUGHT: case SPECIES_DELPHOX: case SPECIES_DIGGERSBY: case SPECIES_TALONFLAME: case SPECIES_SYLVEON: case SPECIES_GOODRA: case SPECIES_KLEFKI:
-        case SPECIES_AVALUGG: case SPECIES_AVALUGG_HISUI: case SPECIES_NOIVERN: case SPECIES_DIANCIE: case SPECIES_HOOPA: case SPECIES_VOLCANION:
-        //4 Points Kalos/Regionals Eviolite Mons
-        case SPECIES_SLIGGOO_HISUI:
-
-        //4 Points Alola
-        case SPECIES_INCINEROAR: case SPECIES_MUDSDALE: case SPECIES_ARAQUANID: case SPECIES_SALAZZLE: case SPECIES_TOGEDEMARU: case SPECIES_TAPU_BULU: case SPECIES_KOMMO_O:
-        case SPECIES_XURKITREE: case SPECIES_STAKATAKA: case SPECIES_NECROZMA: case SPECIES_SILVALLY:
-
-        //4 Points Galar
-        case SPECIES_INTELEON: case SPECIES_ELDEGOSS: case SPECIES_DREDNAW: case SPECIES_BARRASKEWDA: case SPECIES_COALOSSAL: case SPECIES_HATTERENE: case SPECIES_GRIMMSNARL:
-        case SPECIES_PERRSERKER: case SPECIES_EISCUE: case SPECIES_INDEEDEE_F: case SPECIES_INDEEDEE_M: case SPECIES_FALINKS:
-        case SPECIES_DRACOZOLT: case SPECIES_GLASTRIER: case SPECIES_ZARUDE: case SPECIES_REGIELEKI: case SPECIES_REGIDRAGO:
-
-        //4 Points Hisui
-        case SPECIES_KLEAVOR: case SPECIES_ENAMORUS_THERIAN:
-
-        //4 Points Paldea
-        case SPECIES_QUAQUAVAL: case SPECIES_BELLIBOLT: case SPECIES_LOKIX: case SPECIES_PAWMOT: case SPECIES_MAUSHOLD_THREE: case SPECIES_MAUSHOLD_FOUR: case SPECIES_DACHSBUN:
-        case SPECIES_ARBOLIVA: case SPECIES_TINKATON: case SPECIES_ARMAROUGE: case SPECIES_CERULEDGE: case SPECIES_CYCLIZAR: case SPECIES_ORTHWORM: case SPECIES_FLAMIGO:
-        case SPECIES_FARIGIRAF: case SPECIES_CLODSIRE: case SPECIES_WO_CHIEN: case SPECIES_BRUTE_BONNET: case SPECIES_SCREAM_TAIL: case SPECIES_SANDY_SHOCKS: case SPECIES_IRON_TREADS:
-        case SPECIES_IRON_JUGULIS: case SPECIES_IRON_THORNS: case SPECIES_SLITHER_WING: case SPECIES_TERAPAGOS: case SPECIES_IRON_LEAVES:
-        case SPECIES_FEZANDIPITI: case SPECIES_MUNKIDORI: case SPECIES_OKIDOGI:
-            return 4;
-
-        //3 Points Kanto/Regionals
-        case SPECIES_BLASTOISE: case SPECIES_RATICATE: case SPECIES_RAICHU: case SPECIES_RAICHU_ALOLA: case SPECIES_SANDSLASH: case SPECIES_NIDOQUEEN:
-        case SPECIES_NINETALES_ALOLA: case SPECIES_VILEPLUME: case SPECIES_PERSIAN_ALOLA: case SPECIES_DUGTRIO: case SPECIES_POLIWRATH: case SPECIES_MACHAMP:
-        case SPECIES_TENTACRUEL: case SPECIES_GOLEM: case SPECIES_GOLEM_ALOLA: case SPECIES_MUK: case SPECIES_ELECTRODE_HISUI: case SPECIES_KINGLER:
-        case SPECIES_DODRIO: case SPECIES_EXEGGUTOR: case SPECIES_EXEGGUTOR_ALOLA: case SPECIES_HITMONLEE: case SPECIES_HITMONCHAN:
-        case SPECIES_WEEZING: case SPECIES_WEEZING_GALAR: case SPECIES_KANGASKHAN: case SPECIES_JYNX: case SPECIES_PINSIR: case SPECIES_MR_MIME: case SPECIES_MR_MIME_GALAR:
-        case SPECIES_JOLTEON: case SPECIES_ARTICUNO: case SPECIES_RAPIDASH: case SPECIES_RAPIDASH_GALAR: case SPECIES_WIGGLYTUFF:
-
-        //3 Points Kanto Eviolite
-        case SPECIES_DRAGONAIR: case SPECIES_GOLBAT: case SPECIES_GRAVELER: case SPECIES_GRAVELER_ALOLA: case SPECIES_MACHOKE:
-        case SPECIES_TANGELA: case SPECIES_ELECTABUZZ: case SPECIES_MAGMAR:
-            return 3;
-
-        //3 Points Johto/Regionals
-        case SPECIES_MEGANIUM: case SPECIES_LANTURN: case SPECIES_FERALIGATR: case SPECIES_AMPHAROS: case SPECIES_BELLOSSOM: case SPECIES_SUDOWOODO:
-        case SPECIES_WOBBUFFET: case SPECIES_SHUCKLE: case SPECIES_MANTINE: case SPECIES_HOUNDOOM: case SPECIES_DONPHAN:
-        case SPECIES_SMEARGLE: case SPECIES_HITMONTOP: case SPECIES_MILTANK:
-        //3 Points Johto/Regionals Eviolite
-        case SPECIES_GLIGAR: case SPECIES_PUPITAR: case SPECIES_SNEASEL: case SPECIES_SNEASEL_HISUI:
-        case SPECIES_QWILFISH_HISUI: case SPECIES_TOGETIC: case SPECIES_SKIPLOOM: case SPECIES_CORSOLA_GALAR: case SPECIES_GIRAFARIG:
-            return 3;
-
-        //3 Points Hoenn/Regionals
-        case SPECIES_SCEPTILE: case SPECIES_LUDICOLO: case SPECIES_BRELOOM: case SPECIES_HARIYAMA: case SPECIES_NINJASK:
-        case SPECIES_MANECTRIC: case SPECIES_TORKOAL: case SPECIES_GRUMPIG: case SPECIES_FLYGON:
-        case SPECIES_CRAWDAUNT: case SPECIES_KECLEON: case SPECIES_WALREIN: case SPECIES_GOREBYSS:
-        case SPECIES_RELICANTH: case SPECIES_REGICE: case SPECIES_REGIROCK: case SPECIES_DEOXYS_DEFENSE:
-        //3 Points Hoenn/Regionals Eviolite
-        case SPECIES_METANG: case SPECIES_SHELGON: case SPECIES_LAIRON: case SPECIES_VIGOROTH: case SPECIES_DUSCLOPS:
-            return 3;
-
-        //3 Points Sinnoh/Regionals
-        case SPECIES_LUXRAY: case SPECIES_BASTIODON: case SPECIES_GASTRODON: case SPECIES_GASTRODON_EAST:
-        case SPECIES_DRIFBLIM: case SPECIES_TOXICROAK: case SPECIES_LICKILICKY: case SPECIES_ELECTIVIRE: case SPECIES_MAGMORTAR:
-        case SPECIES_DUSKNOIR: case SPECIES_PROBOPASS: case SPECIES_FROSLASS: case SPECIES_ROTOM_HEAT: case SPECIES_ROTOM_FAN:
-        case SPECIES_ROTOM_MOW:  case SPECIES_ROTOM: case SPECIES_MESPRIT: case SPECIES_UXIE: case SPECIES_REGIGIGAS:
-        case SPECIES_WORMADAM_TRASH: case SPECIES_SPIRITOMB:
-
-        //3 Points Sinnoh Eviolite
-        case SPECIES_MUNCHLAX: case SPECIES_GABITE:
-            return 3;
-
-        //3 Points Unova/Regionals
-        case SPECIES_SERPERIOR: case SPECIES_EMBOAR: case SPECIES_STOUTLAND: case SPECIES_MUSHARNA: case SPECIES_UNFEZANT:
-        case SPECIES_ZEBSTRIKA: case SPECIES_SEISMITOAD: case SPECIES_THROH: case SPECIES_LILLIGANT: case SPECIES_SIGILYPH:
-        case SPECIES_COFAGRIGUS: case SPECIES_CARRACOSTA: case SPECIES_SAWSBUCK: case SPECIES_JELLICENT: case SPECIES_GOTHITELLE:
-        case SPECIES_GALVANTULA: case SPECIES_KLINKLANG: case SPECIES_ACCELGOR: case SPECIES_STUNFISK: case SPECIES_STUNFISK_GALAR:
-        case SPECIES_GOLURK: case SPECIES_BRAVIARY: case SPECIES_BRAVIARY_HISUI: case SPECIES_VIRIZION:
-        case SPECIES_DARMANITAN_ZEN: //Zen Mode Unovan Darmanitan is lower points
-        //3 Points Unova Eviolite
-        case SPECIES_ZWEILOUS: case SPECIES_FOONGUS: case SPECIES_FERROSEED: case SPECIES_VULLABY:
-        case SPECIES_BOLDORE: case SPECIES_GURDURR: case SPECIES_COTTONEE:
-            return 3;
-
-        //3 Points Kalos/Regionals
-        case SPECIES_VIVILLON: case SPECIES_PYROAR: case SPECIES_GOGOAT: case SPECIES_PANGORO: case SPECIES_FURFROU:
-        case SPECIES_MEOWSTIC: case SPECIES_MEOWSTIC_F: case SPECIES_AURORUS: case SPECIES_TYRANTRUM: case SPECIES_AROMATISSE:
-        case SPECIES_SLURPUFF: case SPECIES_BARBARACLE: case SPECIES_DRAGALGE: case SPECIES_HELIOLISK: case SPECIES_CARBINK:
-        case SPECIES_TREVENANT: case SPECIES_ZYGARDE_10:
-
-        //3 Points Kalos Eviolite Mons
-        case SPECIES_DOUBLADE: case SPECIES_SLIGGOO: case SPECIES_FLOETTE:
-            return 3;
-
-        //3 Points Alola
-        case SPECIES_DECIDUEYE_HISUI: case SPECIES_DECIDUEYE: case SPECIES_VIKAVOLT:
-        case SPECIES_ORICORIO_POM_POM: case SPECIES_ORICORIO_BAILE: case SPECIES_ORICORIO_PAU: case SPECIES_ORICORIO_SENSU:
-        case SPECIES_RIBOMBEE: case SPECIES_LYCANROC_DUSK: case SPECIES_LYCANROC_MIDDAY:
-        case SPECIES_WISHIWASHI: case SPECIES_WISHIWASHI_SCHOOL: case SPECIES_SHIINOTIC: case SPECIES_BEWEAR:
-        case SPECIES_TSAREENA: case SPECIES_COMFEY: case SPECIES_PASSIMIAN: case SPECIES_PALOSSAND: case SPECIES_PYUKUMUKU:
-        case SPECIES_MINIOR: case SPECIES_KOMALA: case SPECIES_TURTONATOR: case SPECIES_DRAMPA:
-        case SPECIES_BRUXISH: case SPECIES_GUZZLORD:
-        //4 Points Alola Eviolite Mons
-        case SPECIES_HAKAMO_O: case SPECIES_MAREANIE: case SPECIES_WIMPOD: case SPECIES_TYPE_NULL:
-            return 3;
-        //3 Points Galar
-        case SPECIES_GREEDENT: case SPECIES_ORBEETLE: case SPECIES_DUBWOOL: case SPECIES_BOLTUND:
-        case SPECIES_APPLETUN: case SPECIES_SANDACONDA: case SPECIES_GRAPPLOCT: case SPECIES_CENTISKORCH:
-        case SPECIES_CURSOLA: case SPECIES_TOXTRICITY_AMPED: case SPECIES_TOXTRICITY_LOW_KEY: case SPECIES_SIRFETCHD:
-        case SPECIES_RUNERIGUS: case SPECIES_COPPERAJAH: case SPECIES_ALCREMIE: case SPECIES_FROSMOTH:
-        case SPECIES_STONJOURNER: case SPECIES_MORPEKO: case SPECIES_ARCTOVISH: case SPECIES_ARCTOZOLT: case SPECIES_CALYREX:
-        case SPECIES_MR_RIME:
-        //3 Points Galar Eviolite
-        case SPECIES_DURALUDON: case SPECIES_DRAKLOAK: case SPECIES_GOSSIFLEUR: case SPECIES_LINOONE_GALAR:
-            return 3;
-
-        //3 Points Hisui
-        case SPECIES_OVERQWIL:
-            return 3;
-
-        //3 Points Paldea
-        case SPECIES_OINKOLOGNE_F: case SPECIES_OINKOLOGNE_M: case SPECIES_TOEDSCRUEL: case SPECIES_SQUAWKABILLY: case SPECIES_MABOSSTIFF: case SPECIES_KILOWATTREL: case SPECIES_BOMBIRDIER:
-        case SPECIES_REVAVROOM: case SPECIES_HOUNDSTONE: case SPECIES_TATSUGIRI: case SPECIES_TATSUGIRI_DROOPY: case SPECIES_TATSUGIRI_STRETCHY:
-        case SPECIES_VELUZA: case SPECIES_DUDUNSPARCE_THREE_SEGMENT: case SPECIES_DUDUNSPARCE_TWO_SEGMENT: case SPECIES_CETITAN:
-        case SPECIES_SINISTCHA_MASTERPIECE: case SPECIES_SINISTCHA_UNREMARKABLE: case SPECIES_BRAMBLEGHAST:
-
-        //3 Points Paldea Eviolite Mons
-        case SPECIES_ARCTIBAX: case SPECIES_TINKATUFF: case SPECIES_NACLSTACK:
-            return 3;
-
-        //Terminal 3 points after 8 badges; starting 4 points
-        case SPECIES_YANMEGA: case SPECIES_CRUSTLE: case SPECIES_ARMALDO: case SPECIES_SHARPEDO: case SPECIES_ESPATHRA:
-        case SPECIES_KABUTOPS: case SPECIES_OMASTAR: case SPECIES_SCOLIPEDE: case SPECIES_NIDOKING:
-        {
-            if (FlagGet(FLAG_BADGE08_GET)){
-                return 3;
-            }else{
-                return 4;
-            }
-        }
-
-        //Terminal 3 points after 7 badges; starting 4 points
-        case SPECIES_AGGRON: case SPECIES_KLAWF: case SPECIES_DUGTRIO_ALOLA:
-        {
-            if (FlagGet(FLAG_BADGE07_GET)){
-                return 3;
-            }else{
-                return 4;
-            }
-        }
-
-        //Terminal 3 Points after badge 5; Starting 4 points
-        case SPECIES_IVYSAUR:
-        case SPECIES_MARSHTOMP: case SPECIES_COMBUSKEN:
-        case SPECIES_GROTLE: case SPECIES_MONFERNO:
-        case SPECIES_FROGADIER:
-        case SPECIES_RABOOT: case SPECIES_THWACKEY:
-        case SPECIES_FLORAGATO:
-        case SPECIES_KADABRA: case SPECIES_HAUNTER: case SPECIES_DUOSION:
-        {
-            if (FlagGet(FLAG_BADGE05_GET)){
-                return 3;
-            }else{
-                return 4;
-            }
-        }
-
-        //Terminal 2 Points after 4 Badges; starting 4 Points
-        case SPECIES_BUTTERFREE:
-        case SPECIES_DUSTOX:
-        case SPECIES_TRUMBEAK: case SPECIES_STARAVIA:
-        case SPECIES_LOMBRE: case SPECIES_NUZLEAF:
-        case SPECIES_FLAAFFY: case SPECIES_LUXIO:
-            {
-                if (FlagGet(FLAG_BADGE04_GET)){
-                    return 2;
-                }else if (FlagGet(FLAG_BADGE02_GET)){
-                    return 3;
-                }else{
-                    return 4;
-                }
-            }
-
-
-        //Terminal 2 Points after 5 Badges; starting 4 Points
-        case SPECIES_QUILAVA:
-            {
-                if (FlagGet(FLAG_BADGE05_GET)){
-                    return 2;
-                }else if (FlagGet(FLAG_BADGE02_GET)){
-                    return 3;
-                }else{
-                    return 4;
-                }
-            }
-        //Terminal 2 Points after 6 Badges; starting 3 Points
-        case SPECIES_CLAYDOL:
-        case SPECIES_EELEKTROSS:
-        case SPECIES_CRYOGONAL:
-        case SPECIES_DHELMISE:
-        case SPECIES_VIBRAVA:
-        {
-            if (FlagGet(FLAG_BADGE06_GET)){
-                return 2;
-            }else{
-                return 3;
-            }
-        }
-        //Terminal 2 Points after 5 Badges; starting 3 Points
-        case SPECIES_SWALOT: case SPECIES_CAMERUPT: case SPECIES_ALTARIA: case SPECIES_RAMPARDOS:
-        case SPECIES_ABOMASNOW: case SPECIES_LEAFEON:
-        case SPECIES_ROTOM_FROST: case SPECIES_SCRAFTY: case SPECIES_GARBODOR: case SPECIES_VANILLUXE:
-        case SPECIES_BEHEEYEM: case SPECIES_BEARTIC: case SPECIES_DRUDDIGON: case SPECIES_BOUFFALANT:
-        case SPECIES_STANTLER: case SPECIES_WYRDEER: case SPECIES_CLAWITZER: case SPECIES_DEDENNE:
-        case SPECIES_GOURGEIST: case SPECIES_LYCANROC_MIDNIGHT: case SPECIES_LURANTIS: case SPECIES_ORANGURU:
-        case SPECIES_GRAFAIAI: case SPECIES_SCOVILLAIN:
-        case SPECIES_CHARMELEON: case SPECIES_WARTORTLE: case SPECIES_BAYLEEF: case SPECIES_CROCONAW:
-        case SPECIES_GROVYLE: case SPECIES_PRINPLUP: case SPECIES_SERVINE: case SPECIES_PIGNITE: case SPECIES_DEWOTT:
-        case SPECIES_QUILLADIN:  case SPECIES_BRAIXEN: case SPECIES_DARTRIX: case SPECIES_TORRACAT: case SPECIES_BRIONNE:
-        case SPECIES_DRIZZILE: case SPECIES_CROCALOR: case SPECIES_QUAXWELL:
-        case SPECIES_LARVESTA: case SPECIES_RUFFLET: case SPECIES_CORVISQUIRE:
-        case SPECIES_CARKOL: case SPECIES_POLIWHIRL: case SPECIES_PALPITOAD:
-        case SPECIES_MUDBRAY: case SPECIES_HIPPOPOTAS: case SPECIES_DWEBBLE:
-        case SPECIES_KOFFING: case SPECIES_VANILLISH: case SPECIES_DOLLIV:
-        case SPECIES_GRIMER: case SPECIES_GRIMER_ALOLA: case SPECIES_TRUBBISH: case SPECIES_SILICOBRA:
-        case SPECIES_CROAGUNK: case SPECIES_TIRTOUGA: case SPECIES_ARCHEN: case SPECIES_LILEEP:
-        case SPECIES_BERGMITE: case SPECIES_KLINK: case SPECIES_FRAXURE: case SPECIES_SCRAGGY:
-        case SPECIES_EELEKTRIK: case SPECIES_BINACLE: case SPECIES_TYRUNT: case SPECIES_AMAURA:
-        case SPECIES_PONYTA: case SPECIES_PONYTA_GALAR: case SPECIES_OMANYTE: case SPECIES_KABUTO:
-        case SPECIES_ANORITH: case SPECIES_SKORUPI: case SPECIES_SNOVER: case SPECIES_FRILLISH:
-        case SPECIES_VAROOM: case SPECIES_LAMPENT: case SPECIES_RHYHORN: case SPECIES_SANDYGAST:
-        case SPECIES_GOLETT: case SPECIES_SKRELP: case SPECIES_MIENFOO: case SPECIES_PAWNIARD:
-        case SPECIES_PIKACHU: case SPECIES_EXEGGCUTE: case SPECIES_VOLTORB_HISUI: case SPECIES_CLEFAIRY:
-        case SPECIES_STARYU: case SPECIES_ROSELIA: case SPECIES_MISDREAVUS: case SPECIES_CETODDLE:
-        case SPECIES_SHELMET: case SPECIES_PHANTUMP: case SPECIES_LICKITUNG: case SPECIES_AIPOM:
-        case SPECIES_YANMA: case SPECIES_DUNSPARCE:
-        case SPECIES_WORMADAM_SANDY:
-        {
-            if (FlagGet(FLAG_BADGE05_GET)){
-                return 2;
-            }else{
-                return 3;
-            }
-        }
-
-        //Terminal 2 Points after 4 Badges; starting 3 Points
-        case SPECIES_PERSIAN: case SPECIES_HYPNO:
-        case SPECIES_WEEPINBELL: case SPECIES_VICTREEBEL:
-        case SPECIES_FEAROW: case SPECIES_ARBOK: case SPECIES_SANDSLASH_ALOLA:
-        case SPECIES_VENOMOTH: case SPECIES_DEWGONG: case SPECIES_ELECTRODE:
-        case SPECIES_FLAREON: case SPECIES_NOCTOWL: case SPECIES_XATU: case SPECIES_GRANBULL:
-        case SPECIES_OCTILLERY: case SPECIES_MASQUERAIN:
-        case SPECIES_SABLEYE: case SPECIES_MAWILE: case SPECIES_VOLBEAT: case SPECIES_ILLUMISE:
-        case SPECIES_CACTURNE: case SPECIES_SOLROCK: case SPECIES_LUNATONE: case SPECIES_WHISCASH:
-        case SPECIES_ABSOL: case SPECIES_TROPIUS: case SPECIES_CHIMECHO: case SPECIES_HUNTAIL:
-        case SPECIES_VESPIQUEN: case SPECIES_CHERRIM: case SPECIES_LOPUNNY: case SPECIES_HONCHKROW:
-        case SPECIES_PURUGLY: case SPECIES_SKUNTANK: case SPECIES_GLACEON: case SPECIES_LIEPARD:
-        case SPECIES_SIMISAGE: case SPECIES_SIMISEAR: case SPECIES_SIMIPOUR: case SPECIES_AUDINO:
-        case SPECIES_SWADLOON: case SPECIES_LEAVANNY: case SPECIES_WHIRLIPEDE: case SPECIES_CHARJABUG:
-        case SPECIES_BASCULIN: case SPECIES_MARACTUS: case SPECIES_SWANNA: case SPECIES_EMOLGA:
-        case SPECIES_HEATMOR: case SPECIES_RATICATE_ALOLA: case SPECIES_MALAMAR: case SPECIES_TOUCANNON:
-        case SPECIES_GUMSHOOS:  case SPECIES_CRABOMINABLE: case SPECIES_CRAMORANT: case SPECIES_THIEVUL:
-        case SPECIES_FLAPPLE: case SPECIES_WUGTRIO: case SPECIES_RABSCA: case SPECIES_KROKOROK:
-        case SPECIES_SEADRA: case SPECIES_SEALEO: case SPECIES_GLOOM:
-        case SPECIES_DEWPIDER: case SPECIES_CHEWTLE: case SPECIES_STUFFUL: case SPECIES_MEOWTH_GALAR:
-        case SPECIES_KRABBY: case SPECIES_CUBONE: case SPECIES_DRIFLOON: case SPECIES_TRANQUILL:
-        case SPECIES_HATTREM: case SPECIES_MORGREM: case SPECIES_PILOSWINE: case SPECIES_BRONZOR:
-
-        {
-            if (FlagGet(FLAG_BADGE04_GET)){
-                return 2;
-            }else{
-                return 3;
-            }
-        }
-
-        //Terminal 2 Points after 3 Badges; starting 3 Points
-        case SPECIES_PIDGEOTTO: case SPECIES_FLETCHINDER: case SPECIES_LOUDRED: case SPECIES_WAILMER:
-        case SPECIES_SLOWPOKE: case SPECIES_SLOWPOKE_GALAR: case SPECIES_HONEDGE:
-        case SPECIES_GROWLITHE: case SPECIES_GROWLITHE_HISUI:
-        case SPECIES_ONIX: case SPECIES_NOSEPASS: case SPECIES_SHIELDON:
-        case SPECIES_HOUNDOUR:
-        case SPECIES_CARVANHA:
-        case SPECIES_KIRLIA: case SPECIES_GOTHORITA:
-        case SPECIES_DRILBUR:
-        case SPECIES_DARUMAKA: case SPECIES_DARUMAKA_GALAR:
-        case SPECIES_NIDORINO: case SPECIES_NIDORINA:
-        case SPECIES_HERDIER:
-        case SPECIES_STEENEE:
-        case SPECIES_PAWMO:
-        case SPECIES_BUIZEL: case SPECIES_ARROKUDA:
-        {
-            if (FlagGet(FLAG_BADGE03_GET)){
-                return 2;
-            }else{
-                return 3;
-            }
-        }
-
-        //Terminal 2 Points
-        case SPECIES_GOLDUCK:
-        case SPECIES_PIDGEOT:
-        case SPECIES_DITTO:
-        case SPECIES_EXPLOUD:
-        case SPECIES_WAILORD:
-        case SPECIES_CRADILY:
-        case SPECIES_FINIZEN:
-            return 2;
-
-
-    //Terminal 1 Point after 5 Badges; starting 4 Points
-        case SPECIES_BEEDRILL:
-        case SPECIES_FURRET:
-        case SPECIES_BEAUTIFLY:
-        case SPECIES_BIBAREL:
-        case SPECIES_KRICKETUNE:
-        case SPECIES_SPIDOPS:
-        {
-            if (FlagGet(FLAG_BADGE05_GET)){
-                return 1;
-            }else if (FlagGet(FLAG_BADGE03_GET)){
-                return 2;
-            }else if (FlagGet(FLAG_BADGE02_GET)){
-                return 3;
-            }else{
-                return 4;
-            }
-        }
-
-    //Terminal 1 Point after 4 Badges; starting 4 Points
-    case SPECIES_BULBASAUR:
-    case SPECIES_MUDKIP: case SPECIES_TORCHIC:
-    case SPECIES_TURTWIG:
-    case SPECIES_FROAKIE:
-    case SPECIES_SCORBUNNY: case SPECIES_GROOKEY:
-    case SPECIES_SPRIGATITO:
-    {
-        if (FlagGet(FLAG_BADGE04_GET)){
-            return 1;
-        }
-        if (FlagGet(FLAG_BADGE03_GET)){
-            return 2;
-        }
-        else if(FlagGet(FLAG_BADGE02_GET)){
-            return 3;
-        }else{
-            return 4;
-        }
-    }
-
-    //Terminal 1 Point after 5 Badges; starting 3 Points
-        case SPECIES_PARASECT: case SPECIES_SEAKING:
-        case SPECIES_LEDIAN: case SPECIES_ARIADOS: case SPECIES_SUNFLORA: case SPECIES_QWILFISH:
-        case SPECIES_CORSOLA: case SPECIES_MAGCARGO: case SPECIES_DELIBIRD:
-        case SPECIES_MIGHTYENA: case SPECIES_LINOONE: case SPECIES_DELCATTY: case SPECIES_PLUSLE:
-        case SPECIES_MINUN: case SPECIES_SPINDA: case SPECIES_SEVIPER: case SPECIES_CASTFORM:
-        case SPECIES_BANETTE: case SPECIES_LUVDISC: case SPECIES_WORMADAM_PLANT:
-        case SPECIES_MOTHIM: case SPECIES_PACHIRISU: case SPECIES_CHATOT: case SPECIES_CARNIVINE:
-        case SPECIES_LUMINEON: case SPECIES_PHIONE: case SPECIES_SWOOBAT: case SPECIES_WATCHOG:
-        case SPECIES_UNOWN: case SPECIES_TRAPINCH: case SPECIES_SWABLU: case SPECIES_LITLEO:
-        case SPECIES_JOLTIK: case SPECIES_AXEW: case SPECIES_LITWICK: case SPECIES_VANILLITE:
-        case SPECIES_CLAMPERL: case SPECIES_SPRITZEE: case SPECIES_SWIRLIX: case SPECIES_MILCERY:
-        case SPECIES_PORYGON: case SPECIES_MINCCINO:
-        {
-            if (FlagGet(FLAG_BADGE05_GET)){
-                return 1;
-            }else if (FlagGet(FLAG_BADGE04_GET)){
-                return 2;
-            }else{
-                return 3;
-            }
-        }
-    //Terminal 1 Point after 4 Badges; starting 3 Points
-        case SPECIES_NUMEL: case SPECIES_BARBOACH: case SPECIES_BALTOY:
-        case SPECIES_BUNEARY: case SPECIES_MURKROW: case SPECIES_DUCKLETT: case SPECIES_CUBCHOO:
-        case SPECIES_ELGYEM: case SPECIES_INKAY: case SPECIES_CLAUNCHER: case SPECIES_PUMPKABOO:
-        case SPECIES_CRABRAWLER: case SPECIES_ROCKRUFF: case SPECIES_FOMANTIS:
-        case SPECIES_APPLIN: case SPECIES_MIME_JR: case SPECIES_WIGLETT:
-        case SPECIES_CAPSAKID: case SPECIES_RELLOR: case SPECIES_BRAMBLIN: case SPECIES_HAPPINY:
-        case SPECIES_DRATINI: case SPECIES_LARVITAR: case SPECIES_BAGON: case SPECIES_GIBLE:
-        case SPECIES_DEINO: case SPECIES_GOOMY: case SPECIES_JANGMO_O: case SPECIES_DREEPY: case SPECIES_FRIGIBAX: case SPECIES_RIOLU:
-        case SPECIES_CHARMANDER: case SPECIES_SQUIRTLE: case SPECIES_CHIKORITA: case SPECIES_CYNDAQUIL: case SPECIES_TOTODILE:
-        case SPECIES_TREECKO: case SPECIES_PIPLUP: case SPECIES_CHIMCHAR:case SPECIES_SNIVY: case SPECIES_TEPIG: case SPECIES_OSHAWOTT: case SPECIES_FENNEKIN: case SPECIES_CHESPIN:
-        case SPECIES_ROWLET: case SPECIES_LITTEN: case SPECIES_POPPLIO: case SPECIES_SOBBLE: case SPECIES_FUECOCO: case SPECIES_QUAXLY:
-        case SPECIES_ABRA: case SPECIES_GASTLY: case SPECIES_SOLOSIS:
-        case SPECIES_MEDITITE: case SPECIES_SHUPPET: case SPECIES_DUSKULL: case SPECIES_GEODUDE: case SPECIES_GEODUDE_ALOLA: case SPECIES_ARON:
-        case SPECIES_ELEKID: case SPECIES_MAGBY: case SPECIES_SMOOCHUM: case SPECIES_BONSLY: case SPECIES_BUDEW:
-        case SPECIES_NACLI: case SPECIES_TINKATINK: case SPECIES_ROGGENROLA: case SPECIES_MACHOP: case SPECIES_TIMBURR:
-        case SPECIES_FIDOUGH: case SPECIES_CHINCHOU: case SPECIES_BLITZLE: case SPECIES_MEOWTH: case SPECIES_MEOWTH_ALOLA:
-        case SPECIES_SIZZLIPEDE: case SPECIES_SHROODLE: case SPECIES_SANDILE: case SPECIES_TENTACOOL: case SPECIES_TOEDSCOOL: case SPECIES_MAGNEMITE:
-        case SPECIES_VOLTORB: case SPECIES_TEDDIURSA: case SPECIES_CORPHISH: case SPECIES_CRANIDOS: case SPECIES_SHELLOS_EAST: case SPECIES_SHELLOS_WEST:
-        case SPECIES_ZORUA: case SPECIES_ZORUA_HISUI: case SPECIES_MASCHIFF: case SPECIES_GREAVARD: case SPECIES_VENONAT: case SPECIES_DODUO: case SPECIES_PINECO: case SPECIES_HORSEA:
-        case SPECIES_SKIDDO: case SPECIES_PANCHAM: case SPECIES_HATENNA: case SPECIES_IMPIDIMP:
-        case SPECIES_SALANDIT: case SPECIES_SEEL: case SPECIES_STUNKY: case SPECIES_YAMASK: case SPECIES_YAMASK_GALAR:
-        case SPECIES_DEERLING: case SPECIES_CUFANT: case SPECIES_FLITTLE: case SPECIES_SLUGMA: case SPECIES_GLAMEOW: case SPECIES_CHARCADET:
-        case SPECIES_SINISTEA_PHONY: case SPECIES_SINISTEA_ANTIQUE: case SPECIES_POLTCHAGEIST_ARTISAN: case SPECIES_POLTCHAGEIST_COUNTERFEIT:
-        case SPECIES_VULPIX_ALOLA: case SPECIES_EEVEE: case SPECIES_PANSEAR: case SPECIES_SHELLDER: case SPECIES_PANPOUR:
-        case SPECIES_PANSAGE: case SPECIES_TADBULB: case SPECIES_JIGGLYPUFF: case SPECIES_MUNNA: case SPECIES_PETILIL: case SPECIES_HELIOPTILE:  case SPECIES_SNORUNT:
-        case SPECIES_KARRABLAST: case SPECIES_CLOBBOPUS:
-        {
-            if (FlagGet(FLAG_BADGE04_GET)){
-                return 1;
-            }else if (FlagGet(FLAG_BADGE03_GET)){
-                return 2;
-            }else{
-                return 3;
-            }
-        }
-
-    //Terminal 1 Point after 3 badges; starting 3 points
-        case SPECIES_PIDGEY: case SPECIES_HOOTHOOT: case SPECIES_TAILLOW: case SPECIES_STARLY:
-        case SPECIES_PIDOVE: case SPECIES_FLETCHLING: case SPECIES_PIKIPEK: case SPECIES_ROOKIDEE: case SPECIES_WATTREL:
-        case SPECIES_LOTAD: case SPECIES_SEEDOT:
-        case SPECIES_SENTRET: case SPECIES_BIDOOF: case SPECIES_LILLIPUP: case SPECIES_PATRAT: case SPECIES_YUNGOOS:
-        case SPECIES_MAREEP: case SPECIES_SHINX:  case SPECIES_WYNAUT: case SPECIES_NIDORAN_M: case SPECIES_NIDORAN_F:
-        case SPECIES_MARILL: case SPECIES_SURSKIT: case SPECIES_POLIWAG: case SPECIES_WINGULL:
-        case SPECIES_POOCHYENA: case SPECIES_NICKIT: case SPECIES_HOPPIP: case SPECIES_ODDISH: case SPECIES_BELLSPROUT:
-        case SPECIES_ROLYCOLY: case SPECIES_PAWMI: case SPECIES_EKANS: case SPECIES_GULPIN:
-        case SPECIES_SANDSHREW: case SPECIES_SANDSHREW_ALOLA: case SPECIES_FLABEBE:
-        case SPECIES_RATTATA: case SPECIES_RATTATA_ALOLA: case SPECIES_ZIGZAGOON: case SPECIES_ZIGZAGOON_GALAR:
-        case SPECIES_SKWOVET: case SPECIES_WOOLOO: case SPECIES_WHISMUR: case SPECIES_LECHONK:
-        case SPECIES_NYMBLE: case SPECIES_NINCADA: case SPECIES_SPEAROW: case SPECIES_NATU:
-        case SPECIES_WOOPER: case SPECIES_WOOPER_PALDEA: case SPECIES_REMORAID:
-        case SPECIES_MAKUHITA: case SPECIES_SNUBBULL:
-        case SPECIES_SHROOMISH: case SPECIES_PARAS: case SPECIES_MORELULL: case SPECIES_CHERUBI:
-        case SPECIES_PHANPY: case SPECIES_ESPURR: case SPECIES_CUTIEFLY: case SPECIES_YAMPER: case SPECIES_TANDEMAUS:
-        case SPECIES_SMOLIV: case SPECIES_DIGLETT: case SPECIES_DIGLETT_ALOLA:
-        case SPECIES_ELECTRIKE: case SPECIES_FINNEON: case SPECIES_SPOINK: case SPECIES_CACNEA: case SPECIES_SPHEAL:
-        case SPECIES_GOLDEEN: case SPECIES_SWINUB:
-        {
-            if (FlagGet(FLAG_BADGE03_GET)){
-                return 1;
-            }else if (FlagGet(FLAG_BADGE02_GET)){
-                return 2;
-            }else{
-                return 3;
-            }
-        }
-    //Terminal 1 Point after 3 Badges; starting 2 points
-        case SPECIES_BELDUM:
-        case SPECIES_PSYDUCK:
-        case SPECIES_DROWZEE:
-        case SPECIES_FEEBAS:
-        case SPECIES_RALTS:
-        case SPECIES_TOXEL:
-        case SPECIES_SLAKOTH:
-        case SPECIES_TYROGUE:
-        case SPECIES_SKITTY:
-        case SPECIES_TYNAMO:
-        {
-            if (FlagGet(FLAG_BADGE03_GET)){
-                return 1;
-            }else{
-                return 2;
-            }
-        }
-    //Terminal 1 Point after 2 Badges; starting 2 points
-    case SPECIES_ZUBAT: case SPECIES_WOOBAT: case SPECIES_NOIBAT:
-    case SPECIES_TOGEPI: case SPECIES_IGGLYBUFF: case SPECIES_PICHU:
-    case SPECIES_AZURILL: case SPECIES_CLEFFA: case SPECIES_SUNKERN:
-    case SPECIES_SEWADDLE: case SPECIES_VENIPEDE: case SPECIES_SNOM:
-    case SPECIES_CHINGLING:
-        {
-          if (FlagGet(FLAG_BADGE02_GET)){
-                return 1;
-            }else{
-                return 2;
-            }
-        }
-
-    //Terminal 1 Point after 1 Badge; Starting 2 points
-        case SPECIES_METAPOD: case SPECIES_KAKUNA: case SPECIES_LEDYBA: case SPECIES_SPINARAK:
-        case SPECIES_SILCOON: case SPECIES_CASCOON: case SPECIES_COMBEE:
-        case SPECIES_BURMY: case SPECIES_BURMY_SANDY: case SPECIES_BURMY_TRASH:
-        case SPECIES_SPEWPA: case SPECIES_GRUBBIN: case SPECIES_DOTTLER:
-        case SPECIES_TAROUNTULA: case SPECIES_BOUNSWEET:
-        {
-          if (FlagGet(FLAG_BADGE01_GET)){
-                return 1;
-            }else{
-                return 2;
-            }
-        }
-    //Terminal 1 Point after 6 badges; Starting 2 Points
-    case SPECIES_GLALIE:
-    {
-        if (FlagGet(FLAG_BADGE06_GET)){
-            return 1;
-        }else{
-            return 2;
-        }
-    }
-
-    //Terminal 1 Point
-        case SPECIES_MAGIKARP:
-        case SPECIES_CATERPIE: case SPECIES_WEEDLE: case SPECIES_WURMPLE: case SPECIES_KRICKETOT:
-        case SPECIES_SCATTERBUG: case SPECIES_BLIPBUG:
-            return 1;
-        default:
-            return defaultPointValue;
-    }
-}
-
-static bool32 IsFreeMoveRelearnerTierException(u16 species)
-{
-    switch (species)
-    {
-    case SPECIES_BEEDRILL:
-        return TRUE;
-    default:
-        return FALSE;
-    }
-}
-
-static bool32 IsFreeCenterTutorTierException(u16 species)
-{
-    switch (species)
-    {
-    //Currently redundant but keeping this check until
-    //I have identified a mon that has a conditional 2-point ability variation    
-    case SPECIES_BEEDRILL:
-        return TRUE;
-    default:
-        //Because MoveRelearner Tier points are more lenient, they naturally apply here
-        return IsFreeMoveRelearnerTierException(species);
-    }
-}
-
-
-
-static bool32 DoesSpeciesOrEvolutionExceedTierPointThreshold(struct Pokemon *mon, u16 species, u8 threshold)
-{
-    u32 i;
-    u8 abilityNum;
-    struct Pokemon tempMon = *mon;
-    const struct Evolution *evolutions;
-
-    SetMonData(&tempMon, MON_DATA_SPECIES, &species);
-
-    for (abilityNum = 0; abilityNum < NUM_ABILITY_SLOTS; abilityNum++)
-    {
-        if (GetSpeciesAbility(species, abilityNum) == ABILITY_NONE)
-            continue;
-
-        SetMonData(&tempMon, MON_DATA_ABILITY_NUM, &abilityNum);
-        if (GetMonTierPoints(&tempMon) > threshold)
-            return TRUE;
-    }
-
-    evolutions = GetSpeciesEvolutions(species);
-    if (evolutions == NULL)
-        return FALSE;
-
-    for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
-    {
-        u16 targetSpecies = SanitizeSpeciesId(evolutions[i].targetSpecies);
-
-        if (targetSpecies == SPECIES_NONE)
-            continue;
-
-        if (DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, targetSpecies, threshold))
-            return TRUE;
-    }
-
-    return FALSE;
-}
-
-bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon)
-{
-    u16 species;
-
-    if (mon == NULL || GetMonData(mon, MON_DATA_IS_EGG))
-        return FALSE;
-
-    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    if (species == SPECIES_NONE || GetMonTierPoints(mon) > 1)
-        return FALSE;
-
-    if (IsFreeCenterTutorTierException(species))
-        return FALSE;
-
-    return !DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, species, 1);
-}
-
-bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon)
-{
-    if (GetNumberOfCenterTutorableMoves(mon) == 0)
-        return FALSE;
-
-    if (!FlagGet(FLAG_RESOURCE_MODE) || VarGet(VAR_TEMP_9) != MOVE_TUTOR_CENTER || VarGet(VAR_REMAINING_TUTOR) > 0)
-        return TRUE;
-
-    return IsMonFreeCenterTutorEligible(mon);
-}
-
-bool32 IsMonFreeMoveRelearnerEligible(struct Pokemon *mon)
-{
-    u16 species;
-
-    if (mon == NULL || GetMonData(mon, MON_DATA_IS_EGG))
-        return FALSE;
-
-    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    if (species == SPECIES_NONE || GetMonTierPoints(mon) > 2)
-        return FALSE;
-
-    if (IsFreeMoveRelearnerTierException(species))
-        return FALSE;
-
-    return !DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, species, 2);
-}
-
-bool32 CanMonUseMoveRelearnerWithCurrentResources(struct Pokemon *mon)
-{
-    if (GetNumberOfRelearnableMoves(mon) == 0)
-        return FALSE;
-
-    if (!FlagGet(FLAG_RESOURCE_MODE) || VarGet(VAR_REMAINING_RELEARNER) > 0)
-        return TRUE;
-
-    return IsMonFreeMoveRelearnerEligible(mon);
-}
-
-//Get the points of the party other than the mon to replace.
-u32 CountPartyTierPoints(){
-    u16 i = 0;
-    u32 tierPoints = 0;
-
-    for (i = 0; i < PARTY_SIZE; i++)
-    {
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE
-            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
-            )
-        {
-            tierPoints += GetMonTierPoints(&gPlayerParty[i]);
-        }
-    }
-    return tierPoints;
-}
-
 struct Pokemon *GetSavedPlayerPartyMon(u32 index)
 {
     return &gSaveBlock1Ptr->playerParty[index];
@@ -10364,4 +6957,57 @@ bool32 IsSpeciesOfType(u32 species, enum Type type)
      || gSpeciesInfo[species].types[1] == type)
         return TRUE;
     return FALSE;
+}
+
+struct BoxPokemon *GetSelectedBoxMonFromPcOrParty(void)
+{
+    struct BoxPokemon *boxmon;
+    if (gSpecialVar_0x8004 == PC_MON_CHOSEN)
+        boxmon = GetBoxedMonPtr(gSpecialVar_MonBoxId, gSpecialVar_MonBoxPos);
+    else
+        boxmon = &(gPlayerParty[gSpecialVar_0x8004].box);
+    return boxmon;
+}
+
+u32 GiveScriptedMonToPlayer(struct Pokemon *mon, u8 slot)
+{
+    u32 sentToPc;
+    u32 i = 0;
+    if (slot < PARTY_SIZE)
+    {
+        CopyMon(&gPlayerParty[slot], mon, sizeof(struct Pokemon));
+        sentToPc = MON_GIVEN_TO_PARTY;
+    }
+    else
+    {
+        for (i = 0; i < PARTY_SIZE; i++)
+        {
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
+                break;
+        }
+        if (i >= PARTY_SIZE)
+        {
+            sentToPc = CopyMonToPC(mon);
+        }
+        else
+        {
+            sentToPc = MON_GIVEN_TO_PARTY;
+            CopyMon(&gPlayerParty[i], mon, sizeof(struct Pokemon));
+            gPlayerPartyCount = i + 1;
+        }
+    }
+    if (sentToPc != MON_CANT_GIVE)
+    {
+        HandleSetPokedexFlagFromMon(mon, FLAG_SET_SEEN);
+        HandleSetPokedexFlagFromMon(mon, FLAG_SET_CAUGHT);
+    }
+    return sentToPc;
+}
+
+void ChangePokemonNicknameWithCallback(void (*callback)(void))
+{
+    struct BoxPokemon *boxMon = GetSelectedBoxMonFromPcOrParty();
+    GetBoxMonData(boxMon, MON_DATA_NICKNAME, gStringVar3);
+    GetBoxMonData(boxMon, MON_DATA_NICKNAME, gStringVar2);
+    DoNamingScreen(NAMING_SCREEN_NICKNAME, gStringVar2, GetBoxMonData(boxMon, MON_DATA_SPECIES), GetBoxMonGender(boxMon), GetBoxMonData(boxMon, MON_DATA_PERSONALITY), callback);
 }

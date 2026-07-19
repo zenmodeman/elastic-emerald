@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `272b903eeb` (2026-07-17, "Adjust the all scores bad threshold").
-- **Uncommitted AI changes covered by this document:** The read-only `AI Dmg` display uses a single column for a publicly overwritten or suppressed player ability while retaining the three-slot natural-ability view when the ability has not changed. This is an information-presentation change and does not alter ordinary battle-AI decisions.
+- **Last documented code commit:** `995fbe355c` (2026-07-17, "Adjust Ability Displays of the Battle Info menu to accomodate ability changes").
+- **Uncommitted AI changes covered by this document:** The Expansion 1.15 merge restores complete player held-item knowledge and repeated-switch immunity prediction on the new AI/switch APIs, including resetting the switch counter when the AI changes battlers, rescoring against the selected revealed immunity candidate, and adapting the ability-block query used by prediction to the 1.15 move-target and priority APIs.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -165,7 +165,7 @@ In the read-only `AI Dmg` page, the opposing attacker defaults to the opposing b
 
 The all-moves-bad switching check treats move scores below 98 as bad, leaving only moves close to the neutral baseline outside that switch trigger.
 
-Key commits: `7ee8501957`, `272b903eeb`.
+Key commits: `7ee8501957`, `dea75e5c6d`, `dc794373b3`, `3ee4fe2a78`, `272b903eeb`, `995fbe355c`.
 
 ## 4. Doubles coordination
 
