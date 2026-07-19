@@ -308,10 +308,6 @@ script RustboroCity_Gym_EventScript_Roxanne {
 
 script RoxanneFirstGymBattleScript {
     msgbox(format("Hello, I am Roxanne, the Rustboro City POKéMON Gym Leader."))
-    msgbox(format("After battling with my Gym Trainers, your Pokémon must be exhausted."))
-    msgbox(format("Here, let me heal them for you."))
-    playse(SE_USE_ITEM)
-    special(HealPlayerParty)
     msgbox(format("I became a GYM LEADER so that I might apply what I learned at the POKéMON TRAINER'S SCHOOL in battle."))
     msgbox(format("Would you like to have a Single or a Double Battle?"))
     dynmultichoice(0, 100, TRUE, 2, 0, DYN_MULTICHOICE_CB_NONE, "Single Battle", "Double Battle")

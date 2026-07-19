@@ -1229,6 +1229,197 @@ bool8 GetTrainerFlag(void)
         return FlagGet(GetTrainerAFlag());
 }
 
+static bool8 TrainerClassHealsBeforeBattle(u8 trainerClass)
+{
+    switch (trainerClass)
+    {
+    // Accomplished, professional, and affluent trainers offer a fair fight.
+    case TRAINER_CLASS_PKMN_BREEDER:
+    case TRAINER_CLASS_EXPERT:
+    case TRAINER_CLASS_RICH_BOY:
+    case TRAINER_CLASS_LADY:
+    case TRAINER_CLASS_GENTLEMAN:
+    case TRAINER_CLASS_ELITE_FOUR:
+    case TRAINER_CLASS_LEADER:
+    case TRAINER_CLASS_WINSTRATE:
+    case TRAINER_CLASS_CHAMPION:
+    case TRAINER_CLASS_DRAGON_TAMER:
+    case TRAINER_CLASS_COOLTRAINER_2:
+    case TRAINER_CLASS_OLD_COUPLE:
+    case TRAINER_CLASS_SALON_MAIDEN:
+    case TRAINER_CLASS_DOME_ACE:
+    case TRAINER_CLASS_PALACE_MAVEN:
+    case TRAINER_CLASS_ARENA_TYCOON:
+    case TRAINER_CLASS_FACTORY_HEAD:
+    case TRAINER_CLASS_PIKE_QUEEN:
+    case TRAINER_CLASS_PYRAMID_KING:
+        return TRUE;
+
+    // Villainous, entry-level, informal, and otherwise non-healing trainers.
+    case TRAINER_CLASS_BLACK_BELT: //Although somewhat profession, these are adversity oriented trainers
+    case TRAINER_CLASS_BATTLE_GIRL:
+    case TRAINER_CLASS_TRIATHLETE: //Similar to Black Belt
+    case TRAINER_CLASS_PKMN_TRAINER_1:
+    case TRAINER_CLASS_PKMN_TRAINER_2:
+    case TRAINER_CLASS_HIKER:
+    case TRAINER_CLASS_TEAM_AQUA:
+    case TRAINER_CLASS_BIRD_KEEPER:
+    case TRAINER_CLASS_SWIMMER_M:
+    case TRAINER_CLASS_TEAM_MAGMA:
+    case TRAINER_CLASS_AQUA_ADMIN:
+    case TRAINER_CLASS_AQUA_LEADER:
+    case TRAINER_CLASS_RUIN_MANIAC:
+    case TRAINER_CLASS_TUBER_F:
+    case TRAINER_CLASS_TUBER_M:
+    case TRAINER_CLASS_POKEMANIAC:
+    case TRAINER_CLASS_KINDLER:
+    case TRAINER_CLASS_CAMPER:
+    case TRAINER_CLASS_PICNICKER:
+    case TRAINER_CLASS_BUG_MANIAC:
+    case TRAINER_CLASS_SCHOOL_KID:
+    case TRAINER_CLASS_SR_AND_JR:
+    case TRAINER_CLASS_YOUNGSTER:
+    case TRAINER_CLASS_FISHERMAN:
+    case TRAINER_CLASS_SWIMMER_F:
+    case TRAINER_CLASS_TWINS:
+    case TRAINER_CLASS_SAILOR:
+    case TRAINER_CLASS_MAGMA_ADMIN:
+    case TRAINER_CLASS_RIVAL:
+    case TRAINER_CLASS_BUG_CATCHER:
+    case TRAINER_CLASS_MAGMA_LEADER:
+    case TRAINER_CLASS_LASS:
+    case TRAINER_CLASS_YOUNG_COUPLE:
+    case TRAINER_CLASS_SIS_AND_BRO:
+    case TRAINER_CLASS_RS_PROTAG:
+        return FALSE;
+
+    // Status-focused trainers use class-specific medicine instead.
+    case TRAINER_CLASS_HEX_MANIAC:
+    case TRAINER_CLASS_NINJA_BOY:
+    case TRAINER_CLASS_COLLECTOR:
+    case TRAINER_CLASS_GUITARIST:
+    case TRAINER_CLASS_PKMN_RANGER:
+    case TRAINER_CLASS_COOLTRAINER:
+    case TRAINER_CLASS_BEAUTY:
+    case TRAINER_CLASS_PARASOL_LADY:
+    case TRAINER_CLASS_PSYCHIC:
+    case TRAINER_CLASS_POKEFAN:
+    case TRAINER_CLASS_AROMA_LADY:
+    case TRAINER_CLASS_INTERVIEWER:
+        return FALSE;
+
+    // New trainer classes do not heal until deliberately opted in above.
+    default:
+        return FALSE;
+    }
+}
+
+static bool8 IsRouteBossTrainer(u16 trainerId)
+{
+    switch (trainerId)
+    {
+    case TRAINER_AURELIO:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+static u8 GetTrainerClassPreBattleStatusHeal(u8 trainerClass)
+{
+    switch (trainerClass)
+    {
+    case TRAINER_CLASS_HEX_MANIAC:
+        return TRAINER_PRE_BATTLE_HEAL_OLD_GATEAU;
+    case TRAINER_CLASS_NINJA_BOY:
+        return TRAINER_PRE_BATTLE_HEAL_LAVA_COOKIE;
+    case TRAINER_CLASS_COLLECTOR:
+        return TRAINER_PRE_BATTLE_HEAL_PEWTER_CRUNCHIES;
+    case TRAINER_CLASS_GUITARIST:
+        return TRAINER_PRE_BATTLE_HEAL_RAGE_CANDY_BAR;
+    case TRAINER_CLASS_PKMN_RANGER:
+        return TRAINER_PRE_BATTLE_HEAL_HEAL_POWDER;
+    case TRAINER_CLASS_COOLTRAINER:
+        return TRAINER_PRE_BATTLE_HEAL_FULL_HEAL;
+    case TRAINER_CLASS_BEAUTY:
+        return TRAINER_PRE_BATTLE_HEAL_CASTELIACONE;
+    case TRAINER_CLASS_PARASOL_LADY:
+        return TRAINER_PRE_BATTLE_HEAL_LUMIOSE_GALETTE;
+    case TRAINER_CLASS_PSYCHIC:
+        return TRAINER_PRE_BATTLE_HEAL_SHALOUR_SABLE;
+    case TRAINER_CLASS_POKEFAN:
+        return TRAINER_PRE_BATTLE_HEAL_BIG_MALASADA;
+    case TRAINER_CLASS_AROMA_LADY:
+        return TRAINER_PRE_BATTLE_HEAL_LUM_BERRY;
+    case TRAINER_CLASS_INTERVIEWER:
+        return TRAINER_PRE_BATTLE_HEAL_JUBILIFE_MUFFIN;
+    default:
+        return TRAINER_PRE_BATTLE_HEAL_NONE;
+    }
+}
+
+u16 TryHealPlayerPartyBeforeTrainerBattle(void)
+{
+    u32 i;
+    u32 status = STATUS1_NONE;
+    u8 healA;
+    u8 healB = TRAINER_PRE_BATTLE_HEAL_NONE;
+
+    // Facility challenges manage healing separately and should retain their rules.
+    if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || InTrainerHillChallenge())
+        return TRAINER_PRE_BATTLE_HEAL_NONE;
+
+    // Route bosses always offer a complete heal, regardless of trainer class.
+    if (IsRouteBossTrainer(TRAINER_BATTLE_PARAM.opponentA)
+     || (TRAINER_BATTLE_PARAM.opponentB != TRAINER_NONE
+      && IsRouteBossTrainer(TRAINER_BATTLE_PARAM.opponentB)))
+    {
+        u16 healerTrainerId = IsRouteBossTrainer(TRAINER_BATTLE_PARAM.opponentA)
+                            ? TRAINER_BATTLE_PARAM.opponentA
+                            : TRAINER_BATTLE_PARAM.opponentB;
+
+        StringCopy(gStringVar1, GetTrainerNameFromId(healerTrainerId));
+        HealPlayerParty();
+        return TRAINER_PRE_BATTLE_HEAL_FULL;
+    }
+
+    if (TrainerClassHealsBeforeBattle(GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA)))
+        healA = TRAINER_PRE_BATTLE_HEAL_FULL;
+    else
+        healA = GetTrainerClassPreBattleStatusHeal(GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA));
+
+    if (TRAINER_BATTLE_PARAM.opponentB != TRAINER_NONE)
+    {
+        if (TrainerClassHealsBeforeBattle(GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentB)))
+            healB = TRAINER_PRE_BATTLE_HEAL_FULL;
+        else
+            healB = GetTrainerClassPreBattleStatusHeal(GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentB));
+    }
+
+    // Complete healing takes precedence when two trainers offer different medicine.
+    if (healA == TRAINER_PRE_BATTLE_HEAL_FULL || healB == TRAINER_PRE_BATTLE_HEAL_FULL)
+    {
+        u16 healerTrainerId = healA == TRAINER_PRE_BATTLE_HEAL_FULL
+                            ? TRAINER_BATTLE_PARAM.opponentA
+                            : TRAINER_BATTLE_PARAM.opponentB;
+
+        StringCopy(gStringVar1, GetTrainerNameFromId(healerTrainerId));
+        HealPlayerParty();
+        return TRAINER_PRE_BATTLE_HEAL_FULL;
+    }
+
+    if (healA == TRAINER_PRE_BATTLE_HEAL_NONE)
+        healA = healB;
+
+    if (healA == TRAINER_PRE_BATTLE_HEAL_NONE)
+        return TRAINER_PRE_BATTLE_HEAL_NONE;
+
+    for (i = 0; i < gPlayerPartyCount; i++)
+        SetMonData(&gPlayerParty[i], MON_DATA_STATUS, &status);
+
+    return healA;
+}
+
 static void SetBattledTrainersFlags(void)
 {
     if (TRAINER_BATTLE_PARAM.opponentB != 0)

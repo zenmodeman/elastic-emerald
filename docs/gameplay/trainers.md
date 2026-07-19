@@ -8,7 +8,7 @@
 The following tags are used to automate trainer data from source code, while the rest of the text is inputted manually:
 ```text
 <!-- trainer-party:start id=SOURCE_ID -->
-...generated party data...
+...generated trainer items, healing policy, and party data...
 <!-- trainer-party:end -->
 ```
 
@@ -16,7 +16,7 @@ When Brendan and May records intentionally share a party, both are tracked and
 the sync fails if they diverge:
 ```text
 <!-- trainer-party:start ids=SOURCE_ID_1,SOURCE_ID_2 -->
-...generated shared party data...
+...generated shared trainer items, healing policy, and party data...
 <!-- trainer-party:end -->
 ```
 
@@ -26,6 +26,10 @@ the sync fails if they diverge:
 
 ### Route 103 Rival (Torchic Team) — *Mandatory*
 <!-- trainer-party:start ids=TRAINER_BRENDAN_ROUTE_103_TREECKO,TRAINER_MAY_ROUTE_103_TREECKO -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Torchic**
 - **Ability:** Blaze
 - **Nature:** Serious
@@ -42,6 +46,10 @@ the sync fails if they diverge:
 
 ### Route 103 Rival (Mudkip Team)
 <!-- trainer-party:start ids=TRAINER_BRENDAN_ROUTE_103_TORCHIC,TRAINER_MAY_ROUTE_103_TORCHIC -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Mudkip**
 - **Ability:** Torrent
 - **Nature:** Serious
@@ -58,6 +66,10 @@ the sync fails if they diverge:
 
 ### Rival (Treecko Team)
 <!-- trainer-party:start ids=TRAINER_BRENDAN_ROUTE_103_MUDKIP,TRAINER_MAY_ROUTE_103_MUDKIP -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Treecko**
 - **Ability:** Overgrow
 - **Nature:** Serious
@@ -76,6 +88,10 @@ the sync fails if they diverge:
 
 ### Youngster Calvin — *Mandatory*
 <!-- trainer-party:start id=TRAINER_CALVIN_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Shinx (M)**
 - **Ability:** Rivalry
 - **Level:** 4
@@ -107,6 +123,10 @@ the sync fails if they diverge:
 
 ### Bug Catcher Rick — *Mandatory*
 <!-- trainer-party:start id=TRAINER_RICK -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Surskit (M)** @ Aguav Berry
 - **Ability:** Swift Swim
 - **Level:** 5
@@ -139,6 +159,10 @@ the sync fails if they diverge:
 
 ### Youngster Allen — *Optional*
 <!-- trainer-party:start id=TRAINER_ALLEN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Zigzagoon** @ Ganlon Berry
 - **Ability:** Gluttony
 - **Level:** 5
@@ -166,6 +190,10 @@ the sync fails if they diverge:
 
 ### Lass Tiana — *Mandatory*
 <!-- trainer-party:start id=TRAINER_TIANA -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Flabebe** @ Oran Berry
 - **Ability:** Flower Veil
 - **Level:** 7
@@ -206,6 +234,10 @@ the sync fails if they diverge:
 
 ### Beauty Ayumu — *Branched Mandatory / Optional*
 <!-- trainer-party:start id=TRAINER_AYUMU -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Status conditions only (Casteliacone).
+
 **Skitty (F)** @ Oran Berry
 - **Ability:** Cute Charm
 - **Level:** 8
@@ -236,6 +268,10 @@ the sync fails if they diverge:
 
 ### Youngster Billy — *Optional, Reward*
 <!-- trainer-party:start id=TRAINER_BILLY -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Meowth-Galar (M)** @ Throat Spray
 - **Ability:** Pickup
 - **Level:** 7
@@ -273,6 +309,10 @@ the sync fails if they diverge:
 
 ### Fisherman Darian — *Optional*
 <!-- trainer-party:start id=TRAINER_DARIAN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Magikarp**
 - **Level:** 9
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
@@ -283,6 +323,10 @@ the sync fails if they diverge:
 ### Schoolkid Jimmy — *Branched Mandatory / Optional*
 **Item note:** Jimmy is guarding the hidden **Ability Patch**.
 <!-- trainer-party:start id=TRAINER_JIMMY -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Ekans (M)** @ Chesto Berry
 - **Ability:** Shed Skin
 - **Level:** 8
@@ -314,9 +358,13 @@ the sync fails if they diverge:
 - Lady Cindy is intended to be an easy source of money. Happy Hour and Pay Day have been made to apply to the winner, so her uses of these moves increase the player's money if they win the battle.
 - The first Lady Cindy team increases by 3 levels after beating Roxanne and raises by an additional 3 levels after beating Brawly. These level increases raise her money yield.
 - Cindy's money yield is `200 * total sum of Pokemon levels; multiply by 2 once Happy Hour is used.` Not factoring any Pay Day boosts, this puts her at 9600 to start and 16,800 post-Brawly. 
+<!-- trainer-party:start id=TRAINER_CINDY_1 -->
 **Items:** Full Restore
 
-<!-- trainer-party:start id=TRAINER_CINDY_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Complete heal.
+
 **Meowth** @ Oran Berry
 - **Ability:** Pickup
 - **Level:** 8
@@ -361,6 +409,10 @@ the sync fails if they diverge:
 - Although Lyle is optional, it's required to fight Route Boss Aurelio
 - If Collector Darren has been defeated, Lyle's Pokemon increase by 2 levels (for Route Boss level scaling).
 <!-- trainer-party:start id=TRAINER_LYLE -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Cascoon** @ Poison Barb
 - **Ability:** Shed Skin
 - **Level:** 7
@@ -400,6 +452,10 @@ the sync fails if they diverge:
 
 ### Petalburg Woods Aqua Grunt — *Mandatory*
 <!-- trainer-party:start id=TRAINER_GRUNT_PETALBURG_WOODS -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Chewtle** @ Apicot Berry
 - **Ability:** Shell Armor
 - **Level:** 10
@@ -434,9 +490,13 @@ the sync fails if they diverge:
 ### Youngster James — *Optional*
 - While Youngster James is optional, it's required to fight Route Boss Aurelio
 - If Collector Darren has been defeated, James' Pokemon increase by 2 levels (for Route Boss level-scaling)
-- **Special AI flags:** Force Setup First Turn
-
 <!-- trainer-party:start id=TRAINER_JAMES_1 -->
+**Battle type:** Singles.
+
+**Additional AI flags:** Force Setup First Turn.
+
+**Pre-battle healing:** None.
+
 **Zigzagoon** @ Ring Target
 - **Ability:** Quick Feet
 - **Level:** 9
@@ -470,12 +530,15 @@ the sync fails if they diverge:
 - **Battle Notes:** Requires beating **Youngster James** and **Bug Catcher Lyle** to fight.
 - If Collector Darren has been defeated, Aurelio's Pokemon increase by 2 levels (for level scaling).
 - In Restricted Mode, Aurelio can no longer be fought after beating Roxanne, to bound its Route Boss reward.
-- **Pre-battle Note:** Aurelio heals before the fight.
 - **Reward Notes:**  
 	- 1 Jaboca Berry and 1 Rowap Berry in non-Resource Mode;  
 	- 3 Jaboca Berries and 3 Rowap Berries in Resource Mode.
 
 <!-- trainer-party:start id=TRAINER_AURELIO -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Complete heal (route boss override).
+
 **Clefairy (F)** @ Sticky Barb
 - **Ability:** Magic Guard
 - **Level:** 10
@@ -526,9 +589,13 @@ the sync fails if they diverge:
 ## Route 104 (After Petalburg Woods)
 
 ### Rich Boy Winston — *Optional*
+<!-- trainer-party:start id=TRAINER_WINSTON_1 -->
 **Items:** Full Restore
 
-<!-- trainer-party:start id=TRAINER_WINSTON_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Complete heal.
+
 **Bonsly** @ Rindo Berry
 - **Ability:** Sturdy
 - **Level:** 10
@@ -549,6 +616,10 @@ the sync fails if they diverge:
 
 ### Lass Haley — *Optional*
 <!-- trainer-party:start id=TRAINER_HALEY_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Marill** @ Cell Battery
 - **Ability:** Huge Power
 - **Level:** 9
@@ -577,6 +648,10 @@ the sync fails if they diverge:
 
 ### Twins Mina and Gina — *Mandatory*
 <!-- trainer-party:start id=TRAINER_GINA_AND_MIA_1 -->
+**Battle type:** Doubles.
+
+**Pre-battle healing:** None.
+
 **Milcery** @ Maranga Berry
 - **Ability:** Aroma Veil
 - **Level:** 10
@@ -608,6 +683,10 @@ the sync fails if they diverge:
 
 ### Collector Darren — *Mandatory*
 <!-- trainer-party:start id=TRAINER_DARREN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Status conditions only (Pewter Crunchies).
+
 **Sandile (M)** @ Wise Glasses
 - **Ability:** Intimidate
 - **Level:** 12
@@ -644,6 +723,10 @@ the sync fails if they diverge:
 
 ### Fisherman Ivan — *Optional*
 <!-- trainer-party:start id=TRAINER_IVAN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Magikarp**
 - **Level:** 10
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
@@ -659,6 +742,10 @@ the sync fails if they diverge:
 
 ### Youngster Joey — *Optional*
 <!-- trainer-party:start id=TRAINER_JOEY -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Machop** @ Shell Bell
 - **Ability:** Steadfast
 - **Level:** 11
@@ -690,6 +777,10 @@ the sync fails if they diverge:
 
 ### Bug Catcher Jose — *Optional*
 <!-- trainer-party:start id=TRAINER_JOSE -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Beautifly (M)** @ Apicot Berry
 - **Ability:** Swarm
 - **Level:** 10
@@ -717,6 +808,10 @@ the sync fails if they diverge:
 
 ### School Kid Karen — *Optional*
 <!-- trainer-party:start id=TRAINER_KAREN_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Shroomish (F)** @ Big Root
 - **Ability:** Effect Spore
 - **Level:** 10
@@ -745,6 +840,10 @@ the sync fails if they diverge:
 
 ### Youngster Johnson — *Optional*
 <!-- trainer-party:start id=TRAINER_JOHNSON -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Seedot** @ Jaboca Berry
 - **Ability:** Pickpocket
 - **Level:** 10
@@ -772,6 +871,10 @@ the sync fails if they diverge:
 
 ### Hiker Clark — *Optional*
 <!-- trainer-party:start id=TRAINER_CLARK -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Nacli** @ Oran Berry
 - **Ability:** Purifying Salt
 - **Level:** 11
@@ -789,6 +892,10 @@ the sync fails if they diverge:
 
 ### Hiker Devan — *Mandatory to reach Rusturf Tunnel*
 <!-- trainer-party:start id=TRAINER_DEVAN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Diglett** @ Silk Scarf
 - **Ability:** Sand Veil
 - **Level:** 11
@@ -806,6 +913,10 @@ the sync fails if they diverge:
 
 ### Camper Elias — *Optional with Reward*
 <!-- trainer-party:start id=TRAINER_ELIAS -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Scraggy** @ Eject Button
 - **Ability:** Intimidate
 - **Level:** 12
@@ -842,6 +953,10 @@ the sync fails if they diverge:
 
 ### Youngster Josh — *Mandatory*
 <!-- trainer-party:start id=TRAINER_JOSH -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Roggenrola** @ Oran Berry
 - **Ability:** Sturdy
 - **Level:** 10
@@ -868,6 +983,10 @@ the sync fails if they diverge:
 
 #### Youngster Tommy
 <!-- trainer-party:start id=TRAINER_TOMMY -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Binacle** @ Rindo Berry
 - **Ability:** Pickpocket
 - **Level:** 11
@@ -894,6 +1013,10 @@ the sync fails if they diverge:
 
 #### Hiker Marc
 <!-- trainer-party:start id=TRAINER_MARC -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Rolycoly** @ Absorb Bulb
 - **Ability:** Steam Engine
 - **Level:** 11
@@ -930,6 +1053,12 @@ the sync fails if they diverge:
 
 #### Gym Leader Roxanne (3-mon Singles)
 <!-- trainer-party:start id=TRAINER_ROXANNE_1_3MON -->
+**Battle type:** Singles.
+
+**Additional AI flags:** Force Setup First Turn.
+
+**Pre-battle healing:** Complete heal.
+
 **Yamask-Galar (F)** @ Smooth Rock
 - **Ability:** Wandering Spirit
 - **Level:** 14
@@ -972,6 +1101,12 @@ the sync fails if they diverge:
 
 #### Gym Leader Roxanne (4-mon Singles)
 <!-- trainer-party:start id=TRAINER_ROXANNE_1 -->
+**Battle type:** Singles.
+
+**Additional AI flags:** Force Setup First Turn.
+
+**Pre-battle healing:** Complete heal.
+
 **Yamask-Galar (F)** @ Smooth Rock
 - **Ability:** Wandering Spirit
 - **Level:** 14
@@ -1026,6 +1161,10 @@ the sync fails if they diverge:
 
 #### Gym Leader Roxanne (3-mon doubles)
 <!-- trainer-party:start id=TRAINER_ROXANNE_1_3MON_DOUBLES -->
+**Battle type:** Doubles.
+
+**Pre-battle healing:** Complete heal.
+
 **Yamask-Galar (F)** @ Berry Juice
 - **Ability:** Wandering Spirit
 - **Level:** 14
@@ -1068,6 +1207,10 @@ the sync fails if they diverge:
 
 #### Gym Leader Roxanne (4-mon doubles)
 <!-- trainer-party:start id=TRAINER_ROXANNE_1_DOUBLES -->
+**Battle type:** Doubles.
+
+**Pre-battle healing:** Complete heal.
+
 **Dwebble (F)** @ Berry Juice
 - **Ability:** Sturdy
 - **Level:** 13
@@ -1123,6 +1266,10 @@ the sync fails if they diverge:
 
 #### Rich Boy Dawson
 <!-- trainer-party:start id=TRAINER_DAWSON -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Complete heal.
+
 **Popplio** @ Throat Spray
 - **Ability:** Liquid Voice
 - **Level:** 14
@@ -1150,6 +1297,12 @@ the sync fails if they diverge:
 
 #### Lady Sarah
 <!-- trainer-party:start id=TRAINER_SARAH -->
+**Items:** Full Restore
+
+**Battle type:** Singles.
+
+**Pre-battle healing:** Complete heal.
+
 **Floette** @ Misty Seed
 - **Ability:** Symbiosis
 - **Level:** 14
@@ -1182,6 +1335,10 @@ the sync fails if they diverge:
 
 ### School Kid Jerry — *Optional*
 <!-- trainer-party:start id=TRAINER_JERRY_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Ralts**
 - **Level:** 13
 - **IVs:** 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
@@ -1191,6 +1348,10 @@ the sync fails if they diverge:
 
 ### Lass Janice — *Optional*
 <!-- trainer-party:start id=TRAINER_JANICE -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Marill**
 - **Level:** 13
 - **IVs:** 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
@@ -1198,6 +1359,10 @@ the sync fails if they diverge:
 
 ### Rusturf Tunnel Aqua Grunt — *Mandatory*
 <!-- trainer-party:start id=TRAINER_GRUNT_RUSTURF_TUNNEL -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Clobbopus** @ Mystic Water
 - **Ability:** Technician
 - **Level:** 15
@@ -1240,6 +1405,10 @@ the sync fails if they diverge:
 > This team is used if the player chooses **Treecko** as starter, or the player chooses Mono **Normal, Grass, Dark, Bug, Ice, or Steel**.
 
 <!-- trainer-party:start ids=TRAINER_BRENDAN_RUSTBORO_TREECKO,TRAINER_MAY_RUSTBORO_TREECKO -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Wingull** @ Berry Juice
 - **Ability:** Rain Dish
 - **Level:** 15
@@ -1283,6 +1452,10 @@ the sync fails if they diverge:
 > This team is used if the player chooses **Mudkip** as starter, or the player chooses Mono **Water, Ground, Electric, Psychic, Dragon, or Fighting**.
 
 <!-- trainer-party:start ids=TRAINER_BRENDAN_RUSTBORO_MUDKIP,TRAINER_MAY_RUSTBORO_MUDKIP -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Wingull** @ Berry Juice
 - **Ability:** Rain Dish
 - **Level:** 15
@@ -1326,6 +1499,10 @@ the sync fails if they diverge:
 > This team is used if the player chooses **Torchic** as starter, or the player chooses Mono **Flying, Poison, Rock, Ghost, Fire, or Fairy**.
 
 <!-- trainer-party:start ids=TRAINER_BRENDAN_RUSTBORO_TORCHIC,TRAINER_MAY_RUSTBORO_TORCHIC -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Slugma** @ Grip Claw
 - **Ability:** Flame Body
 - **Level:** 15
@@ -1367,6 +1544,10 @@ the sync fails if they diverge:
 > South of Dewford Town; Blocks access to Dewford Garden.
 
 <!-- trainer-party:start id=TRAINER_PLENNY -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Status conditions only (Lum Berry).
+
 **Noibat** @ Leftovers
 - **Ability:** Frisk
 - **Level:** 17
@@ -1396,6 +1577,10 @@ the sync fails if they diverge:
 > Fisherman directly above Dewford
 
 <!-- trainer-party:start id=TRAINER_NED -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Tentacool** @ Honey
 - **Ability:** Clear Body
 - **Level:** 14
@@ -1435,6 +1620,10 @@ the sync fails if they diverge:
   - Brine
 
 <!-- trainer-party:start id=TRAINER_ELLIOT_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Poliwag** @ Damp Rock
 - **Ability:** Damp
 - **Level:** 14
@@ -1490,6 +1679,10 @@ the sync fails if they diverge:
 -  Can be fought before Brawly, and is mandatory for story progression after Brawly. Gives a **Muscle Band**. His Pokémon have excess Attack EVs for flavor.
 
 <!-- trainer-party:start id=TRAINER_DAICHI -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Crabrawler** @ Muscle Band
 - **Ability:** Hyper Cutter
 - **Level:** 15
@@ -1522,6 +1715,10 @@ the sync fails if they diverge:
 - Can be fought before Brawly, and is mandatory for story progression after Brawly. Gives **Protective Pads**. His Pokémon have excess Attack EVs for flavor.
 
 <!-- trainer-party:start id=TRAINER_KENJI -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Pancham** @ Protective Pads
 - **Ability:** Iron Fist
 - **Level:** 15
@@ -1550,11 +1747,14 @@ the sync fails if they diverge:
 ---
 
 ### Black Belt Ryuji — Mandatory to reach Steven's Room
-- **Double Battle**
 - The right-most black belt outside Steven's room, and the Black Belt directly blocking the entrance.
 - Is mandatory for story progression, but can't be fought until beating Brawly, Daichi, and Kenji. Gives a **Black Belt**. Has excess Atk EVs for flavor.
 
 <!-- trainer-party:start id=TRAINER_RYUJI -->
+**Battle type:** Doubles.
+
+**Pre-battle healing:** None.
+
 **Sawk** @ Black Belt
 - **Ability:** Sturdy
 - **Level:** 17
@@ -1583,6 +1783,10 @@ the sync fails if they diverge:
 ### Battle Girl Laura — Mandatory
 
 <!-- trainer-party:start id=TRAINER_LAURA -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Farfetch’d-Galar** @ Stick
 - **Ability:** Scrappy
 - **Level:** 15
@@ -1599,6 +1803,10 @@ the sync fails if they diverge:
 ### Black Belt Takao — Optional
 - Takao is found on the left side of Dewford Gym
 <!-- trainer-party:start id=TRAINER_TAKAO -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Machop** @ Iapapa Berry
 - **Ability:** Guts
 - **Level:** 15
@@ -1617,6 +1825,10 @@ the sync fails if they diverge:
 
 #### Battle Girl Lilith
 <!-- trainer-party:start id=TRAINER_LILITH -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Riolu** @ Micle Berry
 - **Ability:** Prankster
 - **Level:** 15
@@ -1632,6 +1844,10 @@ the sync fails if they diverge:
 
 #### Sailor Brenden
 <!-- trainer-party:start id=TRAINER_BRENDEN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Croagunk** @ Oran Berry
 - **Ability:** Anticipation
 - **Level:** 15
@@ -1648,6 +1864,10 @@ the sync fails if they diverge:
 ### Battle Girl Jocelyn and Black Belt Cristian — Mandatory Double Battle
 #### Battle Girl Jocelyn
 <!-- trainer-party:start id=TRAINER_JOCELYN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Crabrawler** @ Shell Bell
 - **Ability:** Hyper Cutter
 - **Level:** 16
@@ -1675,6 +1895,10 @@ the sync fails if they diverge:
 
 #### Black Belt Cristian
 <!-- trainer-party:start id=TRAINER_CRISTIAN -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
 **Sneasel-Hisui** @ Payapa Berry
 - **Ability:** Pickpocket
 - **Level:** 16
@@ -1715,6 +1939,12 @@ the sync fails if they diverge:
 - Brawly has 4 possible team formats: 3-mon singles, 4-mon singles, 3-mon doubles, 4-mon doubles. Below lists each.
 #### Gym Leader Brawly (4-mon Singles)
 <!-- trainer-party:start id=TRAINER_BRAWLY_1 -->
+**Battle type:** Singles.
+
+**Additional AI flags:** Force Setup First Turn.
+
+**Pre-battle healing:** Complete heal.
+
 **Meditite** @ Coba Berry
 - **Ability:** Pure Power
 - **Level:** 17
@@ -1767,6 +1997,12 @@ the sync fails if they diverge:
 
 #### Gym Leader Brawly (3-mon Singles)
 <!-- trainer-party:start id=TRAINER_BRAWLY_1_3MON -->
+**Battle type:** Singles.
+
+**Additional AI flags:** Force Setup First Turn.
+
+**Pre-battle healing:** Complete heal.
+
 **Meditite** @ Coba Berry
 - **Ability:** Pure Power
 - **Level:** 17
@@ -1808,6 +2044,10 @@ the sync fails if they diverge:
 #### Gym Leader Brawly (4-mon Doubles)
 
 <!-- trainer-party:start id=TRAINER_BRAWLY_1_DOUBLES -->
+**Battle type:** Doubles.
+
+**Pre-battle healing:** Complete heal.
+
 **Meditite** @ Coba Berry
 - **Ability:** Pure Power
 - **Level:** 17
@@ -1860,6 +2100,10 @@ the sync fails if they diverge:
 
 #### Gym Leader Brawly (3-mon Doubles)
 <!-- trainer-party:start id=TRAINER_BRAWLY_1_3MON_DOUBLES -->
+**Battle type:** Doubles.
+
+**Pre-battle healing:** Complete heal.
+
 **Meditite** @ Coba Berry
 - **Ability:** Pure Power
 - **Level:** 17

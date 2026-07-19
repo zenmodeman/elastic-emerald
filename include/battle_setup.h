@@ -85,6 +85,7 @@ void BattleSetup_StartTrainerBattle(void);
 void BattleSetup_StartRematchBattle(void);
 void BattleSetup_EnforceRestrictedModeItemClause(void);
 void ShowTrainerIntroSpeech(void);
+u16 TryHealPlayerPartyBeforeTrainerBattle(void);
 const u8 *BattleSetup_GetScriptAddrAfterBattle(void);
 const u8 *BattleSetup_GetTrainerPostBattleScript(void);
 void ShowTrainerCantBattleSpeech(void);

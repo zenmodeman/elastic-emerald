@@ -597,9 +597,9 @@ RustboroCity_Gym_EventScript_Roxanne::
 # 301 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_unset FLAG_RECEIVED_TM_ROCK_TOMB, RustboroCity_Gym_EventScript_Roxanne_2
 RustboroCity_Gym_EventScript_Roxanne_1:
-# 310 "data/maps/RustboroCity_Gym/scripts.pory"
+# 304 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RustboroCity_Gym_Text_RoxannePostBattle
-# 311 "data/maps/RustboroCity_Gym/scripts.pory"
+# 305 "data/maps/RustboroCity_Gym/scripts.pory"
 	release
 	end
 
@@ -610,188 +610,172 @@ RustboroCity_Gym_EventScript_Roxanne_2:
 
 
 RoxanneFirstGymBattleScript::
-# 316 "data/maps/RustboroCity_Gym/scripts.pory"
+# 310 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RoxanneFirstGymBattleScript_Text_0
-# 323 "data/maps/RustboroCity_Gym/scripts.pory"
+# 311 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RoxanneFirstGymBattleScript_Text_1
-# 324 "data/maps/RustboroCity_Gym/scripts.pory"
+# 312 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RoxanneFirstGymBattleScript_Text_2
-# 325 "data/maps/RustboroCity_Gym/scripts.pory"
-	playse SE_USE_ITEM
-# 326 "data/maps/RustboroCity_Gym/scripts.pory"
-	special HealPlayerParty
-# 327 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox RoxanneFirstGymBattleScript_Text_3
-# 328 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox RoxanneFirstGymBattleScript_Text_4
-# 329 "data/maps/RustboroCity_Gym/scripts.pory"
-	dynmultichoice 0, 100, TRUE, 2, 0, DYN_MULTICHOICE_CB_NONE, RoxanneFirstGymBattleScript_Text_5, RoxanneFirstGymBattleScript_Text_6
-# 330 "data/maps/RustboroCity_Gym/scripts.pory"
+# 313 "data/maps/RustboroCity_Gym/scripts.pory"
+	dynmultichoice 0, 100, TRUE, 2, 0, DYN_MULTICHOICE_CB_NONE, RoxanneFirstGymBattleScript_Text_3, RoxanneFirstGymBattleScript_Text_4
+# 314 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_RESULT, 0
-	goto_if_eq RoxanneFirstGymBattleScript_5
-# 341 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_2
+# 325 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_RESULT, 1
-	goto_if_eq RoxanneFirstGymBattleScript_6
-RoxanneFirstGymBattleScript_4:
-# 352 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_3
+RoxanneFirstGymBattleScript_1:
+# 336 "data/maps/RustboroCity_Gym/scripts.pory"
 	release
 	end
 
-RoxanneFirstGymBattleScript_5:
-# 331 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox RoxanneFirstGymBattleScript_Text_7
-# 332 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox RoxanneFirstGymBattleScript_Text_8
-# 333 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_2:
+# 315 "data/maps/RustboroCity_Gym/scripts.pory"
+	msgbox RoxanneFirstGymBattleScript_Text_5
+# 316 "data/maps/RustboroCity_Gym/scripts.pory"
+	msgbox RoxanneFirstGymBattleScript_Text_6
+# 317 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_NONE
-	goto_if_eq RoxanneFirstGymBattleScript_12
-# 333 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_7
+# 317 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_GRASS - 1
-	goto_if_eq RoxanneFirstGymBattleScript_12
-# 333 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_7
+# 317 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_WATER - 1
-	goto_if_eq RoxanneFirstGymBattleScript_12
-# 333 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_7
+# 317 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_FIGHTING
-	goto_if_eq RoxanneFirstGymBattleScript_12
-# 334 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_7
+# 318 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_STEEL
-	goto_if_eq RoxanneFirstGymBattleScript_12
-# 334 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_7
+# 318 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_MONOTYPE, TYPE_GROUND
-	goto_if_eq RoxanneFirstGymBattleScript_12
-# 337 "data/maps/RustboroCity_Gym/scripts.pory"
+	goto_if_eq RoxanneFirstGymBattleScript_7
+# 321 "data/maps/RustboroCity_Gym/scripts.pory"
 	trainerbattle_no_intro TRAINER_ROXANNE_1_3MON, RustboroCity_Gym_Text_RoxanneDefeat
-RoxanneFirstGymBattleScript_11:
-# 340 "data/maps/RustboroCity_Gym/scripts.pory"
-	call RustboroCity_Gym_EventScript_RoxanneDefeated
-	goto RoxanneFirstGymBattleScript_4
-
 RoxanneFirstGymBattleScript_6:
-# 342 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox RoxanneFirstGymBattleScript_Text_9
-# 343 "data/maps/RustboroCity_Gym/scripts.pory"
-	msgbox RoxanneFirstGymBattleScript_Text_8
-# 344 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_MONOTYPE, TYPE_NONE
-	goto_if_eq RoxanneFirstGymBattleScript_26
-# 344 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_MONOTYPE, TYPE_GRASS - 1
-	goto_if_eq RoxanneFirstGymBattleScript_26
-# 344 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_MONOTYPE, TYPE_WATER - 1
-	goto_if_eq RoxanneFirstGymBattleScript_26
-# 344 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_MONOTYPE, TYPE_FIGHTING
-	goto_if_eq RoxanneFirstGymBattleScript_26
-# 345 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_MONOTYPE, TYPE_STEEL
-	goto_if_eq RoxanneFirstGymBattleScript_26
-# 345 "data/maps/RustboroCity_Gym/scripts.pory"
-	compare VAR_MONOTYPE, TYPE_GROUND
-	goto_if_eq RoxanneFirstGymBattleScript_26
-# 348 "data/maps/RustboroCity_Gym/scripts.pory"
-	trainerbattle_no_intro TRAINER_ROXANNE_1_3MON_DOUBLES, RustboroCity_Gym_Text_RoxanneDefeat
-RoxanneFirstGymBattleScript_25:
-# 350 "data/maps/RustboroCity_Gym/scripts.pory"
+# 324 "data/maps/RustboroCity_Gym/scripts.pory"
 	call RustboroCity_Gym_EventScript_RoxanneDefeated
-	goto RoxanneFirstGymBattleScript_4
+	goto RoxanneFirstGymBattleScript_1
 
-RoxanneFirstGymBattleScript_12:
-# 335 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_3:
+# 326 "data/maps/RustboroCity_Gym/scripts.pory"
+	msgbox RoxanneFirstGymBattleScript_Text_7
+# 327 "data/maps/RustboroCity_Gym/scripts.pory"
+	msgbox RoxanneFirstGymBattleScript_Text_6
+# 328 "data/maps/RustboroCity_Gym/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_NONE
+	goto_if_eq RoxanneFirstGymBattleScript_21
+# 328 "data/maps/RustboroCity_Gym/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_GRASS - 1
+	goto_if_eq RoxanneFirstGymBattleScript_21
+# 328 "data/maps/RustboroCity_Gym/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_WATER - 1
+	goto_if_eq RoxanneFirstGymBattleScript_21
+# 328 "data/maps/RustboroCity_Gym/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_FIGHTING
+	goto_if_eq RoxanneFirstGymBattleScript_21
+# 329 "data/maps/RustboroCity_Gym/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_STEEL
+	goto_if_eq RoxanneFirstGymBattleScript_21
+# 329 "data/maps/RustboroCity_Gym/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_GROUND
+	goto_if_eq RoxanneFirstGymBattleScript_21
+# 332 "data/maps/RustboroCity_Gym/scripts.pory"
+	trainerbattle_no_intro TRAINER_ROXANNE_1_3MON_DOUBLES, RustboroCity_Gym_Text_RoxanneDefeat
+RoxanneFirstGymBattleScript_20:
+# 334 "data/maps/RustboroCity_Gym/scripts.pory"
+	call RustboroCity_Gym_EventScript_RoxanneDefeated
+	goto RoxanneFirstGymBattleScript_1
+
+RoxanneFirstGymBattleScript_7:
+# 319 "data/maps/RustboroCity_Gym/scripts.pory"
 	trainerbattle_no_intro TRAINER_ROXANNE_1, RustboroCity_Gym_Text_RoxanneDefeat
-	goto RoxanneFirstGymBattleScript_11
+	goto RoxanneFirstGymBattleScript_6
 
-RoxanneFirstGymBattleScript_26:
-# 346 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_21:
+# 330 "data/maps/RustboroCity_Gym/scripts.pory"
 	trainerbattle_no_intro TRAINER_ROXANNE_1_DOUBLES, RustboroCity_Gym_Text_RoxanneDefeat
-	goto RoxanneFirstGymBattleScript_25
+	goto RoxanneFirstGymBattleScript_20
+
 
 RustboroCity_Gym_EventScript_GiveRockTomb::
-# 364 "data/maps/RustboroCity_Gym/scripts.pory"
+# 341 "data/maps/RustboroCity_Gym/scripts.pory"
 	compare VAR_MONOTYPE, 0
 	goto_if_gt RustboroCity_Gym_EventScript_GiveRockTomb_2
-# 368 "data/maps/RustboroCity_Gym/scripts.pory"
+# 345 "data/maps/RustboroCity_Gym/scripts.pory"
 	addvar VAR_REMAINING_TUTOR, 1
-# 369 "data/maps/RustboroCity_Gym/scripts.pory"
+# 346 "data/maps/RustboroCity_Gym/scripts.pory"
 	addvar VAR_REMAINING_RELEARNER, 1
 RustboroCity_Gym_EventScript_GiveRockTomb_1:
-# 371 "data/maps/RustboroCity_Gym/scripts.pory"
+# 348 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_unset FLAG_RESOURCE_MODE, RustboroCity_Gym_EventScript_GiveRockTomb_6
-# 376 "data/maps/RustboroCity_Gym/scripts.pory"
+# 353 "data/maps/RustboroCity_Gym/scripts.pory"
 	giveitem ITEM_TM_ROCK_TOMB, 3
-# 377 "data/maps/RustboroCity_Gym/scripts.pory"
+# 354 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-# 378 "data/maps/RustboroCity_Gym/scripts.pory"
+# 355 "data/maps/RustboroCity_Gym/scripts.pory"
 	setflag FLAG_RECEIVED_TM_ROCK_TOMB
 RustboroCity_Gym_EventScript_GiveRockTomb_5:
-# 380 "data/maps/RustboroCity_Gym/scripts.pory"
+# 357 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RustboroCity_Gym_Text_ExplainRockTomb, MSGBOX_DEFAULT
-# 381 "data/maps/RustboroCity_Gym/scripts.pory"
+# 358 "data/maps/RustboroCity_Gym/scripts.pory"
 	release
 	end
 
 RustboroCity_Gym_EventScript_GiveRockTomb_2:
-# 365 "data/maps/RustboroCity_Gym/scripts.pory"
+# 342 "data/maps/RustboroCity_Gym/scripts.pory"
 	addvar VAR_REMAINING_TUTOR, 2
-# 366 "data/maps/RustboroCity_Gym/scripts.pory"
+# 343 "data/maps/RustboroCity_Gym/scripts.pory"
 	addvar VAR_REMAINING_RELEARNER, 2
 	goto RustboroCity_Gym_EventScript_GiveRockTomb_1
 
 RustboroCity_Gym_EventScript_GiveRockTomb_6:
-# 372 "data/maps/RustboroCity_Gym/scripts.pory"
+# 349 "data/maps/RustboroCity_Gym/scripts.pory"
 	giveitem ITEM_TM_ROCK_TOMB
-# 373 "data/maps/RustboroCity_Gym/scripts.pory"
+# 350 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-# 374 "data/maps/RustboroCity_Gym/scripts.pory"
+# 351 "data/maps/RustboroCity_Gym/scripts.pory"
 	setflag FLAG_RECEIVED_TM_ROCK_TOMB
 	goto RustboroCity_Gym_EventScript_GiveRockTomb_5
 
 
 RoxanneFirstGymBattleScript_Text_0:
-# 322 "data/maps/RustboroCity_Gym/scripts.pory"
+# 310 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Hello, I am Roxanne, the Rustboro City\n"
 	.string "POKéMON Gym Leader.$"
 
 RoxanneFirstGymBattleScript_Text_1:
-# 323 "data/maps/RustboroCity_Gym/scripts.pory"
-	.string "After battling with my Gym Trainers,\n"
-	.string "your Pokémon must be exhausted.$"
-
-RoxanneFirstGymBattleScript_Text_2:
-# 324 "data/maps/RustboroCity_Gym/scripts.pory"
-	.string "Here, let me heal them for you.$"
-
-RoxanneFirstGymBattleScript_Text_3:
-# 327 "data/maps/RustboroCity_Gym/scripts.pory"
+# 311 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "I became a GYM LEADER so that I might\n"
 	.string "apply what I learned at the POKéMON\l"
 	.string "TRAINER'S SCHOOL in battle.$"
 
-RoxanneFirstGymBattleScript_Text_4:
-# 328 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_Text_2:
+# 312 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Would you like to have a Single or a\n"
 	.string "Double Battle?$"
 
-RoxanneFirstGymBattleScript_Text_5:
-# 329 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_Text_3:
+# 313 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Single Battle$"
 
-RoxanneFirstGymBattleScript_Text_6:
-# 329 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_Text_4:
+# 313 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Double Battle$"
 
-RoxanneFirstGymBattleScript_Text_7:
-# 331 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_Text_5:
+# 315 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Oh, you want a simple head-to-head.\n"
 	.string "Fine by me.$"
 
-RoxanneFirstGymBattleScript_Text_8:
-# 332 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_Text_6:
+# 316 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Would you kindly demonstrate how you\n"
 	.string "battle, and with which POKéMON?$"
 
-RoxanneFirstGymBattleScript_Text_9:
-# 342 "data/maps/RustboroCity_Gym/scripts.pory"
+RoxanneFirstGymBattleScript_Text_7:
+# 326 "data/maps/RustboroCity_Gym/scripts.pory"
 	.string "Oh, you want a more complex battle. I'm\n"
 	.string "down!$"

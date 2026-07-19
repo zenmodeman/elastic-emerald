@@ -476,10 +476,6 @@ script DewfordTown_Gym_EventScript_Brawly {
 script BrawlyFirstGymBattleScript {
     msgbox(format("I'm BRAWLY! \nDEWFORD's GYM LEADER!"))
 	msgbox(format("I've been churned in the rough waves\n of these parts."))
-	msgbox(format("But I'm sure you've had it tough in my gym as well."))
-	msgbox(format("Here, let me heal your POKéMON for you."))
-    playse(SE_USE_ITEM)
-    special(HealPlayerParty)
 	msgbox(format("I've grown tough in the pitch-black cave!"))
 	msgbox(format("So you wanted to challenge me?"))
     msgbox(format("Would you like to have a Single or a Double Battle?"))

@@ -71,6 +71,7 @@ gSpecials::
 	def_special IsEnigmaBerryValid
 	def_special GetTrainerBattleMode
 	def_special ShowTrainerIntroSpeech
+	def_special TryHealPlayerPartyBeforeTrainerBattle
 	def_special ShowTrainerCantBattleSpeech
 	def_special GetTrainerFlag
 	def_special DoTrainerApproach
