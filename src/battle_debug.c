@@ -995,8 +995,9 @@ static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32
     uq4_12_t effectiveness;
     struct SimulatedDamage damage;
 
-    // Do not use the AI's inferred player ability: show the same roll for every
-    // ability slot the player's current species could have instead.
+    // Do not use the AI's inferred player ability. The caller supplies one of
+    // the species' possible natural abilities, a publicly overwritten current
+    // ability, or no ability when the current ability is publicly suppressed.
     gAiLogicData->abilities[battlerDef] = abilityDef;
     gBattleMons[battlerDef].ability = abilityDef;
     damage = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK, AI_GetWeather());
@@ -1015,23 +1016,38 @@ static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32
 
 static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
 {
+    bool32 hasSuppressedAbility = GetBattlerAbilityIgnoreMoldBreaker(data->battlerId) == ABILITY_NONE
+                               && gBattleMons[data->battlerId].ability != ABILITY_NONE;
+    bool32 hasOverwrittenAbility = gDisableStructs[data->battlerId].overwrittenAbility != ABILITY_NONE;
+    bool32 hasFixedAbility = hasSuppressedAbility || hasOverwrittenAbility;
+    u32 abilityCount = hasFixedAbility ? 1 : NUM_ABILITY_SLOTS;
     u32 moveSlot, abilitySlot;
     u8 text[32];
 
     FillWindowPixelBuffer(data->aiMovesWindowId, 0x11);
-    for (abilitySlot = 0; abilitySlot < NUM_ABILITY_SLOTS; abilitySlot++)
+    for (abilitySlot = 0; abilitySlot < abilityCount; abilitySlot++)
     {
-        enum Ability ability = GetSpeciesAbility(gBattleMons[data->battlerId].species, abilitySlot);
+        enum Ability ability;
+        u32 x = hasFixedAbility ? 134 : 82 + abilitySlot * 52;
         u8 *end;
 
-        if (ability == ABILITY_NONE)
+        if (hasSuppressedAbility)
+            ability = ABILITY_NONE;
+        else if (hasOverwrittenAbility)
+            ability = gBattleMons[data->battlerId].ability;
+        else
+            ability = GetSpeciesAbility(gBattleMons[data->battlerId].species, abilitySlot);
+
+        if (hasSuppressedAbility)
+            StringCopy(text, COMPOUND_STRING("NoAbility"));
+        else if (ability == ABILITY_NONE)
             StringCopy(text, COMPOUND_STRING("-"));
         else
         {
             end = StringCopyN(text, gAbilitiesInfo[ability].name, 8);
             *end = EOS;
         }
-        AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 82 + abilitySlot * 52, 0, 0, NULL, 0, 0);
+        AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, x, 0, 0, NULL, 0, 0);
     }
 
     for (moveSlot = 0; moveSlot < MAX_MON_MOVES; moveSlot++)
@@ -1040,11 +1056,19 @@ static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
 
         StringCopyN(text, GetMoveName(move), 12)[0] = EOS;
         AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 0, 18 + moveSlot * 18, 0, NULL, 0, 0);
-        for (abilitySlot = 0; abilitySlot < NUM_ABILITY_SLOTS; abilitySlot++)
+        for (abilitySlot = 0; abilitySlot < abilityCount; abilitySlot++)
         {
-            enum Ability ability = GetSpeciesAbility(gBattleMons[data->battlerId].species, abilitySlot);
+            enum Ability ability;
+            u32 x = hasFixedAbility ? 134 : 82 + abilitySlot * 52;
 
-            if (move == MOVE_NONE || ability == ABILITY_NONE)
+            if (hasSuppressedAbility)
+                ability = ABILITY_NONE;
+            else if (hasOverwrittenAbility)
+                ability = gBattleMons[data->battlerId].ability;
+            else
+                ability = GetSpeciesAbility(gBattleMons[data->battlerId].species, abilitySlot);
+
+            if (move == MOVE_NONE || (ability == ABILITY_NONE && !hasSuppressedAbility))
             {
                 StringCopy(text, COMPOUND_STRING("-"));
             }
@@ -1056,7 +1080,7 @@ static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
                 *end++ = CHAR_HYPHEN;
                 ConvertIntToDecimalStringN(end, damage.maximum, STR_CONV_MODE_LEFT_ALIGN, 5);
             }
-            AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 82 + abilitySlot * 52, 18 + moveSlot * 18, 0, NULL, 0, 0);
+            AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, x, 18 + moveSlot * 18, 0, NULL, 0, 0);
         }
     }
 

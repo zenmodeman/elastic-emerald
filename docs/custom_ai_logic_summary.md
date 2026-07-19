@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `3ee4fe2a78` (2026-07-17, "Added a player damage battle debug menu, and modiifed the AI Dmg option to enable both opposing battlers in doubles.").
-- **Uncommitted AI changes covered by this document:** General fast-KO switching has been replaced by contextual preservation of ability-based weather setters. Weather-party synergy checks were extended to benched party Pokemon. The abandoned clean-state, literal-lead, and revealed-versus-surmised fast-KO machinery was removed.
+- **Last documented code commit:** `272b903eeb` (2026-07-17, "Adjust the all scores bad threshold").
+- **Uncommitted AI changes covered by this document:** The read-only `AI Dmg` display uses a single column for a publicly overwritten or suppressed player ability while retaining the three-slot natural-ability view when the ability has not changed. This is an information-presentation change and does not alter ordinary battle-AI decisions.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -115,13 +115,13 @@ Preservation additionally requires the setter to retain at least 75% of its maxi
 
 When every gate passes, the AI has a 50% chance to switch to the standard most-suitable party Pokemon. The KO check respects current battle conditions and survival effects such as Focus Sash and Sturdy. It does not use the abandoned clean-state model.
 
-This replacement is currently uncommitted.
+Key commit: `5440fb44b4`.
 
 ### Scrapped generalized fast-KO experiments
 
 Earlier versions attempted broad fast-KO preservation based on revealed versus inferred damage, literal-lead recognition, quad-effective Hidden STAB windows, and a clean-state simulation that removed player-created type, ability, grounding, immunity-bypass, defensive-stage, and Speed-stage changes. That approach was removed because its complexity produced little payoff and could over-penalize ordinary offensive Pokemon and player tech moves. The concise history is retained here in case parts are revisited later.
 
-The original bad-odds and fast-KO progression is represented by commits `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, and `efda8256b3`. Clean-state and literal-lead work was introduced in `6f1d67a6f4`, refined in `8d856e4bcf`, and given its final quad-effective Hidden STAB window in `4547aff533` before being scrapped by the current uncommitted replacement.
+The original bad-odds and fast-KO progression is represented by commits `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, and `efda8256b3`. Clean-state and literal-lead work was introduced in `6f1d67a6f4`, refined in `8d856e4bcf`, and given its final quad-effective Hidden STAB window in `4547aff533` before being scrapped by `5440fb44b4`.
 
 Dig/free-turn switching and broad type-matchup switching were also removed or disabled after testing because they produced poor or exploitable behavior.
 
@@ -155,13 +155,17 @@ Player-facing debug features are controlled by a saved runtime Option-menu setti
 
 When runtime debug mode is disabled, the in-battle Select menu is read-only and omits AI flags, AI knowledge, AI party state, miscellaneous mutation controls, and instant victory. Its reduced `AI Dmg` page calculates minimum and maximum damage against each of the player's species ability slots independently. It snapshots and restores battler and calculation state for every hypothetical ability and deliberately avoids displaying AI scores or using the AI's inferred player ability as the sole result.
 
+If the player's ability has been publicly overwritten during battle, such as by Skill Swap, Trace, Worry Seed, Mummy, or Wandering Spirit, the `AI Dmg` page instead shows one column using that actual current ability. If the ability is actively suppressed by Gastro Acid or another battler's Neutralizing Gas, the page shows a single `None` column and calculates damage without a defender ability. This suppression check respects Ability Shield and abilities that cannot be suppressed, and deliberately ignores Mold Breaker so ordinary ability bypass does not change the column header. An unchanged natural ability continues to use all species slots so the display does not reveal the AI's prediction.
+
 The read-only property pages use player-facing values rather than editor fields: PP is shown as current/maximum, stats use named numeric values, hazards show layers or presence, and statuses show `Active`/`Inactive`. Editor-only bulk actions such as the Moves and Stat Stages `All` entries are omitted. Their detail pages temporarily replace the complete main-list pane with a full-width, normal-font overlay, keeping labels on the left and right-aligning values within the visible screen bounds. Randomly determined remaining durations such as Sleep and Confusion are deliberately reduced to presence only. Public deterministic counters, including Toxic progression and fixed-duration effects such as Encore and Heal Block, remain visible.
 
 Both full-debug and read-only menus provide a `Player Dmg` page. It calculates minimum and maximum rolls for the active player's moves against every living opposing battler using actual current battler abilities rather than AI-inferred ability state. Doubles show both opposing targets and allow L/R to change the active player attacker. The calculation snapshots and restores battler and shared damage-calculation state.
 
 In the read-only `AI Dmg` page, the opposing attacker defaults to the opposing battler selected before opening the page, including battler 3. In doubles, L/R switches between living opposing attackers without changing the selected player defender.
 
-Key commit: `7ee8501957`.
+The all-moves-bad switching check treats move scores below 98 as bad, leaving only moves close to the neutral baseline outside that switch trigger.
+
+Key commits: `7ee8501957`, `272b903eeb`.
 
 ## 4. Doubles coordination
 
