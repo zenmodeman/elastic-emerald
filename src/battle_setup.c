@@ -77,6 +77,7 @@ static void CB2_StartFirstBattle(void);
 static void CB2_EndFirstBattle(void);
 static void SaveChangesToPlayerParty(void);
 static void HandleBattleVariantEndParty(void);
+static void RerollSleepTurnsAfterBattle(void);
 static void CB2_EndTrainerBattle(void);
 static bool32 IsPlayerDefeated(u32 battleOutcome);
 
@@ -587,6 +588,26 @@ static void DowngradeBadPoison(void)
     }
 }
 
+static void RerollSleepTurnsAfterBattle(void)
+{
+    u32 i;
+
+    if (B_SLEEP_TURNS < GEN_5)
+        return;
+
+    for (i = 0; i < gPlayerPartyCount; i++)
+    {
+        u32 status = GetMonData(&gPlayerParty[i], MON_DATA_STATUS);
+
+        if (status & STATUS1_SLEEP)
+        {
+            status &= ~STATUS1_SLEEP;
+            status |= STATUS1_SLEEP_TURN(RandomUniform(RNG_SLEEP_TURNS, 2, 4));
+            SetMonData(&gPlayerParty[i], MON_DATA_STATUS, &status);
+        }
+    }
+}
+
 static void StoreDuplicateHeldItem(u16 item)
 {
     if (!AddBagItem(item, 1))
@@ -651,6 +672,8 @@ static void CB2_EndWildBattle(void)
             HealPlayerParty();
     }
 
+    RerollSleepTurnsAfterBattle();
+
     if (IsPlayerDefeated(gBattleOutcome) == TRUE && CurrentBattlePyramidLocation() == PYRAMID_LOCATION_NONE && !InBattlePike())
     {
         SetMainCallback2(CB2_WhiteOut);
@@ -667,6 +690,7 @@ static void CB2_EndScriptedWildBattle(void)
 {
     CpuFill16(0, (void *)(BG_PLTT), BG_PLTT_SIZE);
     ResetOamRange(0, 128);
+    RerollSleepTurnsAfterBattle();
 
     if (IsPlayerDefeated(gBattleOutcome) == TRUE)
     {
@@ -967,6 +991,7 @@ static void CB2_StartFirstBattle(void)
 static void CB2_EndFirstBattle(void)
 {
     Overworld_ClearSavedMusic();
+    RerollSleepTurnsAfterBattle();
     DowngradeBadPoison();
     SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
 }
@@ -1581,6 +1606,8 @@ static void CB2_EndTrainerBattle(void)
             HealPlayerParty();
     }
 
+    RerollSleepTurnsAfterBattle();
+
     if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_SECRET_BASE)
     {
         DowngradeBadPoison();
@@ -1614,6 +1641,8 @@ static void CB2_EndTrainerBattle(void)
 
 static void CB2_EndRematchBattle(void)
 {
+    RerollSleepTurnsAfterBattle();
+
     if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_SECRET_BASE)
     {
         DowngradeBadPoison();
