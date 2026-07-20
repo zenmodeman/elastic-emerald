@@ -2529,6 +2529,44 @@ enum Move *GetMovesArray(enum BattlerId battler)
         return gBattleHistory->usedMoves[battler];
 }
 
+// Returns revealed moves plus unrevealed, immediately usable STAB attacks for
+// damage-line estimates. Move-specific logic should continue using GetMovesArray.
+enum Move *GetMovesArrayWithHiddenSTAB(enum BattlerId battler, enum Move *moves)
+{
+    struct BattlePokemon *bufferMon = (struct BattlePokemon *)&gBattleResources->bufferB[battler][4];
+    bool32 isMoveAware = IsAiBattlerAware(battler) || IsAiBattlerAware(BATTLE_PARTNER(battler));
+    enum Type types[3];
+    u32 i;
+
+    GetBattlerTypes(battler, FALSE, types);
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        enum Move bufferedMove = bufferMon->moves[i];
+        enum Type moveType = GetMoveType(bufferedMove);
+
+        if (isMoveAware)
+        {
+            moves[i] = gBattleMons[battler].moves[i];
+            continue;
+        }
+
+        moves[i] = gBattleHistory->usedMoves[battler][i];
+        if (moves[i] != MOVE_NONE
+         || bufferedMove == MOVE_NONE
+         || GetMovePower(bufferedMove) == 0
+         || (types[0] != moveType && types[1] != moveType && types[2] != moveType)
+         || MoveHasAdditionalEffect(bufferedMove, MOVE_EFFECT_RECHARGE)
+         || IsTwoTurnNotSemiInvulnerableMove(battler, bufferedMove))
+            continue;
+
+        moves[i] = gBattleMons[battler].moves[i];
+        if (moves[i] == MOVE_NONE)
+            moves[i] = bufferedMove;
+    }
+
+    return moves;
+}
+
 u32 GetBattlerMoveIndexWithEffect(enum BattlerId battler, enum BattleMoveEffects effect)
 {
     enum Move *moves = GetMovesArray(battler);

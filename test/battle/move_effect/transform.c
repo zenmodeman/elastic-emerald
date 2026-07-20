@@ -6,38 +6,21 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_TRANSFORM) == EFFECT_TRANSFORM);
 }
 
-SINGLE_BATTLE_TEST("Transform fails on semi-invulnerable target in Gen2+")
+SINGLE_BATTLE_TEST("Transform fails on semi-invulnerable target")
 {
-    u32 genConfig;
-    bool32 expectFail;
-
-    PARAMETRIZE { genConfig = GEN_1; expectFail = FALSE; }
-    PARAMETRIZE { genConfig = GEN_2; expectFail = TRUE; }
-
     GIVEN {
-        WITH_CONFIG(B_TRANSFORM_SEMI_INV_FAIL, genConfig);
         PLAYER(SPECIES_WOBBUFFET) { Speed(50); Moves(MOVE_DIG); }
         OPPONENT(SPECIES_DITTO) { Speed(10); Moves(MOVE_TRANSFORM); }
     } WHEN {
         TURN { MOVE(player, MOVE_DIG); MOVE(opponent, MOVE_TRANSFORM); }
     } SCENE {
-        if (expectFail)
-            MESSAGE("But it failed!");
-        else
-            MESSAGE("The opposing Ditto transformed into Wobbuffet!");
+        MESSAGE("But it failed!");
     }
 }
 
-SINGLE_BATTLE_TEST("Transform fails on transformed target in Gen2+")
+SINGLE_BATTLE_TEST("Transform fails on transformed target")
 {
-    u32 genConfig;
-    bool32 expectFail;
-
-    PARAMETRIZE { genConfig = GEN_1; expectFail = FALSE; }
-    PARAMETRIZE { genConfig = GEN_2; expectFail = TRUE; }
-
     GIVEN {
-        WITH_CONFIG(B_TRANSFORM_TARGET_FAIL, genConfig);
         PLAYER(SPECIES_DITTO) { Speed(50); Moves(MOVE_TRANSFORM, MOVE_CELEBRATE); }
         OPPONENT(SPECIES_WOBBUFFET) { Speed(10); Moves(MOVE_TRANSFORM, MOVE_CELEBRATE); }
     } WHEN {
@@ -45,23 +28,13 @@ SINGLE_BATTLE_TEST("Transform fails on transformed target in Gen2+")
         TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_TRANSFORM); }
     } SCENE {
         MESSAGE("Ditto transformed into Wobbuffet!");
-        if (expectFail)
-            MESSAGE("But it failed!");
-        else
-            MESSAGE("The opposing Wobbuffet transformed into Wobbuffet!");
+        MESSAGE("But it failed!");
     }
 }
 
-SINGLE_BATTLE_TEST("Transform fails when the user is already transformed in Gen5+")
+SINGLE_BATTLE_TEST("Transform fails when the user is already transformed")
 {
-    u32 genConfig;
-    bool32 expectFail;
-
-    PARAMETRIZE { genConfig = GEN_4; expectFail = FALSE; }
-    PARAMETRIZE { genConfig = GEN_5; expectFail = TRUE; }
-
     GIVEN {
-        WITH_CONFIG(B_TRANSFORM_USER_FAIL, genConfig);
         PLAYER(SPECIES_WOBBUFFET) { Speed(50); Moves(MOVE_TRANSFORM, MOVE_CELEBRATE); }
         OPPONENT(SPECIES_DITTO) { Speed(10); Moves(MOVE_TRANSFORM, MOVE_CELEBRATE); }
     } WHEN {
@@ -69,32 +42,19 @@ SINGLE_BATTLE_TEST("Transform fails when the user is already transformed in Gen5
         TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_TRANSFORM); }
     } SCENE {
         MESSAGE("The opposing Ditto transformed into Wobbuffet!");
-        if (expectFail)
-            MESSAGE("But it failed!");
-        else
-            MESSAGE("The opposing Ditto transformed into Wobbuffet!");
+        MESSAGE("But it failed!");
     }
 }
 
-SINGLE_BATTLE_TEST("Transform fails on target behind substitute in Gen5+")
+SINGLE_BATTLE_TEST("Transform fails on target behind substitute")
 {
-    u32 genConfig;
-    bool32 expectFail;
-
-    PARAMETRIZE { genConfig = GEN_4; expectFail = FALSE; }
-    PARAMETRIZE { genConfig = GEN_5; expectFail = TRUE; }
-
     GIVEN {
-        WITH_CONFIG(B_TRANSFORM_SUBSTITUTE_FAIL, genConfig);
         PLAYER(SPECIES_WOBBUFFET) { Speed(50); Moves(MOVE_SUBSTITUTE); }
         OPPONENT(SPECIES_DITTO) { Speed(10); Moves(MOVE_TRANSFORM); }
     } WHEN {
         TURN { MOVE(player, MOVE_SUBSTITUTE); MOVE(opponent, MOVE_TRANSFORM); }
     } SCENE {
-        if (expectFail)
-            MESSAGE("But it failed!");
-        else
-            MESSAGE("The opposing Ditto transformed into Wobbuffet!");
+        MESSAGE("But it failed!");
     }
 }
 

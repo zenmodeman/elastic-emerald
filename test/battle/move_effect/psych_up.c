@@ -81,31 +81,10 @@ SINGLE_BATTLE_TEST("Psych Up ignores Spiky Shield and Baneful Bunker but fails a
     }
 }
 
-SINGLE_BATTLE_TEST("Psych Up does not copy the target's critical hit ratio (Gen5)")
+SINGLE_BATTLE_TEST("Psych Up copies the target's critical hit ratio")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_FOCUS_ENERGY) == EFFECT_FOCUS_ENERGY);
-        WITH_CONFIG(B_PSYCH_UP_CRIT_RATIO, GEN_5);
-        WITH_CONFIG(B_FOCUS_ENERGY_CRIT_RATIO, GEN_9);
-        PLAYER(SPECIES_TORNADUS) { Speed(66); }
-        OPPONENT(SPECIES_LANDORUS) { Speed(99); }
-    } WHEN {
-        TURN { MOVE(opponent, MOVE_FOCUS_ENERGY); MOVE(player, MOVE_CELEBRATE); }
-        TURN { MOVE(player, MOVE_PSYCH_UP); MOVE(opponent, MOVE_CELEBRATE); }
-    } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_PSYCH_UP, player);
-        MESSAGE("Tornadus copied the opposing Landorus's stat changes!");
-    } THEN {
-        EXPECT(opponent->volatiles.focusEnergy);
-        EXPECT(!player->volatiles.focusEnergy);
-    }
-}
-
-SINGLE_BATTLE_TEST("Psych Up copies the target's critical hit ratio (Gen6+)")
-{
-    GIVEN {
-        ASSUME(GetMoveEffect(MOVE_FOCUS_ENERGY) == EFFECT_FOCUS_ENERGY);
-        WITH_CONFIG(B_PSYCH_UP_CRIT_RATIO, GEN_6);
         WITH_CONFIG(B_FOCUS_ENERGY_CRIT_RATIO, GEN_9);
         PLAYER(SPECIES_TORNADUS) { Speed(66); }
         OPPONENT(SPECIES_LANDORUS) { Speed(99); }

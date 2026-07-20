@@ -1,5 +1,6 @@
 #include "global.h"
 #include "test/battle.h"
+#include "battle_ai_switch.h"
 #include "battle_ai_util.h"
 
 AI_SINGLE_BATTLE_TEST("AI prefers Bubble over Water Gun if it's slower")
@@ -1278,7 +1279,7 @@ TEST("AI hits to KO damage rounding works correctly")
 
 AI_SINGLE_BATTLE_TEST("AI is encouraged to use pivot moves if it outspeeds and should switch")
 {
-    PASSES_RANDOMLY(SHOULD_SWITCH_HASBADODDS_PERCENTAGE, 100, RNG_AI_SWITCH_HASBADODDS);
+    PASSES_RANDOMLY(GetSwitchChance(SHOULD_SWITCH_HASBADODDS), 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_U_TURN) == EFFECT_HIT_ESCAPE);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
@@ -1292,7 +1293,7 @@ AI_SINGLE_BATTLE_TEST("AI is encouraged to use pivot moves if it outspeeds and s
 
 AI_SINGLE_BATTLE_TEST("AI is encouraged to use pivot moves if it is outsped, survives a hit, and should switch")
 {
-    PASSES_RANDOMLY(SHOULD_SWITCH_HASBADODDS_PERCENTAGE, 100, RNG_AI_SWITCH_HASBADODDS);
+    PASSES_RANDOMLY(GetSwitchChance(SHOULD_SWITCH_HASBADODDS), 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_U_TURN) == EFFECT_HIT_ESCAPE);
         ASSUME(GetMoveEffect(MOVE_DRAGON_RAGE) == EFFECT_FIXED_HP_DAMAGE);

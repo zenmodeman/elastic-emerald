@@ -7,7 +7,7 @@ The inventory was built from local `git log --author=zenmodeman`, current symbol
 ## Documentation Status
 
 - Latest commit whose applicable project changes have been reviewed for this dossier: `13802b45662f6833e9f376cbd83837e70199e3a3` (`13802b4566`, merge of `e80ae569039786564381723fca22aac07afc3503`).
-- Applicable work after that boundary: uncommitted first-port Expansion 1.15 merge repairs currently in the working tree, including trainer-backsprite palette lifecycle fixes and low-maximum-HP health-bar color handling.
+- Applicable work after that boundary: uncommitted first-port Expansion 1.15 merge repairs currently in the working tree, including trainer-backsprite palette lifecycle fixes, low-maximum-HP health-bar color handling, Forewarn tie-selection restoration, Hidden-STAB helper restoration, stale test-API migrations, and the mode/progression merge-guard tests described below.
 - Maintenance rule: before advancing the commit above, review every applicable change through the proposed boundary. Keep not-yet-committed work labeled as uncommitted, and replace that label with its real commit once committed.
 
 ## Tag-Partitioned Custom Implementation Trace
@@ -95,6 +95,9 @@ Confirmed later-merge breakages already repaired in history:
 - After `expansion/1.14.4`, additional minor custom-functionality patches landed in `9865fe909f` and `0cf4955fd9`.
 - During the first `expansion/1.15.0` merge portion, the new generational-config API required bare tags in `GetConfig`, level-cap calls gained an explicit hard/candy-cap argument, and variable config tags required `GetConfigInternal`. The merge also displaced Metal Rush's weight-dependent additional effect, full player held-item AI knowledge, and repeated-switch immunity prediction; these were restored as uncommitted merge work on the 1.15 runtime and AI APIs. Expansion 1.15's `HandleKOThroughBerryReduction` now provides the consumed-resist-berry follow-up damage model, so the older local temporary-hold-effect simulator should not be duplicated.
 - Binding, Wrap, and Drain Douse tests required post-merge fixes around `bd83b55fb4`, `c701193e0d`, and `be3390bd51`.
+- A post-1.15 test-ROM build found that Forewarn's tests and deterministic tie handling had survived on opposite sides of the merge: the tests referenced `RNG_FOREWARN`, while the runtime had reverted to pairwise untagged randomness and lacked the empty-candidate guard. The uncommitted repair restores the tagged uniform tie selection and its RNG constant. The same build found stale tests for removed generational keys (`B_INFILTRATOR_SUBSTITUTE`, `B_TAUNT_ME_FIRST`, `B_BATON_PASS_TRAPPING`, `B_PSYCH_UP_CRIT_RATIO`, and four Transform failure keys) plus renamed move target/effect APIs; those tests now assert the current fixed behavior or current helper names.
+- The same audit found that `GetMovesArrayWithHiddenSTAB` remained covered by a custom test but had lost both its declaration and implementation. The uncommitted repair restores the helper on the current `gBattleHistory` and move APIs, excludes status, recharge, and delayed two-turn attacks from hidden-STAB inference, and leaves ordinary move-specific logic on revealed `GetMovesArray` data.
+- Running all tests with the broad `Zenmodeman:` prefix now builds, but reports 26 pre-existing behavioral failures/invalid scenarios across custom AI, abilities, moves, and level-cap handling. Treat that broad result as a prioritized follow-up audit queue; it is distinct from the ten new `Zenmodeman: Merge guard:` tests, which pass twice.
 
 Current audit status from static symbol scans:
 
@@ -554,6 +557,7 @@ The full modern build and a second incremental build both link successfully and 
 
 Useful targeted test files when the user asks for tests:
 
+- `test/elastic_emerald_modes.c` (ten `Zenmodeman: Merge guard:` contracts for monotype encoding/startup inventory, Tier Points, and Restricted Mode item clause)
 - `test/battle/ability/anticipation.c`
 - `test/battle/ability/astral_charge.c`
 - `test/battle/ability/honey_gather.c`
@@ -576,3 +580,18 @@ rg -n 'Drain Douse|EFFECT_DRAIN_DOUSE|trydamphealing|Honey Gather|Astral Charge|
 ```
 
 Avoid full build checks unless explicitly requested.
+
+The first automated merge-guard batch should retain these ten contracts, ranked by merge sensitivity and cross-system reach:
+
+1. Monotype save-value decoding across the removed type slot.
+2. Monotype startup seeding of exactly the super-effective resist berries.
+3. Egg exclusion from Tier Points.
+4. Ability-aware Tier Points for weather setters.
+5. Badge-progression-aware Tier Points.
+6. Safe default Tier Points for a missing candidate.
+7. Party Tier Point totals excluding eggs and empty slots.
+8. Evolution Tier Point projection without mutating the party.
+9. Ability-change Tier Point projection without mutating the party.
+10. Restricted Mode item-clause enforcement, including returning the later duplicate to the bag.
+
+Run this batch with `make check TESTS='Zenmodeman: Merge guard:*'`. After a successful test-ROM build, repeat the command incrementally to catch unstable generated dependencies.

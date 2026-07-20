@@ -43,6 +43,7 @@ enum SwitchType
     SWITCH_MID_BATTLE_OPTIONAL,
 };
 
+u32 GetSwitchChance(enum ShouldSwitchScenario shouldSwitchScenario);
 u32 GetMostSuitableMonToSwitchInto(enum BattlerId battler, enum SwitchType switchType);
 bool32 ShouldSwitch(enum BattlerId battler);
 void ModifySwitchAfterMoveScoring(enum BattlerId battler);
