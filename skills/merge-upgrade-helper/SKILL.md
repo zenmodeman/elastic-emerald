@@ -13,8 +13,10 @@ description: Resolve codebase merge conflicts, post-merge build errors, and func
 4. Preserve local behavior while adopting current upstream APIs and data shapes.
 5. Sweep stale adjacent code after each file, not only conflict hunks.
 6. Audit custom functionality that survived the merge syntactically but may have lost runtime hooks or AI mirrors.
-7. Run static checks before staging. Avoid full builds unless explicitly requested by the user.
-8. Stage only after markers and static checks are clean, if staging is requested or appropriate for the merge workflow.
+7. Maintain the project merge dossier while findings are fresh. Add any newly discovered custom behavior, post-upgrade repair, API adaptation, or reusable conflict insight that is not already covered. Do not defer all documentation until the end of a large merge.
+8. Update the dossier's documentation-status record after checking the relevant diff and history. Advance the latest documented commit only through commits whose applicable changes have actually been reviewed; identify current applicable work as uncommitted until it receives a real commit.
+9. Run static checks before staging. Avoid full builds unless explicitly requested by the user.
+10. Stage only after markers and static checks are clean, if staging is requested or appropriate for the merge workflow.
 
 When the user explicitly requests builds, continue through compilation, assembly, linking, and ROM generation; a clean C compile is not a clean build. After the first successful full build, run an incremental confirmation build to catch unstable generated dependencies.
 
@@ -28,7 +30,19 @@ Load only what is needed:
 - `references/stale-api-map.md`: common upgrade mappings for pokeemerald-expansion-style battle/AI merges.
 - `references/resolution-policy.md`: file-specific resolution rules and merge decision heuristics.
 
-Also load `docs/merge-upgrade-helper/README.md` before functionality regression audits or when conflicts touch local gameplay systems. It summarizes `zenmodeman`-authored mode, tier-point, monotype, Tera, AI, battle-mechanic, content, and QOL behavior that must survive upstream merges.
+Also load `docs/merge-upgrade-helper/README.md` before functionality regression audits or when conflicts touch local gameplay systems. It summarizes `zenmodeman`-authored mode, tier-point, monotype, Tera, AI, battle-mechanic, content, and QOL behavior that must survive upstream merges. Treat this dossier as a maintained output of the workflow: update it whenever the work uncovers previously undocumented implementation changes or conflict-resolution knowledge.
+
+## Dossier Maintenance
+
+For projects with a merge dossier such as `docs/merge-upgrade-helper/README.md`:
+
+- Read its documentation-status section before beginning the audit. Use the recorded commit as the lower history boundary, while still inspecting older code when a conflict or regression points there.
+- Compare the recorded commit with `HEAD`, the relevant commit range, and the working-tree diff. Do not assume that a recent README commit means all code through that commit was reviewed.
+- Document new project behavior and new conflict insights in the appropriate durable section. Capture why a resolution is required, the current API/data contract, and the stale pattern future passes should search for.
+- Avoid duplicate ledger entries. Extend or correct an existing entry when it already describes the same system or regression.
+- Keep two states distinct: the latest real commit fully reviewed and documented, and applicable uncommitted changes reviewed during the current pass.
+- When previously documented uncommitted work is later committed, replace the uncommitted marker with the real commit and advance the latest documented commit only if no intervening applicable changes remain unreviewed.
+- Before finishing, re-read the status section, inspect `git status`, the dossier diff, and recent history, then leave the status accurate even when no code changes were necessary.
 
 ## Conflict Heuristics
 
@@ -62,5 +76,6 @@ In the final response, state:
 - which files were changed,
 - which stale constructions were updated,
 - what static checks were run,
+- how the merge dossier and its latest-documented-commit status were updated (or why no update was needed),
 - whether files were staged,
 - whether a build was intentionally skipped.

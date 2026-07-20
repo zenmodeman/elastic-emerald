@@ -2077,33 +2077,47 @@ static void MoveBattleBarGraphically(enum BattlerId battler, u8 whichBar)
     switch (whichBar)
     {
     case HEALTH_BAR:
-    if (B_HPBAR_COLOR_THRESHOLD < GEN_5)
-    {
-        maxValue = B_HEALTHBAR_PIXELS;
-        currValue = CalcBarFilledPixels(gBattleSpritesDataPtr->battleBars[battler].maxValue,
-                            gBattleSpritesDataPtr->battleBars[battler].oldValue,
-                            gBattleSpritesDataPtr->battleBars[battler].receivedValue,
-                            &gBattleSpritesDataPtr->battleBars[battler].currValue,
-                            array, B_HEALTHBAR_PIXELS / 8);
-    }
-    else
-    {
-        CalcBarFilledPixels(gBattleSpritesDataPtr->battleBars[battler].maxValue,
-                            gBattleSpritesDataPtr->battleBars[battler].oldValue,
-                            gBattleSpritesDataPtr->battleBars[battler].receivedValue,
-                            &gBattleSpritesDataPtr->battleBars[battler].currValue,
-                            array, B_HEALTHBAR_PIXELS / 8);
-
-        maxValue  = gBattleSpritesDataPtr->battleBars[battler].maxValue;
-        currValue = gBattleSpritesDataPtr->battleBars[battler].currValue;
-    }
-
-        if (currValue > (maxValue * 50 / 100)) // more than 50% hp
-            barElementId = HEALTHBOX_GFX_HP_BAR_GREEN;
-        else if (currValue > (maxValue * 20 / 100)) // more than 20% hp
-            barElementId = HEALTHBOX_GFX_HP_BAR_YELLOW;
+        if (B_HPBAR_COLOR_THRESHOLD < GEN_5)
+        {
+            maxValue = B_HEALTHBAR_PIXELS;
+            currValue = CalcBarFilledPixels(gBattleSpritesDataPtr->battleBars[battler].maxValue,
+                                gBattleSpritesDataPtr->battleBars[battler].oldValue,
+                                gBattleSpritesDataPtr->battleBars[battler].receivedValue,
+                                &gBattleSpritesDataPtr->battleBars[battler].currValue,
+                                array, B_HEALTHBAR_PIXELS / 8);
+        }
         else
-            barElementId = HEALTHBOX_GFX_HP_BAR_RED; // 20% or less
+        {
+            CalcBarFilledPixels(gBattleSpritesDataPtr->battleBars[battler].maxValue,
+                                gBattleSpritesDataPtr->battleBars[battler].oldValue,
+                                gBattleSpritesDataPtr->battleBars[battler].receivedValue,
+                                &gBattleSpritesDataPtr->battleBars[battler].currValue,
+                                array, B_HEALTHBAR_PIXELS / 8);
+
+            maxValue = gBattleSpritesDataPtr->battleBars[battler].maxValue;
+            currValue = gBattleSpritesDataPtr->battleBars[battler].currValue;
+
+            if (maxValue < B_HEALTHBAR_PIXELS)
+                currValue = Q_24_8_TO_INT(currValue);
+        }
+
+        switch (GetHPBarLevel(currValue, maxValue))
+        {
+        case HP_BAR_FULL:
+        case HP_BAR_GREEN:
+            barElementId = HEALTHBOX_GFX_HP_BAR_GREEN;
+            break;
+        case HP_BAR_YELLOW:
+            barElementId = HEALTHBOX_GFX_HP_BAR_YELLOW;
+            break;
+        default:
+        case HP_BAR_RED:
+            if (maxValue > 1) // Preserve a green bar for 1-HP Wonder Guard-style cases.
+                barElementId = HEALTHBOX_GFX_HP_BAR_RED;
+            else
+                barElementId = HEALTHBOX_GFX_HP_BAR_GREEN;
+            break;
+        }
 
         for (i = 0; i < 6; i++)
         {

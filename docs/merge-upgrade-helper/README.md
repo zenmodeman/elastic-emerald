@@ -4,6 +4,12 @@ This README summarizes the core project-specific functionality authored by commi
 
 The inventory was built from local `git log --author=zenmodeman`, current symbol scans, and current implementation anchors. It intentionally focuses on feature additions, AI logic, mechanic changes, and merge-sensitive integration points, not routine moveset, encounter, map, or trainer balance changes unless those changes introduced a new mechanic or gate. Treat it as a functional map, not a complete design spec.
 
+## Documentation Status
+
+- Latest commit whose applicable project changes have been reviewed for this dossier: `13802b45662f6833e9f376cbd83837e70199e3a3` (`13802b4566`, merge of `e80ae569039786564381723fca22aac07afc3503`).
+- Applicable work after that boundary: uncommitted first-port Expansion 1.15 merge repairs currently in the working tree, including trainer-backsprite palette lifecycle fixes and low-maximum-HP health-bar color handling.
+- Maintenance rule: before advancing the commit above, review every applicable change through the proposed boundary. Keep not-yet-committed work labeled as uncommitted, and replace that label with its real commit once committed.
+
 ## Tag-Partitioned Custom Implementation Trace
 
 This section groups the major custom implementations by Elastic Emerald release tag. Entries are grouped by where the implementation first appears in history; later fixes may be listed in a newer tag range or in the merge-regression ledger below.
@@ -539,6 +545,8 @@ The first 1.15 merge build exposed several custom systems whose callers or data 
 - Tier-point calculation/party enforcement, egg/evolution auto-box support, and monotype lookup in `src/elastic_emerald_pokemon.c`, separated from the heavily rewritten upstream Pokémon core.
 - Drain Douse and Damp healing battle-script commands/flow, plus illuminating and Merry move-end effects.
 - The custom AI/runtime ability-block query used by repeated-switch immunity prediction, adapted to the 1.15 move-resolution APIs.
+- Correct player backsprite palettes during battle intros. `gTrainerBacksprites` uses full `enum TrainerPicID` designated indices, so callers must not subtract `TRAINER_PIC_FRONT_COUNT`. Load the backsprite palette once through `LoadSpritePalette`, select it with `IndexOfSpritePaletteTag` in every trainer draw/slide path, and do not allocate a duplicate palette during the ball throw; fixed OBJ palette slots can be overwritten or reused during the intro.
+- Correct HP-bar colors for low-HP, low-level battlers. When maximum HP is below the 48-pixel health-bar width, the animated current value is Q24.8 fixed-point and must be converted before passing it to `GetHPBarLevel`; comparing the raw value makes damaged low-level opponents appear permanently green.
 
 The full modern build and a second incremental build both link successfully and produce `pokeemerald.gba`. Merge-marker and unmerged-path scans are clean. The merged upstream tree still contains pre-existing whitespace findings and CRLF normalization notices in generated map/script files.
 
