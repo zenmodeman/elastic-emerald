@@ -1760,6 +1760,36 @@ static enum MoveEndResult MoveEndAbsorb(void)
     enum MoveEndResult result = MOVEEND_RESULT_CONTINUE;
     enum BattleMoveEffects moveEffect = GetMoveEffect(gCurrentMove);
 
+    if (gBattleMons[gBattlerAttacker].volatiles.drainDouse
+     && !gBattleMons[gBattlerAttacker].volatiles.healBlock
+     && gBattleStruct->moveDamage[gBattlerTarget] > 0
+     && IsBattlerTurnDamaged(gBattlerTarget)
+     && IsBattlerAlive(gBattlerAttacker))
+    {
+        u32 drainPercent = 33;
+        if (IS_BATTLER_OF_TYPE(gBattlerTarget, TYPE_POISON))
+            drainPercent = 67;
+        else if (IS_BATTLER_OF_TYPE(gBattlerTarget, TYPE_WATER))
+            drainPercent = 50;
+
+        s32 healAmount = gBattleStruct->moveDamage[gBattlerTarget] * drainPercent / 100;
+        healAmount = GetDrainedBigRootHp(gBattlerAttacker, healAmount);
+        if (GetBattlerAbility(gBattlerTarget) != ABILITY_LIQUID_OOZE)
+        {
+            SetHealAmount(gBattlerAttacker, healAmount);
+            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_DRAIN_DOUSED;
+            BattleScriptCall(BattleScript_EffectAbsorb);
+        }
+        else
+        {
+            SetPassiveDamageAmount(gBattlerAttacker, healAmount);
+            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ABSORB_OOZE;
+            BattleScriptCall(BattleScript_EffectAbsorbLiquidOoze);
+        }
+        gBattleScripting.moveendState++;
+        return MOVEEND_RESULT_RUN_SCRIPT;
+    }
+
     switch (moveEffect)
     {
     case EFFECT_ABSORB:

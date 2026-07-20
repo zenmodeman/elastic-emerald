@@ -9,7 +9,6 @@ SINGLE_BATTLE_TEST("Cute Charm inflicts infatuation on contact")
     GIVEN {
         ASSUME(MoveMakesContact(MOVE_SCRATCH));
         ASSUME(!MoveMakesContact(MOVE_SWIFT));
-        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
         OPPONENT(SPECIES_CLEFAIRY) { Gender(MON_FEMALE); Ability(ABILITY_CUTE_CHARM); }
     } WHEN {
         TURN { MOVE(player, move); }
@@ -81,7 +80,6 @@ SINGLE_BATTLE_TEST("Zenmodeman: Cute Charm successful triggers count toward defe
         PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
         PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
         PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
-        PLAYER(SPECIES_WOBBUFFET) { Gender(MON_MALE); }
         OPPONENT(SPECIES_CLEFAIRY) { Gender(MON_FEMALE); Ability(ABILITY_CUTE_CHARM); }
     } WHEN {
         TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, TRUE)); }
@@ -95,7 +93,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Cute Charm successful triggers count toward defe
         TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
         TURN { SWITCH(player, 5); }
         TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
-        TURN { SWITCH(player, 6); }
+        TURN { SWITCH(player, 0); }
         TURN { MOVE(player, MOVE_SCRATCH, WITH_RNG(RNG_CUTE_CHARM, FALSE)); }
     } SCENE {
         ABILITY_POPUP(opponent, ABILITY_CUTE_CHARM);

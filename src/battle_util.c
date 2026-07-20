@@ -3349,6 +3349,7 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
 
                 if (effect != 0)
                 {
+                    gBattleMons[battler].volatiles.anticipation = TRUE;
                     gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SWITCHIN_ANTICIPATION;
                     BattleScriptCall(BattleScript_SwitchInAbilityMsg);
                 }
@@ -3779,6 +3780,15 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                     effect++;
                 }
                 break;
+            case ABILITY_HONEY_GATHER:
+                if (gBattleMons[battler].item == ITEM_NONE
+                 && gBattleStruct->changedItems[battler] == ITEM_NONE)
+                {
+                    gLastUsedItem = ITEM_HONEY;
+                    BattleScriptExecute(BattleScript_HoneyGatherActivates);
+                    effect++;
+                }
+                break;
             case ABILITY_ICE_BODY:
                 if (IsBattlerWeatherAffected(battler, B_WEATHER_ICY_ANY)
                  && !IsBattlerAtMaxHp(battler)
@@ -4050,6 +4060,19 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
             {
                 gEffectBattler = gBattlerAbility = battler;
                 SET_STATCHANGER(STAT_SPEED, 1, FALSE);
+                BattleScriptCall(BattleScript_TargetAbilityStatRaiseRet);
+                effect++;
+            }
+            break;
+        case ABILITY_ASTRAL_CHARGE:
+            if (!(gBattleStruct->moveResultFlags[battler] & MOVE_RESULT_NO_EFFECT)
+             && IsBattlerTurnDamaged(battler)
+             && IsBattlerAlive(battler)
+             && (moveType == TYPE_PSYCHIC || moveType == TYPE_FAIRY)
+             && CompareStat(battler, STAT_SPATK, MAX_STAT_STAGE, CMP_LESS_THAN, gLastUsedAbility))
+            {
+                gEffectBattler = gBattlerAbility = battler;
+                SET_STATCHANGER(STAT_SPATK, 1, FALSE);
                 BattleScriptCall(BattleScript_TargetAbilityStatRaiseRet);
                 effect++;
             }
@@ -5399,6 +5422,9 @@ bool32 CanBePoisoned(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum 
 // TODO: check order of battlerAtk and battlerDef
 bool32 CanBeBurned(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Ability abilityDef)
 {
+    if ((gFieldStatuses & STATUS_FIELD_WATERSPORT) && GetMoveType(gCurrentMove) == TYPE_FIRE)
+        return FALSE;
+
     if (CanSetNonVolatileStatus(
             battlerAtk,
             battlerDef,
@@ -5412,6 +5438,9 @@ bool32 CanBeBurned(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Ab
 
 bool32 CanBeParalyzed(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Ability abilityDef)
 {
+    if ((gFieldStatuses & STATUS_FIELD_MUDSPORT) && GetMoveType(gCurrentMove) == TYPE_ELECTRIC)
+        return FALSE;
+
     if (CanSetNonVolatileStatus(
             battlerAtk,
             battlerDef,
@@ -7700,6 +7729,14 @@ static inline uq4_12_t GetDefenderAbilitiesModifier(struct BattleContext *ctx)
             modifier = UQ_4_12(0.75);
             recordAbility = TRUE;
         }
+        break;
+    case ABILITY_ANTICIPATION:
+        if (gBattleMons[ctx->battlerDef].volatiles.anticipation
+         && ctx->typeEffectivenessModifier >= UQ_4_12(4.0))
+            modifier = UQ_4_12(0.5625);
+        else if (gBattleMons[ctx->battlerDef].volatiles.anticipation
+              && ctx->typeEffectivenessModifier >= UQ_4_12(2.0))
+            modifier = UQ_4_12(0.75);
         break;
     case ABILITY_FLUFFY:
         if (ctx->moveType == TYPE_FIRE && !IsMoveMakingContact(ctx->battlerAtk, ctx->battlerDef, ABILITY_NONE, ctx->holdEffectAtk, ctx->move))

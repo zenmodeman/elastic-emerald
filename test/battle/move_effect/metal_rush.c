@@ -51,8 +51,10 @@ SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush has no stat rider for middle-weight u
         TURN { MOVE(player, MOVE_METAL_RUSH); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_METAL_RUSH, player);
-        NOT ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, player);
-        NOT ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, opponent);
+        NONE_OF {
+            ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, player);
+            ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, opponent);
+        }
     } THEN {
         EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE);
         EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);

@@ -226,6 +226,7 @@ enum VolatileFlags
     F(VOLATILE_LASER_FOCUS,                 laserFocus,                    (u32, 1)) \
     F(VOLATILE_POWER_TRICK,                 powerTrick,                    (u32, 1), V_BATON_PASSABLE) \
     F(VOLATILE_DRAIN_DOUSE,                 drainDouse,                    (u32, 1)) \
+    F(VOLATILE_ANTICIPATION,                anticipation,                  (u32, 1)) \
     F(VOLATILE_MERRY,                       merry,                         (u32, 1)) \
     F(VOLATILE_NO_RETREAT,                  noRetreat,                     (u32, 1), V_BATON_PASSABLE) \
     F(VOLATILE_VESSEL_OF_RUIN,              vesselOfRuin,                  (u32, 1)) \
