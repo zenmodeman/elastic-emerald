@@ -115,6 +115,8 @@ Preservation additionally requires the setter to retain at least 75% of its maxi
 
 When every gate passes, the AI has a 50% chance to switch to the standard most-suitable party Pokemon. The KO check respects current battle conditions and survival effects such as Focus Sash and Sturdy. It does not use the abandoned clean-state model.
 
+Regression coverage explicitly checks both sides of the critical survival ordering: a slower unprotected setter with three weather allies may be preserved, while a faster setter or one whose Focus Sash prevents the inferred KO stays in.
+
 Key commit: `5440fb44b4`.
 
 ### Scrapped generalized fast-KO experiments

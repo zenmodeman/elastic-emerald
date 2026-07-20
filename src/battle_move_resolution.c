@@ -1762,6 +1762,7 @@ static enum MoveEndResult MoveEndAbsorb(void)
 
     if (gBattleMons[gBattlerAttacker].volatiles.drainDouse
      && !gBattleMons[gBattlerAttacker].volatiles.healBlock
+     && !IsBattlerAlly(gBattlerTarget, gBattlerAttacker)
      && gBattleStruct->moveDamage[gBattlerTarget] > 0
      && IsBattlerTurnDamaged(gBattlerTarget)
      && IsBattlerAlive(gBattlerAttacker))
@@ -1772,22 +1773,39 @@ static enum MoveEndResult MoveEndAbsorb(void)
         else if (IS_BATTLER_OF_TYPE(gBattlerTarget, TYPE_WATER))
             drainPercent = 50;
 
-        s32 healAmount = gBattleStruct->moveDamage[gBattlerTarget] * drainPercent / 100;
-        healAmount = GetDrainedBigRootHp(gBattlerAttacker, healAmount);
-        if (GetBattlerAbility(gBattlerTarget) != ABILITY_LIQUID_OOZE)
+        s32 drainAmount = gBattleStruct->moveDamage[gBattlerTarget] * drainPercent / 100;
+        drainAmount = GetDrainedBigRootHp(gBattlerAttacker, drainAmount);
+        if (GetBattlerAbility(gBattlerTarget) == ABILITY_LIQUID_OOZE)
+            drainAmount = -drainAmount;
+
+        // Drain Douse is an additional drain, so retain the move's native drain too.
+        if ((moveEffect == EFFECT_ABSORB || moveEffect == EFFECT_DREAM_EATER)
+         && gBattleStruct->moveDamage[gBattlerTarget] > 0
+         && IsBattlerTurnDamaged(gBattlerTarget))
         {
-            SetHealAmount(gBattlerAttacker, healAmount);
+            s32 nativeDrain = gBattleStruct->moveDamage[gBattlerTarget] * GetMoveAbsorbPercentage(gCurrentMove) / 100;
+            nativeDrain = GetDrainedBigRootHp(gBattlerAttacker, nativeDrain);
+            if ((moveEffect == EFFECT_DREAM_EATER && GetConfig(DREAM_EATER_LIQUID_OOZE) < GEN_5)
+             || GetBattlerAbility(gBattlerTarget) != ABILITY_LIQUID_OOZE)
+                drainAmount += nativeDrain;
+            else
+                drainAmount -= nativeDrain;
+        }
+
+        if (drainAmount > 0)
+        {
+            SetHealAmount(gBattlerAttacker, drainAmount);
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_DRAIN_DOUSED;
             BattleScriptCall(BattleScript_EffectAbsorb);
         }
-        else
+        else if (drainAmount < 0)
         {
-            SetPassiveDamageAmount(gBattlerAttacker, healAmount);
+            SetPassiveDamageAmount(gBattlerAttacker, -drainAmount);
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ABSORB_OOZE;
             BattleScriptCall(BattleScript_EffectAbsorbLiquidOoze);
         }
         gBattleScripting.moveendState++;
-        return MOVEEND_RESULT_RUN_SCRIPT;
+        return drainAmount == 0 ? MOVEEND_RESULT_CONTINUE : MOVEEND_RESULT_RUN_SCRIPT;
     }
 
     switch (moveEffect)

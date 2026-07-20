@@ -59,3 +59,17 @@ SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush has no stat rider for middle-weight u
         EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
     }
 }
+
+
+SINGLE_BATTLE_TEST("Zenmodeman: Sheer Force suppresses Metal Rush's heavy-user Defense drop")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_SHEER_FORCE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(999), MaxHP(999); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE);
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
+    }
+}

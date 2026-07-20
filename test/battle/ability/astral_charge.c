@@ -11,6 +11,23 @@ ASSUMPTIONS
     ASSUME(GetMoveType(MOVE_TACKLE) == TYPE_NORMAL);
 }
 
+
+SINGLE_BATTLE_TEST("Zenmodeman: Astral Charge does not activate for non-damaging Psychic moves")
+{
+    GIVEN {
+        ASSUME(IsBattleMoveStatus(MOVE_HYPNOSIS));
+        ASSUME(GetMoveType(MOVE_HYPNOSIS) == TYPE_PSYCHIC);
+        PLAYER(SPECIES_ESPEON) { Ability(ABILITY_ASTRAL_CHARGE); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_HYPNOSIS); }
+    } SCENE {
+        NOT ABILITY_POPUP(player, ABILITY_ASTRAL_CHARGE);
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPATK], DEFAULT_STAT_STAGE);
+    }
+}
+
 SINGLE_BATTLE_TEST("Zenmodeman: Astral Charge raises Sp. Attack by 1 when hit by a Fairy or Psychic-type attack")
 {
     u16 move;

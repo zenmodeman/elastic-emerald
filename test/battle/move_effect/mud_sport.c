@@ -43,6 +43,21 @@ SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport prevents paralysis from Electric-type 
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport does not block paralysis from non-Electric secondary effects")
+{
+    GIVEN {
+        ASSUME(GetMoveType(MOVE_BODY_SLAM) == TYPE_NORMAL);
+        ASSUME(MoveHasAdditionalEffect(MOVE_BODY_SLAM, MOVE_EFFECT_PARALYSIS));
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_MUD_SPORT); }
+        TURN { MOVE(opponent, MOVE_BODY_SLAM, WITH_RNG(RNG_SECONDARY_EFFECT, TRUE)); }
+    } SCENE {
+        STATUS_ICON(player, paralysis: TRUE);
+    }
+}
+
 SINGLE_BATTLE_TEST("Mud Sport reduces the damage of Electric Type moves by 50% (Gen3-4) or 67% (Gen5+)")
 {
     u32 config;

@@ -1,6 +1,26 @@
 #include "global.h"
 #include "test/battle.h"
 
+SINGLE_BATTLE_TEST("Zenmodeman: Anticipation does not reduce neutral damage on its switch-in turn", s16 damage)
+{
+    enum Ability ability;
+
+    PARAMETRIZE { ability = ABILITY_NONE; }
+    PARAMETRIZE { ability = ABILITY_ANTICIPATION; }
+
+    GIVEN {
+        ASSUME(GetMoveType(MOVE_TACKLE) == TYPE_NORMAL);
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ability); Defense(100); }
+        OPPONENT(SPECIES_WOBBUFFET) { Attack(100); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_TACKLE); }
+    } SCENE {
+        HP_BAR(player, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_EQ(results[0].damage, results[1].damage);
+    }
+}
+
 SINGLE_BATTLE_TEST("Anticipation causes notifies if an opponent has a super-effective move")
 {
     GIVEN {

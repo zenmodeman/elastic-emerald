@@ -75,4 +75,27 @@ SINGLE_BATTLE_TEST("Zenmodeman: Light Metal has a maximum effective weight of 40
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Light Metal still halves weights below its 40kg cap", s16 damage)
+{
+    u32 species;
+    enum Ability ability;
+
+    PARAMETRIZE { species = SPECIES_BIDOOF;  ability = ABILITY_LIGHT_METAL; }
+    PARAMETRIZE { species = SPECIES_SILCOON; ability = ABILITY_NONE; }
+
+    GIVEN {
+        ASSUME(GetSpeciesWeight(SPECIES_BIDOOF) == 200);
+        ASSUME(GetSpeciesWeight(SPECIES_SILCOON) == 100);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(species) { Ability(ability); Defense(170); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SOAK); }
+        TURN { MOVE(player, MOVE_LOW_KICK); }
+    } SCENE {
+        HP_BAR(opponent, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_EQ(results[0].damage, results[1].damage);
+    }
+}
+
 TO_DO_BATTLE_TEST("Light Metal and Heavy Metal don't affect Heavy Ball's multiplier")

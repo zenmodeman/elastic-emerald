@@ -40,6 +40,21 @@ SINGLE_BATTLE_TEST("Zenmodeman: Water Sport prevents burn from Fire-type seconda
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Water Sport does not block burn from non-Fire secondary effects")
+{
+    GIVEN {
+        ASSUME(GetMoveType(MOVE_SCALD) == TYPE_WATER);
+        ASSUME(MoveHasAdditionalEffect(MOVE_SCALD, MOVE_EFFECT_BURN));
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_WATER_SPORT); }
+        TURN { MOVE(opponent, MOVE_SCALD, WITH_RNG(RNG_SECONDARY_EFFECT, TRUE)); }
+    } SCENE {
+        STATUS_ICON(player, burn: TRUE);
+    }
+}
+
 
 SINGLE_BATTLE_TEST("Water Sport reduces the damage of Fire Type moves by 50% (Gen3-4) or 67% (Gen5+)")
 {

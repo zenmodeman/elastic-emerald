@@ -97,12 +97,12 @@ Confirmed later-merge breakages already repaired in history:
 - Binding, Wrap, and Drain Douse tests required post-merge fixes around `bd83b55fb4`, `c701193e0d`, and `be3390bd51`.
 - A post-1.15 test-ROM build found that Forewarn's tests and deterministic tie handling had survived on opposite sides of the merge: the tests referenced `RNG_FOREWARN`, while the runtime had reverted to pairwise untagged randomness and lacked the empty-candidate guard. The uncommitted repair restores the tagged uniform tie selection and its RNG constant. The same build found stale tests for removed generational keys (`B_INFILTRATOR_SUBSTITUTE`, `B_TAUNT_ME_FIRST`, `B_BATON_PASS_TRAPPING`, `B_PSYCH_UP_CRIT_RATIO`, and four Transform failure keys) plus renamed move target/effect APIs; those tests now assert the current fixed behavior or current helper names.
 - The same audit found that `GetMovesArrayWithHiddenSTAB` remained covered by a custom test but had lost both its declaration and implementation. The uncommitted repair restores the helper on the current `gBattleHistory` and move APIs, excludes status, recharge, and delayed two-turn attacks from hidden-STAB inference, and leaves ordinary move-specific logic on revealed `GetMovesArray` data.
-- The broad `Zenmodeman:` test-build audit repaired the remaining custom regressions across hard level caps, Anticipation, Astral Charge, defensive contact abilities, Honey Gather, Heavy/Light Metal (with Light Metal capped at 40 kg), Drain Douse, Metal Rush, Mud/Water Sport, repeated-switch prediction, and weather-setter preservation. All 40 custom/merge-guard tests pass. Several failures were stale fixtures rather than runtime defects: explicit `SEND_OUT` actions after the upgraded `SWITCH` helper, ability overrides that did not represent party-data weather synergy, and a Sheer Force Copperajah suppressing Metal Rush's additional effect.
+- The broad `Zenmodeman:` test-build audit repaired the remaining custom regressions across hard level caps, Anticipation, Astral Charge, defensive contact abilities, Honey Gather, Heavy/Light Metal (with Light Metal capped at 40 kg), Drain Douse, Metal Rush, Mud/Water Sport, repeated-switch prediction, and weather-setter preservation. Follow-up boundary/exclusion and Drain Douse batches pin Honey's 75% threshold, Light Metal behavior below its cap, neutral/status non-triggers, Sport type restrictions, Sheer Force suppression, Drain Douse zero-damage and Poison-target healing, native-drain stacking, spread targets, Protect, Liquid Ooze, and full-HP behavior, plus weather preservation's Speed and Focus Sash gates. All 58 custom/merge-guard tests pass. Several earlier failures were stale fixtures rather than runtime defects: explicit `SEND_OUT` actions after the upgraded `SWITCH` helper, ability overrides that did not represent party-data weather synergy, and a Sheer Force Copperajah suppressing Metal Rush's additional effect.
 
 Current audit status from static symbol scans:
 
 - Monotype, Tier Points, curated Tera, Restricted/Resource gates, Drain Douse, custom abilities, and smart AI systems all still have live data and runtime anchors in current `include`, `src`, `data`, and `test` scans.
-- Drain Douse still injects through `MOVEEND_ABSORB` and still has script/message/test anchors. Several advanced Drain Douse tests remain commented out in `test/battle/move_effect/drain_douse.c`; treat that as a test coverage gap, not proof the runtime is broken.
+- Drain Douse still injects through `MOVEEND_ABSORB` and still has script/message/test anchors. Its formerly commented advanced tests are now active and adapted to the current test API; the runtime processes spread damage once per opposing target, excludes the attacker's ally, and retains a move's native drain alongside Drain Douse.
 - Tier Points catch/gift/evolution/PC/tutor/ability-change paths are present, including `gExcessTierPoints`, Summary Screen display, and one-point Center Tutor exceptions.
 - AI prediction and smart switching still retain `AI_FLAG_PREDICT_SWITCH`, `AI_FLAG_PREDICT_INCOMING_MON`, `AI_FLAG_SMART_TERA`, `GetMostSuitableMonToSwitchInto`, and `ShouldSwitch` hooks, plus tests for prediction and smart Tera. Held-item awareness now also feeds damage simulation for player-side items, including resist berries.
 
@@ -111,7 +111,7 @@ Likely rework candidates:
 - Tier Points now compute with ability awareness, but the point table itself is still hand-coded in `src/elastic_emerald_pokemon.c`; if expansion gains richer species/form metadata or if more form/ability exceptions accumulate, consider moving tier data into a structured species-side table.
 - Curated Tera is still centralized in code; as curated lists grow, a data-driven species table would make merge conflict resolution easier than editing a large switch/list in `src/pokemon.c`.
 - Monotype exceptions and gender-forced split-evolution handling are runtime helpers in `src/wild_encounter.c`; these are stable, but they should be revisited if expansion adds native encounter filters or richer evolution-family predicates.
-- Drain Douse's current `MOVEEND_ABSORB` integration is the right post-refactor shape, but double/spread/mixed-target semantics are under-tested because several tests are commented out.
+- Drain Douse's current `MOVEEND_ABSORB` integration is the right post-refactor shape, with active regression coverage for double/spread, mixed Liquid Ooze, native-drain, Protect, current-attacker, and full-HP semantics.
 - Smart AI systems are extensive and merge-sensitive. When expansion changes AI damage, switching, or Tera APIs, prefer adapting these helpers onto the new upstream utilities over preserving stale duplicated calculations.
 
 ## How To Use This During A Merge
@@ -569,6 +569,8 @@ Useful targeted test files when the user asks for tests:
 - `test/battle/move_effect/mud_sport.c`
 - `test/battle/move_effect/stockpile.c`
 - `test/battle/move_effect/water_sport.c`
+
+The second automated merge-guard batch adds eleven boundary and negative-path contracts across these files: Honey remains held at 76% HP; Light Metal still halves sub-cap weights; neutral attacks receive no Anticipation reduction; non-damaging Psychic moves do not trigger Astral Charge; Mud/Water Sport do not block off-type secondary statuses; Sheer Force suppresses Metal Rush's rider; Drain Douse does nothing after a zero-damage action and uses its Poison-target two-thirds rate; and weather setters stay in when faster or protected from the inferred KO by Focus Sash.
 
 Default static checks for this repo:
 

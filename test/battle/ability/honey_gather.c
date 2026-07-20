@@ -51,3 +51,17 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather does not grant Honey if the battler
         EXPECT_EQ(opponent->item, ITEM_ORAN_BERRY);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather keeps newly found Honey above the 75 percent activation threshold")
+{
+    GIVEN {
+        ASSUME(gItemsInfo[ITEM_HONEY].holdEffect == HOLD_EFFECT_RESTORE_PCT_HP);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_COMBEE) { MaxHP(100); HP(76); Ability(ABILITY_HONEY_GATHER); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        EXPECT_EQ(opponent->item, ITEM_HONEY);
+        EXPECT_EQ(opponent->hp, 76);
+    }
+}
