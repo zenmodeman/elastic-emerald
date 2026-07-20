@@ -3198,6 +3198,8 @@ void SwitchInClearSetData(enum BattlerId battler, struct Volatiles *volatilesCop
     gBattleStruct->moveResultFlags[battler] = 0;
     gBattleStruct->battlerState[battler].isFirstTurn = 2;
     gBattleStruct->battlerState[battler].fainted = FALSE;
+    gBattleStruct->battlerState[battler].defensiveContactAbilityAttempts = 0;
+    gBattleStruct->battlerState[battler].defensiveContactAbilityHits = 0;
     gBattleMons[battler].volatiles.truantSwitchInHack = volatilesCopy->truantSwitchInHack;
     gLastMoves[battler] = MOVE_NONE;
     gLastLandedMoves[battler] = MOVE_NONE;
@@ -4453,6 +4455,8 @@ static void HandleTurnActionSelectionState(void)
                     }
                     else
                     {
+                        if (!IsDoubleBattle() && IsOnPlayerSide(battler))
+                            gAiBattleData->playerSwitchesDuringAiStint++;
                         UpdateBattlerPartyOrdersOnSwitch(battler);
                         gBattleCommunication[battler]++;
                     }

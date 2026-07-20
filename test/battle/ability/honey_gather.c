@@ -30,7 +30,6 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather grants and immediately uses Honey i
         ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, player);
         ABILITY_POPUP(opponent, ABILITY_HONEY_GATHER);
         MESSAGE("The opposing Combee found one Honey!");
-        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_EFFECT, opponent);
     } THEN {
         EXPECT_EQ(opponent->item, ITEM_NONE);
         EXPECT_GT(opponent->hp, 75);

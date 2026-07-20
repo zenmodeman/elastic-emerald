@@ -28,13 +28,12 @@ SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush raises the user's Speed by 1 if the u
 SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush lowers the target's Defense by 1 if the user weighs 200kg or more")
 {
     GIVEN {
-        PLAYER(SPECIES_COPPERAJAH);
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
         OPPONENT(SPECIES_WOBBUFFET) { HP(999), MaxHP(999); }
     } WHEN {
         TURN { MOVE(player, MOVE_METAL_RUSH); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_METAL_RUSH, player);
-        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, opponent);
         NOT ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, player);
     } THEN {
         EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE);

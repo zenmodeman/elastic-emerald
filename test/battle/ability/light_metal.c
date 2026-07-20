@@ -51,17 +51,17 @@ SINGLE_BATTLE_TEST("Zenmodeman: Heavy Metal has a minimum effective weight of 20
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Light Metal has a maximum effective weight of 50kg", s16 damage)
+SINGLE_BATTLE_TEST("Zenmodeman: Light Metal has a maximum effective weight of 40kg", s16 damage)
 {
     u32 species;
     enum Ability ability;
 
     PARAMETRIZE { species = SPECIES_COPPERAJAH; ability = ABILITY_LIGHT_METAL; }
-    PARAMETRIZE { species = SPECIES_PIKACHU; ability = ABILITY_NONE; }
+    PARAMETRIZE { species = SPECIES_LATIAS; ability = ABILITY_NONE; }
 
     GIVEN {
         ASSUME(GetSpeciesWeight(SPECIES_COPPERAJAH) == 6500);
-        ASSUME(GetSpeciesWeight(SPECIES_PIKACHU) == 60);
+        ASSUME(GetSpeciesWeight(SPECIES_LATIAS) == 400);
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(species) { Ability(ability); Defense(170); }
     } WHEN {

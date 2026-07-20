@@ -17,5 +17,6 @@ enum FieldEffectOutcome
 bool32 WeatherChecker(enum BattlerId battler, u32 weather, enum FieldEffectOutcome desiredResult);
 bool32 FieldStatusChecker(enum BattlerId battler, u32 fieldStatus, enum FieldEffectOutcome desiredResult);
 s32 CalcWeatherScore(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData);
+bool32 DoesPartyMonBenefitFromWeather(struct Pokemon *mon, u32 weather);
 
 #endif //GUARD_BATTLE_AI_FIELD_STATUSES_H

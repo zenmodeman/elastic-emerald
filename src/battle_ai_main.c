@@ -43,6 +43,7 @@ static u32 ChooseMoveOrAction_Singles(enum BattlerId battler);
 static u32 ChooseMoveOrAction_Doubles(enum BattlerId battler);
 static inline void BattleAI_DoAIProcessing(struct AiThinkingStruct *aiThink, enum BattlerId battlerAtk, enum BattlerId battlerDef);
 static inline void BattleAI_DoAIProcessing_PredictedSwitchin(struct AiThinkingStruct *aiThink, struct AiLogicData *aiData, enum BattlerId battlerAtk, enum BattlerId battlerDef);
+static void AI_CompareDamagingMoves_PredictedSwitchin(enum BattlerId battlerAtk, enum BattlerId battlerDef);
 static bool32 IsPinchBerryItemEffect(enum HoldEffect holdEffect);
 static bool32 DoesAbilityBenefitFromSunOrRain(enum BattlerId battler, enum Ability ability, u32 weather);
 static void AI_CompareDamagingMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef);
@@ -833,7 +834,12 @@ scoreMoves:
         gAiThinkingStruct->aiLogicId++;
     }
     if (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_CHECK_VIABILITY)
-        AI_CompareDamagingMoves(battler, opposingBattler);
+    {
+        if (IsBattlerPredictedToSwitch(opposingBattler) && (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_PREDICT_INCOMING_MON))
+            AI_CompareDamagingMoves_PredictedSwitchin(battler, opposingBattler);
+        else
+            AI_CompareDamagingMoves(battler, opposingBattler);
+    }
 
     if (!checkedImmunityPrediction
      && !IsBattlerPredictedToSwitch(opposingBattler)
@@ -1171,6 +1177,38 @@ void BattleAI_DoAIProcessing_PredictedSwitchin(struct AiThinkingStruct *aiThink,
         aiData->simulatedDmg[battlerAtk][battlerDef][moveIndex] = simulatedDamageSwitchout[moveIndex];
         aiData->effectiveness[battlerAtk][battlerDef][moveIndex] = effectivenessSwitchout[moveIndex];
         aiData->moveAccuracy[battlerAtk][battlerDef][moveIndex] = moveAccuracySwitchout[moveIndex];
+    }
+}
+
+static void AI_CompareDamagingMoves_PredictedSwitchin(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    struct BattlePokemon original = gBattleMons[battlerDef];
+    struct SimulatedDamage simulatedDamage[MAX_MON_MOVES];
+    uq4_12_t effectiveness[MAX_MON_MOVES];
+    u8 moveAccuracy[MAX_MON_MOVES];
+    struct Pokemon *party = GetBattlerParty(battlerDef);
+
+    for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
+    {
+        simulatedDamage[moveIndex] = gAiLogicData->simulatedDmg[battlerAtk][battlerDef][moveIndex];
+        effectiveness[moveIndex] = gAiLogicData->effectiveness[battlerAtk][battlerDef][moveIndex];
+        moveAccuracy[moveIndex] = gAiLogicData->moveAccuracy[battlerAtk][battlerDef][moveIndex];
+    }
+
+    PokemonToBattleMon(&party[gAiLogicData->mostSuitableMonId[battlerDef]], &gBattleMons[battlerDef]);
+    gAiThinkingStruct->saved[battlerDef].saved = TRUE;
+    SetBattlerAiData(battlerDef, gAiLogicData);
+    CalcBattlerAiMovesData(gAiLogicData, battlerAtk, battlerDef, AI_GetWeather(), gFieldStatuses);
+    AI_CompareDamagingMoves(battlerAtk, battlerDef);
+    gAiThinkingStruct->saved[battlerDef].saved = FALSE;
+
+    gBattleMons[battlerDef] = original;
+    SetBattlerAiData(battlerDef, gAiLogicData);
+    for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
+    {
+        gAiLogicData->simulatedDmg[battlerAtk][battlerDef][moveIndex] = simulatedDamage[moveIndex];
+        gAiLogicData->effectiveness[battlerAtk][battlerDef][moveIndex] = effectiveness[moveIndex];
+        gAiLogicData->moveAccuracy[battlerAtk][battlerDef][moveIndex] = moveAccuracy[moveIndex];
     }
 }
 

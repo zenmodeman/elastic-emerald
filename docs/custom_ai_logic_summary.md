@@ -3,7 +3,7 @@
 ## Documentation status
 
 - **Last documented code commit:** `995fbe355c` (2026-07-17, "Adjust Ability Displays of the Battle Info menu to accomodate ability changes").
-- **Uncommitted AI changes covered by this document:** The Expansion 1.15 merge restores complete player held-item knowledge and repeated-switch immunity prediction on the new AI/switch APIs, including resetting the switch counter when the AI changes battlers, rescoring against the selected revealed immunity candidate, and adapting the ability-block query used by prediction to the 1.15 move-target and priority APIs. The current test-build audit also restores `GetMovesArrayWithHiddenSTAB` on the 1.15 battle-history and move APIs; hidden inference remains limited to immediately usable damaging STAB moves, while move-specific logic continues to use revealed moves. Forewarn's tagged, uniform tie selection was restored after the merge left its tests without the runtime RNG contract.
+- **Uncommitted AI changes covered by this document:** The Expansion 1.15 merge restores complete player held-item knowledge and repeated-switch immunity prediction on the new AI/switch APIs. The test-build repair restores voluntary hard-switch counting, keeps pivot counting and AI-switch resets, ranks revealed bench immunities without mutating the active battler, and performs both flag scoring and final damaging-move comparison against the selected predicted switch-in before restoring battle and AI state. It also restores the singles-only weather-setter preservation rule, including Hidden STAB KO inference, the 75% HP and three-weather-ally gates, and its tagged 50% decision. `GetMovesArrayWithHiddenSTAB` is restored on the 1.15 battle-history and move APIs; hidden inference remains limited to immediately usable damaging STAB moves, while move-specific logic continues to use revealed moves. Forewarn's tagged, uniform tie selection was restored after the merge left its tests without the runtime RNG contract.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -17,7 +17,7 @@ The most important implementation files are:
 
 - `src/battle_ai_main.c`: move scoring, damaging-move comparison, target selection, and decision flow.
 - `src/battle_ai_util.c`: knowledge modeling, damage and speed helpers, status logic, simulated state changes, and effect predicates.
-- `src/battle_ai_switch_items.c`: voluntary switching, switch-in selection, prediction, and trainer item use.
+- `src/battle_ai_switch.c` and `src/battle_ai_items.c`: voluntary switching, switch-in selection, prediction, and trainer item use.
 - `include/battle.h`: per-turn AI state, party history, predictions, and doubles coordination data.
 - `include/constants/battle_ai.h` and `include/config/ai.h`: strategy composition and tuning gates.
 

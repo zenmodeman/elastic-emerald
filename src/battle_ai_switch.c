@@ -2,6 +2,7 @@
 #include "battle.h"
 #include "constants/battle_ai.h"
 #include "battle_ai_main.h"
+#include "battle_ai_field_statuses.h"
 #include "battle_ai_switch.h"
 #include "battle_ai_util.h"
 #include "battle_util.h"
@@ -58,6 +59,9 @@ static u32 GetMoveImmunityValue(enum BattlerId battlerAtk, u32 partyIndex, enum 
     ctx.abilityAtk = abilityAtk;
     ctx.abilityDef = abilityDef;
 
+    if ((abilityDef == ABILITY_LIGHTNING_ROD && GetConfig(REDIRECT_ABILITY_IMMUNITY) >= GEN_5 && moveType == TYPE_ELECTRIC)
+     || (abilityDef == ABILITY_STORM_DRAIN && GetConfig(REDIRECT_ABILITY_IMMUNITY) >= GEN_5 && moveType == TYPE_WATER))
+        return 3;
     if (abilityDef != ABILITY_NONE && CanAbilityAbsorbMove(&ctx))
         return 3;
     if (abilityDef != ABILITY_NONE
@@ -341,6 +345,93 @@ static inline bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32
             return TRUE;
     }
     return FALSE;
+}
+
+static u32 GetWeatherSetByAbility(enum Ability ability)
+{
+    switch (ability)
+    {
+    case ABILITY_DRIZZLE:
+        return B_WEATHER_RAIN_NORMAL;
+    case ABILITY_DROUGHT:
+        return B_WEATHER_SUN_NORMAL;
+    case ABILITY_SAND_STREAM:
+        return B_WEATHER_SANDSTORM;
+    case ABILITY_SNOW_WARNING:
+        return GetConfig(SNOW_WARNING) >= GEN_9 ? B_WEATHER_SNOW : B_WEATHER_HAIL;
+    default:
+        return B_WEATHER_NONE;
+    }
+}
+
+static u32 CountAliveWeatherSynergyMons(enum BattlerId battler, u32 weather)
+{
+    u32 count = 0;
+    s32 firstId;
+    s32 lastId;
+    struct Pokemon *party = GetBattlerParty(battler);
+
+    GetAIPartyIndexes(battler, &firstId, &lastId);
+    for (s32 partyIndex = firstId; partyIndex < lastId; partyIndex++)
+    {
+        if (partyIndex == gBattlerPartyIndexes[battler] || !IsValidForBattle(&party[partyIndex]))
+            continue;
+        if (DoesPartyMonBenefitFromWeather(&party[partyIndex], weather))
+            count++;
+    }
+    return count;
+}
+
+static bool32 HiddenStabMoveCanKO(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    enum Move moves[MAX_MON_MOVES];
+
+    GetMovesArrayWithHiddenSTAB(battlerAtk, moves);
+    for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
+    {
+        enum Move move = moves[moveIndex];
+        uq4_12_t effectiveness;
+        bool32 aiCalcWasInProgress;
+        struct SimulatedDamage damage;
+
+        if (move == MOVE_NONE || move == MOVE_UNAVAILABLE || IsBattleMoveStatus(move)
+         || GetMoveEffect(move) == EFFECT_FOCUS_PUNCH || AI_DoesChoiceEffectBlockMove(battlerAtk, move))
+            continue;
+
+        aiCalcWasInProgress = gAiLogicData->aiCalcInProgress;
+        damage = AI_CalcDamageSaveBattlers(move, battlerAtk, battlerDef, &effectiveness, NO_GIMMICK, NO_GIMMICK);
+        gAiLogicData->aiCalcInProgress = aiCalcWasInProgress;
+        if (damage.median >= gBattleMons[battlerDef].hp && !CanEndureHit(battlerAtk, battlerDef, move))
+            return TRUE;
+    }
+    return FALSE;
+}
+
+static bool32 ShouldSwitchToPreserveWeatherSetter(enum BattlerId battler)
+{
+    u32 weather;
+    enum BattlerId opposingBattler;
+
+    if (!(gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING) || IsDoubleBattle())
+        return FALSE;
+
+    weather = GetWeatherSetByAbility(gAiLogicData->abilities[battler]);
+    if (weather == B_WEATHER_NONE)
+        return FALSE;
+
+    opposingBattler = GetOppositeBattler(battler);
+    if (!AI_IsSlower(battler, opposingBattler, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
+     || !HiddenStabMoveCanKO(opposingBattler, battler)
+     || gBattleMons[battler].hp * 4 < gBattleMons[battler].maxHP * 3
+     || CountAliveWeatherSynergyMons(battler, weather) < 3
+     || gAiLogicData->mostSuitableMonId[battler] == PARTY_SIZE)
+        return FALSE;
+
+    if (!gAiLogicData->aiPredictionInProgress
+     && !RandomPercentage(RNG_AI_SWITCH_PRESERVE_WEATHER_SETTER, 50))
+        return FALSE;
+
+    return SetSwitchinAndSwitch(battler, PARTY_SIZE);
 }
 
 // Note that as many return statements as possible are INTENTIONALLY put after all of the loops;
@@ -1366,6 +1457,8 @@ bool32 ShouldSwitch(enum BattlerId battler)
     if (ShouldSwitchIfBadlyStatused(battler))
         return TRUE;
     if (ShouldSwitchIfAbilityBenefit(battler))
+        return TRUE;
+    if (ShouldSwitchToPreserveWeatherSetter(battler))
         return TRUE;
     if (ShouldSwitchIfHasBadOdds(battler))
         return TRUE;

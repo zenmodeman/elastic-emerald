@@ -2623,7 +2623,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
     case MOVE_EFFECT_SP_DEF_MINUS_1:
     case MOVE_EFFECT_ACC_MINUS_1:
     case MOVE_EFFECT_EVS_MINUS_1:
-        flags.certain = affectsUser;
+        flags.certain = certain || affectsUser;
         if (mirrorArmorReflected && !affectsUser)
             flags.allowPtr = TRUE;
         else
@@ -4004,6 +4004,31 @@ static bool32 BattleTypeAllowsExp(void)
         return TRUE;
 }
 
+static bool32 IsLevelCapExpExceptionTrainer(u16 trainerId)
+{
+    switch (trainerId)
+    {
+    case TRAINER_SIDNEY:
+    case TRAINER_PHOEBE:
+    case TRAINER_GLACIA:
+    case TRAINER_DRAKE:
+    case TRAINER_WALLACE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+static bool32 ShouldApplyLevelCapToBattleExp(void)
+{
+    if (!FlagGet(FLAG_LEVEL_CAP))
+        return FALSE;
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+        return TRUE;
+    return !IsLevelCapExpExceptionTrainer(TRAINER_BATTLE_PARAM.opponentA)
+        && !IsLevelCapExpExceptionTrainer(TRAINER_BATTLE_PARAM.opponentB);
+}
+
 static u32 GetMonHoldEffect(struct Pokemon *mon)
 {
     enum HoldEffect holdEffect;
@@ -4148,6 +4173,12 @@ static void Cmd_getexp(void)
                 if (B_MAX_LEVEL_EV_GAINS >= GEN_5)
                     MonGainEVs(&gPlayerParty[*expMonId], gBattleMons[gBattlerFainted].species);
             }
+            else if (ShouldApplyLevelCapToBattleExp()
+                  && GetMonData(&gPlayerParty[*expMonId], MON_DATA_LEVEL) >= GetCurrentLevelCap(HARD_CAP))
+            {
+                gBattleScripting.getexpState = 5;
+                gBattleStruct->battlerExpReward = 0;
+            }
             else
             {
                 // Music change in a wild battle after fainting opposing pokemon.
@@ -4177,7 +4208,7 @@ static void Cmd_getexp(void)
 
                     ApplyExperienceMultipliers(&gBattleStruct->battlerExpReward, *expMonId, gBattlerFainted);
 
-                    if (B_EXP_CAP_TYPE == EXP_CAP_HARD && gBattleStruct->battlerExpReward != 0)
+                    if (ShouldApplyLevelCapToBattleExp() && gBattleStruct->battlerExpReward != 0)
                     {
                         enum GrowthRate growthRate = gSpeciesInfo[GetMonData(&gPlayerParty[*expMonId], MON_DATA_SPECIES)].growthRate;
                         u32 currentExp = GetMonData(&gPlayerParty[*expMonId], MON_DATA_EXP);
@@ -4185,8 +4216,16 @@ static void Cmd_getexp(void)
 
                         if (GetMonData(&gPlayerParty[*expMonId], MON_DATA_LEVEL) >= levelCap)
                             gBattleStruct->battlerExpReward = 0;
+                        else if (currentExp >= gExperienceTables[growthRate][levelCap])
+                            gBattleStruct->battlerExpReward = 0;
                         else if (gExperienceTables[growthRate][levelCap] < currentExp + gBattleStruct->battlerExpReward)
                             gBattleStruct->battlerExpReward = gExperienceTables[growthRate][levelCap] - currentExp;
+                    }
+
+                    if (gBattleStruct->battlerExpReward == 0)
+                    {
+                        gBattleScripting.getexpState = 5;
+                        break;
                     }
 
                     if (IsTradedMon(&gPlayerParty[*expMonId]))
