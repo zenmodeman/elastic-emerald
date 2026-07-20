@@ -73,3 +73,79 @@ SINGLE_BATTLE_TEST("Zenmodeman: Sheer Force suppresses Metal Rush's heavy-user D
         EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Light Metal's 40kg cap gives Metal Rush its light-user rider")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_LIGHT_METAL); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(999); MaxHP(999); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE + 1);
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Heavy Metal's 200kg floor gives Metal Rush its heavy-user rider")
+{
+    GIVEN {
+        PLAYER(SPECIES_ARON) { Ability(ABILITY_HEAVY_METAL); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(999); MaxHP(999); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE);
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE - 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Float Stone alone leaves a very heavy Metal Rush user in the middle band")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Item(ITEM_FLOAT_STONE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(999); MaxHP(999); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE);
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Float Stone applies after Light Metal's cap for Metal Rush")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_LIGHT_METAL); Item(ITEM_FLOAT_STONE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(999); MaxHP(999); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE + 1);
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Contrary reverses Metal Rush's light-user Speed boost")
+{
+    GIVEN {
+        PLAYER(SPECIES_ARON) { Ability(ABILITY_CONTRARY); Item(ITEM_FLOAT_STONE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(999); MaxHP(999); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE - 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Contrary reverses Metal Rush's heavy-user Defense drop")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
+        OPPONENT(SPECIES_SHUCKLE) { HP(999); MaxHP(999); Ability(ABILITY_CONTRARY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE + 1);
+    }
+}

@@ -65,3 +65,16 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather keeps newly found Honey above the 7
         EXPECT_EQ(opponent->hp, 76);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Suppressed Honey Gather does not create Honey")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_GASTRO_ACID) == EFFECT_GASTRO_ACID);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(200); }
+        OPPONENT(SPECIES_COMBEE) { Speed(1); Ability(ABILITY_HONEY_GATHER); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_GASTRO_ACID); MOVE(opponent, MOVE_CELEBRATE); }
+    } THEN {
+        EXPECT_EQ(opponent->item, ITEM_NONE);
+    }
+}

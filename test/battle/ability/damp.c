@@ -73,4 +73,45 @@ SINGLE_BATTLE_TEST("Damp prevents damage from Aftermath")
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Damp heals one third HP when Water Sport creates moisture")
+{
+    GIVEN {
+        PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Ability(ABILITY_DAMP); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_WATER_SPORT); }
+    } THEN {
+        EXPECT_EQ(player->hp, 60);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Damp moisture healing does not exceed maximum HP")
+{
+    GIVEN {
+        PLAYER(SPECIES_PSYDUCK) { HP(90); MaxHP(90); Ability(ABILITY_DAMP); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_WATER_SPORT); }
+    } SCENE {
+        NOT ABILITY_POPUP(player, ABILITY_DAMP);
+    } THEN {
+        EXPECT_EQ(player->hp, 90);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Zenmodeman: Water Sport heals every damaged Damp battler")
+{
+    GIVEN {
+        PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Ability(ABILITY_DAMP); }
+        PLAYER(SPECIES_GOLDUCK) { HP(45); MaxHP(90); Ability(ABILITY_DAMP); }
+        OPPONENT(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WYNAUT);
+    } WHEN {
+        TURN { MOVE(opponentLeft, MOVE_WATER_SPORT); }
+    } THEN {
+        EXPECT_EQ(playerLeft->hp, 60);
+        EXPECT_EQ(playerRight->hp, 75);
+    }
+}
+
 //TO_DO_BATTLE_TEST("Damp affects non-adjacent Pokémon (triples)")

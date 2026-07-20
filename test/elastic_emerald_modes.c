@@ -140,3 +140,145 @@ TEST("Zenmodeman: Merge guard: Restricted Mode item clause bags duplicate party 
     EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_NONE);
     EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 1));
 }
+
+TEST("Zenmodeman: Merge guard: Invalid monotype save values decode as no monotype")
+{
+    VarSet(VAR_MONOTYPE, NUMBER_OF_MON_TYPES);
+    EXPECT_EQ(GetMonoType(), TYPE_NONE);
+    VarSet(VAR_MONOTYPE, 255);
+    EXPECT_EQ(GetMonoType(), TYPE_NONE);
+}
+
+TEST("Zenmodeman: Merge guard: Item clause is inactive outside Restricted Mode")
+{
+    u16 item = ITEM_LEFTOVERS;
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_WYNAUT, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM, &item);
+    SetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM, &item);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+    EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+}
+
+TEST("Zenmodeman: Merge guard: Restricted Mode item clause preserves unique held items")
+{
+    u16 leftovers = ITEM_LEFTOVERS;
+    u16 blackSludge = ITEM_BLACK_SLUDGE;
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_WYNAUT, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM, &leftovers);
+    SetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM, &blackSludge);
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+    EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_BLACK_SLUDGE);
+}
+
+TEST("Zenmodeman: Merge guard: Item clause keeps the first of three duplicate items")
+{
+    u16 item = ITEM_LEFTOVERS;
+
+    ZeroPlayerPartyMons();
+    for (u32 i = 0; i < 3; i++)
+    {
+        CreateMon(&gPlayerParty[i], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+        SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &item);
+    }
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+    EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_NONE);
+    EXPECT_EQ(GetMonData(&gPlayerParty[2], MON_DATA_HELD_ITEM), ITEM_NONE);
+    EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 2));
+}
+
+TEST("Zenmodeman: Merge guard: Item clause ignores held items on eggs")
+{
+    u16 item = ITEM_LEFTOVERS;
+    u8 isEgg = TRUE;
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_WYNAUT, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM, &item);
+    SetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM, &item);
+    SetMonData(&gPlayerParty[1], MON_DATA_IS_EGG, &isEgg);
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+}
+
+TEST("Zenmodeman: Merge guard: Reapplying item clause does not bag items twice")
+{
+    u16 item = ITEM_LEFTOVERS;
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_WYNAUT, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM, &item);
+    SetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM, &item);
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 1));
+    EXPECT(!CheckBagHasItem(ITEM_LEFTOVERS, 2));
+}
+
+TEST("Zenmodeman: Merge guard: Party Tier Points equal the sum of member values")
+{
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_CHANSEY, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+
+    EXPECT_EQ(CountPartyTierPoints(), GetMonTierPoints(&gPlayerParty[0]) + GetMonTierPoints(&gPlayerParty[1]));
+}
+
+TEST("Zenmodeman: Merge guard: Evolution Tier Point projection includes the rest of the party")
+{
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_HAPPINY, 30, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_WOBBUFFET, 30, 0, OTID_STRUCT_PLAYER_ID);
+    gPlayerPartyCount = 2;
+
+    EXPECT_EQ(CalcTierPointsAfterEvolution(0, SPECIES_CHANSEY),
+              6 + GetMonTierPoints(&gPlayerParty[1]));
+}
+
+TEST("Zenmodeman: Merge guard: Ability Tier Point projection includes the rest of the party")
+{
+    u8 drizzleSlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DRIZZLE);
+
+    EXPECT_NE(drizzleSlot, NUM_ABILITY_SLOTS);
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_POLITOED, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    gPlayerPartyCount = 2;
+
+    EXPECT_EQ(CalcTierPointsAfterAbilityChange(0, drizzleSlot),
+              6 + GetMonTierPoints(&gPlayerParty[1]));
+}
+
+TEST("Zenmodeman: Merge guard: Empty parties have zero projected Tier Points")
+{
+    ZeroPlayerPartyMons();
+    gPlayerPartyCount = 0;
+
+    EXPECT_EQ(CountPartyTierPoints(), 0);
+    EXPECT_EQ(CalcTierPointsAfterEvolution(0, SPECIES_CHANSEY), 0);
+    EXPECT_EQ(CalcTierPointsAfterAbilityChange(0, 0), 0);
+}
