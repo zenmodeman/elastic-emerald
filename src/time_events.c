@@ -80,7 +80,7 @@ static bool32 IsMirageIslandEncounterSpecies(u16 species, enum Type monotype)
                   + speciesInfo->baseSpeed
                   + speciesInfo->baseSpAttack
                   + speciesInfo->baseSpDefense;
-    if (baseStatTotal < 550 || baseStatTotal > 600)
+    if (baseStatTotal < 540 || baseStatTotal > 600)
         return FALSE;
 
     if (monotype != TYPE_NONE
