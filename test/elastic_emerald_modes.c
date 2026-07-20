@@ -282,3 +282,125 @@ TEST("Zenmodeman: Merge guard: Empty parties have zero projected Tier Points")
     EXPECT_EQ(CalcTierPointsAfterEvolution(0, SPECIES_CHANSEY), 0);
     EXPECT_EQ(CalcTierPointsAfterAbilityChange(0, 0), 0);
 }
+
+TEST("Zenmodeman: Merge guard: Sawsbuck seasonal forms share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_SAWSBUCK, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_SAWSBUCK_WINTER, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Vivillon patterns share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_VIVILLON, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_VIVILLON_POKEBALL, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Silvally type forms share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_SILVALLY, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_SILVALLY_FAIRY, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Minior core forms share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_MINIOR, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_MINIOR_CORE_VIOLET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Alcremie decorations share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_ALCREMIE, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_ALCREMIE_STRAWBERRY_RAINBOW_SWIRL, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: No monotype does not seed resist berries")
+{
+    VarSet(VAR_MONOTYPE, 0);
+    PopulateMonotypeResistBerriesInPC();
+
+    EXPECT(!CheckPCHasItem(ITEM_OCCA_BERRY, 1));
+    EXPECT(!CheckPCHasItem(ITEM_PASSHO_BERRY, 1));
+    EXPECT(!CheckPCHasItem(ITEM_CHOPLE_BERRY, 1));
+}
+
+TEST("Zenmodeman: Merge guard: Evolution projection ignores egg teammates")
+{
+    u8 isEgg = TRUE;
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_HAPPINY, 30, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_CHANSEY, 30, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[1], MON_DATA_IS_EGG, &isEgg);
+    gPlayerPartyCount = 2;
+
+    EXPECT_EQ(CalcTierPointsAfterEvolution(0, SPECIES_CHANSEY), 6);
+}
+
+TEST("Zenmodeman: Merge guard: Ability projection ignores egg teammates")
+{
+    u8 isEgg = TRUE;
+    u8 drizzleSlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DRIZZLE);
+
+    EXPECT_NE(drizzleSlot, NUM_ABILITY_SLOTS);
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_POLITOED, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_CHANSEY, 30, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[1], MON_DATA_IS_EGG, &isEgg);
+    gPlayerPartyCount = 2;
+
+    EXPECT_EQ(CalcTierPointsAfterAbilityChange(0, drizzleSlot), 6);
+}
+
+TEST("Zenmodeman: Merge guard: Item clause ignores empty party slots")
+{
+    u16 item = ITEM_LEFTOVERS;
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM, &item);
+    SetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM, &item);
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+    EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+}
+
+TEST("Zenmodeman: Merge guard: Egg items do not reserve an item-clause slot")
+{
+    u16 item = ITEM_LEFTOVERS;
+    u8 isEgg = TRUE;
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_WYNAUT, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_IS_EGG, &isEgg);
+    SetMonData(&gPlayerParty[0], MON_DATA_HELD_ITEM, &item);
+    CreateMon(&gPlayerParty[1], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM, &item);
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+}

@@ -2379,11 +2379,14 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
     bool32 primary = effectFlags & EFFECT_PRIMARY;
     bool32 certain = effectFlags & EFFECT_CERTAIN;
     bool32 affectsUser = (battlerAtk == effectBattler);
+    bool32 isMetalRush = (moveEffect == MOVE_EFFECT_METAL_RUSH);
 
-    if (moveEffect == MOVE_EFFECT_METAL_RUSH)
+    if (isMetalRush)
     {
         moveEffect = GetMetalRushMoveEffect(battlerAtk, &effectBattler);
         affectsUser = (battlerAtk == effectBattler);
+        // The rider always being selected should not bypass ordinary stat-drop immunities.
+        certain = FALSE;
     }
 
     if (moveEffect == MOVE_EFFECT_NONE)
@@ -15055,7 +15058,9 @@ void BS_TryDampHealing(void)
     NATIVE_ARGS(u8 battler, const u8 *failInstr);
     enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
     enum Ability ability = GetBattlerAbility(battler);
-    if (ability == ABILITY_DAMP && gBattleMons[battler].hp < gBattleMons[battler].maxHP)
+    if (ability == ABILITY_DAMP
+     && !gBattleMons[battler].volatiles.healBlock
+     && gBattleMons[battler].hp < gBattleMons[battler].maxHP)
     {
         gLastUsedAbility = ability;
         RecordAbilityBattle(battler, ability);

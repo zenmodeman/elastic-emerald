@@ -114,4 +114,45 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Water Sport heals every damaged Damp battler")
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Heal Block suppresses Damp moisture healing")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_HEAL_BLOCK) == EFFECT_HEAL_BLOCK);
+        PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Speed(1); Ability(ABILITY_DAMP); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(200); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_HEAL_BLOCK); }
+        TURN { MOVE(opponent, MOVE_WATER_SPORT); }
+    } THEN {
+        EXPECT_EQ(player->hp, 30);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Suppressed Damp does not receive moisture healing")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_GASTRO_ACID) == EFFECT_GASTRO_ACID);
+        PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Speed(1); Ability(ABILITY_DAMP); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(200); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_GASTRO_ACID); }
+        TURN { MOVE(opponent, MOVE_WATER_SPORT); }
+    } THEN {
+        EXPECT_EQ(player->hp, 30);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: A failed repeated Water Sport does not heal Damp again")
+{
+    GIVEN {
+        PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Ability(ABILITY_DAMP); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_WATER_SPORT); }
+        TURN { MOVE(opponent, MOVE_WATER_SPORT); }
+    } THEN {
+        EXPECT_EQ(player->hp, 60);
+    }
+}
+
 //TO_DO_BATTLE_TEST("Damp affects non-adjacent Pokémon (triples)")

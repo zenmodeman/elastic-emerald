@@ -149,3 +149,41 @@ SINGLE_BATTLE_TEST("Zenmodeman: Contrary reverses Metal Rush's heavy-user Defens
         EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE + 1);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush has no weight rider when blocked by Protect")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(999); MaxHP(999); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_PROTECT); MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_SPEED], DEFAULT_STAT_STAGE);
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Clear Body blocks Metal Rush's heavy-user Defense drop")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
+        OPPONENT(SPECIES_BELDUM) { HP(999); MaxHP(999); Ability(ABILITY_CLEAR_BODY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Mirror Armor reflects Metal Rush's heavy-user Defense drop")
+{
+    GIVEN {
+        PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
+        OPPONENT(SPECIES_CORVIKNIGHT) { HP(999); MaxHP(999); Ability(ABILITY_MIRROR_ARMOR); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_METAL_RUSH); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_DEF], DEFAULT_STAT_STAGE - 1);
+        EXPECT_EQ(opponent->statStages[STAT_DEF], DEFAULT_STAT_STAGE);
+    }
+}

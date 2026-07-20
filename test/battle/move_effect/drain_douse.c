@@ -360,3 +360,42 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse does not drain damage dealt to the a
         EXPECT_EQ(opponentLeft->hp, 1);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal from damage dealt to a Substitute")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); Speed(200); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); Speed(1); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(player, MOVE_SUBSTITUTE); MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        EXPECT_EQ(opponent->hp, 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal from a Wonder Guard immunity")
+{
+    GIVEN {
+        PLAYER(SPECIES_SHEDINJA) { Ability(ABILITY_WONDER_GUARD); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_TACKLE); }
+    } THEN {
+        EXPECT_EQ(opponent->hp, 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse heals after a multi-hit attack")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_FURY_SWIPES); }
+    } THEN {
+        EXPECT_GT(opponent->hp, 1);
+    }
+}

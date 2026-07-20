@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `995fbe355c` (2026-07-17, "Adjust Ability Displays of the Battle Info menu to accomodate ability changes").
-- **Uncommitted AI changes covered by this document:** The Expansion 1.15 merge restores complete player held-item knowledge and repeated-switch immunity prediction on the new AI/switch APIs. The test-build repair restores voluntary hard-switch counting, keeps pivot counting and AI-switch resets, ranks revealed bench immunities without mutating the active battler, and performs both flag scoring and final damaging-move comparison against the selected predicted switch-in before restoring battle and AI state. It also restores the singles-only weather-setter preservation rule, including Hidden STAB KO inference, the 75% HP and three-weather-ally gates, and its tagged 50% decision. `GetMovesArrayWithHiddenSTAB` is restored on the 1.15 battle-history and move APIs; hidden inference remains limited to immediately usable damaging STAB moves, while move-specific logic continues to use revealed moves. Forewarn's tagged, uniform tie selection was restored after the merge left its tests without the runtime RNG contract.
+- **Last documented code commit:** `4ed343f5a8` ("Add some more tests of custom features").
+- **Uncommitted AI changes covered by this document:** None. The current uncommitted Metal Rush runtime repair makes its Defense rider honor ordinary stat-loss prevention, matching the existing `CanLowerStat` model; it does not change AI scoring or information policy.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -278,6 +278,7 @@ The following move and custom-mechanic families received explicit AI treatment. 
 - **Follow Me and Helping Hand:** avoids use without a viable partner, against redundant partner support, when the ally is switching or using a status move, and when Good as Gold blocks the benefit. Commit: `6cf60d5e69`.
 - **Tailwind, Magnet Rise, and speed support:** fixes target/type checks and evaluates whether speed changes cross actual thresholds for the user or ally. Commits: `c098ddca1c`, `6cf60d5e69`.
 - **Drain Douse:** custom draining behavior was integrated into move-end absorption processing, and AI/test maintenance preserves its classification with other drain effects. Commits: `432b00e197`, `f3744907b1`, `be3390bd51`.
+- **Metal Rush:** runtime chooses its Speed boost or Defense drop from effective weight. The Defense rider now follows ordinary stat-loss prevention, consistent with the AI's generic `CanLowerStat` policy; the custom weight-selected rider is not otherwise given bespoke AI utility scoring.
 - **Custom defensive abilities:** AI calculations were adapted for Covered/Fur Layer, Illuminate accuracy behavior, Frisk item interactions, Forewarn's warned move, Damp healing, and other project-specific ability effects. Commits: `751228c71d`, `51107271f3`, `ece86112ff`, `1f6633f157`, `8911bb3be4`.
 
 ## 7. Terastalization logic

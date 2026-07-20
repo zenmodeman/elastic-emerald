@@ -78,3 +78,16 @@ SINGLE_BATTLE_TEST("Zenmodeman: Suppressed Honey Gather does not create Honey")
         EXPECT_EQ(opponent->item, ITEM_NONE);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Magic Room lets Honey Gather create Honey without consuming it")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Speed(200); }
+        OPPONENT(SPECIES_COMBEE) { HP(50); MaxHP(100); Speed(1); Ability(ABILITY_HONEY_GATHER); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_MAGIC_ROOM); MOVE(opponent, MOVE_CELEBRATE); }
+    } THEN {
+        EXPECT_EQ(opponent->item, ITEM_HONEY);
+        EXPECT_EQ(opponent->hp, 50);
+    }
+}
