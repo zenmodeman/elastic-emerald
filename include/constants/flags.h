@@ -54,7 +54,7 @@
 #define FLAG_DEMO_GUARD      0x28 //Flag to guard demo-gated content; formerly un used flag
 #define FLAG_RIVAL_112_DEFEATED   0x29 //Need a specific flag because there are multiple possible fights; formerly un used flag
 #define FLAG_TIERED    0x2A // Flag to enable tiered functionality
-#define FLAG_UNUSED_0x02B    0x2B // Unused Flag
+#define FLAG_MIRAGE_ISLAND_UNLOCKED 0x2B // Set by the story event that unlocks deterministic access to Mirage Island.
 #define FLAG_UNUSED_0x02C    0x2C // Unused Flag
 #define FLAG_UNUSED_0x02D    0x2D // Unused Flag
 #define FLAG_UNUSED_0x02E    0x2E // Unused Flag

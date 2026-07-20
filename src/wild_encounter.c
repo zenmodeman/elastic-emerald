@@ -526,16 +526,6 @@ static u8 PickWildMonNature(u32 species)
     return GetSynchronizedNature(WILDMON_ORIGIN, species);
 }
 
-static bool32 IsBurmyCloakType(enum Type type)
-{
-    return type == TYPE_GRASS || type == TYPE_GROUND || type == TYPE_STEEL;
-}
-
-static bool32 IsBurmyExclusiveEvolutionType(enum Type type)
-{
-    return IsBurmyCloakType(type) || type == TYPE_FLYING;
-}
-
 void CreateWildMon(u16 species, u8 level)
 {
     ZeroEnemyPartyMons();

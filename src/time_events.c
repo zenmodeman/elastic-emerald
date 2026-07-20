@@ -1,4 +1,5 @@
 #include "global.h"
+#include "battle_setup.h"
 #include "time_events.h"
 #include "event_data.h"
 #include "field_weather.h"
@@ -7,7 +8,14 @@
 #include "overworld.h"
 #include "rtc.h"
 #include "script.h"
+#include "script_pokemon_util.h"
 #include "task.h"
+#include "constants/event_objects.h"
+#include "constants/items.h"
+#include "constants/species.h"
+#include "constants/vars.h"
+
+static u16 ChooseMirageIslandEncounterSpecies(void);
 
 static u32 GetMirageRnd(void)
 {
@@ -30,6 +38,7 @@ void InitMirageRnd(void)
 
 void UpdateMirageRnd(u16 days)
 {
+    u16 daysPassed = days;
     s32 rnd = GetMirageRnd();
     while (days)
     {
@@ -37,18 +46,101 @@ void UpdateMirageRnd(u16 days)
         days--;
     }
     SetMirageRnd(rnd);
+    VarSet(VAR_MIRAGE_ISLAND_SPECIES, ChooseMirageIslandEncounterSpecies());
+    VarSet(VAR_MIRAGE_ISLAND_ROLL_DAY, VarGet(VAR_DAYS) + daysPassed + 1);
 }
 
 bool8 IsMirageIslandPresent(void)
 {
-    u16 rnd = GetMirageRnd() >> 16;
-    int i;
+    return FlagGet(FLAG_MIRAGE_ISLAND_UNLOCKED);
+}
 
-    for (i = 0; i < PARTY_SIZE; i++)
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) && (GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY) & 0xFFFF) == rnd)
-            return TRUE;
+// This is the single eligibility list for Mirage Island. Add explicit exclusions
+// here if an otherwise-valid species receives a dedicated encounter elsewhere.
+static bool32 IsMirageIslandEncounterSpecies(u16 species, enum Type monotype)
+{
+    const struct SpeciesInfo *speciesInfo = &gSpeciesInfo[species];
+    u32 baseStatTotal;
 
-    return FALSE;
+    // Only offer each Pokédex species' canonical form. This excludes Mega,
+    // Primal, regional, and battle-only forms without maintaining a second list.
+    if (NationalPokedexNumToSpecies(speciesInfo->natDexNum) != species)
+        return FALSE;
+
+    if (!(speciesInfo->isRestrictedLegendary
+       || speciesInfo->isSubLegendary
+       || speciesInfo->isMythical
+       || speciesInfo->isUltraBeast
+       || speciesInfo->isParadox))
+        return FALSE;
+
+    baseStatTotal = speciesInfo->baseHP
+                  + speciesInfo->baseAttack
+                  + speciesInfo->baseDefense
+                  + speciesInfo->baseSpeed
+                  + speciesInfo->baseSpAttack
+                  + speciesInfo->baseSpDefense;
+    if (baseStatTotal < 550 || baseStatTotal > 600)
+        return FALSE;
+
+    if (monotype != TYPE_NONE
+     && speciesInfo->types[0] != monotype
+     && speciesInfo->types[1] != monotype)
+        return FALSE;
+
+    return TRUE;
+}
+
+static u16 ChooseMirageIslandEncounterSpecies(void)
+{
+    enum Type monotype = GetMonoType();
+    u16 species;
+    u16 eligibleCount = 0;
+    u16 selectedIndex;
+
+    for (species = 1; species < NUM_SPECIES; species++)
+        if (IsMirageIslandEncounterSpecies(species, monotype))
+            eligibleCount++;
+
+    if (eligibleCount == 0)
+        return SPECIES_NONE;
+
+    selectedIndex = GetMirageRnd() % eligibleCount;
+    for (species = 1; species < NUM_SPECIES; species++)
+    {
+        if (IsMirageIslandEncounterSpecies(species, monotype) && selectedIndex-- == 0)
+            return species;
+    }
+
+    return SPECIES_NONE;
+}
+
+void PrepareMirageIslandEncounter(void)
+{
+    u16 dayMarker = VarGet(VAR_DAYS) + 1;
+    u16 species = VarGet(VAR_MIRAGE_ISLAND_SPECIES);
+
+    if (VarGet(VAR_MIRAGE_ISLAND_ROLL_DAY) != dayMarker || species == SPECIES_NONE)
+    {
+        species = ChooseMirageIslandEncounterSpecies();
+        VarSet(VAR_MIRAGE_ISLAND_SPECIES, species);
+        VarSet(VAR_MIRAGE_ISLAND_ROLL_DAY, dayMarker);
+    }
+
+    if (species == SPECIES_NONE || VarGet(VAR_MIRAGE_ISLAND_ENCOUNTER_DAY) == dayMarker)
+    {
+        gSpecialVar_Result = FALSE;
+        return;
+    }
+
+    VarSet(VAR_OBJ_GFX_ID_0, OBJ_EVENT_MON + species);
+    gSpecialVar_Result = TRUE;
+}
+
+void StartMirageIslandEncounter(void)
+{
+    CreateScriptedWildMon(VarGet(VAR_MIRAGE_ISLAND_SPECIES), 50, ITEM_NONE);
+    BattleSetup_StartLegendaryBattle();
 }
 
 void UpdateShoalTideFlag(void)

@@ -27,7 +27,25 @@ Route130_OnTransition:
 
 Route130_EventScript_SetMirageIslandLayout::
 	setmaplayoutindex LAYOUT_ROUTE130_MIRAGE_ISLAND
+	clearflag FLAG_TEMP_12
 	end
+
+Route130_EventScript_MirageIslandPortal::
+	lock
+	faceplayer
+	msgbox Route130_Text_MirageIslandPortal, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, Route130_EventScript_DeclineMirageIslandPortal
+	warp MAP_MIRAGE_ISLAND, 13, 16
+	waitstate
+	end
+
+Route130_EventScript_DeclineMirageIslandPortal::
+	release
+	end
+
+Route130_Text_MirageIslandPortal:
+	.string "The stone's surface ripples like a\n"
+	.string "mirage. Enter it?$"
 
 Route130_EventScript_CheckSetAbnormalWeather::
 	call_if_set FLAG_SYS_WEATHER_CTRL, Common_EventScript_SetAbnormalWeather
@@ -47,4 +65,3 @@ Route130_EventScript_Santiago::
 	trainerbattle_single TRAINER_SANTIAGO, Route130_Text_SantiagoIntro, Route130_Text_SantiagoDefeat
 	msgbox Route130_Text_SantiagoPostBattle, MSGBOX_AUTOCLOSE
 	end
-

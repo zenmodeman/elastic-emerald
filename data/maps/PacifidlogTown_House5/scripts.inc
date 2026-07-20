@@ -6,31 +6,27 @@ PacifidlogTown_House5_EventScript_MirageIslandWatcher::
 	faceplayer
 	specialvar VAR_RESULT, IsMirageIslandPresent
 	goto_if_eq VAR_RESULT, TRUE, PacifidlogTown_House5_EventScript_MirageIslandPresent
-	msgbox PacifidlogTown_House5_Text_CantSeeMirageIslandToday, MSGBOX_DEFAULT
+	msgbox PacifidlogTown_House5_Text_CantSeeMirageIsland, MSGBOX_DEFAULT
 	release
 	end
 
 PacifidlogTown_House5_EventScript_MirageIslandPresent::
-	msgbox PacifidlogTown_House5_Text_CanSeeMirageIslandToday, MSGBOX_DEFAULT
+	msgbox PacifidlogTown_House5_Text_CanSeeMirageIsland, MSGBOX_DEFAULT
 	release
 	end
 
 PacifidlogTown_House5_EventScript_Gentleman::
-	msgbox PacifidlogTown_House5_Text_MirageIslandAppearDependingOnWeather, MSGBOX_NPC
+	msgbox PacifidlogTown_House5_Text_MirageIslandRespondsToChosenTrainers, MSGBOX_NPC
 	end
 
-PacifidlogTown_House5_Text_CantSeeMirageIslandToday:
-	.string "I can't see MIRAGE ISLAND today…$"
+PacifidlogTown_House5_Text_CantSeeMirageIsland:
+	.string "I can't see MIRAGE ISLAND…$"
 
-PacifidlogTown_House5_Text_CanSeeMirageIslandToday:
+PacifidlogTown_House5_Text_CanSeeMirageIsland:
 	.string "Oh! Oh my!\n"
-	.string "I can see MIRAGE ISLAND today!$"
+	.string "I can see MIRAGE ISLAND!$"
 
-PacifidlogTown_House5_Text_MirageIslandAppearDependingOnWeather:
+PacifidlogTown_House5_Text_MirageIslandRespondsToChosenTrainers:
 	.string "MIRAGE ISLAND…\p"
-	.string "It must become visible and invisible\n"
-	.string "depending on the weather conditions\l"
-	.string "that make mirages appear.\p"
-	.string "Or is it really appearing and\n"
-	.string "disappearing?$"
-
+	.string "They say it reveals itself only to\n"
+	.string "TRAINERS who have proven themselves.$"
