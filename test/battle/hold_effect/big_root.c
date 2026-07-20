@@ -24,7 +24,7 @@ SINGLE_BATTLE_TEST("Big Root increases healing from absorbing moves", s16 damage
         HP_BAR(player, captureDamage: &results[i].heal);
     } FINALLY {
         EXPECT_EQ(results[0].damage, results[1].damage); // Damage is unaffected
-        EXPECT_MUL_EQ(results[0].heal, Q_4_12(1.3), results[1].heal);
+        EXPECT_MUL_EQ(results[0].heal, Q_4_12(1.4), results[1].heal);
     }
 }
 
@@ -51,9 +51,9 @@ SINGLE_BATTLE_TEST("Big Root increases the damage restored from Leech Seed, Ingr
         HP_BAR(player, captureDamage: &results[i].heal);
     } FINALLY {
         EXPECT_EQ(results[0].damage, results[1].damage); // Damage is unaffected
-        EXPECT_MUL_EQ(results[0].heal, Q_4_12(1.3), results[1].heal);
-        EXPECT_MUL_EQ(results[2].heal, Q_4_12(1.3), results[3].heal);
-        EXPECT_MUL_EQ(results[4].heal, Q_4_12(1.3), results[5].heal);
+        EXPECT_MUL_EQ(results[0].heal, Q_4_12(1.4), results[1].heal);
+        EXPECT_MUL_EQ(results[2].heal, Q_4_12(1.4), results[3].heal);
+        EXPECT_MUL_EQ(results[4].heal, Q_4_12(1.4), results[5].heal);
     }
 }
 
@@ -73,6 +73,6 @@ SINGLE_BATTLE_TEST("Big Root increases damage from absorbing Liquid Ooze", s16 d
         ANIMATION(ANIM_TYPE_MOVE, MOVE_ABSORB, player);
         HP_BAR(player, captureDamage: &results[i].damage);
     } FINALLY {
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.3), results[1].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.4), results[1].damage);
     }
 }

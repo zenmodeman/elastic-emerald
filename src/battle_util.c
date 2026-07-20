@@ -1904,7 +1904,7 @@ bool32 BattleArenaTurnEnd(void)
 s32 GetDrainedBigRootHp(enum BattlerId battler, s32 hp)
 {
     if (GetBattlerHoldEffect(battler) == HOLD_EFFECT_BIG_ROOT)
-        hp = (hp * 1300) / 1000;
+        hp = (hp * 1400) / 1000;
     if (hp == 0)
         hp = 1;
 

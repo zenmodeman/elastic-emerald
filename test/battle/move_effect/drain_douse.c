@@ -215,3 +215,148 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse Liquid Ooze still damages an attacke
         EXPECT_LT(opponent->hp, 100);
     }
 }
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse heals for half the damage dealt to a Water-type target")
+{
+    GIVEN {
+        PLAYER(SPECIES_SQUIRTLE) { HP(200); MaxHP(200); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        u32 damage = 200 - player->hp;
+        EXPECT_EQ(opponent->hp, 1 + damage / 2);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse uses the Poison rate for a Poison Water target")
+{
+    GIVEN {
+        PLAYER(SPECIES_TENTACOOL) { HP(200); MaxHP(200); Ability(ABILITY_CLEAR_BODY); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        u32 damage = 200 - player->hp;
+        EXPECT_EQ(opponent->hp, 1 + damage * 67 / 100);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse receives the custom 40 percent Big Root boost")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(300); Item(ITEM_BIG_ROOT); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        u32 damage = 200 - player->hp;
+        u32 baseDrain = damage * 33 / 100;
+        EXPECT_EQ(opponent->hp, 1 + baseDrain * 140 / 100);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Heal Block suppresses Drain Douse recovery")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_HEAL_BLOCK) == EFFECT_HEAL_BLOCK);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(200); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); Speed(1); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(player, MOVE_HEAL_BLOCK); MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        EXPECT_EQ(opponent->hp, 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Magic Guard blocks Drain Douse Liquid Ooze damage")
+{
+    GIVEN {
+        PLAYER(SPECIES_TENTACOOL) { Ability(ABILITY_LIQUID_OOZE); }
+        OPPONENT(SPECIES_CLEFFA) { HP(100); MaxHP(100); Ability(ABILITY_MAGIC_GUARD); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        EXPECT_EQ(opponent->hp, 100);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse only heals from the HP removed by a lethal hit")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { HP(10); MaxHP(200); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        EXPECT_EQ(player->hp, 0);
+        EXPECT_EQ(opponent->hp, 4);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse and native drain both invert against Liquid Ooze")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_ABSORB) == EFFECT_ABSORB);
+        PLAYER(SPECIES_TENTACOOL) { HP(200); MaxHP(200); Ability(ABILITY_LIQUID_OOZE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(100); MaxHP(200); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(opponent, MOVE_ABSORB); }
+    } THEN {
+        u32 damage = 200 - player->hp;
+        EXPECT_EQ(opponent->hp, 100 - damage / 2 - damage * 67 / 100);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse fails when the target is already doused")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAIN_DOUSE, player);
+        MESSAGE("But it failed!");
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse is cleared when the affected battler switches out")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
+        OPPONENT(SPECIES_WYNAUT);
+    } WHEN {
+        TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
+        TURN { SWITCH(opponent, 1); }
+        TURN { SWITCH(opponent, 0); }
+        TURN { MOVE(opponent, MOVE_MEGA_KICK); }
+    } THEN {
+        EXPECT_EQ(opponent->hp, 1);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse does not drain damage dealt to the attacker's ally")
+{
+    GIVEN {
+        PLAYER(SPECIES_GASTLY);
+        PLAYER(SPECIES_HAUNTER);
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
+        OPPONENT(SPECIES_WYNAUT) { HP(200); MaxHP(200); }
+    } WHEN {
+        TURN { MOVE(playerLeft, MOVE_DRAIN_DOUSE, target: opponentLeft); }
+        TURN { MOVE(opponentLeft, MOVE_EARTHQUAKE); }
+    } THEN {
+        EXPECT_LT(opponentRight->hp, 200);
+        EXPECT_EQ(opponentLeft->hp, 1);
+    }
+}
