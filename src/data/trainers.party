@@ -2655,7 +2655,7 @@ Skitty (F) @ Oran Berry
 Ability: Cute Charm  
 Level: 8  
 Calm Nature  
-IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
+IVs: 10 HP / 4 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
 - Charm  
 - Fake Tears  
 - Water Pulse  
@@ -2777,27 +2777,29 @@ Music: Suspicious
 Battle Type: Singles
 AI: Smart Trainer
 
-Sandile (M) @ Wise Glasses  
-Ability: Intimidate  
+Dottler @ Eviolite  
+Ability: Compound Eyes  
 Level: 12  
-EVs: 32 SpA  
-IVs: 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe  
-- Sand Tomb  
-- Torment  
-- Snarl  
-- Mud-Slap  
+EVs: 12 HP / 36 Def / 24 SpD  
+Bold Nature  
+IVs: 14 Atk / 12 SpA / 16 Spe  
+- Struggle Bug  
+- Confusion  
+- Supersonic  
+- Reflect
 
-Jigglypuff (M) @ Leftovers  
-Ability: Friend Guard
+Seel @ Leftovers  
+Ability: Thick Fat
 Level: 13  
-EVs: 28 HP / 12 SpD  
-Careful Nature  
-IVs: 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe  
-PP Ups: 0 / 0 / 0 / 3
+EVs: 36 HP / 24 SpD  
+Calm Nature  
+IVs: 2 Atk / 11 SpA / 14 Spe  
 - Stockpile  
 - Swallow  
+- Skull Bash  
 - Double Team  
-- Secret Power
+
+
 
 
 === TRAINER_STEVE_1 ===
@@ -5080,7 +5082,7 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Light Screen  
 - Aerial Ace  
 
-Combusken @ Expert Belt  
+Combusken @ Shuca Berry
 Ability: Speed Boost  
 Level: 17  
 EVs: 8 HP / 48 Atk / 32 Def  
@@ -5089,7 +5091,7 @@ IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
 - Work Up  
 - Incinerate  
 - Low Kick  
-- Rock Tomb
+- Natural Gift
 
 Pawniard @ Protective Pads  
 Ability: Inner Focus  
@@ -5110,8 +5112,8 @@ EVs: 4 HP / 48 Atk / 48 Def
 IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
-- Force Palm  
-- Bulldoze
+- Low Kick  
+- Rock Tomb
 - Body Slam  
 
 === TRAINER_WATTSON_1 ===
@@ -16896,7 +16898,7 @@ Ability: Pure Power
 Level: 17  
 EVs: 48 Atk / 32 Def / 16 Spe  
 Naive Nature  
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 18 Spe  
 - Low Kick  
 - Psychic  
 - Light Screen  
@@ -16907,7 +16909,7 @@ Ability: Inner Focus
 Level: 18  
 Tera Type: Fighting  
 EVs: 28 HP / 48 Atk / 28 Def  
-IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+IVs: 15 HP / 15 Atk / 20 Def / 11 SpA / 15 SpD / 15 Spe
 Impish Nature  
 - Low Kick  
 - Metal Claw  
@@ -16918,10 +16920,10 @@ Makuhita @ Eviolite
 Ability: Sheer Force  
 Level: 19  
 EVs: 4 HP / 48 Atk / 48 Def  
-IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
+IVs: 15 HP / 15 Atk / 16 Def / 10 SpA / 20 SpD / 15 Spe
 Adamant Nature  
 - Bulk Up  
-- Force Palm  
+- Low Kick  
 - Rock Tomb
 - Body Slam  
 
@@ -16975,7 +16977,7 @@ EVs: 4 HP / 48 Atk / 48 Def
 IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
 Adamant Nature  
 - Bulk Up  
-- Force Palm  
+- Low Kick
 - Rock Tomb 
 - Body Slam  
 
@@ -16993,18 +16995,18 @@ Ability: Pure Power
 Level: 17  
 EVs: 48 Atk / 32 Def / 16 Spe  
 Naive Nature  
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe  
+IVs: 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 18 Spe  
 - Low Kick  
 - Psychic  
 - Light Screen  
-- Aerial Ace  
+- Rock Tomb  
 
 Pawniard @ Protective Pads  
 Ability: Inner Focus  
 Level: 18  
 Tera Type: Fighting  
 EVs: 28 HP / 48 Atk / 28 Def  
-IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+IVs: 15 HP / 15 Atk / 20 Def / 11 SpA / 15 SpD / 15 Spe
 Impish Nature  
 - Low Kick  
 - Metal Claw  
@@ -17014,12 +17016,12 @@ Impish Nature
 Makuhita @ Eviolite  
 Ability: Sheer Force  
 Level: 19  
-EVs: 4 HP / 48 Atk / 48 Def  
-IVs: 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
+EVs: 36 HP / 48 Atk / 16 Def  
+IVs: 15 HP / 15 Atk / 16 Def / 10 SpA / 20 SpD / 15 Spe
 Adamant Nature  
 - Bulk Up  
-- Force Palm  
-- Rock Tomb 
+- Low Kick  
+- Bulldoze /*Reworked this team to have Bulldoze instead of Rock Tomb to lower the pressure on Mono Rock Dwebble*/
 - Body Slam  
 
 === TRAINER_CORY_2 ===

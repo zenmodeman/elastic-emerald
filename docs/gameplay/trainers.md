@@ -242,7 +242,7 @@ the sync fails if they diverge:
 - **Ability:** Cute Charm
 - **Level:** 8
 - **Nature:** Calm
-- **IVs:** 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **IVs:** 10 HP / 4 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - **Moves:**
   - Charm
   - Fake Tears
@@ -276,7 +276,7 @@ the sync fails if they diverge:
 - **Ability:** Pickup
 - **Level:** 7
 - **EVs:** 20 HP / 36 Def
-- **IVs:** 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **IVs:** 10 HP / 31 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - **Nature:** Serious
 - **Moves:**
   - Metal Sound
@@ -418,7 +418,7 @@ the sync fails if they diverge:
 - **Level:** 7
 - **EVs:** 20 HP / 20 SpD
 - **Nature:** Adamant
-- **IVs:** 8 HP / 8 Def / 8 SpA / 8 SpD / 8 Spe
+- **IVs:** 8 HP / 31 Atk / 8 Def / 8 SpA / 8 SpD / 8 Spe
 - **Moves:**
   - Tackle
   - String Shot
@@ -429,7 +429,7 @@ the sync fails if they diverge:
 - **Ability:** Compound Eyes
 - **Level:** 8
 - **EVs:** 20 HP / 20 Def / 20 SpD
-- **IVs:** 8 HP / 8 Def / 8 SpA / 8 SpD / 8 Spe
+- **IVs:** 8 HP / 31 Atk / 8 Def / 8 SpA / 8 SpD / 8 Spe
 - **Moves:**
   - Electroweb
   - Pounce
@@ -440,7 +440,7 @@ the sync fails if they diverge:
 - **Level:** 9
 - **EVs:** 40 HP
 - **Nature:** Calm
-- **IVs:** 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **IVs:** 10 HP / 31 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - **Moves:**
   - Powder
   - Fairy Wind
@@ -461,7 +461,7 @@ the sync fails if they diverge:
 - **Level:** 10
 - **EVs:** 4 SpD
 - **Nature:** Sassy
-- **IVs:** 12 HP / 12 Def / 12 SpA / 12 SpD / 0 Spe
+- **IVs:** 12 HP / 31 Atk / 12 Def / 12 SpA / 12 SpD / 0 Spe
 - **Moves:**
   - Tackle
   - Chilling Water
@@ -655,7 +655,7 @@ the sync fails if they diverge:
 **Milcery** @ Maranga Berry
 - **Ability:** Aroma Veil
 - **Level:** 10
-- **IVs:** 0 Atk
+- **IVs:** 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - **Moves:**
   - Sweet Kiss
   - Sweet Scent
@@ -665,6 +665,7 @@ the sync fails if they diverge:
 **Stunky** @ Chesto Berry
 - **Ability:** Stench
 - **Level:** 10
+- **IVs:** 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - **Moves:**
   - Corrosive Gas
   - Poison Gas
@@ -687,35 +688,35 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** Status conditions only (Pewter Crunchies).
 
-**Sandile (M)** @ Wise Glasses
-- **Ability:** Intimidate
+**Dottler** @ Eviolite
+- **Ability:** Compound Eyes
 - **Level:** 12
-- **EVs:** 32 SpA
-- **IVs:** 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **EVs:** 12 HP / 36 Def / 24 SpD
+- **Nature:** Bold
+- **IVs:** 31 HP / 14 Atk / 31 Def / 12 SpA / 31 SpD / 16 Spe
 - **Moves:**
-  - Sand Tomb
-  - Torment
-  - Snarl
-  - Mud-Slap
+  - Struggle Bug
+  - Confusion
+  - Supersonic
+  - Reflect
 
-**Jigglypuff (M)** @ Leftovers
-- **Ability:** Friend Guard
+**Seel** @ Leftovers
+- **Ability:** Thick Fat
 - **Level:** 13
-- **EVs:** 28 HP / 12 SpD
-- **Nature:** Careful
-- **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **EVs:** 36 HP / 24 SpD
+- **Nature:** Calm
+- **IVs:** 31 HP / 2 Atk / 31 Def / 11 SpA / 31 SpD / 14 Spe
 - **Moves:**
   - Stockpile
   - Swallow
+  - Skull Bash
   - Double Team
-  - Secret Power (**PP Maxed**)
 <!-- trainer-party:end -->
 
 **Mechanics Notes:**  
-- Swallow heals by **1/3 × number of stockpiles**.
+- Swallow heals by **1/3 × number of stockpiles**, and it doesn't use up more stockpiles than necessary to heal to full (e.g. if only healing 60% HP and having 3 stockpiles up, only 2 are used).
 
 **AI Notes:**  
-- If the AI mon can't 2KO the target, **Torment** gets **+1 score** if either AI mon doesn't get 2KO'd, or there's still an AI mon in the back.  
 - Double Team incentives are ignored if the target has Sweet Scent to stunlock evasion. Double Team is disincentivized if the player mon has an ability (e.g., Keen Eye) or status (e.g., Foresight) that ignores evasion boosts. Double Team gets additional incentives while AI mon has both Stockpile and Swallow and Evasion is less than +2.  
 - Stockpile has a **50% chance** to get an additional **+1** while the AI mon has either Swallow or Spit Up.
 
@@ -960,7 +961,7 @@ the sync fails if they diverge:
 **Roggenrola** @ Oran Berry
 - **Ability:** Sturdy
 - **Level:** 10
-- **IVs:** 10 HP / 10 Atk/ 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - **Moves:**
   - Rock Throw
   - Tackle
@@ -969,7 +970,7 @@ the sync fails if they diverge:
 **Geodude** @ Clear Amulet
 - **Ability:** Sturdy
 - **Level:** 12
-- **IVs:** 10 HP / 10 Atk/ 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - **Moves:**
   - Rock Polish
   - Rollout
@@ -1003,7 +1004,7 @@ the sync fails if they diverge:
 - **Ability:** Vital Spirit
 - **Level:** 12
 - **Nature:** Impish
-- **IVs:** 10 HP / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **IVs:** 10 HP / 31 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 - **Moves:**
   - Helping Hand
   - Taunt
@@ -1426,7 +1427,7 @@ the sync fails if they diverge:
 - **Level:** 15
 - **EVs:** 32 HP / 32 Def / 32 Spe
 - **Nature:** Jolly
-- **IVs:** 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Yawn
   - Bite
@@ -1473,7 +1474,7 @@ the sync fails if they diverge:
 - **Level:** 15
 - **EVs:** 32 HP / 32 Def / 32 Spe
 - **Nature:** Jolly
-- **IVs:** 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Yawn
   - Bite
@@ -1520,7 +1521,7 @@ the sync fails if they diverge:
 - **Level:** 15
 - **EVs:** 32 HP / 32 Def / 32 Spe
 - **Nature:** Jolly
-- **IVs:** 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Yawn
   - Bite
@@ -1553,7 +1554,7 @@ the sync fails if they diverge:
 - **Level:** 17
 - **EVs:** 12 HP / 16 Atk / 28 Def / 12 SpD
 - **Nature:** Quirky
-- **IVs:** 12 HP / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- **IVs:** 12 HP / 31 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
 - **Moves:**
   - Fly
   - Agility
@@ -1596,7 +1597,7 @@ the sync fails if they diverge:
 - **Ability:** Contrary
 - **Level:** 14
 - **EVs:** 32 HP / 4 Def / 32 SpD
-- **IVs:** 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Flatter
   - Topsy-Turvy
@@ -1629,7 +1630,7 @@ the sync fails if they diverge:
 - **Level:** 14
 - **EVs:** 28 Atk / 20 SpA / 20 SpD / 20 Spe
 - **Nature:** Hardy
-- **IVs:** 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Water Sport
   - Flip Turn
@@ -1641,7 +1642,7 @@ the sync fails if they diverge:
 - **Level:** 14
 - **EVs:** 4 HP / 20 Atk / 4 Def / 20 SpA / 4 SpD / 20 Spe
 - **Nature:** Quirky
-- **IVs:** 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Screech
   - Secret Power
@@ -1724,7 +1725,7 @@ the sync fails if they diverge:
 - **Level:** 15
 - **EVs:** 43 Atk / 32 Def / 24 Spe
 - **Nature:** Careful
-- **IVs:** 15 HP / 15 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Arm Thrust
   - Comet Punch
@@ -1792,7 +1793,7 @@ the sync fails if they diverge:
 - **Level:** 15
 - **EVs:** 32 HP / 36 Atk / 32 Def
 - **Nature:** Impish
-- **IVs:** 15 HP / 16 Def / 15 SpA / 15 SpD / 15 Spe
+- **IVs:** 15 HP / 31 Atk / 16 Def / 15 SpA / 15 SpD / 15 Spe
 - **Moves:**
   - Counter
   - Feint
@@ -1957,7 +1958,7 @@ the sync fails if they diverge:
   - Light Screen
   - Aerial Ace
 
-**Combusken** @ Expert Belt
+**Combusken** @ Shuca Berry
 - **Ability:** Speed Boost
 - **Level:** 17
 - **EVs:** 8 HP / 48 Atk / 32 Def
@@ -1967,7 +1968,7 @@ the sync fails if they diverge:
   - Work Up
   - Incinerate
   - Low Kick
-  - Rock Tomb
+  - Natural Gift
 
 **Pawniard** @ Protective Pads
 - **Ability:** Inner Focus
@@ -1990,8 +1991,8 @@ the sync fails if they diverge:
 - **Nature:** Adamant
 - **Moves:**
   - Bulk Up
-  - Force Palm
-  - Bulldoze
+  - Low Kick
+  - Rock Tomb
   - Body Slam
 <!-- trainer-party:end -->
 
@@ -2008,19 +2009,19 @@ the sync fails if they diverge:
 - **Level:** 17
 - **EVs:** 48 Atk / 32 Def / 16 Spe
 - **Nature:** Naive
-- **IVs:** 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- **IVs:** 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 18 Spe
 - **Moves:**
   - Low Kick
   - Psychic
   - Light Screen
-  - Aerial Ace
+  - Rock Tomb
 
 **Pawniard** @ Protective Pads
 - **Ability:** Inner Focus
 - **Level:** 18
 - **Tera Type:** Fighting
 - **EVs:** 28 HP / 48 Atk / 28 Def
-- **IVs:** 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- **IVs:** 15 HP / 15 Atk / 20 Def / 11 SpA / 15 SpD / 15 Spe
 - **Nature:** Impish
 - **Moves:**
   - Low Kick
@@ -2031,13 +2032,13 @@ the sync fails if they diverge:
 **Makuhita** @ Eviolite
 - **Ability:** Sheer Force
 - **Level:** 19
-- **EVs:** 4 HP / 48 Atk / 48 Def
-- **IVs:** 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
+- **EVs:** 36 HP / 48 Atk / 16 Def
+- **IVs:** 15 HP / 15 Atk / 16 Def / 10 SpA / 20 SpD / 15 Spe
 - **Nature:** Adamant
 - **Moves:**
   - Bulk Up
-  - Force Palm
-  - Rock Tomb
+  - Low Kick
+  - Bulldoze
   - Body Slam
 <!-- trainer-party:end -->
 
@@ -2093,7 +2094,7 @@ the sync fails if they diverge:
 - **Nature:** Adamant
 - **Moves:**
   - Bulk Up
-  - Force Palm
+  - Low Kick
   - Rock Tomb
   - Body Slam
 <!-- trainer-party:end -->
@@ -2109,7 +2110,7 @@ the sync fails if they diverge:
 - **Level:** 17
 - **EVs:** 48 Atk / 32 Def / 16 Spe
 - **Nature:** Naive
-- **IVs:** 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- **IVs:** 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 18 Spe
 - **Moves:**
   - Low Kick
   - Psychic
@@ -2121,7 +2122,7 @@ the sync fails if they diverge:
 - **Level:** 18
 - **Tera Type:** Fighting
 - **EVs:** 28 HP / 48 Atk / 28 Def
-- **IVs:** 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- **IVs:** 15 HP / 15 Atk / 20 Def / 11 SpA / 15 SpD / 15 Spe
 - **Nature:** Impish
 - **Moves:**
   - Low Kick
@@ -2133,11 +2134,11 @@ the sync fails if they diverge:
 - **Ability:** Sheer Force
 - **Level:** 19
 - **EVs:** 4 HP / 48 Atk / 48 Def
-- **IVs:** 26 HP / 24 Atk / 26 Def / 24 SpA / 26 SpD / 24 Spe
+- **IVs:** 15 HP / 15 Atk / 16 Def / 10 SpA / 20 SpD / 15 Spe
 - **Nature:** Adamant
 - **Moves:**
   - Bulk Up
-  - Force Palm
+  - Low Kick
   - Rock Tomb
   - Body Slam
 <!-- trainer-party:end -->

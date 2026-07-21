@@ -13,6 +13,7 @@ TRAINER_DATA = REPO_ROOT / "src/data/trainers.h"
 BATTLE_SETUP_SOURCE = REPO_ROOT / "src/battle_setup.c"
 START_RE = re.compile(r"<!-- trainer-party:start ids?=(TRAINER_[A-Z0-9_]+(?:,TRAINER_[A-Z0-9_]+)*) -->")
 END_MARKER = "<!-- trainer-party:end -->"
+STAT_NAMES = ("HP", "Atk", "Def", "SpA", "SpD", "Spe")
 
 
 def _trainer_blocks(source: str) -> dict[str, str]:
@@ -133,6 +134,26 @@ def _party_paragraphs(block: str) -> list[list[str]]:
     return [[line.rstrip() for line in paragraph.splitlines()] for paragraph in re.split(r"\n\s*\n", party_text) if paragraph.strip()]
 
 
+def _render_ivs(value: str) -> str:
+    ivs = dict.fromkeys(STAT_NAMES, 31)
+    seen = set()
+    if not value.strip():
+        return " / ".join(f"31 {stat}" for stat in STAT_NAMES)
+    for entry in value.split("/"):
+        match = re.fullmatch(r"\s*(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)\s*", entry)
+        if match is None:
+            raise ValueError(f"invalid IVs value: {value}")
+        stat = match.group(2)
+        if stat in seen:
+            raise ValueError(f"duplicate IV stat: {stat}")
+        seen.add(stat)
+        iv = int(match.group(1))
+        if iv not in range(32):
+            raise ValueError(f"IV for {stat} is outside 0 to 31: {iv}")
+        ivs[stat] = iv
+    return " / ".join(f"{ivs[stat]} {stat}" for stat in STAT_NAMES)
+
+
 def _render_party(block: str) -> str:
     rendered = []
     for lines in _party_paragraphs(block):
@@ -154,9 +175,14 @@ def _render_party(block: str) -> str:
                 attributes.append(("Nature", value.removesuffix(" Nature")))
             elif ":" in value:
                 label, content = value.split(":", 1)
+                if label == "IVs":
+                    content = _render_ivs(content)
                 attributes.append((label, content.strip()))
             else:
                 raise ValueError(f"unsupported trainer-party line: {value}")
+
+        if not any(label == "IVs" for label, _ in attributes):
+            attributes.append(("IVs", _render_ivs("")))
 
         if " @ " in heading:
             pokemon, item = heading.split(" @ ", 1)
