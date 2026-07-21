@@ -435,139 +435,64 @@ static bool32 ShouldSwitchToPreserveWeatherSetter(enum BattlerId battler)
     return SetSwitchinAndSwitch(battler, PARTY_SIZE);
 }
 
-// Note that as many return statements as possible are INTENTIONALLY put after all of the loops;
-// the function can take a max of about 0.06s to run, and this prevents the player from identifying
-// whether the mon will switch or not by seeing how long the delay is before they select a move
 static bool32 ShouldSwitchIfHasBadOdds(enum BattlerId battler)
 {
-    //Variable initialization
-    enum BattlerPosition opposingPosition = BATTLE_OPPOSITE(GetBattlerPosition(battler));
-    enum BattlerId opposingBattler = GetBattlerAtPosition(opposingPosition);
-    enum Move *playerMoves = GetMovesArray(opposingBattler);
-    enum Move aiMove, playerMove, bestPlayerPriorityMove = MOVE_NONE, bestPlayerMove = MOVE_NONE, expectedMove = MOVE_NONE;
-    enum Ability aiAbility = gAiLogicData->abilities[battler];
-    bool32 hasStatusMove = FALSE, hasSuperEffectiveMove = FALSE;
-    u32 typeMatchup;
-    enum BattleMoveEffects aiMoveEffect;
-    u32 hitsToKOAI = 0, hitsToKOPlayer = 0, minHitsToKOAI = gBattleMons[battler].hp, minHitsToKOAIPriority = gBattleMons[battler].hp;
-    bool32 canBattlerWin1v1 = FALSE, isBattlerFirst, isBattlerFirstPriority;
+    enum BattlerId opposingBattler = GetOppositeBattler(battler);
+    u8 defenseStage = gBattleMons[battler].statStages[STAT_DEF];
+    u8 spDefenseStage = gBattleMons[battler].statStages[STAT_SPDEF];
+    bool32 meetsDefensiveDropCheck = FALSE;
+    bool32 meetsOuterSwitchCheck;
 
-    // Only use this if AI_FLAG_SMART_SWITCHING is set for the trainer
-    if (!(gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING))
+    // Convert the u64 flag result explicitly: assigning bit 34 directly to bool32 would
+    // truncate its only set bit and incorrectly make this check false.
+    bool32 meetsHeavySwitchingCheck = (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_HEAVY_SWITCHING) != 0;
+
+    // Hard preconditions are evaluated before any extensible outer reason. A targeted
+    // battler is no longer "fresh", and this also prevents Screech-like player moves
+    // from creating an immediate switch response.
+    if (IsDoubleBattle()
+     || gBattleStruct->battlerState[battler].targetedByPlayerAttack)
         return FALSE;
 
-    // Double Battles aren't included in AI_FLAG_SMART_MON_CHOICE. Defaults to regular switch in logic
-    if (IsDoubleBattle())
+    // Outer checks are independent reasons to consider this switching behavior. Keep each
+    // reason in a named boolean, then OR them together below.
+
+    // Without Heavy Switching, a defensive drop can still qualify if it alone enables
+    // the KO. The hard target gate excludes Screech, but permits self-drops and Obstruct.
+    if ((gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING)
+     && (defenseStage < DEFAULT_STAT_STAGE || spDefenseStage < DEFAULT_STAT_STAGE))
+    {
+        bool32 wouldSurviveWithoutDefensiveDrops;
+
+        // Use the same revealed-plus-Hidden-STAB information policy as the actual KO check.
+        gBattleMons[battler].statStages[STAT_DEF] = DEFAULT_STAT_STAGE;
+        gBattleMons[battler].statStages[STAT_SPDEF] = DEFAULT_STAT_STAGE;
+        wouldSurviveWithoutDefensiveDrops = !HiddenStabMoveCanKO(opposingBattler, battler);
+        gBattleMons[battler].statStages[STAT_DEF] = defenseStage;
+        gBattleMons[battler].statStages[STAT_SPDEF] = spDefenseStage;
+        meetsDefensiveDropCheck = wouldSurviveWithoutDefensiveDrops;
+    }
+
+    // Passing any outer check grants access to the common inner fast-KO conditions.
+    meetsOuterSwitchCheck = meetsHeavySwitchingCheck || meetsDefensiveDropCheck;
+    if (!meetsOuterSwitchCheck)
         return FALSE;
 
-    // Get max damage mon could take
-    for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
-    {
-        playerMove = SMART_SWITCHING_OMNISCIENT ? gBattleMons[opposingBattler].moves[moveIndex] : playerMoves[moveIndex];
-        if (playerMove != MOVE_NONE && !IsBattleMoveStatus(playerMove) && GetMoveEffect(playerMove) != EFFECT_FOCUS_PUNCH && gBattleMons[opposingBattler].pp[moveIndex] > 0)
-        {
-            hitsToKOAI = GetNoOfHitsToKOBattler(opposingBattler, battler, moveIndex, AI_DEFENDING, CONSIDER_ENDURE);
-            if (hitsToKOAI < minHitsToKOAI && !AI_DoesChoiceEffectBlockMove(opposingBattler, playerMove))
-            {
-                bestPlayerMove = playerMove;
-                minHitsToKOAI = hitsToKOAI;
-            }
-            if (GetBattleMovePriority(opposingBattler, gAiLogicData->abilities[opposingBattler], playerMove) > 0 && hitsToKOAI < minHitsToKOAIPriority && !AI_DoesChoiceEffectBlockMove(opposingBattler, playerMove))
-            {
-                bestPlayerPriorityMove = playerMove;
-                minHitsToKOAIPriority = hitsToKOAI;
-            }
-        }
-    }
-
-    expectedMove = gAiThinkingStruct->aiFlags[battler] & AI_FLAG_PREDICT_MOVE ? GetIncomingMove(battler, opposingBattler, gAiLogicData) : bestPlayerMove;
-
-    for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
-    {
-        aiMove = gBattleMons[battler].moves[moveIndex];
-        aiMoveEffect = GetMoveEffect(aiMove);
-        if (aiMove != MOVE_NONE && gBattleMons[battler].pp[moveIndex] > 0)
-        {
-            enum MoveEffect nonVolatileStatus = GetMoveNonVolatileStatus(aiMove);
-            // Check if mon has an "important" status move
-            if (aiMoveEffect == EFFECT_REFLECT || aiMoveEffect == EFFECT_LIGHT_SCREEN
-            || aiMoveEffect == EFFECT_SPIKES || aiMoveEffect == EFFECT_TOXIC_SPIKES || aiMoveEffect == EFFECT_STEALTH_ROCK || aiMoveEffect == EFFECT_STICKY_WEB || aiMoveEffect == EFFECT_LEECH_SEED
-            || IsExplosionMove(aiMove)
-            || nonVolatileStatus == MOVE_EFFECT_SLEEP
-            || nonVolatileStatus == MOVE_EFFECT_TOXIC
-            || nonVolatileStatus == MOVE_EFFECT_PARALYSIS
-            || nonVolatileStatus == MOVE_EFFECT_BURN
-            || aiMoveEffect == EFFECT_YAWN
-            || aiMoveEffect == EFFECT_TRICK || aiMoveEffect == EFFECT_TRICK_ROOM || aiMoveEffect== EFFECT_WONDER_ROOM || aiMoveEffect ==  EFFECT_PSYCHO_SHIFT || aiMoveEffect == EFFECT_FIRST_TURN_ONLY
-            )
-            {
-                hasStatusMove = TRUE;
-            }
-
-            // Only check damage if it's a damaging move
-            if (!IsBattleMoveStatus(aiMove) && !AI_DoesChoiceEffectBlockMove(battler, aiMove))
-            {
-                // Check if mon has a super effective move
-                if (gAiLogicData->effectiveness[battler][opposingBattler][moveIndex] >= UQ_4_12(2.0))
-                    hasSuperEffectiveMove = TRUE;
-
-                // Check if can win 1v1
-                hitsToKOPlayer = GetNoOfHitsToKOBattler(battler, opposingBattler, moveIndex, AI_ATTACKING, CONSIDER_ENDURE);
-                if (!canBattlerWin1v1 ) // Once we can win a 1v1 we don't need to track this, but want to run the rest of the function to keep the runtime the same regardless of when we find the winning move
-                {
-                    isBattlerFirst = AI_IsFaster(battler, opposingBattler, aiMove, expectedMove, CONSIDER_PRIORITY);
-                    isBattlerFirstPriority = AI_IsFaster(battler, opposingBattler, aiMove, bestPlayerPriorityMove, CONSIDER_PRIORITY);
-                    canBattlerWin1v1 = CanBattlerWin1v1(minHitsToKOAI, hitsToKOPlayer, isBattlerFirst) && CanBattlerWin1v1(minHitsToKOAIPriority, hitsToKOPlayer, isBattlerFirstPriority);
-                }
-            }
-        }
-    }
-
-    // Calculate type advantage
-    typeMatchup = GetBattlerTypeMatchup(opposingBattler, battler);
-
-    // Check if current mon can 1v1 in spite of bad matchup, and don't switch out if it can
-    if (canBattlerWin1v1)
+    // Inner checks are requirements shared by every outer reason. New outer checks should
+    // normally feed meetsOuterSwitchCheck above rather than bypassing these safeguards.
+    if (gAiLogicData->mostSuitableMonId[battler] == PARTY_SIZE
+     || !AI_IsSlower(battler, opposingBattler, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
+     || !HiddenStabMoveCanKO(opposingBattler, battler)
+     || (gAiLogicData->abilities[battler] == ABILITY_REGENERATOR
+       ? gBattleMons[battler].hp * 2 < gBattleMons[battler].maxHP
+       : gBattleMons[battler].hp * 4 < gBattleMons[battler].maxHP * 3))
         return FALSE;
 
-    // If we don't have any other viable options, don't switch out
-    if (gAiLogicData->mostSuitableMonId[battler] == PARTY_SIZE)
+    if (!gAiLogicData->aiPredictionInProgress
+     && !RandomPercentage(RNG_AI_SWITCH_HASBADODDS, GetSwitchChance(SHOULD_SWITCH_HASBADODDS)))
         return FALSE;
 
-    // Start assessing whether or not mon has bad odds
-    // Jump straight to switching out in cases where mon gets OHKO'd
-    if ((minHitsToKOAI == 1 && !canBattlerWin1v1) && (gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 2 // And the current mon has at least 1/2 their HP, or 1/4 HP and Regenerator
-            || (aiAbility == ABILITY_REGENERATOR && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4)))
-    {
-        // 50% chance to stay in regardless
-        if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - GetSwitchChance(SHOULD_SWITCH_HASBADODDS))) && !gAiLogicData->aiPredictionInProgress)
-            return FALSE;
-
-        // Switch mon out
-        return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-    }
-
-    // General bad type matchups have more wiggle room
-    if (typeMatchup > UQ_4_12(2.0)) // If the player has favourable offensive matchup (2.0 is neutral, this must be worse)
-    {
-        if (!hasSuperEffectiveMove // If the AI doesn't have a super effective move
-        && (gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 2 // And the current mon has at least 1/2 their HP, or 1/4 HP and Regenerator
-            || (aiAbility == ABILITY_REGENERATOR
-            && gBattleMons[battler].hp >= gBattleMons[battler].maxHP / 4)))
-        {
-            // Then check if they have an important status move, which is worth using even in a bad matchup
-            if (hasStatusMove)
-                return FALSE;
-
-            // 50% chance to stay in regardless
-            if (RandomPercentage(RNG_AI_SWITCH_HASBADODDS, (100 - GetSwitchChance(SHOULD_SWITCH_HASBADODDS))) && !gAiLogicData->aiPredictionInProgress)
-                return FALSE;
-
-            // Switch mon out
-            return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-        }
-    }
-    return FALSE;
+    return SetSwitchinAndSwitch(battler, PARTY_SIZE);
 }
 
 static bool32 ShouldSwitchIfTruant(enum BattlerId battler)
@@ -840,7 +765,7 @@ static bool32 ShouldSwitchIfOpponentChargingOrInvulnerable(enum BattlerId battle
     if (IsDoubleBattle() || !(gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING))
         return FALSE;
 
-    // In a world with a unified ShouldSwitch function, also want to check whether we already win 1v1 and if we do don't switch; not worth doubling the HasBadOdds computation for now
+    // A future unified switch evaluation could also avoid this switch when the active battler already wins the matchup.
     if (isOpposingBattlerChargingOrInvulnerable && gAiLogicData->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_FREE_TURN, GetSwitchChance(SHOULD_SWITCH_FREE_TURN)))
         return SetSwitchinAndSwitch(battler, PARTY_SIZE);
 
@@ -1165,7 +1090,7 @@ static bool32 FindMonWithFlagsAndSuperEffective(enum BattlerId battler, u16 flag
     struct Pokemon *party;
     enum Move move;
 
-    // Similar functionality handled more thoroughly by ShouldSwitchIfHasBadOdds
+    // Smart switching uses its own targeted switch heuristics instead of this broad fallback.
     if (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING)
         return FALSE;
 

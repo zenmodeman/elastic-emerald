@@ -78,6 +78,74 @@ AI_SINGLE_BATTLE_TEST("AI revives the best fainted ally with Revival Blessing") 
 }
 
 // General switching behaviour
+AI_SINGLE_BATTLE_TEST("Zenmodeman: heavy switching preserves a healthy mon from an inferred fast KO")
+{
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_HEAVY_SWITCHING);
+        PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_CELEBRATE, MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(70); MaxHP(70); SpDefense(200); Speed(1); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_SWITCH(opponent, 1); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: regular smart switching does not preserve a healthy mon from an inferred fast KO")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING);
+        PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_CELEBRATE, MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(70); MaxHP(70); SpDefense(200); Speed(1); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_TACKLE); }
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_TACKLE); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: AI self-drop enables switching")
+{
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING);
+        PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_CELEBRATE, MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(140); MaxHP(140); SpDefense(200); Speed(1); Moves(MOVE_CLOSE_COMBAT); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_CLOSE_COMBAT); }
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_SWITCH(opponent, 1); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: Obstruct enables switching")
+{
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
+    GIVEN {
+        ASSUME(MoveMakesContact(MOVE_SCRATCH));
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING);
+        PLAYER(SPECIES_SLAKING) { Level(100); Attack(200); Speed(100); Ability(ABILITY_VITAL_SPIRIT); Moves(MOVE_OBSTRUCT, MOVE_DOUBLE_EDGE); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(200); MaxHP(200); Defense(200); Speed(1); Moves(MOVE_SCRATCH); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_OBSTRUCT); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
+        TURN { MOVE(player, MOVE_DOUBLE_EDGE); EXPECT_SWITCH(opponent, 1); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: Screech prevents switching")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING);
+        PLAYER(SPECIES_SLAKING) { Level(100); Attack(200); Speed(100); Ability(ABILITY_VITAL_SPIRIT); Moves(MOVE_SCREECH, MOVE_DOUBLE_EDGE, MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(200); MaxHP(200); Defense(200); Speed(1); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCREECH); EXPECT_MOVE(opponent, MOVE_TACKLE); }
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_TACKLE); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter switches from inferred fast KO for three weather allies")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_PRESERVE_WEATHER_SETTER);
@@ -1768,7 +1836,6 @@ AI_DOUBLE_BATTLE_TEST("Switch AI: Palafin hard switches under harsh sunlight (Do
 
 AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI won't send out defensive mon that can lose 1v1, or switch out a mon that can win 1v1 even with bad type matchup")
 {
-    PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
         PLAYER(SPECIES_PANPOUR) {
@@ -1912,33 +1979,6 @@ AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_MON_CHOICES: AI will consider player's prio
         PLAYER(SPECIES_KINGAMBIT) { Speed(2); Moves(MOVE_SUCKER_PUNCH, MOVE_KNOCK_OFF); }
     } WHEN {
         TURN { MOVE(player, MOVE_KNOCK_OFF); EXPECT_MOVE(opponent, MOVE_HEADBUTT); EXPECT_SEND_OUT(opponent, 1); }
-    }
-}
-
-AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI will consider player's priority when evaluating Bad Odds 1v1")
-{
-    PASSES_RANDOMLY(GetSwitchChance(SHOULD_SWITCH_HASBADODDS), 100, RNG_AI_SWITCH_HASBADODDS);
-    GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
-        OPPONENT(SPECIES_GENGAR) { Speed(10); Moves(MOVE_FOCUS_BLAST); }
-        OPPONENT(SPECIES_SCRAFTY) { Speed(5); Moves(MOVE_DRAIN_PUNCH); }
-        PLAYER(SPECIES_KINGAMBIT) { Speed(2); Moves(MOVE_SUCKER_PUNCH, MOVE_KNOCK_OFF); }
-    } WHEN {
-        TURN { MOVE(player, MOVE_KNOCK_OFF); EXPECT_SWITCH(opponent, 1); }
-    }
-}
-
-AI_SINGLE_BATTLE_TEST("AI_FLAG_SMART_SWITCHING: AI will consider player's endure effects when evaluating Bad Odds 1v1")
-{
-    PASSES_RANDOMLY(GetSwitchChance(SHOULD_SWITCH_HASBADODDS), 100, RNG_AI_SWITCH_HASBADODDS);
-    GIVEN {
-        ASSUME(GetItemHoldEffect(ITEM_FOCUS_SASH) == HOLD_EFFECT_FOCUS_SASH);
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
-        OPPONENT(SPECIES_GENGAR) { Speed(10); Moves(MOVE_FOCUS_BLAST); }
-        OPPONENT(SPECIES_SCRAFTY) { Speed(5); Moves(MOVE_DRAIN_PUNCH); }
-        PLAYER(SPECIES_KINGAMBIT) { Speed(2); Item(ITEM_FOCUS_SASH); Moves(MOVE_KNOCK_OFF); }
-    } WHEN {
-        TURN { MOVE(player, MOVE_KNOCK_OFF); EXPECT_SWITCH(opponent, 1); }
     }
 }
 

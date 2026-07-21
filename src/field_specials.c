@@ -4559,6 +4559,10 @@ static bool32 IsAbilityTutorViable(u16 species, u16 ability){
         case ABILITY_STAKEOUT:
         case ABILITY_RIVALRY:
         case ABILITY_UNNERVE:
+        case ABILITY_CUTE_CHARM:
+        case ABILITY_WONDER_SKIN:
+        case ABILITY_NORMALIZE:
+        case ABILITY_STEADFAST:
             return TRUE;
     }
 

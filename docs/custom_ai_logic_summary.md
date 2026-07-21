@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `4ed343f5a8` ("Add some more tests of custom features").
-- **Uncommitted AI changes covered by this document:** Weather-setter fast-KO preservation now requires that the active setter has not been targeted by a player's damaging or status move during its current field stint. The targeting memory resets when the battler switches out. The current uncommitted Metal Rush runtime repair makes its Defense rider honor ordinary stat-loss prevention, matching the existing `CanLowerStat` model; it does not change AI scoring or information policy.
+- **Last documented code commit:** `a2ef6c4bde` ("Add not already target guard for fast KO logic").
+- **Uncommitted AI changes covered by this document:** A narrow `AI_FLAG_HEAVY_SWITCHING` fast-KO preservation rule replaces the stale broad bad-odds implementation reintroduced by the upstream switch-file refactor. Regular smart switching receives only the defensive-drop exception described below. The current uncommitted Metal Rush runtime repair makes its Defense rider honor ordinary stat-loss prevention, matching the existing `CanLowerStat` model; it does not change AI scoring or information policy.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -117,11 +117,21 @@ When every gate passes, the AI has a 50% chance to switch to the standard most-s
 
 Regression coverage explicitly checks both sides of the critical survival ordering: a slower unprotected setter with three weather allies may be preserved, while a faster setter, a setter whose Focus Sash prevents the inferred KO, or a setter already targeted by the player stays in.
 
-Key commit: `5440fb44b4`.
+Key commits: `5440fb44b4`, `a2ef6c4bde`.
+
+### Heavy-switching fast-KO preservation
+
+The logic begins with hard preconditions, followed by an extensible outer-check layer and then shared inner checks. Singles and the absence of prior targeting by a player's damaging or status move are hard gates evaluated before any outer reason, preventing unnecessary hypothetical calculations and ensuring future outer checks cannot bypass the targeting policy. Each independent reason to consider the behavior is stored as a named boolean, and passing any outer check admits the battler to the same inner safeguards. The current outer checks are `AI_FLAG_HEAVY_SWITCHING` and the defensive-drop exception described below; future reasons can be added to their combined eligibility condition without duplicating the common logic. Once any outer check qualifies, there is a 50% chance to preserve an active Pokemon when all of the following inner conditions are true: the opponent is faster, an actual-state calculation using revealed moves plus Hidden STAB inference finds a KO, and the standard switch-in ranking found a suitable replacement. The HP gate is at least 75% for most Pokemon and at least 50% for Regenerator Pokemon. `AI_FLAG_HEAVY_SWITCHING` is deliberately absent from `AI_FLAG_SMART_TRAINER`, so ordinary smart trainers receive only the defensive-drop exception rather than generalized fast-KO switching.
+
+Regular `AI_FLAG_SMART_SWITCHING` can use the same response without the heavy-switching flag only when the current KO depends on negative Defense or Special Defense stages: after restoring both defensive stages to neutral, no move in that same revealed-plus-Hidden-STAB information set may still KO. The pre-existing targeting guard means player-applied drops such as Screech disable the response, while self-inflicted drops and reactive drops from effects such as Obstruct remain eligible. The temporary defensive-stage changes are restored immediately after calculation.
+
+Focused regression coverage verifies the heavy-switching flag and ordinary-smart exclusion, plus each defensive-drop origin: Close Combat-style AI self-drops and Obstruct can enable the switch, while Screech trips the prior-targeting hard gate and cannot. Weather-setter coverage separately verifies the suitable-switch-in, 50% roll, HP, Speed, survival, ally-count, and prior-targeting gates.
+
+This replacement is currently uncommitted.
 
 ### Scrapped generalized fast-KO experiments
 
-Earlier versions attempted broad fast-KO preservation based on revealed versus inferred damage, literal-lead recognition, quad-effective Hidden STAB windows, and a clean-state simulation that removed player-created type, ability, grounding, immunity-bypass, defensive-stage, and Speed-stage changes. That approach was removed because its complexity produced little payoff and could over-penalize ordinary offensive Pokemon and player tech moves. The concise history is retained here in case parts are revisited later.
+Earlier versions attempted broad fast-KO preservation based on revealed versus inferred damage, literal-lead recognition, quad-effective Hidden STAB windows, and a clean-state simulation that removed player-created type, ability, grounding, immunity-bypass, defensive-stage, and Speed-stage changes. That approach was removed because its complexity produced little payoff and could over-penalize ordinary offensive Pokemon and player tech moves. The new heavy-switching rule restores only its narrow fast-KO core and defensive-drop comparison; the concise older history is retained here for context.
 
 The original bad-odds and fast-KO progression is represented by commits `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, and `efda8256b3`. Clean-state and literal-lead work was introduced in `6f1d67a6f4`, refined in `8d856e4bcf`, and given its final quad-effective Hidden STAB window in `4547aff533` before being scrapped by `5440fb44b4`.
 
