@@ -31,6 +31,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Torchic**
+- **Gender:** Trainer default
 - **Ability:** Blaze
 - **Nature:** Serious
 - **Level:** 5
@@ -51,6 +52,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Mudkip**
+- **Gender:** Trainer default
 - **Ability:** Torrent
 - **Nature:** Serious
 - **Level:** 5
@@ -71,6 +73,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Treecko**
+- **Gender:** Trainer default
 - **Ability:** Overgrow
 - **Nature:** Serious
 - **Level:** 5
@@ -92,7 +95,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** None.
 
-**Shinx (M)**
+**Shinx**
+- **Gender:** Male
 - **Ability:** Rivalry
 - **Level:** 4
 - **Nature:** Careful
@@ -103,7 +107,8 @@ the sync fails if they diverge:
   - Mud-Slap
   - Quick Attack
 
-**Litleo (F)**
+**Litleo**
+- **Gender:** Female
 - **Ability:** Rivalry
 - **Level:** 5
 - **Nature:** Adamant
@@ -127,7 +132,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** None.
 
-**Surskit (M)** @ Aguav Berry
+**Surskit** @ Aguav Berry
+- **Gender:** Male
 - **Ability:** Swift Swim
 - **Level:** 5
 - **Nature:** Bashful
@@ -138,7 +144,8 @@ the sync fails if they diverge:
   - Quick Attack
   - Mist
 
-**Venonat (M)** @ Wide Lens
+**Venonat** @ Wide Lens
+- **Gender:** Male
 - **Ability:** Tinted Lens
 - **Level:** 6
 - **Nature:** Quiet
@@ -164,6 +171,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Zigzagoon** @ Ganlon Berry
+- **Gender:** Male
 - **Ability:** Gluttony
 - **Level:** 5
 - **Nature:** Impish
@@ -175,6 +183,7 @@ the sync fails if they diverge:
   - Growl
 
 **Taillow** @ Lansat Berry
+- **Gender:** Male
 - **Ability:** Guts
 - **Level:** 6
 - **Nature:** Careful
@@ -195,6 +204,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Flabebe** @ Oran Berry
+- **Gender:** Female
 - **Ability:** Flower Veil
 - **Level:** 7
 - **EVs:** 8 SpD / 16 Spe
@@ -207,6 +217,7 @@ the sync fails if they diverge:
   - Chilling Water
 
 **Tangela** @ Rocky Helmet
+- **Gender:** Female
 - **Ability:** Regenerator
 - **Level:** 8
 - **EVs:** 20 HP / 20 Def / 20 Spe
@@ -238,7 +249,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** Status conditions only (Casteliacone).
 
-**Skitty (F)** @ Oran Berry
+**Skitty** @ Oran Berry
+- **Gender:** Female
 - **Ability:** Cute Charm
 - **Level:** 8
 - **Nature:** Calm
@@ -249,7 +261,8 @@ the sync fails if they diverge:
   - Water Pulse
   - Attract
 
-**Stufful (M)** @ Rawst Berry
+**Stufful** @ Rawst Berry
+- **Gender:** Male
 - **Ability:** Cute Charm
 - **Level:** 8
 - **EVs:** 12 Def / 12 SpD / 12 Spe
@@ -272,7 +285,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** None.
 
-**Meowth-Galar (M)** @ Throat Spray
+**Meowth-Galar** @ Throat Spray
+- **Gender:** Male
 - **Ability:** Pickup
 - **Level:** 7
 - **EVs:** 20 HP / 36 Def
@@ -285,6 +299,7 @@ the sync fails if they diverge:
   - Growl
 
 **Tyrogue** @ Flame Orb
+- **Gender:** Male
 - **Ability:** Guts
 - **Level:** 8
 - **EVs:** 24 HP / 24 Def / 24 SpD
@@ -314,6 +329,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Magikarp**
+- **Gender:** Male
 - **Level:** 9
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 <!-- trainer-party:end -->
@@ -327,7 +343,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** None.
 
-**Ekans (M)** @ Chesto Berry
+**Ekans** @ Chesto Berry
+- **Gender:** Male
 - **Ability:** Shed Skin
 - **Level:** 8
 - **Nature:** Quirky
@@ -339,7 +356,8 @@ the sync fails if they diverge:
   - Mud Bomb
   - Poison Sting
 
-**Sandshrew (M)** @ Normal Gem
+**Sandshrew** @ Normal Gem
+- **Gender:** Male
 - **Ability:** Sand Veil
 - **Level:** 9
 - **Nature:** Jolly
@@ -366,6 +384,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Meowth** @ Oran Berry
+- **Gender:** Female
 - **Ability:** Pickup
 - **Level:** 8
 - **EVs:** 32 Def
@@ -376,6 +395,7 @@ the sync fails if they diverge:
   - Pay Day
 
 **Combee** @ Honey
+- **Gender:** Male
 - **Ability:** Honey Gather
 - **Level:** 8
 - **Nature:** Jolly
@@ -386,6 +406,7 @@ the sync fails if they diverge:
   - Bug Bite
 
 **Gimmighoul** @ Amulet Coin
+- **Gender:** Genderless
 - **Level:** 8
 - **Ability:** Rattled
 - **Nature:** Bold
@@ -414,6 +435,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Cascoon** @ Poison Barb
+- **Gender:** Male
 - **Ability:** Shed Skin
 - **Level:** 7
 - **EVs:** 20 HP / 20 SpD
@@ -426,6 +448,7 @@ the sync fails if they diverge:
   - Poison Sting
 
 **Joltik** @ Miracle Seed
+- **Gender:** Male
 - **Ability:** Compound Eyes
 - **Level:** 8
 - **EVs:** 20 HP / 20 Def / 20 SpD
@@ -436,6 +459,7 @@ the sync fails if they diverge:
   - Absorb
 
 **Cutiefly** @ Fairy Gem
+- **Gender:** Male
 - **Ability:** Honey Gather
 - **Level:** 9
 - **EVs:** 40 HP
@@ -457,6 +481,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Chewtle** @ Apicot Berry
+- **Gender:** Male
 - **Ability:** Shell Armor
 - **Level:** 10
 - **EVs:** 4 SpD
@@ -469,6 +494,7 @@ the sync fails if they diverge:
   - Scary Face
 
 **Tadbulb** @ Luminous Moss
+- **Gender:** Male
 - **Ability:** Static
 - **Level:** 11
 - **EVs:** 24 Def
@@ -498,6 +524,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Zigzagoon** @ Ring Target
+- **Gender:** Male
 - **Ability:** Quick Feet
 - **Level:** 9
 - **EVs:** 12 HP / 16 Spe
@@ -509,6 +536,7 @@ the sync fails if they diverge:
   - Shock Wave
 
 **Impidimp** @ Mirror Herb
+- **Gender:** Male
 - **Ability:** Prankster
 - **Level:** 10
 - **EVs:** 32 Spe
@@ -539,7 +567,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** Complete heal (route boss override).
 
-**Clefairy (F)** @ Sticky Barb
+**Clefairy** @ Sticky Barb
+- **Gender:** Female
 - **Ability:** Magic Guard
 - **Level:** 10
 - **EVs:** 32 HP / 8 Def / 32 SpA
@@ -551,7 +580,8 @@ the sync fails if they diverge:
   - Charm
   - Disarming Voice
 
-**Shroodle (M)** @ Jaboca Berry
+**Shroodle** @ Jaboca Berry
+- **Gender:** Male
 - **Ability:** Pickpocket
 - **Level:** 11
 - **EVs:** 32 HP / 32 Spe
@@ -563,7 +593,8 @@ the sync fails if they diverge:
   - Leer
   - Super Fang
 
-**Applin (M)** @ Rowap Berry
+**Applin** @ Rowap Berry
+- **Gender:** Male
 - **Ability:** Ripen
 - **Level:** 12
 - **EVs:** 20 HP / 28 Def / 20 SpD
@@ -597,6 +628,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Bonsly** @ Rindo Berry
+- **Gender:** Male
 - **Ability:** Sturdy
 - **Level:** 10
 - **EVs:** 8 HP / 16 SpA / 16 Spe
@@ -621,6 +653,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Marill** @ Cell Battery
+- **Gender:** Female
 - **Ability:** Huge Power
 - **Level:** 9
 - **EVs:** 12 Def / 12 SpD
@@ -632,6 +665,7 @@ the sync fails if they diverge:
   - Fling
 
 **Vulpix-Alola** @ Persim Berry
+- **Gender:** Female
 - **Ability:** Snow Cloak
 - **Level:** 9
 - **EVs:** 8 HP / 12 SpA
@@ -653,6 +687,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Milcery** @ Maranga Berry
+- **Gender:** Female
 - **Ability:** Aroma Veil
 - **Level:** 10
 - **IVs:** 31 HP / 0 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
@@ -663,6 +698,7 @@ the sync fails if they diverge:
   - Aromatic Mist
 
 **Stunky** @ Chesto Berry
+- **Gender:** Male
 - **Ability:** Stench
 - **Level:** 10
 - **IVs:** 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
@@ -689,6 +725,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Status conditions only (Pewter Crunchies).
 
 **Dottler** @ Eviolite
+- **Gender:** Male
 - **Ability:** Compound Eyes
 - **Level:** 12
 - **EVs:** 12 HP / 36 Def / 24 SpD
@@ -701,6 +738,7 @@ the sync fails if they diverge:
   - Reflect
 
 **Seel** @ Leftovers
+- **Gender:** Male
 - **Ability:** Thick Fat
 - **Level:** 13
 - **EVs:** 36 HP / 24 SpD
@@ -729,14 +767,17 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Magikarp**
+- **Gender:** Male
 - **Level:** 10
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 
 **Goldeen**
+- **Gender:** Male
 - **Level:** 11
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 
 **Wishiwashi**
+- **Gender:** Male
 - **Level:** 10
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
 <!-- trainer-party:end -->
@@ -748,6 +789,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Machop** @ Shell Bell
+- **Gender:** Male
 - **Ability:** Steadfast
 - **Level:** 11
 - **EVs:** 36 Def / 8 SpD
@@ -760,6 +802,7 @@ the sync fails if they diverge:
   - Leer
 
 **Panpour** @ Iapapa Berry
+- **Gender:** Male
 - **Ability:** Gluttony
 - **Level:** 11
 - **EVs:** 36 HP / 16 Def / 16 SpD
@@ -782,7 +825,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** None.
 
-**Beautifly (M)** @ Apicot Berry
+**Beautifly** @ Apicot Berry
+- **Gender:** Male
 - **Ability:** Swarm
 - **Level:** 10
 - **Nature:** Calm
@@ -793,7 +837,8 @@ the sync fails if they diverge:
   - Absorb
   - Harden
 
-**Dustox (M)** @ Mago Berry
+**Dustox** @ Mago Berry
+- **Gender:** Male
 - **Ability:** Shield Dust
 - **Level:** 10
 - **Nature:** Docile
@@ -813,7 +858,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** None.
 
-**Shroomish (F)** @ Big Root
+**Shroomish** @ Big Root
+- **Gender:** Female
 - **Ability:** Effect Spore
 - **Level:** 10
 - **Nature:** Quirky
@@ -824,7 +870,8 @@ the sync fails if they diverge:
   - Headbutt
   - Stun Spore
 
-**Cyndaquil (M)** @ Leftovers
+**Cyndaquil** @ Leftovers
+- **Gender:** Male
 - **Ability:** Flash Fire
 - **Level:** 10
 - **EVs:** 16 Def
@@ -846,6 +893,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Seedot** @ Jaboca Berry
+- **Gender:** Male
 - **Ability:** Pickpocket
 - **Level:** 10
 - **Nature:** Hardy
@@ -857,6 +905,7 @@ the sync fails if they diverge:
   - Absorb
 
 **Lotad** @ White Herb
+- **Gender:** Male
 - **Ability:** Swift Swim
 - **Level:** 10
 - **Nature:** Docile
@@ -877,6 +926,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Nacli** @ Oran Berry
+- **Gender:** Male
 - **Ability:** Purifying Salt
 - **Level:** 11
 - **EVs:** 20 HP / 4 Def / 36 SpD
@@ -898,6 +948,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Diglett** @ Silk Scarf
+- **Gender:** Male
 - **Ability:** Sand Veil
 - **Level:** 11
 - **EVs:** 16 Def
@@ -919,6 +970,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Scraggy** @ Eject Button
+- **Gender:** Male
 - **Ability:** Intimidate
 - **Level:** 12
 - **EVs:** 12 HP / 28 Spe
@@ -931,6 +983,7 @@ the sync fails if they diverge:
   - Leer
 
 **Sableye** @ Eject Button
+- **Gender:** Male
 - **Ability:** Prankster
 - **Level:** 12
 - **EVs:** 20 HP / 32 SpD
@@ -959,6 +1012,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Roggenrola** @ Oran Berry
+- **Gender:** Male
 - **Ability:** Sturdy
 - **Level:** 10
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
@@ -968,6 +1022,7 @@ the sync fails if they diverge:
   - Harden
 
 **Geodude** @ Clear Amulet
+- **Gender:** Male
 - **Ability:** Sturdy
 - **Level:** 12
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
@@ -989,6 +1044,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Binacle** @ Rindo Berry
+- **Gender:** Male
 - **Ability:** Pickpocket
 - **Level:** 11
 - **EVs:** 8 Def / 24 SpD
@@ -1001,6 +1057,7 @@ the sync fails if they diverge:
   - Water Gun
 
 **Rockruff**
+- **Gender:** Male
 - **Ability:** Vital Spirit
 - **Level:** 12
 - **Nature:** Impish
@@ -1019,6 +1076,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Rolycoly** @ Absorb Bulb
+- **Gender:** Male
 - **Ability:** Steam Engine
 - **Level:** 11
 - **EVs:** 12 HP / 48 Spe
@@ -1031,6 +1089,7 @@ the sync fails if they diverge:
   - Rapid Spin
 
 **Rhyhorn**
+- **Gender:** Male
 - **Ability:** Rock Head
 - **Level:** 12
 - **Nature:** Careful
@@ -1060,7 +1119,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** Complete heal.
 
-**Yamask-Galar (F)** @ Smooth Rock
+**Yamask-Galar** @ Smooth Rock
+- **Gender:** Female
 - **Ability:** Wandering Spirit
 - **Level:** 14
 - **Tera Type:** Rock
@@ -1073,7 +1133,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Curse
 
-**Lileep (F)** @ Kee Berry
+**Lileep** @ Kee Berry
+- **Gender:** Female
 - **Ability:** Storm Drain
 - **Level:** 13
 - **EVs:** 12 HP / 16 Def / 28 SpD / 16 Spe
@@ -1085,7 +1146,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Recover
 
-**Nosepass (F)** @ Enigma Berry
+**Nosepass** @ Enigma Berry
+- **Gender:** Female
 - **Ability:** Sand Force
 - **Level:** 15
 - **EVs:** 12 HP / 24 Def / 12 SpD / 12 Spe
@@ -1108,7 +1170,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** Complete heal.
 
-**Yamask-Galar (F)** @ Smooth Rock
+**Yamask-Galar** @ Smooth Rock
+- **Gender:** Female
 - **Ability:** Wandering Spirit
 - **Level:** 14
 - **Tera Type:** Rock
@@ -1121,7 +1184,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Curse
 
-**Dwebble (F)** @ Berry Juice
+**Dwebble** @ Berry Juice
+- **Gender:** Female
 - **Ability:** Sturdy
 - **Level:** 13
 - **EVs:** 16 HP / 12 Def / 12 SpD / 36 Spe
@@ -1133,7 +1197,8 @@ the sync fails if they diverge:
   - Rock Smash
   - Aerial Ace
 
-**Lileep (F)** @ Kee Berry
+**Lileep** @ Kee Berry
+- **Gender:** Female
 - **Ability:** Storm Drain
 - **Level:** 13
 - **EVs:** 12 HP / 16 Def / 28 SpD / 16 Spe
@@ -1145,7 +1210,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Recover
 
-**Nosepass (F)** @ Enigma Berry
+**Nosepass** @ Enigma Berry
+- **Gender:** Female
 - **Ability:** Sand Force
 - **Level:** 15
 - **EVs:** 12 HP / 24 Def / 12 SpD / 12 Spe
@@ -1166,7 +1232,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** Complete heal.
 
-**Yamask-Galar (F)** @ Berry Juice
+**Yamask-Galar** @ Berry Juice
+- **Gender:** Female
 - **Ability:** Wandering Spirit
 - **Level:** 14
 - **Tera Type:** Rock
@@ -1179,7 +1246,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Curse
 
-**Lileep (F)** @ Kee Berry
+**Lileep** @ Kee Berry
+- **Gender:** Female
 - **Ability:** Storm Drain
 - **Level:** 13
 - **EVs:** 12 HP / 16 Def / 28 SpD / 16 Spe
@@ -1191,7 +1259,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Recover
 
-**Nosepass (F)** @ Enigma Berry
+**Nosepass** @ Enigma Berry
+- **Gender:** Female
 - **Ability:** Sand Force
 - **Level:** 15
 - **EVs:** 12 HP / 24 Def / 12 SpD / 12 Spe
@@ -1212,7 +1281,8 @@ the sync fails if they diverge:
 
 **Pre-battle healing:** Complete heal.
 
-**Dwebble (F)** @ Berry Juice
+**Dwebble** @ Berry Juice
+- **Gender:** Female
 - **Ability:** Sturdy
 - **Level:** 13
 - **EVs:** 32 HP / 28 SpD
@@ -1224,7 +1294,8 @@ the sync fails if they diverge:
   - Rock Smash
   - Aerial Ace
 
-**Lileep (F)** @ Kee Berry
+**Lileep** @ Kee Berry
+- **Gender:** Female
 - **Ability:** Storm Drain
 - **Level:** 13
 - **EVs:** 12 HP / 16 Def / 36 Spe
@@ -1236,7 +1307,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Recover
 
-**Yamask-Galar (F)** @ Smooth Rock
+**Yamask-Galar** @ Smooth Rock
+- **Gender:** Female
 - **Ability:** Wandering Spirit
 - **Level:** 14
 - **Tera Type:** Rock
@@ -1249,7 +1321,8 @@ the sync fails if they diverge:
   - Rock Tomb
   - Curse
 
-**Nosepass (F)** @ Enigma Berry
+**Nosepass** @ Enigma Berry
+- **Gender:** Female
 - **Ability:** Sand Force
 - **Level:** 15
 - **EVs:** 12 HP / 24 Def / 12 SpD / 12 Spe
@@ -1272,6 +1345,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Popplio** @ Throat Spray
+- **Gender:** Male
 - **Ability:** Liquid Voice
 - **Level:** 14
 - **EVs:** 28 HP / 24 Def / 12 SpA / 8 SpD
@@ -1284,6 +1358,7 @@ the sync fails if they diverge:
   - Life Dew
 
 **Skwovet** @ Sitrus Berry
+- **Gender:** Male
 - **Ability:** Cheek Pouch
 - **Level:** 14
 - **EVs:** 40 HP / 16 Def / 32 SpD
@@ -1305,6 +1380,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Floette** @ Misty Seed
+- **Gender:** Female
 - **Ability:** Symbiosis
 - **Level:** 14
 - **EVs:** 24 HP / 24 Def / 16 SpD
@@ -1317,6 +1393,7 @@ the sync fails if they diverge:
   - Helping Hand
 
 **Pachirisu** @ Sitrus Berry
+- **Gender:** Female
 - **Ability:** Pickup
 - **Level:** 14
 - **EVs:** 4 HP / 40 Def / 20 SpD / 12 Spe
@@ -1341,6 +1418,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Ralts**
+- **Gender:** Male
 - **Level:** 13
 - **IVs:** 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 <!-- trainer-party:end -->
@@ -1354,6 +1432,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Marill**
+- **Gender:** Female
 - **Level:** 13
 - **IVs:** 15 HP / 15 Atk / 15 Def / 15 SpA / 15 SpD / 15 Spe
 <!-- trainer-party:end -->
@@ -1365,6 +1444,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Clobbopus** @ Mystic Water
+- **Gender:** Male
 - **Ability:** Technician
 - **Level:** 15
 - **EVs:** 28 HP / 32 Def / 28 SpD
@@ -1377,6 +1457,7 @@ the sync fails if they diverge:
   - Feint
 
 **Totodile** @ Sea Incense
+- **Gender:** Male
 - **Ability:** Torrent
 - **Level:** 16
 - **EVs:** 20 HP / 16 Def / 36 SpD
@@ -1411,6 +1492,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Wingull** @ Berry Juice
+- **Gender:** Trainer default
 - **Ability:** Rain Dish
 - **Level:** 15
 - **EVs:** 20 HP / 44 Def / 16 SpD
@@ -1423,6 +1505,7 @@ the sync fails if they diverge:
   - Aqua Ring
 
 **Poochyena** @ Tanga Berry
+- **Gender:** Trainer default
 - **Ability:** Rattled
 - **Level:** 15
 - **EVs:** 32 HP / 32 Def / 32 Spe
@@ -1435,6 +1518,7 @@ the sync fails if they diverge:
   - Take Down
 
 **Combusken** @ Scope Lens
+- **Gender:** Trainer default
 - **Ability:** Blaze
 - **Level:** 17
 - **EVs:** 16 HP / 16 Atk / 16 Def / 16 SpD / 32 Spe
@@ -1458,6 +1542,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Wingull** @ Berry Juice
+- **Gender:** Trainer default
 - **Ability:** Rain Dish
 - **Level:** 15
 - **EVs:** 20 HP / 44 Def / 16 SpD
@@ -1470,6 +1555,7 @@ the sync fails if they diverge:
   - Aqua Ring
 
 **Poochyena** @ Tanga Berry
+- **Gender:** Trainer default
 - **Ability:** Rattled
 - **Level:** 15
 - **EVs:** 32 HP / 32 Def / 32 Spe
@@ -1482,6 +1568,7 @@ the sync fails if they diverge:
   - Take Down
 
 **Grovyle** @ Bright Powder
+- **Gender:** Trainer default
 - **Ability:** Overgrow
 - **Level:** 17
 - **EVs:** 20 HP / 36 Def / 28 SpD / 12 Spe
@@ -1505,6 +1592,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Slugma** @ Grip Claw
+- **Gender:** Trainer default
 - **Ability:** Flame Body
 - **Level:** 15
 - **EVs:** 20 HP / 20 Def / 12 SpA / 20 SpD
@@ -1517,6 +1605,7 @@ the sync fails if they diverge:
   - Fire Spin
 
 **Poochyena** @ Tanga Berry
+- **Gender:** Trainer default
 - **Ability:** Rattled
 - **Level:** 15
 - **EVs:** 32 HP / 32 Def / 32 Spe
@@ -1529,6 +1618,7 @@ the sync fails if they diverge:
   - Take Down
 
 **Marshtomp** @ Iapapa Berry
+- **Gender:** Trainer default
 - **Ability:** Torrent
 - **Level:** 17
 - **EVs:** 36 HP / 12 Def / 16 SpA / 36 SpD
@@ -1550,6 +1640,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Status conditions only (Lum Berry).
 
 **Noibat** @ Leftovers
+- **Gender:** Female
 - **Ability:** Frisk
 - **Level:** 17
 - **EVs:** 12 HP / 16 Atk / 28 Def / 12 SpD
@@ -1562,6 +1653,7 @@ the sync fails if they diverge:
   - Absorb
 
 **Grotle** @ Soft Sand
+- **Gender:** Male
 - **Ability:** Overgrow
 - **Level:** 18
 - **EVs:** 28 Atk / 36 SpA / 20 SpD
@@ -1583,6 +1675,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Tentacool** @ Honey
+- **Gender:** Male
 - **Ability:** Clear Body
 - **Level:** 14
 - **EVs:** 20 HP / 32 Def / 12 Spe
@@ -1594,6 +1687,7 @@ the sync fails if they diverge:
   - Bubble Beam
 
 **Inkay** @ Grip Claw
+- **Gender:** Male
 - **Ability:** Contrary
 - **Level:** 14
 - **EVs:** 32 HP / 4 Def / 32 SpD
@@ -1626,6 +1720,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Poliwag** @ Damp Rock
+- **Gender:** Male
 - **Ability:** Damp
 - **Level:** 14
 - **EVs:** 28 Atk / 20 SpA / 20 SpD / 20 Spe
@@ -1638,6 +1733,7 @@ the sync fails if they diverge:
   - Round
 
 **Remoraid** @ Sea Incense
+- **Gender:** Male
 - **Ability:** Hustle
 - **Level:** 14
 - **EVs:** 4 HP / 20 Atk / 4 Def / 20 SpA / 4 SpD / 20 Spe
@@ -1650,6 +1746,7 @@ the sync fails if they diverge:
   - Brine
 
 **Magikarp** @ Adrenaline Orb
+- **Gender:** Male
 - **Ability:** Rattled
 - **Level:** 15
 - **EVs:** 20 HP / 48 Atk / 8 Def / 20 Spe
@@ -1685,6 +1782,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Crabrawler** @ Muscle Band
+- **Gender:** Male
 - **Ability:** Hyper Cutter
 - **Level:** 15
 - **EVs:** 20 HP / 31 Atk / 20 Def / 20 SpD
@@ -1697,6 +1795,7 @@ the sync fails if they diverge:
   - Payback
 
 **Mudbray** @ Muscle Band
+- **Gender:** Male
 - **Ability:** Inner Focus
 - **Level:** 15
 - **EVs:** 20 HP / 47 Atk / 20 Def / 8 SpD
@@ -1721,6 +1820,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Pancham** @ Protective Pads
+- **Gender:** Male
 - **Ability:** Iron Fist
 - **Level:** 15
 - **EVs:** 43 Atk / 32 Def / 24 Spe
@@ -1733,6 +1833,7 @@ the sync fails if they diverge:
   - Work Up
 
 **Pikipek** @ Protective Pads
+- **Gender:** Male
 - **Ability:** Skill Link
 - **Level:** 15
 - **EVs:** 8 HP / 35 Atk / 20 Def / 20 SpD / 8 Spe
@@ -1757,6 +1858,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Sawk** @ Black Belt
+- **Gender:** Male
 - **Ability:** Sturdy
 - **Level:** 17
 - **EVs:** 12 HP / 34 Atk / 12 Def / 12 SpD / 28 Spe
@@ -1769,6 +1871,7 @@ the sync fails if they diverge:
   - Coaching
 
 **Throh** @ Black Belt
+- **Gender:** Male
 - **Ability:** Guts
 - **Level:** 17
 - **EVs:** 4 HP / 40 Atk / 28 Def / 28 SpD
@@ -1789,6 +1892,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Farfetch’d-Galar** @ Stick
+- **Gender:** Female
 - **Ability:** Scrappy
 - **Level:** 15
 - **EVs:** 32 HP / 36 Atk / 32 Def
@@ -1809,6 +1913,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Machop** @ Iapapa Berry
+- **Gender:** Male
 - **Ability:** Guts
 - **Level:** 15
 - **EVs:** 48 HP / 48 Def / 8 SpD
@@ -1831,6 +1936,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Riolu** @ Micle Berry
+- **Gender:** Male
 - **Ability:** Prankster
 - **Level:** 15
 - **EVs:** 20 HP / 20 Atk / 36 SpA / 20 Spe
@@ -1850,6 +1956,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Croagunk** @ Oran Berry
+- **Gender:** Male
 - **Ability:** Anticipation
 - **Level:** 15
 - **EVs:** 40 Atk / 20 Def / 20 SpD
@@ -1870,6 +1977,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Crabrawler** @ Shell Bell
+- **Gender:** Female
 - **Ability:** Hyper Cutter
 - **Level:** 16
 - **EVs:** 16 HP / 34 Atk / 32 Def
@@ -1882,6 +1990,7 @@ the sync fails if they diverge:
   - Dizzy Punch
 
 **Timburr** @ Silk Scarf
+- **Gender:** Male
 - **Ability:** Guts
 - **Level:** 16
 - **EVs:** 16 HP / 38 Atk / 24 Def
@@ -1901,6 +2010,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** None.
 
 **Sneasel-Hisui** @ Payapa Berry
+- **Gender:** Male
 - **Ability:** Pickpocket
 - **Level:** 16
 - **EVs:** 28 HP / 34 Atk / 36 Spe
@@ -1913,6 +2023,7 @@ the sync fails if they diverge:
   - Rock Smash
 
 **Mankey** @ Loaded Dice
+- **Gender:** Male
 - **Ability:** Vital Spirit
 - **Level:** 16
 - **EVs:** 20 HP / 36 Atk / 44 Spe
@@ -1947,6 +2058,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Meditite** @ Coba Berry
+- **Gender:** Male
 - **Ability:** Pure Power
 - **Level:** 17
 - **EVs:** 48 Atk / 32 Def / 16 Spe
@@ -1959,6 +2071,7 @@ the sync fails if they diverge:
   - Aerial Ace
 
 **Combusken** @ Shuca Berry
+- **Gender:** Male
 - **Ability:** Speed Boost
 - **Level:** 17
 - **EVs:** 8 HP / 48 Atk / 32 Def
@@ -1971,6 +2084,7 @@ the sync fails if they diverge:
   - Natural Gift
 
 **Pawniard** @ Protective Pads
+- **Gender:** Male
 - **Ability:** Inner Focus
 - **Level:** 18
 - **Tera Type:** Fighting
@@ -1984,6 +2098,7 @@ the sync fails if they diverge:
   - Assurance
 
 **Makuhita** @ Eviolite
+- **Gender:** Male
 - **Ability:** Sheer Force
 - **Level:** 19
 - **EVs:** 4 HP / 48 Atk / 48 Def
@@ -2005,6 +2120,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Meditite** @ Coba Berry
+- **Gender:** Male
 - **Ability:** Pure Power
 - **Level:** 17
 - **EVs:** 48 Atk / 32 Def / 16 Spe
@@ -2017,6 +2133,7 @@ the sync fails if they diverge:
   - Rock Tomb
 
 **Pawniard** @ Protective Pads
+- **Gender:** Male
 - **Ability:** Inner Focus
 - **Level:** 18
 - **Tera Type:** Fighting
@@ -2030,6 +2147,7 @@ the sync fails if they diverge:
   - Assurance
 
 **Makuhita** @ Eviolite
+- **Gender:** Male
 - **Ability:** Sheer Force
 - **Level:** 19
 - **EVs:** 36 HP / 48 Atk / 16 Def
@@ -2050,6 +2168,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Meditite** @ Coba Berry
+- **Gender:** Male
 - **Ability:** Pure Power
 - **Level:** 17
 - **EVs:** 48 Atk / 32 Def / 16 Spe
@@ -2062,6 +2181,7 @@ the sync fails if they diverge:
   - Signal Beam
 
 **Combusken** @ Expert Belt
+- **Gender:** Male
 - **Ability:** Speed Boost
 - **Level:** 17
 - **EVs:** 8 HP / 48 Atk / 32 Def
@@ -2074,6 +2194,7 @@ the sync fails if they diverge:
   - Helping Hand
 
 **Pawniard** @ Protective Pads
+- **Gender:** Male
 - **Ability:** Inner Focus
 - **Level:** 18
 - **Tera Type:** Fighting
@@ -2087,6 +2208,7 @@ the sync fails if they diverge:
   - Assurance
 
 **Makuhita** @ Eviolite
+- **Gender:** Male
 - **Ability:** Sheer Force
 - **Level:** 19
 - **EVs:** 4 HP / 48 Atk / 48 Def
@@ -2106,6 +2228,7 @@ the sync fails if they diverge:
 **Pre-battle healing:** Complete heal.
 
 **Meditite** @ Coba Berry
+- **Gender:** Male
 - **Ability:** Pure Power
 - **Level:** 17
 - **EVs:** 48 Atk / 32 Def / 16 Spe
@@ -2118,6 +2241,7 @@ the sync fails if they diverge:
   - Aerial Ace
 
 **Pawniard** @ Protective Pads
+- **Gender:** Male
 - **Ability:** Inner Focus
 - **Level:** 18
 - **Tera Type:** Fighting
@@ -2131,6 +2255,7 @@ the sync fails if they diverge:
   - Assurance
 
 **Makuhita** @ Eviolite
+- **Gender:** Male
 - **Ability:** Sheer Force
 - **Level:** 19
 - **EVs:** 4 HP / 48 Atk / 48 Def

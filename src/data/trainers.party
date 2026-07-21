@@ -16,7 +16,7 @@ Required fields for trainers:
     - Pic
 Optional (but still recommended) fields for trainers:
     - Class (if not specified, PkMn Trainer will be used)
-    - Gender (Male/Female, affects random gender weights of party if not specified)
+    - Gender (Male/Female, sets the default personality and gender bias of party Pokemon)
     - Music
     - Items (Some Item / Another Item / Third Item)
             (Can also be specified with ITEM_SOME_ITEM)
@@ -36,6 +36,7 @@ Required fields for Pokemon:
       Alfred (Abra) (M) @ Eviolite
       Roberta (SPECIES_ABRA) (F) @ ITEM_CHOICE_SPECS
       Both lines are valid. Gender (M) or (F) must use a capital letter.
+      If omitted, gender uses the trainer- and battle-type-based personality default.
       Nickname length is limited to 10 characters using standard letters.
       With narrow font it's increased to 12. Longer strings will be silently shortened.
 

@@ -1916,7 +1916,17 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                 personalityValue = (personalityValue & 0xFFFFFF00) | GeneratePersonalityForGender(MON_FEMALE, partyData[monIndex].species);
             else if (partyData[monIndex].gender == TRAINER_MON_RANDOM_GENDER)
                 personalityValue = (personalityValue & 0xFFFFFF00) | GeneratePersonalityForGender(Random() & 1 ? MON_MALE : MON_FEMALE, partyData[monIndex].species);
+            u32 generatedGender = GetGenderFromSpeciesAndPersonality(partyData[monIndex].species, personalityValue);
             ModifyPersonalityForNature(&personalityValue, partyData[monIndex].nature);
+            if (generatedGender != GetGenderFromSpeciesAndPersonality(partyData[monIndex].species, personalityValue))
+            {
+                // Moving by a full nature cycle retains the requested nature while
+                // restoring the gender selected before the nature adjustment.
+                if (generatedGender == MON_FEMALE)
+                    personalityValue -= NUM_NATURES;
+                else
+                    personalityValue += NUM_NATURES;
+            }
             if (partyData[monIndex].isShiny)
             {
                 otId.method = OT_ID_PRESET;

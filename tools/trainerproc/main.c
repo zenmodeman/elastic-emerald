@@ -34,7 +34,7 @@ struct Stats
 
 enum Gender
 {
-    GENDER_ANY,
+    GENDER_DEFAULT,
     GENDER_MALE,
     GENDER_FEMALE,
 };
@@ -1397,7 +1397,7 @@ static bool parse_trainer(struct Parser *p, const struct Parsed *parsed, struct 
         pokemon->nickname = token_string(&nickname);
         pokemon->species = token_string(&species);
         if (is_empty_token(&gender))
-            pokemon->gender = GENDER_ANY;
+            pokemon->gender = GENDER_DEFAULT;
         else if (!token_gender(p, &gender, &pokemon->gender))
             any_error = !show_parse_error(p);
         pokemon->item = token_string(&item);
@@ -1409,7 +1409,7 @@ static bool parse_trainer(struct Parser *p, const struct Parsed *parsed, struct 
             {
                 switch (pokemon->gender)
                 {
-                case GENDER_ANY:
+                case GENDER_DEFAULT:
                     break;
                 case GENDER_MALE:
                     pokemon->species = literal_string(gendered_species[i].male_species);
@@ -1418,7 +1418,7 @@ static bool parse_trainer(struct Parser *p, const struct Parsed *parsed, struct 
                     pokemon->species = literal_string(gendered_species[i].female_species);
                     break;
                 }
-                pokemon->gender = GENDER_ANY;
+                pokemon->gender = GENDER_DEFAULT;
                 break;
             }
         }
@@ -2032,8 +2032,9 @@ static void fprint_trainers(const char *output_path, FILE *f, struct Parsed *par
 
             switch (pokemon->gender)
             {
-                case GENDER_ANY:
-                    fprintf(f, "            .gender = TRAINER_MON_RANDOM_GENDER,\n");
+                case GENDER_DEFAULT:
+                    // Leave the zero-initialized field alone so party creation uses
+                    // its trainer- and battle-type-based personality default.
                     break;
                 case GENDER_MALE:
                     fprintf(f, "#line %d\n", pokemon->header_line);
