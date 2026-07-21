@@ -420,7 +420,8 @@ static bool32 ShouldSwitchToPreserveWeatherSetter(enum BattlerId battler)
         return FALSE;
 
     opposingBattler = GetOppositeBattler(battler);
-    if (!AI_IsSlower(battler, opposingBattler, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
+    if (gBattleStruct->battlerState[battler].targetedByPlayerAttack
+     || !AI_IsSlower(battler, opposingBattler, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
      || !HiddenStabMoveCanKO(opposingBattler, battler)
      || gBattleMons[battler].hp * 4 < gBattleMons[battler].maxHP * 3
      || CountAliveWeatherSynergyMons(battler, weather) < 3

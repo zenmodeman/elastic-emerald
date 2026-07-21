@@ -3,7 +3,7 @@
 ## Documentation status
 
 - **Last documented code commit:** `4ed343f5a8` ("Add some more tests of custom features").
-- **Uncommitted AI changes covered by this document:** None. The current uncommitted Metal Rush runtime repair makes its Defense rider honor ordinary stat-loss prevention, matching the existing `CanLowerStat` model; it does not change AI scoring or information policy.
+- **Uncommitted AI changes covered by this document:** Weather-setter fast-KO preservation now requires that the active setter has not been targeted by a player's damaging or status move during its current field stint. The targeting memory resets when the battler switches out. The current uncommitted Metal Rush runtime repair makes its Defense rider honor ordinary stat-loss prevention, matching the existing `CanLowerStat` model; it does not change AI scoring or information policy.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -106,7 +106,7 @@ Key commits: `93531a3cea`, `6e5f7576f7`.
 
 General fast-KO switching is disabled. The remaining contextual rule applies in singles to smart-switching trainers whose active Pokemon has Drizzle, Drought, Sand Stream, or Snow Warning. If the setter would act after the opponent and an actual-state damage calculation using the opponent's revealed moves plus Hidden STAB inference finds a KO, the AI may preserve the setter.
 
-Preservation additionally requires the setter to retain at least 75% of its maximum HP, at least three other living Pokemon in that trainer's party to benefit from the setter's weather, and a viable standard switch candidate. The HP gate limits preservation to setters with enough longevity to contribute again after returning. A party Pokemon counts once if any of the following apply:
+Preservation additionally requires that the player has not targeted the setter with either a damaging or status move during its current field stint, that the setter retains at least 75% of its maximum HP, that at least three other living Pokemon in that trainer's party benefit from the setter's weather, and that a viable standard switch candidate exists. The targeting memory resets when the setter switches out. The HP gate limits preservation to setters with enough longevity to contribute again after returning. A party Pokemon counts once if any of the following apply:
 
 - it has a directly encouraged type: Fire in sun, Water in rain, Rock in sand, or Ice in hail/snow;
 - it has a positively weather-interacting ability already recognized by the field-status AI;
@@ -115,7 +115,7 @@ Preservation additionally requires the setter to retain at least 75% of its maxi
 
 When every gate passes, the AI has a 50% chance to switch to the standard most-suitable party Pokemon. The KO check respects current battle conditions and survival effects such as Focus Sash and Sturdy. It does not use the abandoned clean-state model.
 
-Regression coverage explicitly checks both sides of the critical survival ordering: a slower unprotected setter with three weather allies may be preserved, while a faster setter or one whose Focus Sash prevents the inferred KO stays in.
+Regression coverage explicitly checks both sides of the critical survival ordering: a slower unprotected setter with three weather allies may be preserved, while a faster setter, a setter whose Focus Sash prevents the inferred KO, or a setter already targeted by the player stays in.
 
 Key commit: `5440fb44b4`.
 

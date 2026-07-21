@@ -149,6 +149,36 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in when it outspeeds the
     }
 }
 
+AI_SINGLE_BATTLE_TEST("Zenmodeman: targeted weather setter stays in after becoming slower than inferred KO threat")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
+        PLAYER(SPECIES_BLASTOISE) { Level(100); Speed(150); Moves(MOVE_SCARY_FACE, MOVE_HYDRO_PUMP); }
+        OPPONENT(SPECIES_NINETALES) { Level(1); Speed(200); Ability(ABILITY_DROUGHT); Moves(MOVE_EMBER); }
+        OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCARY_FACE); EXPECT_MOVE(opponent, MOVE_EMBER); }
+        TURN { MOVE(player, MOVE_HYDRO_PUMP); EXPECT_MOVE(opponent, MOVE_EMBER); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter targeted by damaging move stays in against inferred KO threat")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
+        PLAYER(SPECIES_BLASTOISE) { Level(100); Attack(1); SpAttack(500); Speed(150); Moves(MOVE_ROCK_TOMB, MOVE_HYDRO_PUMP); }
+        OPPONENT(SPECIES_NINETALES) { Level(100); HP(100); MaxHP(100); Speed(200); Ability(ABILITY_DROUGHT); Moves(MOVE_EMBER); }
+        OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_ROCK_TOMB); EXPECT_MOVE(opponent, MOVE_EMBER); }
+        TURN { MOVE(player, MOVE_HYDRO_PUMP); EXPECT_MOVE(opponent, MOVE_EMBER); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("AI switches if Perish Song is about to kill")
 {
     PASSES_RANDOMLY(SHOULD_SWITCH_PERISH_SONG_PERCENTAGE, 100, RNG_AI_SWITCH_PERISH_SONG);

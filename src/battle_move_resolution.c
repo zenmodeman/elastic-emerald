@@ -1345,7 +1345,12 @@ static enum CancelerResult CancelerTargetFailure(struct BattleContext *ctx)
             gBattleStruct->moveResultFlags[ctx->battlerDef] |= MOVE_RESULT_FAILED;
             continue;
         }
-        else if (!BreaksThroughSemiInvulnerablity(ctx->battlerAtk, ctx->battlerDef, ctx->abilityAtk, ctx->abilityDef, ctx->move))
+
+        if (GetBattlerSide(ctx->battlerAtk) == B_SIDE_PLAYER
+         && GetBattlerSide(ctx->battlerDef) == B_SIDE_OPPONENT)
+            gBattleStruct->battlerState[ctx->battlerDef].targetedByPlayerAttack = TRUE;
+
+        if (!BreaksThroughSemiInvulnerablity(ctx->battlerAtk, ctx->battlerDef, ctx->abilityAtk, ctx->abilityDef, ctx->move))
         {
             gBattleStruct->moveResultFlags[ctx->battlerDef] |= MOVE_RESULT_FAILED;
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_AVOIDED_ATK;
