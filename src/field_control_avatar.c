@@ -47,7 +47,7 @@ static EWRAM_DATA u16 sPrevMetatileBehavior = 0;
 
 COMMON_DATA u8 gSelectedObjectEvent = 0;
 
-static void GetPlayerPosition(struct MapPosition *);
+void GetPlayerPosition(struct MapPosition *);
 static void GetInFrontOfPlayerPosition(struct MapPosition *);
 static u16 GetPlayerCurMetatileBehavior(int);
 static bool8 TryStartInteractionScript(struct MapPosition *, u16, enum Direction);
@@ -58,7 +58,7 @@ static const u8 *GetInteractedMetatileScript(struct MapPosition *, u8, enum Dire
 static const u8 *GetInteractedWaterScript(struct MapPosition *, u8, enum Direction);
 static bool32 TrySetupDiveDownScript(void);
 static bool32 TrySetupDiveEmergeScript(void);
-static bool8 TryStartStepBasedScript(struct MapPosition *, u16, enum Direction);
+bool8 TryStartStepBasedScript(struct MapPosition *, u16, enum Direction);
 static bool8 CheckStandardWildEncounter(u16);
 static bool8 TryArrowWarp(struct MapPosition *, u16, enum Direction);
 static bool8 IsWarpMetatileBehavior(u16);
@@ -256,7 +256,7 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
     return FALSE;
 }
 
-static void GetPlayerPosition(struct MapPosition *position)
+void GetPlayerPosition(struct MapPosition *position)
 {
     PlayerGetDestCoords(&position->x, &position->y);
     position->elevation = PlayerGetElevation();
@@ -675,7 +675,7 @@ static bool32 TrySetupDiveEmergeScript(void)
     return FALSE;
 }
 
-static bool8 TryStartStepBasedScript(struct MapPosition *position, u16 metatileBehavior, enum Direction direction)
+bool8 TryStartStepBasedScript(struct MapPosition *position, u16 metatileBehavior, enum Direction direction)
 {
     if (TryStartCoordEventScript(position) == TRUE)
         return TRUE;
@@ -885,7 +885,7 @@ void RestartWildEncounterImmunitySteps(void)
 
 static bool8 CheckStandardWildEncounter(u16 metatileBehavior)
 {
-    if (FlagGet(OW_FLAG_NO_ENCOUNTER))
+    if (FlagGet(WE_FLAG_NO_ENCOUNTER))
         return FALSE;
 
     if (sWildEncounterImmunitySteps < 4)

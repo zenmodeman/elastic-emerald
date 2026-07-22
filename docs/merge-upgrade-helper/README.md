@@ -7,7 +7,7 @@ The inventory was built from local `git log --author=zenmodeman`, current symbol
 ## Documentation Status
 
 - Latest commit whose applicable project changes have been reviewed for this dossier: `f82a47022b` (`More test additions`).
-- Applicable work after that boundary: uncommitted fifth regression batch adding twenty form-normalization, mode, progression, ability, and move-interaction scenarios, plus the Damp and Metal Rush runtime repairs described below; the FRLG integration and current Expansion 1.15.0 merge resolutions are also uncommitted.
+- Applicable work after that boundary: uncommitted fifth regression batch adding twenty form-normalization, mode, progression, ability, and move-interaction scenarios, plus the Damp and Metal Rush runtime repairs described below; the FRLG integration and current Expansion 1.15.0 and 1.16.2 merge resolutions are also uncommitted.
 - Maintenance rule: before advancing the commit above, review every applicable change through the proposed boundary. Keep not-yet-committed work labeled as uncommitted, and replace that label with its real commit once committed.
 
 ## Tag-Partitioned Custom Implementation Trace
@@ -97,6 +97,7 @@ Confirmed later-merge breakages already repaired in history:
 - After `expansion/1.14.0`, monotype filtering, non-monotype modulus behavior, Tier Points catch logic, extra Suction Cups behavior, AI flags, candy cap logic, and Aqua Ring bonus-effect cleanup needed restoration in `5b2db2f453`, `448477bf2e`, `4038c36be7`, `5d34747fa5`, and `86a1b336ef`.
 - After `expansion/1.14.4`, additional minor custom-functionality patches landed in `9865fe909f` and `0cf4955fd9`.
 - During the first `expansion/1.15.0` merge portion, the new generational-config API required bare tags in `GetConfig`, level-cap calls gained an explicit hard/candy-cap argument, and variable config tags required `GetConfigInternal`. The merge also displaced Metal Rush's weight-dependent additional effect, full player held-item AI knowledge, repeated-switch immunity prediction, and weather-setter preservation; these were restored as uncommitted merge work on the 1.15 runtime and AI APIs. Incoming-mon prediction must run its final damaging-move comparison against the temporary predicted battler, then restore the active battler and cached AI damage data. Expansion 1.15's `HandleKOThroughBerryReduction` now provides the consumed-resist-berry follow-up damage model, so the older local temporary-hold-effect simulator should not be duplicated.
+- During the `expansion/1.16.2` merge, broad upstream rewrites conflicted with Elastic Emerald's battle, AI, mode, content, and generated-data files. The uncommitted resolution uses the rewritten upstream battle and AI cores as the framework base, re-ports Drain Douse, Illuminate, Merry, Honey Gather, trainer PP Ups, mode/evolution hooks, and project tuning onto their new APIs, and accepts the upstream deletion of generated `src/data/trainer_parties.h`. The upstream AI now carries dynamic scoring/switch callbacks that were previously local. The custom smart-trainer information policy remains composed from prediction and assumption flags rather than upstream omniscience and PP-stall prevention. Future ports should recheck this flag composition even when `include/constants/battle_ai.h` merges without textual conflict.
 - Binding, Wrap, and Drain Douse tests required post-merge fixes around `bd83b55fb4`, `c701193e0d`, and `be3390bd51`.
 - A post-1.15 test-ROM build found that Forewarn's tests and deterministic tie handling had survived on opposite sides of the merge: the tests referenced `RNG_FOREWARN`, while the runtime had reverted to pairwise untagged randomness and lacked the empty-candidate guard. The uncommitted repair restores the tagged uniform tie selection and its RNG constant. The same build found stale tests for removed generational keys (`B_INFILTRATOR_SUBSTITUTE`, `B_TAUNT_ME_FIRST`, `B_BATON_PASS_TRAPPING`, `B_PSYCH_UP_CRIT_RATIO`, and four Transform failure keys) plus renamed move target/effect APIs; those tests now assert the current fixed behavior or current helper names.
 - The same audit found that `GetMovesArrayWithHiddenSTAB` remained covered by a custom test but had lost both its declaration and implementation. The uncommitted repair restores the helper on the current `gBattleHistory` and move APIs, excludes status, recharge, and delayed two-turn attacks from hidden-STAB inference, and leaves ordinary move-specific logic on revealed `GetMovesArray` data.
@@ -542,9 +543,9 @@ Audit checks:
 - Learnset helper JSON and generated learnset headers can diverge after merge conflict resolution.
 - Curated Tera comments in `src/pokemon.c` often explain why high-tier species intentionally lack curated Tera.
 
-## Expansion 1.15 First-Port Build Findings
+## Expansion 1.15/1.16 Port Build Findings
 
-The first 1.15 merge build exposed several custom systems whose callers or data survived while their implementation hooks were lost. The port restores:
+The 1.15 and 1.16 merge builds exposed several custom systems whose callers or data survived while their implementation hooks were lost. The ports restore:
 
 - MAP/FLY start-menu labels and the Fly error script export.
 - Suction Cups fishing item rewards on a failed bite.

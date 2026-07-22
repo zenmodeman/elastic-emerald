@@ -1105,6 +1105,8 @@ enum
 
 };
 
+//Constants for unused maps
+
 #define MAP_GROUPS_COUNT 75
 
 #endif // GUARD_CONSTANTS_MAP_GROUPS_H

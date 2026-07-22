@@ -14,13 +14,14 @@
 #include "main.h"
 #include "menu.h"
 #include "overworld.h"
-#include "ow_synchronize.h"
+#include "ow_abilities.h"
 #include "palette.h"
 #include "party_menu.h"
 #include "pokedex.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
 #include "random.h"
+#include "random_mon_generation.h"
 #include "script.h"
 #include "sprite.h"
 #include "string_util.h"
@@ -499,7 +500,7 @@ static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, e
     SetMonData(&mon, MON_DATA_HELD_ITEM, &item);
 
     // In case a mon with a form changing item is given. Eg: SPECIES_ARCEUS_NORMAL with ITEM_SPLASH_PLATE will transform into SPECIES_ARCEUS_WATER upon gifted.
-    TryFormChange(&mon, FORM_CHANGE_ITEM_HOLD);
+    TryFormChange(&mon, FORM_CHANGE_ITEM_HOLD, B_TRAINER_PLAYER);
 
     if (side == B_SIDE_PLAYER)
         return GiveScriptedMonToPlayer(&mon, slot);
@@ -739,4 +740,12 @@ void Script_SetKO(struct ScriptContext *ctx)
         u32 hp = 0;
         SetMonData(&gPlayerParty[slot], MON_DATA_HP, &hp);
     }
+}
+
+void Script_GiveRandomBerry(struct ScriptContext *ctx)
+{
+    enum BerryId loBerry = ScriptReadByte(ctx);
+    enum BerryId hiBerry = ScriptReadByte(ctx);
+
+    gSpecialVar_Result = BerryTypeToItemId(RandomUniform(RNG_RANDOM_BERRY, loBerry, hiBerry));
 }

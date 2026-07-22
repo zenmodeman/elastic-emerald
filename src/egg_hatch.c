@@ -358,7 +358,8 @@ static void CreateHatchedMon(struct Pokemon *egg, struct Pokemon *temp)
 static void AddHatchedMonToParty(u8 id)
 {
     u8 isEgg = 0x46; // ?
-    enum NationalDexOrder species;
+    enum Species species;
+    enum NationalDexOrder nationalDexNum;
     u8 name[POKEMON_NAME_LENGTH + 1];
     u16 metLevel;
     metloc_u8_t metLocation;
@@ -371,9 +372,9 @@ static void AddHatchedMonToParty(u8 id)
     StringCopy(name, GetSpeciesName(species));
     SetMonData(mon, MON_DATA_NICKNAME, name);
 
-    species = SpeciesToNationalPokedexNum(species);
-    GetSetPokedexFlag(species, FLAG_SET_SEEN);
-    GetSetPokedexFlag(species, FLAG_SET_CAUGHT);
+    nationalDexNum = SpeciesToNationalPokedexNum(species);
+    GetSetPokedexFlag(nationalDexNum, FLAG_SET_SEEN);
+    GetSetPokedexFlag(nationalDexNum, FLAG_SET_CAUGHT);
 
     GetMonNickname(mon, gStringVar1);
 

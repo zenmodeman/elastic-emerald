@@ -11,7 +11,7 @@
 #include "link.h"
 #include "metatile_behavior.h"
 #include "overworld.h"
-#include "ow_synchronize.h"
+#include "ow_abilities.h"
 #include "pokeblock.h"
 #include "pokemon.h"
 #include "random.h"
@@ -49,7 +49,7 @@ extern const u8 EventScript_SprayWoreOff[];
 
 static u16 FeebasRandom(void);
 static void FeebasSeedRng(u16 seed);
-static bool8 IsWildLevelAllowedByRepel(u8 level);
+bool8 IsWildLevelAllowedByRepel(u8 level);
 static void ApplyFluteEncounterRateMod(u32 *encRate);
 static void ApplyCleanseTagEncounterRateMod(u32 *encRate);
 static u8 GetMaxLevelOfSpeciesInWildTable(const struct WildPokemon *wildMon, u16 species, enum WildPokemonArea area);
@@ -61,7 +61,7 @@ static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildM
 #else
 static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, enum Type type, enum Ability ability, u8 *monIndex);
 #endif
-static bool8 IsAbilityAllowingEncounter(u8 level);
+bool8 IsAbilityAllowingEncounter(u8 level);
 
 EWRAM_DATA static u8 sWildEncountersDisabled = 0;
 EWRAM_DATA static u32 sFeebasRngValue = 0;
@@ -382,7 +382,7 @@ static u32 ChooseWildMonIndex_Fishing(u8 rod)
     return wildMonIndex;
 }
 
-static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIndex, enum WildPokemonArea area)
+u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIndex, enum WildPokemonArea area)
 {
     u8 min;
     u8 max;
@@ -540,7 +540,7 @@ void CreateWildMon(u16 species, u8 level)
 #define TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildPokemon, type, ability, ptr, count) TryGetAbilityInfluencedWildMonIndex(wildPokemon, type, ability, ptr)
 #endif
 
-static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum WildPokemonArea area, u8 flags)
+bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum WildPokemonArea area, u8 flags)
 {
     u8 wildMonIndex = 0;
     u8 level;
@@ -642,7 +642,7 @@ static u16 GenerateFishingWildMon(const struct WildPokemonInfo *wildMonInfo, u8 
     return wildMonSpecies;
 }
 
-static bool8 SetUpMassOutbreakEncounter(u8 flags)
+bool8 SetUpMassOutbreakEncounter(u8 flags)
 {
     u16 i;
 
@@ -656,7 +656,7 @@ static bool8 SetUpMassOutbreakEncounter(u8 flags)
     return TRUE;
 }
 
-static bool8 DoMassOutbreakEncounterTest(void)
+bool8 DoMassOutbreakEncounterTest(void)
 {
     if (gSaveBlock1Ptr->outbreakPokemonSpecies != SPECIES_NONE
      && gSaveBlock1Ptr->location.mapNum == gSaveBlock1Ptr->outbreakLocationMapNum
@@ -726,7 +726,7 @@ static bool8 AllowWildCheckOnNewMetatile(void)
         return TRUE;
 }
 
-static bool8 AreLegendariesInSootopolisPreventingEncounters(void)
+bool8 AreLegendariesInSootopolisPreventingEncounters(void)
 {
     if (gSaveBlock1Ptr->location.mapGroup != MAP_GROUP(MAP_SOOTOPOLIS_CITY)
      || gSaveBlock1Ptr->location.mapNum != MAP_NUM(MAP_SOOTOPOLIS_CITY))
@@ -778,7 +778,7 @@ bool8 StandardWildEncounter(u16 curMetatileBehavior, u16 prevMetatileBehavior)
             else if (TryGenerateWildMon(gBattlePyramidWildMonHeaders[headerId].encounterTypes[timeOfDay].landMonsInfo, WILD_AREA_LAND, WILD_CHECK_KEEN_EYE) != TRUE)
                 return FALSE;
 
-            GenerateBattlePyramidWildMon();
+            GenerateBattlePyramidWildMon(SPECIES_NONE);
             BattleSetup_StartWildBattle();
             return TRUE;
         }
@@ -955,7 +955,7 @@ bool8 SweetScentWildEncounter(void)
             if (TryGenerateWildMon(gBattlePyramidWildMonHeaders[headerId].encounterTypes[timeOfDay].landMonsInfo, WILD_AREA_LAND, 0) != TRUE)
                 return FALSE;
 
-            GenerateBattlePyramidWildMon();
+            GenerateBattlePyramidWildMon(SPECIES_NONE);
             BattleSetup_StartWildBattle();
             return TRUE;
         }
@@ -1170,7 +1170,7 @@ bool8 UpdateRepelCounter(void)
     return FALSE;
 }
 
-static bool8 IsWildLevelAllowedByRepel(u8 wildLevel)
+bool8 IsWildLevelAllowedByRepel(u8 wildLevel)
 {
     u8 i;
 
@@ -1189,7 +1189,7 @@ static bool8 IsWildLevelAllowedByRepel(u8 wildLevel)
     return FALSE;
 }
 
-static bool8 IsAbilityAllowingEncounter(u8 level)
+bool8 IsAbilityAllowingEncounter(u8 level)
 {
     enum Ability ability;
 
@@ -1362,19 +1362,19 @@ bool8 TryDoDoubleWildBattle(void)
     u32 sweetScentOdds;
 
     if (GetSafariZoneFlag()
-      || (B_DOUBLE_WILD_REQUIRE_2_MONS == TRUE && GetMonsStateToDoubles() != PLAYER_HAS_TWO_USABLE_MONS))
+      || (WE_DOUBLE_WILD_REQUIRE_2_MONS == TRUE && GetMonsStateToDoubles() != PLAYER_HAS_TWO_USABLE_MONS))
         return FALSE;
     if (FollowerNPCIsBattlePartner() && FNPC_FLAG_PARTNER_WILD_BATTLES != 0
      && (FNPC_FLAG_PARTNER_WILD_BATTLES == FNPC_ALWAYS || FlagGet(FNPC_FLAG_PARTNER_WILD_BATTLES)) && FNPC_NPC_FOLLOWER_WILD_BATTLE_VS_2 == TRUE)
         return TRUE;
-    else if (B_FLAG_FORCE_DOUBLE_WILD != 0 && FlagGet(B_FLAG_FORCE_DOUBLE_WILD))
+    else if (WE_FLAG_FORCE_DOUBLE_WILD != 0 && FlagGet(WE_FLAG_FORCE_DOUBLE_WILD))
         return TRUE;
 
     randResult = Random() % 100 + 1;
     sweetScentOdds = sSweetScentDoubleChance;
     sSweetScentDoubleChance = 0;
 
-    if ((B_DOUBLE_WILD_CHANCE != 0 && randResult <= B_DOUBLE_WILD_CHANCE)
+    if ((WE_DOUBLE_WILD_CHANCE != 0 && randResult <= WE_DOUBLE_WILD_CHANCE)
      || (sweetScentOdds != 0 && randResult <= sweetScentOdds))
         return TRUE;
 

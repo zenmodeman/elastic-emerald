@@ -3873,6 +3873,9 @@ static void DebugAction_PCBag_ClearBoxes(u8 taskId)
 
 // *******************************
 // Actions Sound
+#define START_MUS 350
+#define END_MUS MUS_RG_TEACHY_TV_MENU
+#define END_SE SE_SUDOWOODO_SHAKE
 static const u8 *const sBGMNames[END_MUS - START_MUS + 1];
 static const u8 *const sSENames[END_SE + 1];
 

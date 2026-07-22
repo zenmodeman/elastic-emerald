@@ -1366,6 +1366,16 @@ void HasMovesToRelearn(void)
         gSpecialVar_Result = FALSE;
 }
 
+void Special_HasMoveToRelearn(void)
+{
+    HasMovesToRelearn();
+}
+
+bool32 HasMoveToRelearn(struct BoxPokemon *boxMon, enum MoveRelearnerStates state)
+{
+    return sRelearnTypes[state].hasMoveToRelearn(boxMon);
+}
+
 bool32 CanBoxMonRelearnAnyMove(struct BoxPokemon *boxMon)
 {
     for (u32 i = MOVE_RELEARNER_LEVEL_UP_MOVES; i < MOVE_RELEARNER_COUNT; i++)

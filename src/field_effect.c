@@ -29,6 +29,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "task.h"
+#include "trainer.h"
 #include "trainer_pokemon_sprites.h"
 #include "trig.h"
 #include "util.h"
@@ -882,6 +883,13 @@ void FieldEffectScript_LoadFadedPalette(u8 **script)
     UpdateSpritePaletteWithWeather(paletteSlot, ShouldFieldEffectBeFogBlended(*script));
 }
 
+void FieldEffect_LoadFadedPalette(struct SpritePalette *palette, enum ColorMapType colorMap)
+{
+    u32 paletteSlot = LoadSpritePalette(palette);
+    SetPaletteColorMapType(paletteSlot + 16, colorMap);
+    UpdateSpritePaletteWithWeather(paletteSlot, TRUE);
+}
+
 void FieldEffectScript_LoadPalette(u8 **script)
 {
     struct SpritePalette *palette = (struct SpritePalette *)FieldEffectScript_ReadWord(script);
@@ -982,8 +990,9 @@ bool8 FieldEffectActiveListContains(u8 id)
     return FALSE;
 }
 
-u8 CreateTrainerSprite(u8 trainerSpriteID, s16 x, s16 y, u8 subpriority, u8 *buffer)
+u8 CreateTrainerSprite(enum TrainerPicID trainerPicId, s16 x, s16 y, u8 subpriority, u8 *buffer)
 {
+    struct CompressedSpriteSheet spriteSheet;
     struct SpriteTemplate spriteTemplate;
     bool32 alloced = FALSE;
 
@@ -994,13 +1003,16 @@ u8 CreateTrainerSprite(u8 trainerSpriteID, s16 x, s16 y, u8 subpriority, u8 *buf
         alloced = TRUE;
     }
 
-    LoadSpritePalette(&gTrainerSprites[trainerSpriteID].palette);
-    LoadCompressedSpriteSheetOverrideBuffer(&gTrainerSprites[trainerSpriteID].frontPic, buffer);
+    spriteSheet.data = GetTrainerFrontPicData(trainerPicId);
+    spriteSheet.size = TRAINER_PIC_SIZE;
+    spriteSheet.tag = GetTrainerPicTag(trainerPicId, TRUE);
+    LoadSpritePaletteWithTag(GetTrainerFrontPicPalette(trainerPicId), GetTrainerPicTag(trainerPicId, TRUE));
+    LoadCompressedSpriteSheetOverrideBuffer(&spriteSheet, buffer);
     if (alloced)
         Free(buffer);
 
-    spriteTemplate.tileTag = gTrainerSprites[trainerSpriteID].frontPic.tag;
-    spriteTemplate.paletteTag = gTrainerSprites[trainerSpriteID].palette.tag;
+    spriteTemplate.tileTag = GetTrainerPicTag(trainerPicId, TRUE);
+    spriteTemplate.paletteTag = GetTrainerPicTag(trainerPicId, TRUE);
     spriteTemplate.oam = &sOam_64x64;
     spriteTemplate.anims = gDummySpriteAnimTable;
     spriteTemplate.images = NULL;
@@ -1011,8 +1023,8 @@ u8 CreateTrainerSprite(u8 trainerSpriteID, s16 x, s16 y, u8 subpriority, u8 *buf
 
 static void UNUSED LoadTrainerGfx_TrainerCard(u8 gender, u16 palOffset, u8 *dest)
 {
-    DecompressDataWithHeaderVram(gTrainerSprites[gender].frontPic.data, dest);
-    LoadPalette(gTrainerSprites[gender].palette.data, palOffset, PLTT_SIZE_4BPP);
+    DecompressDataWithHeaderVram(GetTrainerFrontPicData(gender), dest);
+    LoadPalette(GetTrainerFrontPicPalette(gender), palOffset, PLTT_SIZE_4BPP);
 }
 
 u8 AddNewGameBirchObject(s16 x, s16 y, u8 subpriority)
