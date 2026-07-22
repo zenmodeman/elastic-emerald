@@ -12,6 +12,7 @@
 #include "battle_gimmick.h"
 #include "bg.h"
 #include "data.h"
+#include "debug.h"
 #include "item.h"
 #include "item_menu.h"
 #include "link.h"
@@ -395,7 +396,7 @@ static void HandleInputChooseAction(enum BattlerId battler)
     {
         SwapHpBarsWithHpText();
     }
-    else if (DEBUG_BATTLE_MENU == TRUE && JOY_NEW(SELECT_BUTTON))
+    else if (IsDebugModeEnabled() && JOY_NEW(SELECT_BUTTON))
     {
         BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_DEBUG, 0);
         BtlController_Complete(battler);
