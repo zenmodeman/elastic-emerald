@@ -7,7 +7,7 @@ The inventory was built from local `git log --author=zenmodeman`, current symbol
 ## Documentation Status
 
 - Latest commit whose applicable project changes have been reviewed for this dossier: `f82a47022b` (`More test additions`).
-- Applicable work after that boundary: uncommitted fifth regression batch adding twenty form-normalization, mode, progression, ability, and move-interaction scenarios, plus the Damp and Metal Rush runtime repairs described below.
+- Applicable work after that boundary: uncommitted fifth regression batch adding twenty form-normalization, mode, progression, ability, and move-interaction scenarios, plus the Damp and Metal Rush runtime repairs described below; the current FRLG integration merge resolution is also uncommitted.
 - Maintenance rule: before advancing the commit above, review every applicable change through the proposed boundary. Keep not-yet-committed work labeled as uncommitted, and replace that label with its real commit once committed.
 
 ## Tag-Partitioned Custom Implementation Trace
@@ -83,6 +83,9 @@ Major systems and mechanics:
 - Documentation: feature summary/dossier commits now fold into this README.
 
 ## Merge Regression And Rework Ledger
+
+- The uncommitted FRLG integration merge collides with Elastic Emerald identifiers in shared numeric namespaces. Preserve `BATTLE_TYPE_AI_VS_AI` on bit 28 and assign FRLG ghost/Pokédude battles bits 29/30; preserve trainer mode 14 for continue-after-loss and assign early-rival mode 15; retain Emerald's custom flags `0x20`-`0x2B` in the non-FRLG branch; and place the Ruin Maniac palette after the imported FRLG palette range. Future resolutions should search these namespaces for duplicate numeric values rather than accepting either side wholesale.
+- The FRLG integration updates `tools/mapjson` so every layout record requires a nonempty `layout_version`. Older Elastic Emerald layouts must explicitly use `"layout_version": "emerald"`; otherwise map-source generation stops before compilation with `Value for 'layout_version' cannot be empty.`
 
 Confirmed later-merge breakages already repaired in history:
 
