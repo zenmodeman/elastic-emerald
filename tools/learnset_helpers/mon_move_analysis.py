@@ -3,8 +3,8 @@
 
 Examples:
     python tools/learnset_helpers/mon_move_analysis.py Bulbasaur
-    python tools/learnset_helpers/mon_move_analysis.py "Mr. Mime" --format csv
-    python tools/learnset_helpers/mon_move_analysis.py Rotom_Wash --format json
+    python tools/learnset_helpers/mon_move_analysis.py "Mr. Mime" -o mr_mime.md
+    python tools/learnset_helpers/mon_move_analysis.py Rotom_Wash
 
 When a move occurs in more than one game, its reported level is the arithmetic
 mean of the levels in those games.  The source data lives in porymoves_files
@@ -14,14 +14,13 @@ beside this script.
 from __future__ import annotations
 
 import argparse
-import csv
 import difflib
 import json
 import re
 import sys
 from collections import defaultdict
+from io import StringIO
 from pathlib import Path
-from typing import TextIO
 
 try:
     from .type_move_report import (
@@ -56,6 +55,7 @@ except ImportError:  # Direct script execution.
 
 
 DEFAULT_DATA_DIR = Path(__file__).resolve().parent / "porymoves_files"
+DEFAULT_OUTPUT = Path("move_analysis_output_instance.md")
 
 
 def normalize_name(name: str) -> str:
@@ -193,6 +193,115 @@ def build_comparisons(
     return results
 
 
+def evolution_relatives(
+    species: str, species_info: dict[str, SpeciesInfo]
+) -> tuple[set[str], set[str]]:
+    """Return all ancestors and descendants without including sibling branches."""
+    children = {name: set(info.evolutions) & species_info.keys() for name, info in species_info.items()}
+    parents: dict[str, set[str]] = {name: set() for name in species_info}
+    for parent, evolved_forms in children.items():
+        for evolved in evolved_forms:
+            parents[evolved].add(parent)
+
+    def transitive(start: str, graph: dict[str, set[str]]) -> set[str]:
+        found: set[str] = set()
+        pending = list(graph.get(start, set()))
+        while pending:
+            relative = pending.pop()
+            if relative not in found:
+                found.add(relative)
+                pending.extend(graph.get(relative, set()) - found)
+        return found
+
+    return transitive(species, parents), transitive(species, children)
+
+
+def delta_entries(moves_to_relatives: dict[str, set[str]]) -> list[dict[str, object]]:
+    return [
+        {"move": move, "relatives": sorted(relatives)}
+        for move, relatives in sorted(
+            moves_to_relatives.items(), key=lambda item: display_constant(item[0], "MOVE_")
+        )
+    ]
+
+
+def build_evolution_deltas(
+    species: SpeciesInfo,
+    species_info: dict[str, SpeciesInfo],
+    pools: dict[str, dict[str, set[str]]],
+) -> dict[str, object]:
+    """Aggregate move differences against every ancestor and descendant once per move."""
+    ancestors, descendants = evolution_relatives(species.name, species_info)
+    ancestors &= pools.keys()
+    descendants &= pools.keys()
+    classes: dict[str, dict[str, list[dict[str, object]]]] = {}
+    for move_class in MOVE_CLASSES:
+        target_moves = pools[species.name][move_class]
+        evolution_only: dict[str, set[str]] = defaultdict(set)
+        missing_from_evolutions: dict[str, set[str]] = defaultdict(set)
+        pre_evolution_only: dict[str, set[str]] = defaultdict(set)
+        new_since_pre_evolutions: dict[str, set[str]] = defaultdict(set)
+        for relative in descendants:
+            relative_moves = pools[relative][move_class]
+            for move in relative_moves - target_moves:
+                evolution_only[move].add(relative)
+            for move in target_moves - relative_moves:
+                missing_from_evolutions[move].add(relative)
+        for relative in ancestors:
+            relative_moves = pools[relative][move_class]
+            for move in relative_moves - target_moves:
+                pre_evolution_only[move].add(relative)
+            for move in target_moves - relative_moves:
+                new_since_pre_evolutions[move].add(relative)
+        classes[move_class] = {
+            "evolution_only": delta_entries(evolution_only),
+            "missing_from_evolutions": delta_entries(missing_from_evolutions),
+            "pre_evolution_only": delta_entries(pre_evolution_only),
+            "new_since_pre_evolutions": delta_entries(new_since_pre_evolutions),
+        }
+    return {
+        "pre_evolutions": sorted(ancestors),
+        "evolutions": sorted(descendants),
+        "move_classes": classes,
+    }
+
+
+def build_evolution_moves(
+    species: SpeciesInfo,
+    species_info: dict[str, SpeciesInfo],
+    games: dict[str, dict],
+) -> list[dict[str, object]]:
+    """Collect every level-0 move seen anywhere in the connected evolution family."""
+    family = evolution_line(species.name, species_info)
+    moves_by_species: dict[str, dict[str, set[str]]] = {
+        relative: defaultdict(set) for relative in family
+    }
+    for game_name, game_data in games.items():
+        for source_species, learnset in game_data.items():
+            relative = normalize_name(source_species)
+            if relative not in moves_by_species:
+                continue
+            for entry in learnset.get("LevelMoves", []):
+                if int(entry["Level"]) == 0 and entry["Move"] != "MOVE_UNAVAILABLE":
+                    moves_by_species[relative][entry["Move"]].add(game_name)
+
+    return [
+        {
+            "species": relative,
+            "moves": [
+                {"move": move, "games": sorted(game_names)}
+                for move, game_names in sorted(
+                    moves_by_species[relative].items(),
+                    key=lambda item: display_constant(item[0], "MOVE_"),
+                )
+            ],
+        }
+        for relative in sorted(
+            family, key=lambda name: (qualified_name(species_info[name]), name)
+        )
+    ]
+
+
 def format_level(level: float) -> str:
     return str(int(level)) if level.is_integer() else f"{level:.2f}".rstrip("0")
 
@@ -201,84 +310,164 @@ def analysis_move_list(entries: list[dict[str, object]]) -> str:
     if not entries:
         return "None."
     return ", ".join(
-        f"{display_constant(entry['move'], 'MOVE_')} "
+        f"`{display_constant(entry['move'], 'MOVE_')}` "
         f"({entry['learners']}/{entry['cohort_size']}, {entry['prevalence']:.1%})"
         for entry in entries
     ) + "."
 
 
-def write_text(
+def relative_names(names: list[str], species_info: dict[str, SpeciesInfo]) -> str:
+    if not names:
+        return "None"
+    return ", ".join(qualified_name(species_info[name]) for name in names)
+
+
+def delta_move_list(entries: list[dict[str, object]], species_info: dict[str, SpeciesInfo]) -> str:
+    if not entries:
+        return "None."
+    return ", ".join(
+        f"`{display_constant(entry['move'], 'MOVE_')}` "
+        f"({relative_names(entry['relatives'], species_info)})"
+        for entry in entries
+    ) + "."
+
+
+def render_markdown(
     species: SpeciesInfo,
     moves: list[dict[str, object]],
+    evolution_moves: list[dict[str, object]],
+    evolution_deltas: dict[str, object],
     comparisons: list[dict[str, object]],
-    output: TextIO,
-) -> None:
-    print(f"Move analysis for {qualified_name(species)} ({type_label(species.types)})", file=output)
+    species_info: dict[str, SpeciesInfo],
+    *,
+    include_standouts: bool = True,
+) -> str:
+    output = StringIO()
+    print(f"# Move analysis: {qualified_name(species)}", file=output)
     print(file=output)
-    print("Combined historical level-up moves", file=output)
-    print(f"{'Average level':>13}  {'Move':<28} Games", file=output)
-    print(f"{'-' * 13}  {'-' * 28} {'-' * 5}", file=output)
+    print(f"**Type:** {type_label(species.types)}  ", file=output)
+    print(f"**Fully evolved:** {'Yes' if species.fully_evolved else 'No'}", file=output)
+    print(file=output)
+    print("## Combined historical level-up moves", file=output)
+    print(file=output)
+    print("| Average level | Move | Game appearances |", file=output)
+    print("|---:|---|---:|", file=output)
     for item in moves:
         level = format_level(item["average_level"])
         print(
-            f"{level:>13}  {display_name(item['move'], 'MOVE_'):<28} {item['appearances']}",
+            f"| {level} | {display_name(item['move'], 'MOVE_')} | {item['appearances']} |",
             file=output,
         )
     print(file=output)
-    print("Standout move comparisons", file=output)
-    if not species.fully_evolved:
-        excluded = comparisons[0]["excluded_evolution_line"]
+    print("## Evolution moves across the evolutionary line", file=output)
+    print(file=output)
+    print(
+        "Any move recorded at level 0 in at least one bundled game is included. "
+        "Repeated records are deduplicated by Pokémon, move, and game.",
+        file=output,
+    )
+    for relative_data in evolution_moves:
+        relative = species_info[relative_data["species"]]
+        print(file=output)
+        print(f"### {qualified_name(relative)}", file=output)
+        print(file=output)
+        if not relative_data["moves"]:
+            print("None recorded.", file=output)
+            continue
+        for entry in relative_data["moves"]:
+            print(
+                f"- `{display_constant(entry['move'], 'MOVE_')}` — "
+                f"{', '.join(entry['games'])}",
+                file=output,
+            )
+    print(file=output)
+    print("## Evolution-relative move deltas", file=output)
+    print(file=output)
+    print(
+        "Moves are deduplicated across relatives. Parentheses identify every ancestor or "
+        "descendant responsible for that delta.",
+        file=output,
+    )
+    print(file=output)
+    print(
+        f"**Pre-evolutions compared:** {relative_names(evolution_deltas['pre_evolutions'], species_info)}  ",
+        file=output,
+    )
+    print(
+        f"**Evolutions compared:** {relative_names(evolution_deltas['evolutions'], species_info)}",
+        file=output,
+    )
+    class_labels = {
+        "level_up": "Level-up moves",
+        "egg": "Egg moves",
+        "total": "Total learnset",
+    }
+    for move_class in MOVE_CLASSES:
+        deltas = evolution_deltas["move_classes"][move_class]
+        print(file=output)
+        print(f"### {class_labels[move_class]}", file=output)
+        print(file=output)
         print(
-            "Excluded evolution line: "
-            + ", ".join(display_name(name) for name in excluded)
-            + ".",
+            "- **Present in evolutions but not this Pokémon:** "
+            + delta_move_list(deltas["evolution_only"], species_info),
             file=output,
         )
-    for comparison in comparisons:
+        print(
+            "- **Present in this Pokémon but missing from evolutions:** "
+            + delta_move_list(deltas["missing_from_evolutions"], species_info),
+            file=output,
+        )
+        print(
+            "- **Present in pre-evolutions but not this Pokémon:** "
+            + delta_move_list(deltas["pre_evolution_only"], species_info),
+            file=output,
+        )
+        print(
+            "- **New on this Pokémon relative to pre-evolutions:** "
+            + delta_move_list(deltas["new_since_pre_evolutions"], species_info),
+            file=output,
+        )
+    if include_standouts:
         print(file=output)
-        print(f"{comparison['group']} cohort ({comparison['cohort_size']} Pokemon)", file=output)
-        if not comparison["cohort_size"]:
-            print("  No eligible fully evolved comparison Pokemon.", file=output)
-            continue
-        for move_class, label in (
-            ("level_up", "Level-up (< 1/6)"),
-            ("egg", "Egg (< 1/6)"),
-            ("total", "Total learnset (< 1/4)"),
-        ):
-            print(f"  {label}: {analysis_move_list(comparison['moves'][move_class])}", file=output)
-
-
-def write_csv(
-    species: str,
-    moves: list[dict[str, object]],
-    comparisons: list[dict[str, object]],
-    output: TextIO,
-) -> None:
-    writer = csv.writer(output)
-    writer.writerow(["pokemon", "move", "average_level", "appearances", "game_levels"])
-    for item in moves:
-        game_levels = ";".join(
-            f"{entry['game']}:{entry['level']}" for entry in item["games"]
-        )
-        writer.writerow(
-            [species, item["move"], format_level(item["average_level"]), item["appearances"], game_levels]
-        )
-    writer.writerow([])
-    writer.writerow(["comparison", "move_class", "move", "learners", "cohort_size", "prevalence"])
-    for comparison in comparisons:
-        for move_class, entries in comparison.get("moves", {}).items():
-            for entry in entries:
-                writer.writerow(
-                    [comparison["group"], move_class, entry["move"], entry["learners"],
-                     entry["cohort_size"], f"{entry['prevalence']:.6f}"]
+        print("## Standout move comparisons", file=output)
+        if not species.fully_evolved:
+            excluded = comparisons[0]["excluded_evolution_line"]
+            print(file=output)
+            print(
+                "**Excluded evolution line:** "
+                + ", ".join(display_name(name) for name in excluded)
+                + ".",
+                file=output,
+            )
+        for comparison in comparisons:
+            print(file=output)
+            print(
+                f"### {comparison['group']} cohort ({comparison['cohort_size']} Pokémon)",
+                file=output,
+            )
+            if not comparison["cohort_size"]:
+                print(file=output)
+                print("No eligible fully evolved comparison Pokémon.", file=output)
+                continue
+            print(file=output)
+            for move_class, label in (
+                ("level_up", "Level-up (< 1/6)"),
+                ("egg", "Egg (< 1/6)"),
+                ("total", "Total learnset (< 1/4)"),
+            ):
+                print(
+                    f"- **{label}:** {analysis_move_list(comparison['moves'][move_class])}",
+                    file=output,
                 )
+    return output.getvalue()
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("pokemon", help="Pokemon name, such as Bulbasaur or Mr. Mime")
     parser.add_argument(
-        "--format", choices=("text", "json", "csv"), default="text", help="output format"
+        "-o", "--output", type=Path,
+        help="Markdown result filename (default: move_analysis_output_instance.md)",
     )
     parser.add_argument(
         "--data-dir", type=Path, default=DEFAULT_DATA_DIR, help=argparse.SUPPRESS
@@ -301,29 +490,33 @@ def main() -> int:
         species = species_info[species_name]
         pools = collect_move_pools(games)
         moves = combine_moves(source_species_name, games)
+        evolution_moves = build_evolution_moves(species, species_info, games)
+        evolution_deltas = build_evolution_deltas(species, species_info, pools)
         comparisons = build_comparisons(species, species_info, pools)
     except (FileNotFoundError, json.JSONDecodeError, LookupError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
-    if args.format == "json":
-        json.dump(
-            {
-                "pokemon": species.name,
-                "display_name": qualified_name(species),
-                "types": species.types,
-                "fully_evolved": species.fully_evolved,
-                "level_up_moves": moves,
-                "standout_comparisons": comparisons,
-            },
-            sys.stdout,
-            indent=2,
-        )
-        print()
-    elif args.format == "csv":
-        write_csv(species.name, moves, comparisons, sys.stdout)
-    else:
-        write_text(species, moves, comparisons, sys.stdout)
+    markdown = render_markdown(
+        species,
+        moves,
+        evolution_moves,
+        evolution_deltas,
+        comparisons,
+        species_info,
+    )
+    output_path = args.output or DEFAULT_OUTPUT
+    if output_path.suffix.lower() != ".md":
+        print("error: output path must end in .md", file=sys.stderr)
+        return 2
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(markdown, encoding="utf-8")
+    except OSError as error:
+        print(f"error: could not write {output_path}: {error}", file=sys.stderr)
+        return 1
+
+    print(f"Success: move analysis written to {output_path}")
     return 0
 
 
