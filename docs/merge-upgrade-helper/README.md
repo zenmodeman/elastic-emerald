@@ -7,7 +7,7 @@ The inventory was built from local `git log --author=zenmodeman`, current symbol
 ## Documentation Status
 
 - Latest commit whose applicable project changes have been reviewed for this dossier: `f82a47022b` (`More test additions`).
-- Applicable work after that boundary: uncommitted fifth regression batch adding twenty form-normalization, mode, progression, ability, and move-interaction scenarios, plus the Damp and Metal Rush runtime repairs described below; the current FRLG integration merge resolution is also uncommitted.
+- Applicable work after that boundary: uncommitted fifth regression batch adding twenty form-normalization, mode, progression, ability, and move-interaction scenarios, plus the Damp and Metal Rush runtime repairs described below; the FRLG integration and current Expansion 1.15.0 merge resolutions are also uncommitted.
 - Maintenance rule: before advancing the commit above, review every applicable change through the proposed boundary. Keep not-yet-committed work labeled as uncommitted, and replace that label with its real commit once committed.
 
 ## Tag-Partitioned Custom Implementation Trace
@@ -551,7 +551,7 @@ The first 1.15 merge build exposed several custom systems whose callers or data 
 - Trainer PP Ups, NPC center tutors, resource-mode relearner/tutor costs, and the item-clause party special.
 - Restricted-level and monotype evolution conditions, including a missing break that previously fell through to the region condition.
 - Tier-point calculation/party enforcement, egg/evolution auto-box support, and monotype lookup in `src/elastic_emerald_pokemon.c`, separated from the heavily rewritten upstream Pokémon core.
-- Drain Douse and Damp healing battle-script commands/flow, plus illuminating and Merry move-end effects.
+- Drain Douse and Damp healing battle-script commands/flow, plus Honey Gather, illuminating, and Merry move-end effects. The delayed stolen-item handoff still blocks Pickup, Harvest, Recycle, and Symbiosis until the item is assigned at move end.
 - The custom AI/runtime ability-block query used by repeated-switch immunity prediction, adapted to the 1.15 move-resolution APIs.
 - Correct player backsprite palettes during battle intros. `gTrainerBacksprites` uses full `enum TrainerPicID` designated indices, so callers must not subtract `TRAINER_PIC_FRONT_COUNT`. Load the backsprite palette once through `LoadSpritePalette`, select it with `IndexOfSpritePaletteTag` in every trainer draw/slide path, and do not allocate a duplicate palette during the ball throw; fixed OBJ palette slots can be overwritten or reused during the intro.
 - Correct HP-bar colors for low-HP, low-level battlers. When maximum HP is below the 48-pixel health-bar width, the animated current value is Q24.8 fixed-point and must be converted before passing it to `GetHPBarLevel`; comparing the raw value makes damaged low-level opponents appear permanently green.

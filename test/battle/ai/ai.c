@@ -820,7 +820,7 @@ AI_SINGLE_BATTLE_TEST("AI won't use thawing moves if target is frozen unless it 
     PARAMETRIZE { status = STATUS1_FROSTBITE;   aiMove = MOVE_EMBER;    aiFlags = AI_FLAG_CHECK_BAD_MOVE; }
 
     GIVEN {
-        WITH_CONFIG(B_BURN_HIT_THAW, GEN_6); // In Gen 5, non-Fire burning moves didn't cause thawing
+        WITH_CONFIG(B_HIT_THAW, GEN_6); // In Gen 5, moves that thawed the user didn't thaw the target
         ASSUME(GetMoveType(MOVE_EMBER) == TYPE_FIRE);
         ASSUME(GetMoveCategory(MOVE_TACKLE) == DAMAGE_CATEGORY_PHYSICAL);
         ASSUME(GetMoveCategory(MOVE_WATER_GUN) == DAMAGE_CATEGORY_SPECIAL);
@@ -1247,7 +1247,7 @@ AI_SINGLE_BATTLE_TEST("AI's Explosion scoring handles multiple move effects and 
     PARAMETRIZE { genConfig = GEN_4; passesChance = EXPLOSION_MAXIMUM_CHANCE; }
     PASSES_RANDOMLY(passesChance, 100, RNG_AI_CONSIDER_EXPLOSION);
     GIVEN {
-        WITH_CONFIG(CONFIG_EXPLOSION_DEFENSE, genConfig);
+        WITH_CONFIG(B_EXPLOSION_DEFENSE, genConfig);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
         PLAYER(SPECIES_CLOYSTER) { Level(44); HP(68); Moves(MOVE_DETECT, MOVE_RAZOR_SHELL, MOVE_ICICLE_SPEAR, MOVE_ICE_SHARD); }
         OPPONENT(SPECIES_GLALIE_MEGA) { Level(44); HP(1); Ability(ABILITY_REFRIGERATE); Friendship(MAX_FRIENDSHIP); Moves(MOVE_RETURN, MOVE_EARTHQUAKE, MOVE_EXPLOSION, MOVE_CRUNCH); }

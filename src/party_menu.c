@@ -102,10 +102,10 @@ enum {
     MENU_TRADE1,
     MENU_TRADE2,
     MENU_LEVEL_UP_MOVES,
-	MENU_EGG_MOVES,
+    MENU_EGG_MOVES,
     MENU_TM_MOVES,
     MENU_TUTOR_MOVES,
-	MENU_SUB_MOVES,
+    MENU_SUB_MOVES,
     MENU_TOSS,
     MENU_CATALOG_BULB,
     MENU_CATALOG_OVEN,
@@ -2105,25 +2105,25 @@ static void ResetHPTaskData(u8 taskId, u8 caseId, u32 hp)
 
     switch (caseId) // always zero
     {
-        case 0:
-            tHP = hp;
-            tStartHP = hp;
-            break;
-        case 1:
-            tMaxHP = hp;
-            break;
-        case 2:
-            tHPIncrement = hp;
-            break;
-        case 3:
-            tHPToAdd = hp;
-            break;
-        case 4:
-            tPartyId = hp;
-            break;
-        case 5:
-            SetTaskFuncWithFollowupFunc(taskId, Task_PartyMenuModifyHP, (TaskFunc)hp); // >casting hp as a taskfunc
-            break;
+    case 0:
+        tHP = hp;
+        tStartHP = hp;
+        break;
+    case 1:
+        tMaxHP = hp;
+        break;
+    case 2:
+        tHPIncrement = hp;
+        break;
+    case 3:
+        tHPToAdd = hp;
+        break;
+    case 4:
+        tPartyId = hp;
+        break;
+    case 5:
+        SetTaskFuncWithFollowupFunc(taskId, Task_PartyMenuModifyHP, (TaskFunc)hp); // >casting hp as a taskfunc
+        break;
     }
 }
 
@@ -6539,59 +6539,59 @@ void ItemUseCB_Fusion(u8 taskId, TaskFunc taskFunc)
     PlaySE(SE_SELECT);
     switch (IsFusionMon(species))
     {
-        case FALSE: // Cancel if Not a Fuse Mon
+    case FALSE: // Cancel if Not a Fuse Mon
+        break;
+    case UNFUSE_MON:
+        if (task->fusionType == FUSE_MON) // Cancel if An already Fused Mon Is Chosen For The Second Fusion Mon
             break;
-        case UNFUSE_MON:
-            if (task->fusionType == FUSE_MON) // Cancel if An already Fused Mon Is Chosen For The Second Fusion Mon
-                break;
-            if (gPlayerPartyCount == PARTY_SIZE)
+        if (gPlayerPartyCount == PARTY_SIZE)
+        {
+            gPartyMenuUseExitCallback = FALSE;
+            DisplayPartyMenuMessage(gText_YourPartysFull, TRUE);
+            ScheduleBgCopyTilemapToVram(2);
+            task->func = taskFunc;
+            return;
+        }
+        for (i = 0; itemFusion[i].fusionStorageIndex != FUSION_TERMINATOR; i++) // Loops through fusion table and checks if the mon can be unfused
+        {
+            if (gPokemonStoragePtr->fusions[itemFusion[i].fusionStorageIndex].level == 0)
+                continue;
+            if (itemFusion[i].itemId == gSpecialVar_ItemId && GetMonData(&gPokemonStoragePtr->fusions[itemFusion[i].fusionStorageIndex], MON_DATA_SPECIES) == itemFusion[i].targetSpecies2)
             {
-                gPartyMenuUseExitCallback = FALSE;
-                DisplayPartyMenuMessage(gText_YourPartysFull, TRUE);
-                ScheduleBgCopyTilemapToVram(2);
-                task->func = taskFunc;
+                task->fusionType = UNFUSE_MON;
+                task->firstFusion = species;
+                task->firstFusionSlot = gPartyMenu.slotId;
+                task->storageIndex = itemFusion[i].fusionStorageIndex;
+                task->fusionResult = itemFusion[i].targetSpecies1;
+                task->unfuseSecondMon = itemFusion[i].targetSpecies2;
+                task->tExtraMoveHandling = itemFusion[i].extraMoveHandling;
+                task->forgetMove = itemFusion[i].fusionMove;
+                TryItemUseFusionChange(taskId, taskFunc);
                 return;
             }
-            for (i = 0; itemFusion[i].fusionStorageIndex != FUSION_TERMINATOR; i++) // Loops through fusion table and checks if the mon can be unfused
-            {
-                if (gPokemonStoragePtr->fusions[itemFusion[i].fusionStorageIndex].level == 0)
-                    continue;
-                if (itemFusion[i].itemId == gSpecialVar_ItemId && GetMonData(&gPokemonStoragePtr->fusions[itemFusion[i].fusionStorageIndex], MON_DATA_SPECIES) == itemFusion[i].targetSpecies2)
-                {
-                    task->fusionType = UNFUSE_MON;
-                    task->firstFusion = species;
-                    task->firstFusionSlot = gPartyMenu.slotId;
-                    task->storageIndex = itemFusion[i].fusionStorageIndex;
-                    task->fusionResult = itemFusion[i].targetSpecies1;
-                    task->unfuseSecondMon = itemFusion[i].targetSpecies2;
-                    task->tExtraMoveHandling = itemFusion[i].extraMoveHandling;
-                    task->forgetMove = itemFusion[i].fusionMove;
-                    TryItemUseFusionChange(taskId, taskFunc);
-                    return;
-                }
-            }
+        }
+        break;
+    case FUSE_MON:
+        if (task->fusionType == FUSE_MON) // Cancel If Second Mon is Another First Fusion Mon
             break;
-        case FUSE_MON:
-            if (task->fusionType == FUSE_MON) // Cancel If Second Mon is Another First Fusion Mon
-                break;
-            for (i = 0; itemFusion[i].fusionStorageIndex != FUSION_TERMINATOR; i++) // Run through the Fusion table for each species and check if the item matches one of the entries
+        for (i = 0; itemFusion[i].fusionStorageIndex != FUSION_TERMINATOR; i++) // Run through the Fusion table for each species and check if the item matches one of the entries
+        {
+            if (itemFusion[i].itemId == gSpecialVar_ItemId)
             {
-                if (itemFusion[i].itemId == gSpecialVar_ItemId)
-                {
-                    task->fusionType = FUSE_MON;
-                    task->firstFusion = species;
-                    task->firstFusionSlot = gPartyMenu.slotId;
-                    task->storageIndex = itemFusion[i].fusionStorageIndex;
-                    task->func = Task_HandleChooseMonInput;
-                    gPartyMenuUseExitCallback = FALSE;
-                    sPartyMenuInternal->exitCallback = NULL;
-                    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
-                    DisplayPartyMenuStdMessage(PARTY_MSG_CHOOSE_SECOND_FUSION);
-                    return;
-                }
+                task->fusionType = FUSE_MON;
+                task->firstFusion = species;
+                task->firstFusionSlot = gPartyMenu.slotId;
+                task->storageIndex = itemFusion[i].fusionStorageIndex;
+                task->func = Task_HandleChooseMonInput;
+                gPartyMenuUseExitCallback = FALSE;
+                sPartyMenuInternal->exitCallback = NULL;
+                PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
+                DisplayPartyMenuStdMessage(PARTY_MSG_CHOOSE_SECOND_FUSION);
+                return;
             }
-            break;
-        case SECOND_FUSE_MON:
+        }
+        break;
+    case SECOND_FUSE_MON:
             if (task->fusionType != FUSE_MON) // Cancel if Secondary Fusion Mon Chosen First
                 break;
             for (i = 0; itemFusion[i].fusionStorageIndex != FUSION_TERMINATOR; i++) // run through fusion table and check if the fusion works
@@ -6660,32 +6660,19 @@ static void SpriteCB_FormChangeIconMosaic(struct Sprite *sprite)
 static void Task_TryItemUseFormChange(u8 taskId)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
-    u16 targetSpecies;
     struct Sprite *icon = &gSprites[sPartyMenuBoxes[gPartyMenu.slotId].monSpriteId];
 
     switch (gTasks[taskId].tState)
     {
     case 0:
-        targetSpecies = gTasks[taskId].tTargetSpecies;
-        SetMonData(mon, MON_DATA_SPECIES, &targetSpecies);
-        TrySetDayLimitToFormChange(mon);
-        CalculateMonStats(mon);
-        gTasks[taskId].tState++;
-        break;
-    case 1:
-        gTasks[taskId].tState++;
-        break;
-    case 2:
         PlaySE(SE_M_TELEPORT);
         gTasks[taskId].tState++;
         break;
-    case 3:
-        targetSpecies = gTasks[taskId].tTargetSpecies;
-
+    case 1:
         if (gTasks[taskId].tAnimWait == 0)
         {
             FreeAndDestroyMonIconSprite(icon);
-            CreatePartyMonIconSpriteParameterized(targetSpecies, GetMonData(mon, MON_DATA_PERSONALITY), FALSE, &sPartyMenuBoxes[gPartyMenu.slotId], 1);
+            CreatePartyMonIconSpriteParameterized(gTasks[taskId].tTargetSpecies, GetMonData(mon, MON_DATA_PERSONALITY), FALSE, &sPartyMenuBoxes[gPartyMenu.slotId], 1);
             icon->oam.mosaic = TRUE;
             icon->data[0] = 10;
             icon->data[1] = 1;
@@ -6693,17 +6680,14 @@ static void Task_TryItemUseFormChange(u8 taskId)
             icon->callback = SpriteCB_FormChangeIconMosaic;
             SetGpuReg(REG_OFFSET_MOSAIC, (icon->data[0] << 12) | (icon->data[1] << 8));
         }
-
         if (++gTasks[taskId].tAnimWait == 60)
             gTasks[taskId].tState++;
-
         break;
-    case 4:
-        targetSpecies = gTasks[taskId].tTargetSpecies;
-        PlayCry_Normal(targetSpecies, 0);
+    case 2:
+        PlayCry_Normal(gTasks[taskId].tTargetSpecies, 0);
         gTasks[taskId].tState++;
         break;
-    case 5:
+    case 3:
         if (IsCryFinished())
         {
             GetMonNickname(mon, gStringVar1);
@@ -6714,7 +6698,7 @@ static void Task_TryItemUseFormChange(u8 taskId)
         }
 
         break;
-    case 6:
+    case 4:
         if (!IsPartyMenuTextPrinterActive())
         {
             if (gSpecialVar_ItemId == ITEM_ROTOM_CATALOG) //only for Rotom currently
@@ -6735,7 +6719,7 @@ static void Task_TryItemUseFormChange(u8 taskId)
             gTasks[taskId].tState++;
         }
         break;
-    case 7:
+    case 5:
         gTasks[taskId].func = (void *)GetWordTaskArg(taskId, tNextFunc);
         break;
     }
@@ -6744,16 +6728,14 @@ static void Task_TryItemUseFormChange(u8 taskId)
 bool32 TryItemUseFormChange(u8 taskId, TaskFunc task)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
-    u32 currentSpecies = GetMonData(mon, MON_DATA_SPECIES);
-    u32 targetSpecies = GetFormChangeTargetSpecies(mon, FORM_CHANGE_ITEM_USE, gSpecialVar_ItemId);
 
-    if (targetSpecies != currentSpecies)
+    if (TryFormChange(mon, FORM_CHANGE_ITEM_USE))
     {
         gPartyMenuUseExitCallback = TRUE;
         SetWordTaskArg(taskId, tNextFunc, (u32)task);
         gTasks[taskId].func = Task_TryItemUseFormChange;
         gTasks[taskId].tState = 0;
-        gTasks[taskId].tTargetSpecies = targetSpecies;
+        gTasks[taskId].tTargetSpecies = GetMonData(mon, MON_DATA_SPECIES);
         gTasks[taskId].tAnimWait = 0;
         return TRUE;
     }
@@ -6793,19 +6775,17 @@ void ItemUseCB_RotomCatalog(u8 taskId, TaskFunc task)
 bool32 TryMultichoiceFormChange(u8 taskId)
 {
     struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
-    u32 currentSpecies = GetMonData(mon, MON_DATA_SPECIES);
-    u32 targetSpecies = GetFormChangeTargetSpecies(mon, FORM_CHANGE_ITEM_USE_MULTICHOICE, gSpecialVar_ItemId);
 
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
 
-    if (targetSpecies != currentSpecies)
+    if (TryFormChange(mon, FORM_CHANGE_ITEM_USE_MULTICHOICE))
     {
         gPartyMenuUseExitCallback = TRUE;
         SetWordTaskArg(taskId, tNextFunc, (u32)Task_ClosePartyMenuAfterText);
         gTasks[taskId].func = Task_TryItemUseFormChange;
         gTasks[taskId].tState = 0;
-        gTasks[taskId].tTargetSpecies = targetSpecies;
+        gTasks[taskId].tTargetSpecies = GetMonData(mon, MON_DATA_SPECIES);
         gTasks[taskId].tAnimWait = 0;
         return TRUE;
     }
@@ -6886,15 +6866,12 @@ static void CursorCb_ChangeAbility(u8 taskId)
 
 void TryItemHoldFormChange(struct Pokemon *mon, s8 slotId)
 {
-    u32 currentSpecies = GetMonData(mon, MON_DATA_SPECIES);
-    u32 targetSpecies = GetFormChangeTargetSpecies(mon, FORM_CHANGE_ITEM_HOLD, 0);
-    if (targetSpecies != currentSpecies)
+    if (TryFormChange(mon, FORM_CHANGE_ITEM_HOLD))
     {
-        PlayCry_NormalNoDucking(targetSpecies, 0, CRY_VOLUME_RS, CRY_VOLUME_RS);
-        SetMonData(mon, MON_DATA_SPECIES, &targetSpecies);
+        u32 species = GetMonData(mon, MON_DATA_SPECIES);
+        PlayCry_NormalNoDucking(species, 0, CRY_VOLUME_RS, CRY_VOLUME_RS);
         FreeAndDestroyMonIconSprite(&gSprites[sPartyMenuBoxes[slotId].monSpriteId]);
-        CreatePartyMonIconSpriteParameterized(targetSpecies, GetMonData(mon, MON_DATA_PERSONALITY), FALSE, &sPartyMenuBoxes[slotId], 1);
-        CalculateMonStats(mon);
+        CreatePartyMonIconSpriteParameterized(species, GetMonData(mon, MON_DATA_PERSONALITY), FALSE, &sPartyMenuBoxes[slotId], 1);
         UpdatePartyMonHeldItemSprite(mon, &sPartyMenuBoxes[slotId]);
     }
 }
@@ -8137,7 +8114,7 @@ void IsLastMonThatKnowsSurf(void)
 static void CursorCb_ChangeLevelUpMoves(u8 taskId)
 {
     PlaySE(SE_SELECT);
-	gMoveRelearnerState = MOVE_RELEARNER_LEVEL_UP_MOVES;
+    gMoveRelearnerState = MOVE_RELEARNER_LEVEL_UP_MOVES;
     gRelearnMode = RELEARN_MODE_PARTY_MENU;
     gLastViewedMonIndex = gPartyMenu.slotId;
     gSpecialVar_0x8004 = gLastViewedMonIndex;
@@ -8148,7 +8125,7 @@ static void CursorCb_ChangeLevelUpMoves(u8 taskId)
 static void CursorCb_ChangeEggMoves(u8 taskId)
 {
     PlaySE(SE_SELECT);
-	gMoveRelearnerState = MOVE_RELEARNER_EGG_MOVES;
+    gMoveRelearnerState = MOVE_RELEARNER_EGG_MOVES;
     gRelearnMode = RELEARN_MODE_PARTY_MENU;
     gLastViewedMonIndex = gPartyMenu.slotId;
     gSpecialVar_0x8004 = gLastViewedMonIndex;
@@ -8159,7 +8136,7 @@ static void CursorCb_ChangeEggMoves(u8 taskId)
 static void CursorCb_ChangeTMMoves(u8 taskId)
 {
     PlaySE(SE_SELECT);
-	gMoveRelearnerState = MOVE_RELEARNER_TM_MOVES;
+    gMoveRelearnerState = MOVE_RELEARNER_TM_MOVES;
     gRelearnMode = RELEARN_MODE_PARTY_MENU;
     gLastViewedMonIndex = gPartyMenu.slotId;
     gSpecialVar_0x8004 = gLastViewedMonIndex;
@@ -8170,7 +8147,7 @@ static void CursorCb_ChangeTMMoves(u8 taskId)
 static void CursorCb_ChangeTutorMoves(u8 taskId)
 {
     PlaySE(SE_SELECT);
-	gMoveRelearnerState = MOVE_RELEARNER_TUTOR_MOVES;
+    gMoveRelearnerState = MOVE_RELEARNER_TUTOR_MOVES;
     gRelearnMode = RELEARN_MODE_PARTY_MENU;
     gLastViewedMonIndex = gPartyMenu.slotId;
     gSpecialVar_0x8004 = gLastViewedMonIndex;
