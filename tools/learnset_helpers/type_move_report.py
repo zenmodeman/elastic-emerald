@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate a Markdown move report for fully evolved Pokemon of one type.
 
-Standout moves are moves learned by exactly one Pokemon in the relevant
+Standout moves fall below the configured prevalence threshold in the relevant
 comparison group. Move pools are unions across all bundled porymoves game data.
 
 Examples:
@@ -39,6 +39,7 @@ class SpeciesInfo:
     display_name: str
     types: tuple[str, ...]
     fully_evolved: bool
+    evolutions: tuple[str, ...]
 
 
 def normalize_constant(value: str, prefix: str = "") -> str:
@@ -71,6 +72,26 @@ def iter_initializer_blocks(content: str):
         yield match.group(1), content[match.end() : position - 1]
 
 
+def extract_evolutions(body: str) -> tuple[str, ...]:
+    """Extract target species only from the EVOLUTION(...) field."""
+    match = re.search(r"\.evolutions\s*=\s*EVOLUTION\(", body)
+    if not match:
+        return ()
+    depth = 1
+    position = match.end()
+    while position < len(body) and depth:
+        if body[position] == "(":
+            depth += 1
+        elif body[position] == ")":
+            depth -= 1
+        position += 1
+    if depth:
+        raise ValueError("unterminated EVOLUTION expression")
+    return tuple(
+        dict.fromkeys(re.findall(r"\bSPECIES_([A-Z0-9_]+)\b", body[match.end() : position - 1]))
+    )
+
+
 def load_species_info(species_dir: Path) -> dict[str, SpeciesInfo]:
     paths = sorted(species_dir.glob("gen_*_families.h"))
     if not paths:
@@ -100,13 +121,33 @@ def load_species_info(species_dir: Path) -> dict[str, SpeciesInfo]:
             )
             types = tuple(dict.fromkeys(types))
             name_match = name_pattern.search(body)
+            evolutions = extract_evolutions(body)
             result[species] = SpeciesInfo(
                 name=species,
                 display_name=name_match.group(1) if name_match else display_constant(species),
                 types=types,
                 fully_evolved=".evolutions" not in body,
+                evolutions=evolutions,
             )
     return result
+
+
+def evolution_line(species: str, species_info: dict[str, SpeciesInfo]) -> set[str]:
+    """Return the connected evolution family containing species."""
+    neighbors: dict[str, set[str]] = {name: set() for name in species_info}
+    for name, info in species_info.items():
+        for evolved in info.evolutions:
+            if evolved in neighbors:
+                neighbors[name].add(evolved)
+                neighbors[evolved].add(name)
+    family = {species}
+    pending = [species]
+    while pending:
+        current = pending.pop()
+        for relative in neighbors.get(current, set()) - family:
+            family.add(relative)
+            pending.append(relative)
+    return family
 
 
 def load_game_data(data_dir: Path) -> dict[str, dict]:
@@ -125,10 +166,11 @@ def load_game_data(data_dir: Path) -> dict[str, dict]:
 
 def collect_move_pools(games: dict[str, dict]) -> dict[str, dict[str, set[str]]]:
     """Union each species' moves across games, deduplicated by move constant."""
-    species_names = {species for game in games.values() for species in game}
+    species_names = {normalize_constant(species) for game in games.values() for species in game}
     pools = {species: {kind: set() for kind in MOVE_CLASSES} for species in species_names}
     for game in games.values():
-        for species, learnset in game.items():
+        for source_species, learnset in game.items():
+            species = normalize_constant(source_species)
             for move_class, keys in METHOD_KEYS.items():
                 for key in keys:
                     for entry in learnset.get(key, []):

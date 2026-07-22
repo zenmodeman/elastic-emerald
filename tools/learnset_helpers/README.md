@@ -1,22 +1,25 @@
 # Learnset helpers
 
-## Combined historical level-up moves
+## Single-Pokémon move analysis
 
-`combined_level_up_moves.py` reads every `porymoves_files/*.json` game dataset and
-combines the level-up learnsets for one Pokemon. If a move appears in multiple
-datasets, the script reports the arithmetic mean of its levels. Moves that only
-appear once retain that level.
+`mon_move_analysis.py` reads every `porymoves_files/*.json` game dataset and
+combines the level-up learnsets for one Pokémon. If a move appears in multiple
+datasets, the script reports the arithmetic mean of its levels. It also reports
+standout level-up, egg, and total-learnset moves relative to fully evolved
+Pokémon of each of the Pokémon's types and its exact dual type, when applicable.
 
 Run it from anywhere; its default data path is relative to the script:
 
 ```sh
-python3 tools/learnset_helpers/combined_level_up_moves.py Bulbasaur
-python3 tools/learnset_helpers/combined_level_up_moves.py "Mr. Mime" --format csv
-python3 tools/learnset_helpers/combined_level_up_moves.py Rotom_Wash --format json
+python3 tools/learnset_helpers/mon_move_analysis.py Bulbasaur
+python3 tools/learnset_helpers/mon_move_analysis.py "Mr. Mime" --format csv
+python3 tools/learnset_helpers/mon_move_analysis.py Rotom_Wash --format json
 ```
 
 Text output is sorted by average level and then move name. CSV and JSON output
 also include the source game/level pairs, making individual values easy to audit.
+For a Pokémon that can still evolve, its entire connected evolution line is
+excluded from the fully evolved comparison cohorts.
 
 ## Type move reports
 
