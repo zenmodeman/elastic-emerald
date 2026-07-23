@@ -3,7 +3,7 @@
 ## Documentation status
 
 - **Last documented code commit:** `a2ef6c4bde` ("Add not already target guard for fast KO logic").
-- **Uncommitted AI changes covered by this document:** The post-1.16.2 repair restores the narrow `AI_FLAG_HEAVY_SWITCHING` fast-KO rule, its regular-smart defensive-drop exception, weather-setter preservation, and repeated-switch immunity prediction on the rewritten upstream switching APIs. Eligible-reserve fallback is used when upstream does not pre-rank a suitable switch-in. Repeated-switch prediction uses both the stint counter and revealed party switch-in history, retains the standard prediction RNG gate, and avoids re-running active-target damage comparison after predicted-target scoring. Smart trainers continue to use prediction and assumptions instead of upstream omniscience and PP-stall knowledge. Test adaptations also cover the upstream `AI_FLAG_ASSUME_STAB` knowledge path and unified stat-change contracts for Rock Tomb and Coaching. All of these AI changes are currently uncommitted.
+- **Uncommitted AI changes covered by this document:** The post-1.16.2 repair restores the narrow `AI_FLAG_HEAVY_SWITCHING` fast-KO rule, its regular-smart defensive-drop exception, weather-setter preservation, and repeated-switch immunity prediction on the rewritten upstream switching APIs. Eligible-reserve fallback is used when upstream does not pre-rank a suitable switch-in. Repeated-switch prediction uses both the stint counter and revealed party switch-in history, retains the standard prediction RNG gate, and avoids re-running active-target damage comparison after predicted-target scoring. Smart trainers continue to use prediction and assumptions instead of upstream omniscience and PP-stall knowledge. Test adaptations also cover the upstream `AI_FLAG_ASSUME_STAB` knowledge path and unified stat-change contracts for Rock Tomb and Coaching. The custom move Befuddle reuses the modeled random-status additional effect, giving its damaging spread attack paralysis, poison, or sleep possibilities without introducing a separate AI-only approximation. All of these AI changes are currently uncommitted.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -97,6 +97,10 @@ Key commit: `6cf60d5e69`.
 Guaranteed stat drops and other secondary effects are scored only when they are useful and the target is expected to survive. The system accounts for Sheer Force suppressing applicable effects and uses stat-specific predicates rather than awarding a uniform utility bonus.
 
 Key commits: `93531a3cea`, `6e5f7576f7`.
+
+### Befuddle status modeling
+
+Befuddle is a 70-power special Bug-type spread move with a guaranteed additional effect that independently attempts to paralyze, poison, or put each foe to sleep. It uses the existing per-target random-status handling shared with Dire Claw, so status immunities, Protect, and Sleep Clause remain aligned with ordinary damaging-move execution. This addition is currently uncommitted.
 
 ## 3. Imperfect-information switching and counterplay
 

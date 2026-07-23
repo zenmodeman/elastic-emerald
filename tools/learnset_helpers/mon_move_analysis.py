@@ -113,11 +113,14 @@ def combine_moves(species: str, games: dict[str, dict]) -> list[dict[str, object
 
     combined = []
     for move, entries in occurrences.items():
-        average = sum(level for _, level in entries) / len(entries)
+        levels = [level for _, level in entries]
+        average = sum(levels) / len(levels)
         combined.append(
             {
                 "move": move,
                 "average_level": average,
+                "minimum_level": min(levels),
+                "maximum_level": max(levels),
                 "appearances": len(entries),
                 "games": [{"game": game, "level": level} for game, level in entries],
             }
@@ -350,12 +353,13 @@ def render_markdown(
     print(file=output)
     print("## Combined historical level-up moves", file=output)
     print(file=output)
-    print("| Average level | Move | Game appearances |", file=output)
-    print("|---:|---|---:|", file=output)
+    print("| Average level | Minimum level | Maximum level | Move | Game appearances |", file=output)
+    print("|---:|---:|---:|---|---:|", file=output)
     for item in moves:
         level = format_level(item["average_level"])
         print(
-            f"| {level} | {display_name(item['move'], 'MOVE_')} | {item['appearances']} |",
+            f"| {level} | {item['minimum_level']} | {item['maximum_level']} | "
+            f"{display_name(item['move'], 'MOVE_')} | {item['appearances']} |",
             file=output,
         )
     print(file=output)

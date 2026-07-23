@@ -380,14 +380,13 @@ MOVE_IMPRISON,
 MOVE_INGRAIN,
 MOVE_ION_DELUGE,
 MOVE_LASER_FOCUS,
-MOVE_LUCKY_CHANT,
+// MOVE_LUCKY_CHANT, Turn Lucky Chant into a TM
 MOVE_MAGIC_ROOM,
 MOVE_MEAN_LOOK,
 MOVE_MIST,
 MOVE_MUD_SLAP,
 MOVE_MUD_SPORT,
 MOVE_ODOR_SLEUTH,
-MOVE_PLAY_NICE,
 MOVE_QUASH,
 MOVE_QUICK_GUARD,
 MOVE_REFRESH,
@@ -410,22 +409,113 @@ MOVE_WATER_SPORT,
 
 const u16 gTechTutor1Badge[] = {
 MOVE_COPYCAT,
-MOVE_GROWL,
-MOVE_LEER,
-MOVE_TAIL_WHIP,
 MOVE_UPPER_HAND,
 MOVE_TWISTER,
 };
 
 const u16 gTechTutor2Badge[] = {
-    MOVE_SWITCHEROO, //Trick is a TM, but Switcheroo being less common gets to be Tech Tutor
-    MOVE_LIFE_DEW,
     MOVE_POWER_SHIFT,
     MOVE_POWER_TRICK,
+    MOVE_ATTRACT,
 };
 
 const u16 gTechTutor3Badge[] = {
     MOVE_ME_FIRST,
-    MOVE_CONFIDE,
+    //Turn Life Dew into a TM
+    // MOVE_CONFIDE, Turn Confide into a TM
 };
 
+const u16 gTechTutor5Badge[] = {
+    MOVE_SYNCHRONOISE,
+    MOVE_DREAM_EATER,
+    MOVE_FOCUS_PUNCH,
+}
+
+const u61 gTechTutor6Badge[] = {
+    MOVE_HYPER_BEAM,
+    MOVE_GIGA_IMPACT,
+    MOVE_FRENZY_PLANT,
+    MOVE_HYDRO_CANNON,
+    MOVE_BLAST_BURN,
+    MOVE_STEEL_ROLLER,
+}
+
+//In Resource Mode specifically, the center will also have the option to trade a certain TM for some adjacent moves, as an alternative to spending points
+
+//Trades for an Aerial Ace TM
+const u16 gAerialAceTradeTutor[] = {
+    MOVE_SHOCK_WAVE,
+    MOVE_DISARMING_VOICE,
+    MOVE_FEINT_ATTACK,
+    MOVE_MAGICAL_LEAF,
+    MOVE_MAGNET_BOMB,
+}
+
+//Trades for a Dragon Tail TM
+const u16 gDragonTailTradeTutor[] = {
+    MOVE_ROAR,
+    MOVE_WHIRLWIND,
+    MOVE_CIRCLE_THROW,
+}
+
+//Trades for a Confide TM
+const u16 gConfideTradeTutor[] = {
+    MOVE_GROWL,
+    MOVE_LEER,
+    MOVE_TAIL_WHIP,
+    MOVE_PLAY_NICE,
+}
+
+//Trades for a Charm TM
+const u16 gCharmTradeTutor[] = {
+    MOVE_EERIE_IMPULSE,
+    MOVE_SCREECH,
+    MOVE_FAKE_TEARS,
+    MOVE_METAL_SOUND,
+}
+
+//Trades for an Icy Wind TM
+const u16 gIcyWindTradeTutor[] = {    
+    MOVE_BULLDOZE,
+    MOVE_ELECTROWEB,
+    MOVE_SNARL,
+    MOVE_STRUGGLE_BUG,
+    MOVE_BREAKING_SWIPE,
+}
+
+//Trades for a Shadow Ball TM
+const u16 gShadowBallTradeTutor[] = {
+    MOVE_DARK_PULSE,
+    MOVE_FLASH_CANNON, 
+    MOVE_DAZZLING_GLEAM,
+    MOVE_DRAGON_PULSE,
+    MOVE_ALLURING_VOICE,
+    MOVE_PSYSHOCK,
+    MOVE_TRI_ATTACK,
+}
+
+//Trades for a Dragon Claw TM
+const u16 gDragonClawTradeTutor[] = {
+    MOVE_CRUNCH,
+    MOVE_X_SCISSOR,
+    MOVE_DRILL_RUN,
+    MOVE_IRON_HEAD,
+    MOVE_POISON_JAB,
+    MOVE_ZEN_HEADBUTT,
+}
+
+//Trades for a Lunge TM
+const u16 gLungeTradeTutor[] = {
+    MOVE_SKITTER_SMACK,
+    MOVE_MYSTICAL_FIRE,
+}
+
+//Trades for a Temper Flare TM
+const u16 gTemperFlareTradeTutor[] = {
+    MOVE_BRINE,
+    MOVE_STOMPING_TANTRUM,
+    MOVE_HEX,
+    MOVE_VENOSHOCK,
+    MOVE_BURNING_JEALOUSY,
+    MOVE_LASH_OUT
+}

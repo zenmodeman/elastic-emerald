@@ -4,7 +4,8 @@
 
 `mon_move_analysis.py` reads every `porymoves_files/*.json` game dataset and
 combines the level-up learnsets for one Pokémon. If a move appears in multiple
-datasets, the script reports the arithmetic mean of its levels. It also reports
+datasets, the script reports the arithmetic mean plus the minimum and maximum
+observed levels. Level 0 evolution-move records count toward those ranges. It also reports
 standout level-up, egg, and total-learnset moves relative to fully evolved
 Pokémon of each of the Pokémon's types and its exact dual type, when applicable.
 Immediately after the combined level-up table, it reports deduplicated move

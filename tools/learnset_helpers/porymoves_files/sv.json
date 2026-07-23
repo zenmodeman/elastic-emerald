@@ -1075,7 +1075,7 @@
     "PreEvoMoves": [],
     "TMMoves": [],
     "EggMoves": [],
-    "TutorMoves": ["MOVE_CAMOUFLAGE", "MOVE_HEAL_BLOCK"]
+    "TutorMoves": ["MOVE_CAMOUFLAGE", "MOVE_HEAL_BLOCK", "MOVE_ALLURING_VOICE"]
   },
   "WEEDLE": {
     "LevelMoves": [],

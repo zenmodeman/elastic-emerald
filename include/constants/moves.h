@@ -908,6 +908,7 @@ enum __attribute__((packed)) Move
     // Add any custom moves here, not further down!
     MOVE_DRAIN_DOUSE = MOVES_COUNT_GEN9,
     MOVE_METAL_RUSH,
+    MOVE_BEFUDDLE,
 
     MOVES_COUNT,
 

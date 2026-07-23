@@ -251,7 +251,6 @@ static const struct LevelUpMove sBlastoiseLevelUpLearnset[] = {
     LEVEL_UP_MOVE(64, MOVE_WAVE_CRASH),
 
     LEVEL_UP_MOVE(74, MOVE_SHELL_SMASH),
-ddd
     LEVEL_UP_END};
 #endif // P_FAMILY_SQUIRTLE
 
@@ -270,6 +269,7 @@ static const struct LevelUpMove sMetapodLevelUpLearnset[] = {
 
 static const struct LevelUpMove sButterfreeLevelUpLearnset[] = {
     LEVEL_UP_MOVE(0, MOVE_GUST),
+    LEVEL_UP_MOVE(1, MOVE_SAFEGUARD),
     LEVEL_UP_MOVE(1, MOVE_HARDEN),
     LEVEL_UP_MOVE(1, MOVE_TACKLE),
     LEVEL_UP_MOVE(1, MOVE_STRING_SHOT),
@@ -283,15 +283,27 @@ static const struct LevelUpMove sButterfreeLevelUpLearnset[] = {
     LEVEL_UP_MOVE(17, MOVE_PSYBEAM),
     LEVEL_UP_MOVE(19, MOVE_WHIRLWIND),
     LEVEL_UP_MOVE(22, MOVE_SILVER_WIND),
+    LEVEL_UP_MOVE(25, MOVE_CAPTIVATE),
+    LEVEL_UP_MOVE(28, MOVE_AIR_SLASH),
+    LEVEL_UP_MOVE(32, MOVE_BEFUDDLE), //New signature move based on the G-Max move
+    LEVEL_UP_MOVE(36, MOVE_RAGE_POWDER), 
+    LEVEL_UP_MOVE(39, MOVE_BUG_BUZZ),
+    LEVEL_UP_MOVE(42, MOVE_TAILWIND),
+    LEVEL_UP_MOVE(46, MOVE_HURRICANE), //Level-up addition
+    LEVEL_UP_MOVE(50, MOVE_POLLEN_PUFF), //Level-up addition
 
-    // WIP 2
-    LEVEL_UP_MOVE(25, MOVE_AIR_SLASH),
-    LEVEL_UP_MOVE(28, MOVE_SAFEGUARD),
-    LEVEL_UP_MOVE(32, MOVE_BUG_BUZZ),
-    LEVEL_UP_MOVE(36, MOVE_TAILWIND),
-    LEVEL_UP_MOVE(40, MOVE_RAGE_POWDER),
-    LEVEL_UP_MOVE(70, MOVE_QUIVER_DANCE),
     LEVEL_UP_END};
+
+/*
+| Average level | Minimum level | Maximum level | Move | Game appearances |
+|---:|---:|---:|---|---:|
+| 33.09 | 30 | 41 | Tailwind | 11 |
+| 34.13 | 25 | 40 | Safeguard | 15 |
+| 35.75 | 34 | 40 | Rage Powder | 8 |
+| 37.08 | 31 | 42 | Bug Buzz | 12 |
+| 38 | 36 | 40 | Captivate | 9 |
+| 43.11 | 22 | 47 | Quiver Dance | 9 |
+*/
 #endif // P_FAMILY_CATERPIE
 
 #if P_FAMILY_WEEDLE

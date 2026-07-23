@@ -15244,7 +15244,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Lets out a charming cry\n"
             "that cannot be evaded."),
         .effect = EFFECT_HIT,
-        .power = 40,
+        .power = 55, //Buffed in power but slightly less than the usual bypass accuracy moves because it is spread
         .type = TYPE_FAIRY,
         .accuracy = 0,
         .pp = 15,
@@ -22025,6 +22025,29 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             .moveEffect = MOVE_EFFECT_METAL_RUSH,
             .chance = 100,
         }),
+    },
+
+    [MOVE_BEFUDDLE] =
+    {
+        .name = COMPOUND_STRING("Befuddle"),
+        .description = COMPOUND_STRING(
+            "A bewildering attack that\n"
+            "poisons, paralyzes, or sleeps."),
+        .effect = EFFECT_HIT,
+        .power = 70,
+        .type = TYPE_BUG,
+        .accuracy = 100,
+        .pp = 10,
+        .target = TARGET_BOTH,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_DIRE_CLAW,
+            .chance = 100,
+        }),
+        .contestEffect = CONTEST_EFFECT_STARTLE_PREV_MONS,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .battleAnimScript = gBattleAnimMove_GMaxBefuddle,
     },
 
     // Z-Moves
