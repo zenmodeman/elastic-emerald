@@ -2703,15 +2703,38 @@ BattleScript_EffectStruggle::
 	incrementgamestat GAME_STAT_USED_STRUGGLE
 	goto BattleScript_EffectHit
 
-BattleScript_EffectMudSport::
-BattleScript_EffectWaterSport::
+BattleScript_EffectSportCommon::
 	attackcanceler
 	settypebasedhalvers BattleScript_ButItFailed
 	attackanimation
 	waitanimation
 	printfromtable gSportsUsedStringIds
 	waitmessage B_WAIT_TIME_LONG
+	return
+
+BattleScript_EffectMudSport::
+	call BattleScript_EffectSportCommon
 	goto BattleScript_MoveEnd
+
+BattleScript_EffectWaterSport::
+	call BattleScript_EffectSportCommon
+	call BattleScript_TryDampHealingLoop
+	goto BattleScript_MoveEnd
+
+BattleScript_TryDampHealingLoop:
+	savetarget
+	setbyte gBattlerTarget, 0
+BattleScript_TryDampLoop_Iter:
+	trydamphealing BS_TARGET, BattleScript_TryDampHealingLoop_Increment
+	jumpifability BS_TARGET, ABILITY_DAMP, BattleScript_TryDampHealingLoop_Execute
+BattleScript_TryDampHealingLoop_Increment:
+	addbyte gBattlerTarget, 0x1
+	jumpifbytenotequal gBattlerTarget, gBattlersCount, BattleScript_TryDampLoop_Iter
+	restoretarget
+	return
+BattleScript_TryDampHealingLoop_Execute:
+	call BattleScript_DampHealingEffect
+	goto BattleScript_TryDampHealingLoop_Increment
 
 BattleScript_EffectCamouflage::
 	attackcanceler
@@ -6340,10 +6363,18 @@ BattleScript_MerryActivates::
 
 BattleScript_HoneyGatherActivates::
 	pause 5
-	tryrecycleitem BattleScript_HoneyGatherActivatesEnd
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_XFOUNDONEY
 	waitmessage B_WAIT_TIME_LONG
 	tryactivateitem BS_ATTACKER, ACTIVATION_ON_PICK_UP
 BattleScript_HoneyGatherActivatesEnd:
-	end2
+	return
+
+BattleScript_DampHealingEffect::
+	pause B_WAIT_TIME_SHORT
+	call BattleScript_AbilityPopUp
+	printstring STRINGID_DAMP_HEALING
+	waitmessage B_WAIT_TIME_LONG
+	healthbarupdate BS_EFFECT_BATTLER, PASSIVE_HP_UPDATE
+	datahpupdate BS_EFFECT_BATTLER, PASSIVE_HP_UPDATE
+	return

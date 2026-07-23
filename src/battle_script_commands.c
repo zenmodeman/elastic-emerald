@@ -2291,6 +2291,29 @@ static bool32 DoesSubstituteBlockMoveEffectOnTarget(enum BattlerId battlerAtk, e
 
 void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum MoveEffect moveEffect, const u8 *battleScript, enum SetMoveEffectFlags effectFlags)
 {
+    bool32 metalRush = moveEffect == MOVE_EFFECT_METAL_RUSH;
+
+    if (moveEffect == MOVE_EFFECT_METAL_RUSH)
+    {
+        u32 weight = GetBattlerWeight(battlerAtk);
+
+        if (weight <= 500)
+        {
+            effectBattler = battlerAtk;
+            moveEffect = MOVE_EFFECT_STAT_PLUS;
+        }
+        else if (weight >= 2000)
+        {
+            moveEffect = MOVE_EFFECT_STAT_MINUS;
+            if (GetBattlerAbility(effectBattler) == ABILITY_MIRROR_ARMOR)
+                effectBattler = battlerAtk;
+        }
+        else
+        {
+            moveEffect = MOVE_EFFECT_NONE;
+        }
+    }
+
     enum Ability abilities[MAX_BATTLERS_COUNT] = {ABILITY_NONE};
     abilities[battlerAtk] = GetBattlerAbility(battlerAtk);
     if (battlerAtk != effectBattler)
@@ -2298,7 +2321,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
 
     s32 i;
     bool32 primary = effectFlags & EFFECT_PRIMARY;
-    bool32 certain = effectFlags & EFFECT_CERTAIN;
+    bool32 certain = (effectFlags & EFFECT_CERTAIN) && !metalRush;
     bool32 affectsUser = (battlerAtk == effectBattler);
 
     if (gSpecialStatuses[gBattlerAttacker].parentalBondState == PARENTAL_BOND_1ST_HIT
@@ -2480,23 +2503,33 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
     case MOVE_EFFECT_STAT_PLUS:
     case MOVE_EFFECT_STAT_MINUS:
     {
-        // Better to pass the addtional effect as an argument but for now that works
-        const struct AdditionalEffect *effect = GetMoveAdditionalEffectById(gCurrentMove, gBattleStruct->additionalEffectsCounter);
-
-        for (enum Stat i = STAT_ATK; i < NUM_BATTLE_STATS; i++)
+        if (metalRush)
         {
-            enum Stat stat = sAccurateStatOrder[i];
-            s32 stage = GetStatStage(stat, effect);
+            if (moveEffect == MOVE_EFFECT_STAT_PLUS)
+                SetStatChange(effectBattler, STAT_SPEED, 1);
+            else
+                SetStatChange(effectBattler, STAT_DEF, -1);
+        }
+        else
+        {
+            // Better to pass the additional effect as an argument but for now that works.
+            const struct AdditionalEffect *effect = GetMoveAdditionalEffectById(gCurrentMove, gBattleStruct->additionalEffectsCounter);
 
-            if (stage == 0)
-                continue;
+            for (enum Stat i = STAT_ATK; i < NUM_BATTLE_STATS; i++)
+            {
+                enum Stat stat = sAccurateStatOrder[i];
+                s32 stage = GetStatStage(stat, effect);
 
-            if (effect->moveEffect == MOVE_EFFECT_STAT_MINUS)
-                stage = -1 * stage;
+                if (stage == 0)
+                    continue;
 
-            SetStatChange(effectBattler, stat, stage);
-            if (effectFlags & EFFECT_ON_SIDE)
-                SetStatChange(BATTLE_PARTNER(effectBattler), stat, stage);
+                if (effect->moveEffect == MOVE_EFFECT_STAT_MINUS)
+                    stage = -1 * stage;
+
+                SetStatChange(effectBattler, stat, stage);
+                if (effectFlags & EFFECT_ON_SIDE)
+                    SetStatChange(BATTLE_PARTNER(effectBattler), stat, stage);
+            }
         }
 
         BattleScriptPush(battleScript);
@@ -3831,6 +3864,31 @@ static bool32 BattleTypeAllowsExp(void)
         return TRUE;
 }
 
+static bool32 IsLevelCapExpExceptionTrainer(u16 trainerId)
+{
+    switch (trainerId)
+    {
+    case TRAINER_SIDNEY:
+    case TRAINER_PHOEBE:
+    case TRAINER_GLACIA:
+    case TRAINER_DRAKE:
+    case TRAINER_WALLACE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+static bool32 ShouldApplyLevelCapToBattleExp(void)
+{
+    if (!FlagGet(FLAG_LEVEL_CAP))
+        return FALSE;
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+        return TRUE;
+    return !IsLevelCapExpExceptionTrainer(TRAINER_BATTLE_PARAM.opponentA)
+        && !IsLevelCapExpExceptionTrainer(TRAINER_BATTLE_PARAM.opponentB);
+}
+
 static u32 GetMonHoldEffect(struct Pokemon *mon)
 {
     enum HoldEffect holdEffect;
@@ -3975,6 +4033,12 @@ static void Cmd_getexp(void)
                 if (B_MAX_LEVEL_EV_GAINS >= GEN_5)
                     MonGainEVs(&gParties[B_TRAINER_PLAYER][*expMonId], gBattleMons[gBattlerFainted].species);
             }
+            else if (ShouldApplyLevelCapToBattleExp()
+                  && GetMonData(&gParties[B_TRAINER_PLAYER][*expMonId], MON_DATA_LEVEL) >= GetCurrentLevelCap(HARD_CAP))
+            {
+                gBattleScripting.getexpState = 5;
+                gBattleStruct->battlerExpReward = 0;
+            }
             else
             {
                 // Music change in a wild battle after fainting opposing Pokémon.
@@ -4004,7 +4068,7 @@ static void Cmd_getexp(void)
 
                     ApplyExperienceMultipliers(&gBattleStruct->battlerExpReward, *expMonId, gBattlerFainted);
 
-                    if (B_EXP_CAP_TYPE == EXP_CAP_HARD && gBattleStruct->battlerExpReward != 0)
+                    if (ShouldApplyLevelCapToBattleExp() && gBattleStruct->battlerExpReward != 0)
                     {
                         enum GrowthRate growthRate = gSpeciesInfo[GetMonData(&gParties[B_TRAINER_PLAYER][*expMonId], MON_DATA_SPECIES)].growthRate;
                         u32 currentExp = GetMonData(&gParties[B_TRAINER_PLAYER][*expMonId], MON_DATA_EXP);
@@ -4012,8 +4076,16 @@ static void Cmd_getexp(void)
 
                         if (GetMonData(&gParties[B_TRAINER_PLAYER][*expMonId], MON_DATA_LEVEL) >= levelCap)
                             gBattleStruct->battlerExpReward = 0;
+                        else if (currentExp >= gExperienceTables[growthRate][levelCap])
+                            gBattleStruct->battlerExpReward = 0;
                         else if (gExperienceTables[growthRate][levelCap] < currentExp + gBattleStruct->battlerExpReward)
                             gBattleStruct->battlerExpReward = gExperienceTables[growthRate][levelCap] - currentExp;
+                    }
+
+                    if (gBattleStruct->battlerExpReward == 0)
+                    {
+                        gBattleScripting.getexpState = 5;
+                        break;
                     }
 
                     if (IsTradedMon(&gParties[B_TRAINER_PLAYER][*expMonId]))
@@ -5339,6 +5411,8 @@ static void Cmd_openpartyscreen(void)
 
             if (GetBattlerPosition(battler) == B_POSITION_PLAYER_LEFT && gBattleResults.playerSwitchesCounter < 255)
                 gBattleResults.playerSwitchesCounter++;
+            if (!IsDoubleBattle() && IsOnPlayerSide(battler))
+                gAiBattleData->playerSwitchesDuringAiStint++;
 
             if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
             {
@@ -9584,7 +9658,17 @@ static void Cmd_tryrecycleitem(void)
         usedHeldItem = &GetBattlerPartyState(gBattlerTarget)->usedHeldItem;
     else
         usedHeldItem = &GetBattlerPartyState(gBattlerAttacker)->usedHeldItem;
-    if (*usedHeldItem != ITEM_NONE && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
+    if (GetBattlerAbility(gBattlerAttacker) == ABILITY_HONEY_GATHER
+     && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
+    {
+        gLastUsedItem = ITEM_HONEY;
+        gBattleMons[gBattlerAttacker].item = gLastUsedItem;
+        gBattleMons[gBattlerAttacker].volatiles.unburdenActive = FALSE;
+        BtlController_EmitSetMonData(gBattlerAttacker, B_COMM_TO_CONTROLLER, REQUEST_HELDITEM_BATTLE, 0, sizeof(gBattleMons[gBattlerAttacker].item), &gBattleMons[gBattlerAttacker].item);
+        MarkBattlerForControllerExec(gBattlerAttacker);
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+    else if (*usedHeldItem != ITEM_NONE && gBattleMons[gBattlerAttacker].item == ITEM_NONE)
     {
         gLastUsedItem = *usedHeldItem;
         *usedHeldItem = ITEM_NONE;
@@ -13983,4 +14067,25 @@ void BS_SetDrainDouse(void)
         gBattleMons[gBattlerTarget].volatiles.drainDouse = TRUE;
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
+}
+
+void BS_TryDampHealing(void)
+{
+    NATIVE_ARGS(u8 battler, const u8 *failInstr);
+
+    enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
+    enum Ability ability = GetBattlerAbility(battler);
+    if (ability == ABILITY_DAMP
+     && gBattleMons[battler].hp < gBattleMons[battler].maxHP
+     && !gBattleMons[battler].volatiles.healBlock)
+    {
+        gLastUsedAbility = ability;
+        RecordAbilityBattle(battler, ability);
+        gBattlerAbility = gBattleScripting.battler = battler;
+        gEffectBattler = battler;
+        SetHealAmount(battler, GetNonDynamaxMaxHP(battler) / 3);
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+    else
+        gBattlescriptCurrInstr = cmd->failInstr;
 }

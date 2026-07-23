@@ -3,7 +3,7 @@
 ## Documentation status
 
 - **Last documented code commit:** `a2ef6c4bde` ("Add not already target guard for fast KO logic").
-- **Uncommitted AI changes covered by this document:** A narrow `AI_FLAG_HEAVY_SWITCHING` fast-KO preservation rule replaces the stale broad bad-odds implementation reintroduced by the upstream switch-file refactor. Regular smart switching receives only the defensive-drop exception described below. The current uncommitted Metal Rush runtime repair makes its Defense rider honor ordinary stat-loss prevention, matching the existing `CanLowerStat` model; it does not change AI scoring or information policy. The Expansion 1.15.0 merge retained the local AI cores while adapting their runtime dependencies. For 1.16.2, the AI cores move to the rewritten upstream implementations, which now include the dynamic scoring/switch callbacks and related functionality previously carried locally; Elastic Emerald retains its absorber-switch and bad-score tuning plus its custom `AI_FLAG_SMART_TRAINER` composition. Smart trainers therefore continue to use prediction and assumptions instead of upstream omniscience and PP-stall knowledge.
+- **Uncommitted AI changes covered by this document:** The post-1.16.2 repair restores the narrow `AI_FLAG_HEAVY_SWITCHING` fast-KO rule, its regular-smart defensive-drop exception, weather-setter preservation, and repeated-switch immunity prediction on the rewritten upstream switching APIs. Eligible-reserve fallback is used when upstream does not pre-rank a suitable switch-in. Repeated-switch prediction uses both the stint counter and revealed party switch-in history, retains the standard prediction RNG gate, and avoids re-running active-target damage comparison after predicted-target scoring. Smart trainers continue to use prediction and assumptions instead of upstream omniscience and PP-stall knowledge. Test adaptations also cover the upstream `AI_FLAG_ASSUME_STAB` knowledge path and unified stat-change contracts for Rock Tomb and Coaching. All of these AI changes are currently uncommitted.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -42,7 +42,7 @@ The AI distinguishes among:
 - known held-item effects;
 - revealed party species and previously used switch-ins.
 
-Helpers such as `GetMovesArrayWithHiddenSTAB`, `HasNoMovesKnown`, `HasAllKnownMoves`, `HasNoKnownNonProtectingMoves`, and `GetStatusMoveCount` let individual heuristics state how much evidence they require.
+The upstream `AI_FLAG_ASSUME_STAB` path records eligible unrevealed STAB options while helpers such as `HasNoMovesKnown`, `HasAllKnownMoves`, `HasNoKnownNonProtectingMoves`, and `GetStatusMoveCount` let individual heuristics state how much evidence they require.
 
 Unrevealed STAB estimates are filtered to avoid implausible predictions such as unusable recharge or two-turn attacks. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
 
@@ -72,19 +72,17 @@ Damaging moves are primarily compared by turns to KO, then by reliability and ef
 
 Key commits: `7829b03a9c`, `69e70069a6`.
 
-### Binding-move sequence simulation
+### Binding-move comparison
 
-Wrap-style attacks are evaluated as a sequence rather than by their immediate hit alone. The model combines:
+The current upstream damage comparison does not assume speculative future binding turns. Effect-specific viability can still account for immediate tactical value, including:
 
 - initial move damage;
-- expected residual binding damage;
 - Binding Band and Grip Claw behavior;
-- the number of actions the user is expected to survive;
 - Magic Guard immunity;
 - the possibility that an escapable target switches out;
-- follow-up use of the user's strongest direct attack.
+- whether binding improves the reachable KO line rather than merely adding hypothetical residual damage.
 
-The binding line is preferred only when its reachable damage or KO timing beats simply using the best direct move. Binding moves are exempted from ordinary same-KO damage-gap rules where that comparison would discard their residual value.
+Regression coverage now explicitly preserves this non-speculative merged behavior: a weaker binding move is not promoted above the stronger direct attack solely by assuming future trapped turns.
 
 Key commits: `cf246c99c5`, `64d81988c7`, `41dd243ec6`, `bd83b55fb4`.
 
@@ -106,14 +104,12 @@ Key commits: `93531a3cea`, `6e5f7576f7`.
 
 General fast-KO switching is disabled. The remaining contextual rule applies in singles to smart-switching trainers whose active Pokemon has Drizzle, Drought, Sand Stream, or Snow Warning. If the setter would act after the opponent and an actual-state damage calculation using the opponent's revealed moves plus Hidden STAB inference finds a KO, the AI may preserve the setter.
 
-Preservation additionally requires that the player has not targeted the setter with either a damaging or status move during its current field stint, that the setter retains at least 75% of its maximum HP, that at least three other living Pokemon in that trainer's party benefit from the setter's weather, and that a viable standard switch candidate exists. The targeting memory resets when the setter switches out. The HP gate limits preservation to setters with enough longevity to contribute again after returning. A party Pokemon counts once if any of the following apply:
+Preservation additionally requires that the player has not targeted the setter with either a damaging or status move during its current field stint, that the setter retains at least 75% of its maximum HP, that at least three other living Pokemon in that trainer's party benefit from the setter's weather, and that an eligible reserve exists. The targeting memory resets when the setter switches out. The HP gate limits preservation to setters with enough longevity to contribute again after returning. A party Pokemon counts once if either of the following applies:
 
-- it has a directly encouraged type: Fire in sun, Water in rain, Rock in sand, or Ice in hail/snow;
-- it has a positively weather-interacting ability already recognized by the field-status AI;
-- it has a weather-boosted Fire or Water attack;
-- it has an applicable weather move interaction, including Solar Beam-style sun effects, rain/hail accuracy effects, weather-enabled two-turn attacks, Weather Ball, Hydro Steam, Aurora Veil, or Shore Up.
+- it has a positively weather-interacting ability such as Swift Swim, Chlorophyll, Sand Rush, or Slush Rush;
+- it is Grass-type in sun or Ice-type in hail/snow.
 
-When every gate passes, the AI has a 50% chance to switch to the standard most-suitable party Pokemon. The KO check respects current battle conditions and survival effects such as Focus Sash and Sturdy. It does not use the abandoned clean-state model.
+When every gate passes, the AI has a 50% chance to switch to the standard most-suitable party Pokemon, falling back to the first eligible reserve when the upstream ranker returns no candidate. The KO check respects current battle conditions and survival effects such as Focus Sash and Sturdy. It does not use the abandoned clean-state model.
 
 Regression coverage explicitly checks both sides of the critical survival ordering: a slower unprotected setter with three weather allies may be preserved, while a faster setter, a setter whose Focus Sash prevents the inferred KO, or a setter already targeted by the player stays in.
 
@@ -151,7 +147,7 @@ The current immunity-abuse countermeasure is singles-only and overlays the norma
 
 1. Score moves normally and identify the highest-scored damaging move.
 2. Track voluntary player hard switches and pivot moves during the current AI battler's field stint.
-3. After six such switches, consider revealed, living, benched player Pokemon that could absorb, block, or type-immune the selected attack.
+3. After five such switches, consider revealed, living, benched player Pokemon that could absorb, block, or type-immune the selected attack. Revealed party switch-in counts provide a fallback when a test or alternate switch path does not update the dedicated stint counter.
 4. Rank candidates first by prior switch-in count, then by immunity quality: healing absorber, ability blocker, then type immunity.
 5. Apply the configured prediction RNG gate and rescore against the predicted switch-in.
 

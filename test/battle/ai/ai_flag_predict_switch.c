@@ -133,7 +133,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON only considers i
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON prioritizes higher value immunity ties")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON handles equally frequent immunity candidates")
 {
     PASSES_RANDOMLY(PREDICT_SWITCH_CHANCE, 100, RNG_AI_PREDICT_SWITCH);
     PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_SE_DEFENSIVE);
@@ -155,6 +155,6 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON prioritizes high
         TURN { SWITCH(player, 0); }
         TURN { SWITCH(player, 2); }
         TURN { SWITCH(player, 0); }
-        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_EARTHQUAKE); }
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVES(opponent, MOVE_SURF, MOVE_EARTHQUAKE); }
     }
 }

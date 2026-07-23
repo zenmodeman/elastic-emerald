@@ -1972,6 +1972,10 @@ static enum CancelerResult CancelerTargetFailure(struct BattleCalcValues *cv)
         struct DamageContext ctx = {0};
         SetDamageContextValues(&ctx, cv);
 
+        if (GetBattlerSide(cv->battlerAtk) == B_SIDE_PLAYER
+         && GetBattlerSide(cv->battlerDef) == B_SIDE_OPPONENT)
+            gBattleStruct->battlerState[cv->battlerDef].targetedByPlayerAttack = TRUE;
+
         if (moveTarget == TARGET_OPPONENTS_FIELD)
         {
             if (!IsSemiInvulnerable(cv->battlerDef, CHECK_ALL) && CanBattlerBounceBackMove(cv))
@@ -2626,7 +2630,7 @@ static enum MoveEndResult MoveEndAbsorb(struct BattleCalcValues *cv)
      && !gBattleMons[cv->battlerAtk].volatiles.healBlock
      && !IsBattlerAlly(cv->battlerDef, cv->battlerAtk)
      && gBattleStruct->moveDamage[cv->battlerDef] > 0
-     && IsBattlerTurnDamaged(cv->battlerDef, INCLUDING_SUBSTITUTES)
+     && IsBattlerTurnDamaged(cv->battlerDef, EXCLUDING_SUBSTITUTES)
      && IsBattlerAlive(cv->battlerAtk))
     {
         u32 drainPercent = 33;

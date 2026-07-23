@@ -2108,6 +2108,12 @@
 	.4byte \failInstr
 	.endm
 
+	.macro trydamphealing battler:req, failInstr:req
+	callnative BS_TryDampHealing
+	.byte \battler
+	.4byte \failInstr
+	.endm
+
 	.macro endturnevents
 	callnative BS_EndTurnEvents
 	.endm

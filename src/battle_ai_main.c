@@ -601,6 +601,9 @@ void Ai_UpdateSwitchInData(enum BattlerId battler)
     enum BattleTrainer trainer = GetBattlerTrainer(battler);
     struct AiPartyMon *aiMon = &gAiPartyData->mons[trainer][gBattlerPartyIndexes[battler]];
 
+    if (!IsDoubleBattle() && GetBattlerSide(battler) == B_SIDE_OPPONENT)
+        gAiBattleData->playerSwitchesDuringAiStint = 0;
+
     // See if the switched-in mon has been already in battle
     if (aiMon->wasSentInBattle)
     {
@@ -860,7 +863,9 @@ static u32 ChooseMoveOrAction_Singles(enum BattlerId battler)
     u32 numOfBestMoves;
     u64 flags = gAiThinkingStruct->aiFlags[battler];
     enum BattlerId opposingBattler = GetOppositeBattler(battler);
+    bool32 checkedImmunityPrediction = FALSE;
 
+scoreMoves:
     gAiThinkingStruct->aiLogicId = 0;
     gAiThinkingStruct->movesetIndex = 0;
     gAiLogicData->partnerMove = MOVE_NONE;   // no ally
@@ -877,8 +882,37 @@ static u32 ChooseMoveOrAction_Singles(enum BattlerId battler)
         flags >>= (u64)1;
         gAiThinkingStruct->aiLogicId++;
     }
-    if (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_CHECK_VIABILITY)
+    // The predicted-switch scorer already evaluated the moves against its
+    // temporary switch-in. Re-running damage comparison after it restores the
+    // active battler would incorrectly erase moves such as Ground attacks into
+    // an anticipated Lightning Rod switch.
+    if ((gAiThinkingStruct->aiFlags[battler] & AI_FLAG_CHECK_VIABILITY) && !checkedImmunityPrediction)
         AI_CompareDamagingMoves(battler, opposingBattler);
+
+    if (!checkedImmunityPrediction
+     && gAiLogicData->predictingSwitch
+     && (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_PREDICT_INCOMING_MON))
+    {
+        u32 bestMoveIndex = 0;
+
+        checkedImmunityPrediction = TRUE;
+        for (u32 moveIndex = 1; moveIndex < MAX_MON_MOVES; moveIndex++)
+        {
+            if (gBattleMons[battler].moves[moveIndex] != MOVE_NONE
+             && gAiThinkingStruct->score[bestMoveIndex] < gAiThinkingStruct->score[moveIndex])
+                bestMoveIndex = moveIndex;
+        }
+        if (TryChooseImmunityPredictionSwitchin(battler, opposingBattler, gBattleMons[battler].moves[bestMoveIndex]))
+        {
+            BattleAI_SetupAIData(0xF, battler);
+            gAiLogicData->mostSuitableMonId[opposingBattler] = gBattleStruct->AI_monToSwitchIntoId[opposingBattler];
+            gAiLogicData->predictingSwitch = TRUE;
+            gBattlerTarget = opposingBattler;
+            gAiBattleData->chosenTarget[battler] = opposingBattler;
+            flags = gAiThinkingStruct->aiFlags[battler];
+            goto scoreMoves;
+        }
+    }
 
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {

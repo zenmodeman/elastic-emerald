@@ -135,7 +135,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Effect Spore remaps a blocked proc to another va
     } SCENE {
         ABILITY_POPUP(opponent, ABILITY_EFFECT_SPORE);
         ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_SLP, player);
-        MESSAGE("The opposing Breloom's Effect Spore made Toxel sleep!");
+        MESSAGE("Toxel fell asleep!");
         STATUS_ICON(player, sleep: TRUE);
     }
 }

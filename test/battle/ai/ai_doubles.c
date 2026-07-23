@@ -601,10 +601,10 @@ AI_DOUBLE_BATTLE_TEST("AI will choose Earthquake if it kills both opposing mons"
 
 
 
-AI_DOUBLE_BATTLE_TEST("Zenmodeman AI: Coaching is discouraged if simulated boosts still leave the ally in KO range")
+AI_DOUBLE_BATTLE_TEST("Zenmodeman AI: Coaching receives no major bonus if simulated boosts still leave the ally in KO range")
 {
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_COACHING) == EFFECT_COACHING);
+        ASSUME_STAT_CHANGE(MOVE_COACHING, attack: +1, defense: +1);
         ASSUME(GetMoveCategory(MOVE_CLOSE_COMBAT) == DAMAGE_CATEGORY_PHYSICAL);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
         PLAYER(SPECIES_MACHAMP) { Speed(50); Attack(200); Moves(MOVE_CLOSE_COMBAT, MOVE_CELEBRATE); }
@@ -613,7 +613,7 @@ AI_DOUBLE_BATTLE_TEST("Zenmodeman AI: Coaching is discouraged if simulated boost
         OPPONENT(SPECIES_ABRA) { HP(40); Defense(20); Speed(10); Moves(MOVE_CONFUSION, MOVE_CELEBRATE); }
     } WHEN {
         TURN {
-            SCORE_LT_VAL(opponentLeft, MOVE_COACHING, AI_SCORE_DEFAULT, target: opponentRight);
+            SCORE_LT_VAL(opponentLeft, MOVE_COACHING, AI_SCORE_DEFAULT + 2, target: opponentRight);
         }
     }
 }

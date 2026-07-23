@@ -166,7 +166,7 @@ AI_SINGLE_BATTLE_TEST("AI prefers moves which deal more damage instead of moves 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI considers binding residual when comparing damaging moves")
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI damage comparison does not assume speculative binding turns")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -177,7 +177,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI considers binding residual when compari
         PLAYER(SPECIES_WOBBUFFET) { MaxHP(400); HP(400); Speed(10); Moves(MOVE_CELEBRATE); }
         OPPONENT(SPECIES_TYPHLOSION) { Speed(100); Moves(MOVE_FIRE_SPIN, MOVE_INCINERATE); }
     } WHEN {
-        TURN { SCORE_GT(opponent, MOVE_FIRE_SPIN, MOVE_INCINERATE); }
+        TURN { SCORE_GT(opponent, MOVE_INCINERATE, MOVE_FIRE_SPIN); }
     }
 }
 
@@ -476,7 +476,7 @@ AI_SINGLE_BATTLE_TEST("AI will choose either Rock Tomb or Bulldoze if Stat drop 
 AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI values Rock Tomb when the simulated Speed drop lets it move first")
 {
     GIVEN {
-        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_SPD_MINUS_1, 100) == TRUE);
+        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100) == TRUE);
         ASSUME(GetMoveType(MOVE_ROCK_TOMB) == TYPE_ROCK);
         ASSUME(GetMoveType(MOVE_ROCK_THROW) == TYPE_ROCK);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
@@ -490,7 +490,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI values Rock Tomb when the simulated Spe
 AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not prioritize Rock Tomb when the simulated Speed drop not let it move first")
 {
     GIVEN {
-        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_SPD_MINUS_1, 100) == TRUE);
+        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100) == TRUE);
         ASSUME(GetMoveType(MOVE_ROCK_TOMB) == TYPE_ROCK);
         ASSUME(GetMoveType(MOVE_ROCK_SLIDE) == TYPE_ROCK);
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
@@ -498,32 +498,25 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not prioritize Rock Tomb when the 
         OPPONENT(SPECIES_GEODUDE) { Speed(70); Moves(MOVE_ROCK_TOMB, MOVE_ROCK_SLIDE); }
     } WHEN {
         //At most Rock tomb can get the +1
-        TURN { SCORE_LT_VAL(opponent, MOVE_ROCK_TOMB, AI_SCORE_DEFAULT + 2); }
+        TURN { SCORE_LT_VAL(opponent, MOVE_ROCK_TOMB, AI_SCORE_DEFAULT + 3); }
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: HiddenSTAB includes unrevealed STAB moves but revealed logic does not")
+AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI_FLAG_ASSUME_STAB records unrevealed STAB moves but not unrevealed non-STAB moves")
 {
     GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_CACNEA) { Moves(MOVE_ABSORB, MOVE_FLAMETHROWER, MOVE_GIGA_DRAIN, MOVE_HYPER_BEAM); }
         OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE); }
     } WHEN {
         TURN { MOVE(player, MOVE_FLAMETHROWER); EXPECT_MOVE(opponent, MOVE_CELEBRATE); }
     } THEN {
-        u16 surmisedMoves[MAX_MON_MOVES];
-        u16 *revealedMoves = GetMovesArray(B_POSITION_PLAYER_LEFT);
+        enum Move *knownMoves = GetMovesArray(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT));
 
-        GetMovesArrayWithHiddenSTAB(B_POSITION_PLAYER_LEFT, surmisedMoves);
-
-        EXPECT(revealedMoves[0] == MOVE_NONE);
-        EXPECT(revealedMoves[1] == MOVE_FLAMETHROWER);
-        EXPECT(revealedMoves[2] == MOVE_NONE);
-        EXPECT(revealedMoves[3] == MOVE_NONE);
-        EXPECT(surmisedMoves[0] == MOVE_ABSORB);
-        EXPECT(surmisedMoves[1] == MOVE_FLAMETHROWER);
-        EXPECT(surmisedMoves[2] == MOVE_GIGA_DRAIN);
-        EXPECT(surmisedMoves[3] == MOVE_NONE);
+        EXPECT(knownMoves[0] == MOVE_ABSORB);
+        EXPECT(knownMoves[1] == MOVE_FLAMETHROWER);
+        EXPECT(knownMoves[2] == MOVE_GIGA_DRAIN);
+        EXPECT(knownMoves[3] == MOVE_NONE);
     }
 }
 

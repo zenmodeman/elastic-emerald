@@ -66,7 +66,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Flame Body is forced when its defensive contact 
     } SCENE {
         ABILITY_POPUP(opponent, ABILITY_FLAME_BODY);
         ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_BRN, player);
-        MESSAGE("The opposing Magmar's Flame Body burned Wobbuffet!");
+        MESSAGE("Wobbuffet was burned!");
         STATUS_ICON(player, burn: TRUE);
     }
 }
