@@ -18,9 +18,6 @@ const u16 gPreGym1TutorSetup[] = {
 };
 
 const u16 gPreGym2Tutor[] = {
-    MOVE_AIR_CUTTER,
-    MOVE_BUG_BITE,
-    MOVE_DISARMING_VOICE,
     MOVE_INCINERATE,
     MOVE_METAL_CLAW,
     MOVE_NIGHT_SHADE,
@@ -33,6 +30,9 @@ const u16 gPreGym2Tutor[] = {
     MOVE_SEISMIC_TOSS,
     MOVE_SMACK_DOWN,
     MOVE_SWIFT,
+    MOVE_POISON_TAIL,
+    MOVE_CONFUSE_RAY,
+    MOVE_STRUGGLE_BUG,
 };
 
 const u16 gPreGym2TutorSetup[] = {
@@ -47,6 +47,9 @@ const u16 gPreGym3TutorSetup[] = {
 };
 
 const u16 gPreGym3Tutor[] = {
+    MOVE_AIR_CUTTER,
+    MOVE_BUG_BITE,
+    MOVE_DISARMING_VOICE,
     MOVE_AERIAL_ACE,
     MOVE_BRUTAL_SWING,
     MOVE_COVET,
@@ -59,69 +62,64 @@ const u16 gPreGym3Tutor[] = {
     MOVE_ELECTROWEB,
     MOVE_HEADBUTT,
     MOVE_MAGICAL_LEAF,
-    MOVE_STRUGGLE_BUG,
+    MOVE_CHILLING_WATER,
+    MOVE_ECHOED_VOICE,
+    MOVE_ASSURANCE,
+    MOVE_ACID_SPRAY,
+    MOVE_ROAR,
+    MOVE_WHIRLWIND,
 };
 
 const u16 gPreGym4Tutor[] = {
     MOVE_BULLDOZE,
+    MOVE_LOW_SWEEP,
     MOVE_MUD_SHOT,
     MOVE_FIRE_FANG,
     MOVE_THUNDER_FANG,
     MOVE_ICE_FANG,
     MOVE_TAKE_DOWN,
-    MOVE_SMART_STRIKE,
     MOVE_PSYBEAM,
-    MOVE_CHILLING_WATER,
-    MOVE_POISON_TAIL,
-    MOVE_ECHOED_VOICE,
     MOVE_FURY_CUTTER,
+    MOVE_DRAINING_KISS,
+    MOVE_WATER_PULSE,
+    MOVE_HEX,
+    MOVE_SNARL,
+    MOVE_BREAKING_SWIPE,
+    MOVE_ENDEAVOR,
+    MOVE_PAIN_SPLIT,
 };
 
 const u16 gPreGym4TutorSetup[] = {
     MOVE_CHARGE_BEAM,
     MOVE_DOUBLE_TEAM,
     MOVE_SNATCH,
+    MOVE_SPIKES,
+    MOVE_STEALTH_ROCK,
 };
 
 const u16 gPreGym5Tutor[] = {
-    MOVE_ICY_WIND,
+    MOVE_SMART_STRIKE,
     MOVE_UPROAR,
-    MOVE_MAGNET_RISE,
     MOVE_BRINE,
-    MOVE_DRAINING_KISS,
     MOVE_TELEPORT,
     MOVE_MEGA_PUNCH,
-    MOVE_ROLE_PLAY,
     MOVE_HEAL_BELL,
-    MOVE_MAGIC_ROOM,
-    MOVE_WONDER_ROOM,
-    MOVE_HELPING_HAND,
-    MOVE_SNORE,
-    MOVE_SLEEP_TALK,
-    MOVE_FLING,
-    MOVE_SNARL,
-    MOVE_TRICK,
-    MOVE_ALLY_SWITCH,
-    MOVE_VENOM_DRENCH,
+    MOVE_QUASH,
     MOVE_SCARY_FACE,
     MOVE_SCREECH,
     MOVE_BEAT_UP,
-    MOVE_IMPRISON,
     MOVE_DEFOG,
     MOVE_FAKE_TEARS,
-    MOVE_ASSURANCE,
-    MOVE_POWER_SWAP,
-    MOVE_GUARD_SWAP,
+    MOVE_EERIE_IMPULSE,
     MOVE_SPEED_SWAP,
-    MOVE_POWER_SHIFT,
     MOVE_PSYCHO_CUT,
     MOVE_CROSS_POISON,
-    MOVE_ACID_SPRAY,
-    MOVE_CONFUSE_RAY,
     MOVE_RECYCLE,
-    MOVE_CAPTIVATE,
     MOVE_AFTER_YOU,
-    MOVE_CORROSIVE_GAS,
+    MOVE_LASH_OUT,
+    MOVE_BURNING_JEALOUSY,
+    MOVE_COUNTER,
+    MOVE_COACHING,
 };
 
 const u16 gPreGym5TutorSetup[] = {
@@ -136,85 +134,34 @@ const u16 gPreGym5TutorSetup[] = {
     MOVE_AUTOTOMIZE,
     MOVE_RAPID_SPIN,
     MOVE_SWAGGER,
-    MOVE_TORCH_SONG,
-    MOVE_AQUA_STEP,
+    MOVE_ENCORE,
+    MOVE_TOXIC_SPIKES,
 };
 
 const u16 gPreGym6Tutor[] = {
-    MOVE_PIN_MISSILE,
-    MOVE_BULLET_SEED,
-    MOVE_ROCK_BLAST,
-    MOVE_ICICLE_SPEAR,
-    MOVE_TAIL_SLAP,
-    MOVE_COUNTER,
-    MOVE_ENDEAVOR,
-    MOVE_HEX,
-    MOVE_PAIN_SPLIT,
+    MOVE_FLING,
+    MOVE_TRICK,
+    MOVE_ALLY_SWITCH,
     MOVE_SYNTHESIS,
-    MOVE_LOW_KICK,
-    MOVE_GRASS_KNOT,
-    MOVE_ELECTRO_BALL,
-    MOVE_THROAT_CHOP,
-    MOVE_DRILL_RUN,
     MOVE_SIGNAL_BEAM,
-    MOVE_GRAVITY,
-    MOVE_FIRE_PUNCH,
-    MOVE_ICE_PUNCH,
-    MOVE_THUNDER_PUNCH,
     MOVE_RAZOR_SHELL,
     MOVE_REVENGE,
-    MOVE_ZEN_HEADBUTT,
     MOVE_BODY_SLAM,
-    MOVE_DUAL_CHOP,
-    MOVE_DUAL_WINGBEAT,
     MOVE_AIR_SLASH,
     MOVE_STOMPING_TANTRUM,
-    MOVE_IRON_HEAD,
-    MOVE_AQUA_TAIL,
-    MOVE_BOUNCE,
-    MOVE_POWER_GEM,
-    MOVE_CRUNCH,
     MOVE_MYSTICAL_FIRE,
-    MOVE_BURNING_JEALOUSY,
-    MOVE_LASH_OUT,
     MOVE_MEGA_KICK,
-    MOVE_HYPER_VOICE,
-    MOVE_SKY_ATTACK,
-    MOVE_DYNAMIC_PUNCH,
-    MOVE_AURA_SPHERE,
     MOVE_SHADOW_CLAW,
-    MOVE_PSYCHIC_FANGS,
-    MOVE_COACHING,
     MOVE_SELF_DESTRUCT,
     MOVE_MISTY_EXPLOSION,
-    MOVE_ROCK_CLIMB,
-    MOVE_FLIP_TURN,
     MOVE_PAYBACK,
     MOVE_VENOSHOCK,
-    MOVE_LEECH_LIFE,
     MOVE_TRI_ATTACK,
-    MOVE_PSYSHOCK,
-    MOVE_FUTURE_SIGHT,
-    MOVE_MUDDY_WATER,
-    MOVE_POISON_JAB,
-    MOVE_DARK_PULSE,
-    MOVE_SEED_BOMB,
-    MOVE_X_SCISSOR,
-    MOVE_FLASH_CANNON,
-    MOVE_DAZZLING_GLEAM,
-    MOVE_CHARM,
-    MOVE_EERIE_IMPULSE,
     MOVE_DRAIN_PUNCH,
-    MOVE_BREAKING_SWIPE,
-    MOVE_DRAGON_TAIL,
-    MOVE_ROAR,
-    MOVE_FIRE_PLEDGE,
-    MOVE_WATER_PULSE,
-    MOVE_GRASS_PLEDGE,
-    MOVE_DREAM_EATER,
     MOVE_SKITTER_SMACK,
-    MOVE_STEEL_ROLLER,
-    MOVE_LUNGE,
+    MOVE_MAGIC_COAT,
+    MOVE_GRASSY_GLIDE,
+    MOVE_SCORCHING_SANDS,
 };
 
 const u16 gPreGym6TutorSetup[] = {
@@ -234,54 +181,58 @@ const u16 gPreGym6TutorSetup[] = {
     MOVE_SKULL_BASH,
     MOVE_MINIMIZE,
     MOVE_TAILWIND,
+    MOVE_SUBSTITUTE,
+    MOVE_DYNAMIC_PUNCH,
 };
 
 const u16 gPreGym7Tutor[] = {
-    MOVE_LEAF_BLADE,
+    MOVE_ROCK_SLIDE,
+    MOVE_HYPER_VOICE,
+    MOVE_ROCK_CLIMB,
+    MOVE_DUAL_CHOP,
+    MOVE_DUAL_WINGBEAT,
+    MOVE_THROAT_CHOP,
+    MOVE_DRILL_RUN,
+    MOVE_GIGA_DRAIN,
+    MOVE_LEECH_LIFE,
+    MOVE_POWER_GEM,
+    MOVE_AURA_SPHERE,
+    MOVE_RISING_VOLTAGE,
+    MOVE_ZEN_HEADBUTT,
+    MOVE_IRON_HEAD,
+    MOVE_BOUNCE,
+    MOVE_CRUNCH,
+    MOVE_PSYCHIC_FANGS,
+    MOVE_PSYSHOCK,
+    MOVE_POISON_JAB,
+    MOVE_DARK_PULSE,
+    MOVE_SEED_BOMB,
+    MOVE_X_SCISSOR,
+    MOVE_FLASH_CANNON,
+    MOVE_DAZZLING_GLEAM,
+    MOVE_LUNGE,
+    MOVE_FIRE_PUNCH,
+    MOVE_ICE_PUNCH,
+    MOVE_PIN_MISSILE,
+    MOVE_BULLET_SEED,
+    MOVE_TAIL_SLAP,
+    MOVE_ROCK_BLAST,
+    MOVE_ICICLE_SPEAR,
     MOVE_DRAGON_PULSE,
-    MOVE_DOUBLE_EDGE,
-    MOVE_BUG_BUZZ,
-    MOVE_POLLEN_PUFF,
     MOVE_WEATHER_BALL,
     MOVE_TERRAIN_PULSE,
-    MOVE_WILD_CHARGE,
-    MOVE_GUNK_SHOT,
-    MOVE_HEAT_CRASH,
-    MOVE_HEAVY_SLAM,
-    MOVE_WOOD_HAMMER,
-    MOVE_MEGAHORN,
-    MOVE_FOCUS_BLAST,
-    MOVE_SOLAR_BLADE,
-    MOVE_HEAT_WAVE,
     MOVE_LIQUIDATION,
-    MOVE_FOUL_PLAY,
-    MOVE_PHANTOM_FORCE,
-    MOVE_PLAY_ROUGH,
-    MOVE_EXPLOSION,
-    MOVE_POWER_WHIP,
-    MOVE_HURRICANE,
     MOVE_AVALANCHE,
-    MOVE_SUBSTITUTE,
-    MOVE_DRAGON_CLAW,
-    MOVE_THUNDER_WAVE,
-    MOVE_SLUDGE_WAVE,
     MOVE_BLAZE_KICK,
-    MOVE_GYRO_BALL,
-    MOVE_ENERGY_BALL,
-    MOVE_STONE_EDGE,
     MOVE_DARKEST_LARIAT,
     MOVE_BODY_PRESS,
     MOVE_ICE_SPINNER,
-    MOVE_HYDRO_CANNON,
-    MOVE_BLAST_BURN,
-    MOVE_FRENZY_PLANT,
-    MOVE_POLTERGEIST,
-    MOVE_U_TURN,
-    MOVE_VOLT_SWITCH,
-    MOVE_MAGIC_COAT,
-    MOVE_ACROBATICS,
-    MOVE_FROST_BREATH,
     MOVE_LAST_RESORT,
+    MOVE_OUTRAGE,
+    MOVE_FUTURE_SIGHT,
+    MOVE_SKY_ATTACK,
+    MOVE_STONE_EDGE,
+    MOVE_SCALD,
 };
 
 const u16 gPreGym7TutorSetup[] = {
@@ -298,21 +249,33 @@ const u16 gPreGym7TutorSetup[] = {
     MOVE_STORED_POWER,
 };
 
-const u16 gPreGym8Tutor[] = {
-    MOVE_SPIKES,
-    MOVE_STEALTH_ROCK,
-    MOVE_TOXIC_SPIKES,
+const u16 gPreGym8Tutor[] = {    
+    MOVE_EXPLOSION,
+    MOVE_ACROBATICS,
+    MOVE_FROST_BREATH,
+    MOVE_HEAT_CRASH,
+    MOVE_HEAVY_SLAM,
     MOVE_EARTH_POWER,
     MOVE_HIGH_HORSEPOWER,
-    MOVE_OUTRAGE,
+    MOVE_MUDDY_WATER,
+    MOVE_LEAF_BLADE,
+    MOVE_HEAT_WAVE,
+    MOVE_ENERGY_BALL,
+    MOVE_AQUA_TAIL,
+    MOVE_BUG_BUZZ,
+    MOVE_POLLEN_PUFF,
+    MOVE_WILD_CHARGE,
+    MOVE_GUNK_SHOT,
+    MOVE_MEGAHORN,
+    MOVE_FOCUS_BLAST,
+    MOVE_SOLAR_BLADE,
+    MOVE_FOUL_PLAY,
+    MOVE_PHANTOM_FORCE,
+    MOVE_PLAY_ROUGH,
+    MOVE_POWER_WHIP,
+    MOVE_SLUDGE_WAVE,
+    MOVE_POLTERGEIST,
     MOVE_REVERSAL,
-    MOVE_DRACO_METEOR,
-    MOVE_STEEL_BEAM,
-    MOVE_SCORCHING_SANDS,
-    MOVE_SUPERPOWER,
-    MOVE_TRIPLE_AXEL,
-    MOVE_LEAF_STORM,
-    MOVE_KNOCK_OFF,
 };
 
 const u16 gPreGym8TutorSetup[] = {
@@ -330,12 +293,21 @@ const u16 gPreGym8TutorSetup[] = {
 
 const u16 gEliteFourTutor[] = {
     MOVE_CLOSE_COMBAT,
+    MOVE_OVERHEAT,
+    MOVE_LEAF_STORM,
     MOVE_FLARE_BLITZ,
     MOVE_BRAVE_BIRD,
-    MOVE_GRASSY_GLIDE,
-    MOVE_RISING_VOLTAGE,
-    MOVE_EXPANDING_FORCE,
-    MOVE_ENCORE,
+    MOVE_FLIP_TURN,
+    MOVE_U_TURN,
+    MOVE_VOLT_SWITCH,
+    MOVE_WOOD_HAMMER,
+    MOVE_DRACO_METEOR,
+    MOVE_STEEL_BEAM,
+    MOVE_SUPERPOWER,
+    MOVE_TRIPLE_AXEL,
+    MOVE_LEAF_STORM,
+    MOVE_KNOCK_OFF,
+    MOVE_FACADE,
 };
 
 const u16 gLegacyTutor[] = {
@@ -380,14 +352,12 @@ MOVE_IMPRISON,
 MOVE_INGRAIN,
 MOVE_ION_DELUGE,
 MOVE_LASER_FOCUS,
-// MOVE_LUCKY_CHANT, Turn Lucky Chant into a TM
 MOVE_MAGIC_ROOM,
 MOVE_MEAN_LOOK,
 MOVE_MIST,
 MOVE_MUD_SLAP,
 MOVE_MUD_SPORT,
 MOVE_ODOR_SLEUTH,
-MOVE_QUASH,
 MOVE_QUICK_GUARD,
 MOVE_REFRESH,
 MOVE_ROTOTILLER,
@@ -400,11 +370,11 @@ MOVE_SWEET_SCENT,
 MOVE_TELEKINESIS,
 MOVE_TORMENT,
 MOVE_VENOM_DRENCH,
-// MOVE_WHIRLWIND, /To Do to make Whirlwind a TM
 MOVE_WONDER_ROOM,
 MOVE_WORRY_SEED,
 MOVE_HOLD_BACK,
 MOVE_WATER_SPORT,
+MOVE_ROLE_PLAY,
 };
 
 const u16 gTechTutor1Badge[] = {
@@ -429,7 +399,7 @@ const u16 gTechTutor5Badge[] = {
     MOVE_SYNCHRONOISE,
     MOVE_DREAM_EATER,
     MOVE_FOCUS_PUNCH,
-}
+};
 
 const u61 gTechTutor6Badge[] = {
     MOVE_HYPER_BEAM,
@@ -438,9 +408,13 @@ const u61 gTechTutor6Badge[] = {
     MOVE_HYDRO_CANNON,
     MOVE_BLAST_BURN,
     MOVE_STEEL_ROLLER,
-}
+    MOVE_FIRE_PLEDGE,
+    MOVE_WATER_PLEDGE,
+    MOVE_GRASS_PLEDGE,
+};
 
 //In Resource Mode specifically, the center will also have the option to trade a certain TM for some adjacent moves, as an alternative to spending points
+//These trades are only elligble if the corresponding tutor move has been unlocked
 
 //Trades for an Aerial Ace TM
 const u16 gAerialAceTradeTutor[] = {
@@ -449,14 +423,15 @@ const u16 gAerialAceTradeTutor[] = {
     MOVE_FEINT_ATTACK,
     MOVE_MAGICAL_LEAF,
     MOVE_MAGNET_BOMB,
-}
+    MOVE_SWIFT,
+};
 
 //Trades for a Dragon Tail TM
 const u16 gDragonTailTradeTutor[] = {
     MOVE_ROAR,
     MOVE_WHIRLWIND,
     MOVE_CIRCLE_THROW,
-}
+};
 
 //Trades for a Confide TM
 const u16 gConfideTradeTutor[] = {
@@ -464,7 +439,7 @@ const u16 gConfideTradeTutor[] = {
     MOVE_LEER,
     MOVE_TAIL_WHIP,
     MOVE_PLAY_NICE,
-}
+};
 
 //Trades for a Charm TM
 const u16 gCharmTradeTutor[] = {
@@ -472,7 +447,14 @@ const u16 gCharmTradeTutor[] = {
     MOVE_SCREECH,
     MOVE_FAKE_TEARS,
     MOVE_METAL_SOUND,
-}
+    MOVE_SCARY_FACE,
+};
+
+//Trades for a Rock Tomb TM
+const u16 gRockTombTradeTutor[] = {
+    MOVE_POUNCE,
+    MOVE_LOW_SWEEP,
+};
 
 //Trades for an Icy Wind TM
 const u16 gIcyWindTradeTutor[] = {    
@@ -481,7 +463,7 @@ const u16 gIcyWindTradeTutor[] = {
     MOVE_SNARL,
     MOVE_STRUGGLE_BUG,
     MOVE_BREAKING_SWIPE,
-}
+};
 
 //Trades for a Shadow Ball TM
 const u16 gShadowBallTradeTutor[] = {
@@ -492,7 +474,7 @@ const u16 gShadowBallTradeTutor[] = {
     MOVE_ALLURING_VOICE,
     MOVE_PSYSHOCK,
     MOVE_TRI_ATTACK,
-}
+};
 
 //Trades for a Dragon Claw TM
 const u16 gDragonClawTradeTutor[] = {
@@ -502,13 +484,13 @@ const u16 gDragonClawTradeTutor[] = {
     MOVE_IRON_HEAD,
     MOVE_POISON_JAB,
     MOVE_ZEN_HEADBUTT,
-}
+};
 
-//Trades for a Lunge TM
-const u16 gLungeTradeTutor[] = {
-    MOVE_SKITTER_SMACK,
-    MOVE_MYSTICAL_FIRE,
-}
+//Trades for a Thunder Punch TM
+const u16 gThunderPunchTradeTutor[] = {
+    MOVE_ICE_PUNCH,
+    MOVE_FIRE_PUNCH,
+};
 
 //Trades for a Temper Flare TM
 const u16 gTemperFlareTradeTutor[] = {
@@ -518,4 +500,27 @@ const u16 gTemperFlareTradeTutor[] = {
     MOVE_VENOSHOCK,
     MOVE_BURNING_JEALOUSY,
     MOVE_LASH_OUT
+};
+
+//Trades for a Helping Hand TM
+const u16 gHelpingHandTradeTutor[] = {
+    MOVE_QUASH,
+    MOVE_LIFE_DEW,
+    MOVE_ALLY_SWITCH,
+    MOVE_AFTER_YOU,
+    MOVE_COACHING,
+}
+
+//Trades for an Earthquake TM
+const u16 gEarthquakeTradeTutor[] = {
+    MOVE_EARTH_POWER,
+    MOVE_HIGH_HORSEPOWER,
+}
+
+//Trades for a Fire Blast TM
+const u16 gFireBlastTradeTutor[] = {
+    MOVE_HYDRO_PUMP,
+    MOVE_FOCUS_BLAST,
+    MOVE_MEGAHORN,
+    MOVE_GUNK_SHOT,
 }

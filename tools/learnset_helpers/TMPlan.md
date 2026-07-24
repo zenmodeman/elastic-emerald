@@ -6,17 +6,16 @@ TM plan:
 
 #### Speed Debuff Attacking moves 
 - Rock Tomb
-- Low Sweep
-- Icy Wind (Can be traded for tutors: Electroweb, Bulldoze, Snarl, Struggle Bug, Breaking Swipe)
+- Icy Wind (Abandoned Ship)
 
 
-### Recovery
+### Strong Status
 - Roost
 - Rest
+- Thunder Wave
 
 #### Tech
 - Charm (Has trade tutors)
-- Life Dew
 - Lucky Chant
 - Gravity
 - Helping Hand
@@ -27,33 +26,38 @@ TM plan:
 - Thief
 - Speed Swap
 - Magnet Rise
+- Whirlpool
+- Snore
+- Sleep Talk
+
 
 #### Variability
 - Low Kick
 - Grass Knot
 - Nature Power
+- Electro Ball
+- Gyro Ball
 
 ### ~80 Power Moves
 - Dragon Claw (Has replacement tutors)
 - Shadow Ball (Has replacement tutors)
-- Lunge (Has replacement tutors)
 - Body Slam
 - Brick Break
-- Air Slash
-- Fire Punch
-- Thunder Punch
-- Ice Punch
+- Thunder Punch (Has replacement tutors)
 - Temper Flare (Has replacement tutors)
 - Dig
 - Waterfall
 - Dive
 - Throat Chop
 - Ice Spinner
+- Rock Slide
+- Expanding Force
 
 ### ~70 power Moves
 - Secret Power
-- Smart Strike
+- Steel Wing
 - Retaliate
+- Skitter Smack
 
 ### 90 Base power moves
 - Ice Beam
@@ -61,6 +65,11 @@ TM plan:
 - Thunderbolt
 - Earthquake
 - Surf
+- Hyper Voice
+- Fly
+- Psychic
+- Sludge Bomb
+- Bug Buzz
 
 ### High Power moves
 - Hard Press
@@ -69,8 +78,6 @@ TM plan:
 - Blizzard
 - Hurricane
 - Thunder
-- Hydro Pump
 - Fire Blast
 - Solarbeam
-- Psychic
-- Sludge Bomb
+- Double-Edge
