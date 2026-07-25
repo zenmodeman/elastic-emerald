@@ -401,7 +401,7 @@ const u16 gTechTutor5Badge[] = {
     MOVE_FOCUS_PUNCH,
 };
 
-const u61 gTechTutor6Badge[] = {
+const u16 gTechTutor6Badge[] = {
     MOVE_HYPER_BEAM,
     MOVE_GIGA_IMPACT,
     MOVE_FRENZY_PLANT,
@@ -509,13 +509,13 @@ const u16 gHelpingHandTradeTutor[] = {
     MOVE_ALLY_SWITCH,
     MOVE_AFTER_YOU,
     MOVE_COACHING,
-}
+};
 
 //Trades for an Earthquake TM
 const u16 gEarthquakeTradeTutor[] = {
     MOVE_EARTH_POWER,
     MOVE_HIGH_HORSEPOWER,
-}
+};
 
 //Trades for a Fire Blast TM
 const u16 gFireBlastTradeTutor[] = {
@@ -523,4 +523,4 @@ const u16 gFireBlastTradeTutor[] = {
     MOVE_FOCUS_BLAST,
     MOVE_MEGAHORN,
     MOVE_GUNK_SHOT,
-}
+};

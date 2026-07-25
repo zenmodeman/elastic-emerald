@@ -26,6 +26,7 @@
 #include "frontier_util.h"
 #include "graphics.h"
 #include "item.h"
+#include "item_menu.h"
 #include "link.h"
 #include "m4a.h"
 #include "main.h"
@@ -74,8 +75,6 @@
 #include "constants/union_room.h"
 #include "constants/weather.h"
 #include "data/pokemon/center_tutor_moves.h"
-
-extern u16 gSpecialVar_ItemId;
 
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_8) ? 160 : 220)
 

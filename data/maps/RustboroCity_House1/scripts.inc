@@ -27,7 +27,7 @@ RustboroCity_House1_EventScript_Trader_Logic::
 # 14 "data/maps/RustboroCity_House1/scripts.pory"
 	special ChoosePartyMon
 # 15 "data/maps/RustboroCity_House1/scripts.pory"
-	waitstate
+
 # 16 "data/maps/RustboroCity_House1/scripts.pory"
 	copyvar VAR_0x800A, VAR_0x8004
 # 17 "data/maps/RustboroCity_House1/scripts.pory"
@@ -49,7 +49,7 @@ RustboroCity_House1_EventScript_Trader_Logic::
 # 25 "data/maps/RustboroCity_House1/scripts.pory"
 	special DoInGameTradeScene
 # 26 "data/maps/RustboroCity_House1/scripts.pory"
-	waitstate
+
 # 27 "data/maps/RustboroCity_House1/scripts.pory"
 	msgbox RustboroCity_House1_Text_PleaseBeGoodToMyPokemon, MSGBOX_DEFAULT
 # 28 "data/maps/RustboroCity_House1/scripts.pory"

@@ -2943,7 +2943,7 @@ bool8 FldEff_FieldMoveShowMonInit(void)
 {
     struct Pokemon *pokemon;
     bool32 noDucking = gFieldEffectArguments[0] & SHOW_MON_CRY_NO_DUCKING;
-    pokemon = &gPlayerParty[(u8)gFieldEffectArguments[0]];
+    pokemon = &gParties[B_TRAINER_PLAYER][(u8)gFieldEffectArguments[0]];
 
         if (FlagGet(FLAG_SYS_MAP_MENU_USED)) {
             u16 designatedFlyMon = SPECIES_CORVIKNIGHT;

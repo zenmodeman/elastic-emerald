@@ -68,7 +68,7 @@ script TakeCenterNap{
 script CheckTriumphs{
     msgbox(format("Whose triumphs would you like to check?"))
     special(ChoosePartyMon)
-    waitstate
+
     if (var(VAR_0x8004) != PARTY_NOTHING_CHOSEN){
         special(Script_BufferChosenMonTriumph)
         msgbox(gStringVar4)

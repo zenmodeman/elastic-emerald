@@ -139,7 +139,7 @@ BerryTree_EventScript_ChooseBerryToPlant::
 # 70 "data/scripts/berry_tree.pory"
 	special Bag_ChooseBerry
 # 71 "data/scripts/berry_tree.pory"
-	waitstate
+
 # 72 "data/scripts/berry_tree.pory"
 	goto_if_eq VAR_ITEM_ID, 0, BerryTree_EventScript_CancelPlanting
 # 73 "data/scripts/berry_tree.pory"
@@ -469,7 +469,7 @@ BerryTree_EventScript_WaterBerry::
 # 235 "data/scripts/berry_tree.pory"
 	special DoWateringBerryTreeAnim
 # 236 "data/scripts/berry_tree.pory"
-	waitstate
+
 # 237 "data/scripts/berry_tree.pory"
 	message BerryTree_Text_PlantIsDelighted
 # 238 "data/scripts/berry_tree.pory"

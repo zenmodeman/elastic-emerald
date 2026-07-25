@@ -496,8 +496,6 @@ IVTrainer_ChooseMon::
 	msgbox IVTrainer_ChooseMon_Text_0
 # 240 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	special ChoosePartyMon
-# 241 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
-	waitstate
 # 242 "data/maps/RustboroCity_DevonCorp_1F/scripts.pory"
 	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
 	goto_if_eq IVTrainer_ChooseMon_1

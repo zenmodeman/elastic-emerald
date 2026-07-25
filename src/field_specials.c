@@ -4603,12 +4603,12 @@ u8 TrainPlainIV(void)
 
     targetStat = MON_DATA_HP_IV + VarGet(VAR_TEMP_1);
 
-    currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
+    currentIv = GetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], targetStat);
     if (currentIv >= targetIv){
         return FALSE;
     } 
-    SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
-    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+    SetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], targetStat, &targetIv);
+    CalculateMonStats(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004]);
 
     return TRUE;
 }
@@ -4620,12 +4620,12 @@ u8 TrainMaxIV(void){
     u8 currentIv;
 
     targetStat = MON_DATA_HP_IV + VarGet(VAR_TEMP_1);
-    currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
+    currentIv = GetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], targetStat);
     if (currentIv >= targetIv){
         return FALSE;
     } 
-    SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
-    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+    SetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], targetStat, &targetIv);
+    CalculateMonStats(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004]);
     return TRUE;
 }
 
@@ -4678,7 +4678,7 @@ static bool32 IsAbilityTutorViable(u16 species, u16 ability){
 }
 
 u16 GetTutorAbility(){
-    struct Pokemon *mon = &gPlayerParty[gSpecialVar_0x8004];
+    struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004];
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
     u16 currentAbility;
@@ -4723,7 +4723,7 @@ u16 GetTutorAbility(){
 }
 
 void SetTutorAbility(){
-    u16 species = GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPECIES, NULL);
+    u16 species = GetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], MON_DATA_SPECIES, NULL);
     u8 choice = sTutorAbilityCount == 1 ? 0 : gSpecialVar_Result;
     u8 abilityNum;
 
@@ -4736,7 +4736,7 @@ void SetTutorAbility(){
     if (gSpeciesInfo[species].abilities[abilityNum] == ABILITY_NONE){
         return;
     }
-    SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &abilityNum);
+    SetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], MON_DATA_ABILITY_NUM, &abilityNum);
     sTutorAbilityCount = 0;
 }
 
@@ -4751,17 +4751,17 @@ u8 TrainMaxIVs(void){
 
     for (i=0; i< NUM_STATS; i++){
         targetStat = MON_DATA_HP_IV + i;
-        currentIv = GetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat);
+        currentIv = GetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], targetStat);
         if(currentIv >= targetIv){
             numAlreadyMaxed += 1;
             continue;
         }
-        SetMonData(&gPlayerParty[gSpecialVar_0x8004], targetStat, &targetIv);
+        SetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], targetStat, &targetIv);
     }
     if (numAlreadyMaxed >= NUM_STATS){
         return FALSE;
     }
-    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+    CalculateMonStats(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004]);
     return TRUE;
 }
 

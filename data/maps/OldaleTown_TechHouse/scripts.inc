@@ -304,8 +304,6 @@ AbilityTutor_ChooseMon::
 	msgbox AbilityTutor_ChooseMon_Text_0
 # 164 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	special ChoosePartyMon
-# 165 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	waitstate
 # 166 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
 	goto_if_eq AbilityTutor_ChooseMon_1

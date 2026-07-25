@@ -238,7 +238,7 @@ script RustboroCity_DevonCorp_1F_IVTrainer_Farewell{
 script IVTrainer_ChooseMon{
 		msgbox(format("Alright, Please choose a Pokemon to train."))
 		special(ChoosePartyMon)
-		waitstate
+
 		if (var(VAR_0x8004) == PARTY_NOTHING_CHOSEN) {
 			msgbox(format("Having trouble deciding? Take your time."))
 			waitmessage

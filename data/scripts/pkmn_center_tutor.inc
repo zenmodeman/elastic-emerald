@@ -181,8 +181,6 @@ CheckTriumphs::
 	msgbox CheckTriumphs_Text_0
 # 70 "data/scripts/pkmn_center_tutor.pory"
 	special ChoosePartyMon
-# 71 "data/scripts/pkmn_center_tutor.pory"
-	waitstate
 # 72 "data/scripts/pkmn_center_tutor.pory"
 	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
 	goto_if_ne CheckTriumphs_1

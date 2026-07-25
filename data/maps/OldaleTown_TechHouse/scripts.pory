@@ -162,7 +162,7 @@ script TechHouse_SuctionCupsFisher{
 script AbilityTutor_ChooseMon{
 		msgbox(format("Alright, Please choose a Pokemon to check."))
 		special(ChoosePartyMon)
-		waitstate
+
 		if (var(VAR_0x8004) == PARTY_NOTHING_CHOSEN) {
             goto(AbilityTutor_NotInterested)
 		}

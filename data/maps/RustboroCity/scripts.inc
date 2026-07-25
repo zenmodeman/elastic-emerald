@@ -159,7 +159,7 @@ RustboroCity_EventScript_MatchCallTutorial::
 # 80 "data/maps/RustboroCity/scripts.pory"
 	special ScriptMenu_CreateStartMenuForPokenavTutorial
 # 81 "data/maps/RustboroCity/scripts.pory"
-	waitstate
+
 # 82 "data/maps/RustboroCity/scripts.pory"
 	switch VAR_RESULT
 # 83 "data/maps/RustboroCity/scripts.pory"
@@ -181,7 +181,7 @@ RustboroCity_EventScript_MatchCallTutorial::
 # 91 "data/maps/RustboroCity/scripts.pory"
 	special OpenPokenavForTutorial
 # 92 "data/maps/RustboroCity/scripts.pory"
-	waitstate
+
 # 93 "data/maps/RustboroCity/scripts.pory"
 	delay 20
 # 94 "data/maps/RustboroCity/scripts.pory"

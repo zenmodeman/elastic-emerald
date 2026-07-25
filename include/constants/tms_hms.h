@@ -8,7 +8,7 @@
     F(FOCUS_PUNCH) \
     F(DRAGON_CLAW) \
     F(WATER_PULSE) \
-    F(CALM_MIND) \ 
+    F(CALM_MIND) \
     F(ROAR) \
     F(TOXIC) \
     F(HAIL) \
