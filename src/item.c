@@ -55,7 +55,7 @@ const struct TmHmIndexKey gTMHMItemMoveIds[NUM_ALL_MACHINES + 1] =
      *
      * [1] = { ITEM_TM_FOCUS_PUNCH, MOVE_FOCUS_PUNCH },
      * [2] = { ITEM_TM_DRAGON_CLAW, MOVE_DRAGON_CLAW },
-     * [3] = { ITEM_TM_WATER_PULSE, MOVE_WATER_PULSE },
+     * [3] = { ITEM_TM_CONFIDE, MOVE_CONFIDE },
      * etc etc
     */
 };

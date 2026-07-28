@@ -26,7 +26,6 @@ TM plan:
 - Thief
 - Speed Swap
 - Magnet Rise
-- Whirlpool
 - Snore
 - Sleep Talk
 

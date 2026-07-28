@@ -7,7 +7,7 @@
 #define FOREACH_TM(F) \
     F(FOCUS_PUNCH) \
     F(DRAGON_CLAW) \
-    F(WATER_PULSE) \
+    F(CONFIDE) \
     F(CALM_MIND) \
     F(ROAR) \
     F(TOXIC) \
@@ -60,7 +60,8 @@
     F(HARD_PRESS)\
     F(TRICK)\
     F(POWER_SPLIT)\
-    F(MAGNET_RISE)
+    F(MAGNET_RISE)\
+    F(FLIP_TURN)
 
 #define FOREACH_HM(F) \
     F(CUT) \

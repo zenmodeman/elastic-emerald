@@ -3,7 +3,6 @@
   "name": "Route109",
   "layout": "LAYOUT_ROUTE109",
   "music": "MUS_ROUTE104",
-  "region": "REGION_HOENN",
   "region_map_section": "MAPSEC_ROUTE_109",
   "requires_flash": false,
   "weather": "WEATHER_SUNNY",
@@ -320,12 +319,12 @@
       "y": 6,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_LOOK_AROUND",
-      "movement_range_x": 3,
+      "movement_range_x": 6,
       "movement_range_y": 1,
       "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "ITEM_TM_WATER_PULSE",
+      "trainer_sight_or_berry_tree_id": "ITEM_TM_CONFIDE",
       "script": "Common_EventScript_FindItem",
-      "flag": "FLAG_ITEM_ROUTE_109_WATER_PULSE"
+      "flag": "FLAG_ITEM_ROUTE_109_CONFIDE"
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_MAN_5",
@@ -350,9 +349,7 @@
       "dest_warp_id": "0"
     }
   ],
-  "coord_events": [
-
-  ],
+  "coord_events": [],
   "bg_events": [
     {
       "type": "sign",
@@ -375,8 +372,8 @@
       "x": 16,
       "y": 23,
       "elevation": 3,
-      "item": "ITEM_REVIVE",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_109_REVIVE"
+      "item": "ITEM_RASH_MINT",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_109_RASH_MINT"
     },
     {
       "type": "hidden_item",
@@ -399,16 +396,16 @@
       "x": 28,
       "y": 20,
       "elevation": 3,
-      "item": "ITEM_ETHER",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_109_ETHER"
+      "item": "ITEM_PP_UP",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_109_PP_UP"
     },
     {
       "type": "hidden_item",
       "x": 13,
       "y": 16,
       "elevation": 3,
-      "item": "ITEM_HEART_SCALE",
-      "flag": "FLAG_HIDDEN_ITEM_ROUTE_109_HEART_SCALE_2"
+      "item": "ITEM_ABILITY_CAPSULE",
+      "flag": "FLAG_HIDDEN_ITEM_ROUTE_109_ABILITY_CAPSULE"
     },
     {
       "type": "hidden_item",
@@ -418,5 +415,6 @@
       "item": "ITEM_HEART_SCALE",
       "flag": "FLAG_HIDDEN_ITEM_ROUTE_109_HEART_SCALE_3"
     }
-  ]
+  ],
+  "region": "REGION_HOENN"
 }

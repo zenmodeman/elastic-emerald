@@ -1597,7 +1597,7 @@
 #define FLAG_RECEIVED_TM_FACADE              0
 #define FLAG_RECEIVED_TM_AERIAL_ACE          0
 #define FLAG_RECEIVED_TM_CALM_MIND           0
-#define FLAG_RECEIVED_TM_WATER_PULSE         0
+#define FLAG_RECEIVED_TM_FLIP_TURN           0
 #define FLAG_HIDE_SECRET_BASE_TRAINER        0
 #define FLAG_DECORATION_1                    0
 #define FLAG_DECORATION_2                    0

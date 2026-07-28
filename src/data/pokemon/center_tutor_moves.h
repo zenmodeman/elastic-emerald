@@ -7,7 +7,6 @@ const u16 gPreGym1Tutor[] = {
     MOVE_INFESTATION,
     MOVE_SAND_TOMB,
     MOVE_METRONOME,
-    MOVE_CONFIDE,
 };
 
 const u16 gPreGym1TutorSetup[] = {
@@ -392,7 +391,6 @@ const u16 gTechTutor2Badge[] = {
 const u16 gTechTutor3Badge[] = {
     MOVE_ME_FIRST,
     //Turn Life Dew into a TM
-    // MOVE_CONFIDE, Turn Confide into a TM
 };
 
 const u16 gTechTutor5Badge[] = {
@@ -431,14 +429,6 @@ const u16 gDragonTailTradeTutor[] = {
     MOVE_ROAR,
     MOVE_WHIRLWIND,
     MOVE_CIRCLE_THROW,
-};
-
-//Trades for a Confide TM
-const u16 gConfideTradeTutor[] = {
-    MOVE_GROWL,
-    MOVE_LEER,
-    MOVE_TAIL_WHIP,
-    MOVE_PLAY_NICE,
 };
 
 //Trades for a Charm TM
