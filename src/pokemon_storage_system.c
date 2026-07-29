@@ -1443,11 +1443,11 @@ u32 CountPartyPointsExcept(u8 slotToIgnore){
     for (i = 0; i < PARTY_SIZE; i++)
     {
         if (i != slotToIgnore
-            && GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE
-            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+            && GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES) != SPECIES_NONE
+            && !GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_IS_EGG)
             )
         {
-            tierPoints += GetMonTierPoints(&gPlayerParty[i]);
+            tierPoints += GetMonTierPoints(&gParties[B_TRAINER_PLAYER][i]);
         }
     }
     return tierPoints;

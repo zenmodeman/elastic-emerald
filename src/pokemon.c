@@ -5330,6 +5330,8 @@ static u16 GetNPCTutorMoveList(enum Species species, u16 *moves)
             moveCount += AddTutorMoves(species, moves, gTechTutor5Badge, ARRAY_COUNT(gTechTutor5Badge), moveCount);
         if (FlagGet(FLAG_BADGE06_GET))
             moveCount += AddTutorMoves(species, moves, gTechTutor6Badge, ARRAY_COUNT(gTechTutor6Badge), moveCount);
+        if (FlagGet(FLAG_BADGE07_GET))
+            moveCount += AddTutorMoves(species, moves, gTechTutor7Badge, ARRAY_COUNT(gTechTutor7Badge), moveCount);
     }
     return moveCount;
 }

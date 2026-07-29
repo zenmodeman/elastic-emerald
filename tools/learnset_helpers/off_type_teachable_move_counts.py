@@ -55,17 +55,26 @@ tmExclusionHelper = [
     "Rain Dance", #Setup tutor
     "Double Team", #Setup tutor
     "Fling", #Tutor
-    "Rock Smash", #HM
     "Swift", #Tutor (and later tech tutor)
-    "Natural Gift", #Exclusive
     "Take Down", #tutor
     "Mud-Slap", #Tech tutor
     "Strength", #Tutor
-    "Flash", #HM
-    "Mimic", #Exclusive
-    "Captivate", #Exclusive
+    "Mimic", #Setup tutor
+    "Captivate", #Tech Tutor
     "Psych Up", #Setup tutor
-
+    "Confide", #Tech Tutor
+    "Trailblaze", #Tech Tutor
+    "Aerial Ace", #Tutor (and later Tech Tutor)
+    "Laser Focus", #Tech Tutor
+    "Shock Wave", #Tutor (and later Tech Tutor)
+    "Headbutt", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Body Press", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Taunt", #Setup Tutor
+    "Mega Kick", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Uproar", #Tech Tutor
+    "Mega Punch", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Incinerate", #Tutor (and later Tech Tutor)
+    "Thief", #Tutor (and later Tech Tutor)
 ]
 
 @dataclass(frozen=True)

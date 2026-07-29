@@ -660,15 +660,15 @@ static void RerollSleepTurnsAfterBattle(void)
     if (B_SLEEP_TURNS < GEN_5)
         return;
 
-    for (i = 0; i < gPlayerPartyCount; i++)
+    for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
     {
-        u32 status = GetMonData(&gPlayerParty[i], MON_DATA_STATUS);
+        u32 status = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_STATUS);
 
         if (status & STATUS1_SLEEP)
         {
             status &= ~STATUS1_SLEEP;
             status |= STATUS1_SLEEP_TURN(RandomUniform(RNG_SLEEP_TURNS, 2, 4));
-            SetMonData(&gPlayerParty[i], MON_DATA_STATUS, &status);
+            SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_STATUS, &status);
         }
     }
 }
@@ -685,11 +685,11 @@ static bool32 PartyHasEarlierHeldItem(u32 partyIndex, u16 item)
 
     for (i = 0; i < partyIndex; i++)
     {
-        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
+        u32 species = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG);
 
         if (species != SPECIES_NONE
          && species != SPECIES_EGG
-         && GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM) == item)
+         && GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM) == item)
             return TRUE;
     }
 
@@ -706,8 +706,8 @@ void BattleSetup_EnforceRestrictedModeItemClause(void)
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
-        u16 item = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
+        u32 species = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG);
+        u16 item = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM);
 
         if (species == SPECIES_NONE || species == SPECIES_EGG || item == ITEM_NONE)
             continue;
@@ -715,10 +715,10 @@ void BattleSetup_EnforceRestrictedModeItemClause(void)
         if (PartyHasEarlierHeldItem(i, item))
         {
             StoreDuplicateHeldItem(item);
-            if (MonHasMail(&gPlayerParty[i]))
-                TakeMailFromMon(&gPlayerParty[i]);
+            if (MonHasMail(&gParties[B_TRAINER_PLAYER][i]))
+                TakeMailFromMon(&gParties[B_TRAINER_PLAYER][i]);
             else
-                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &noItem);
+                SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &noItem);
         }
     }
 }
@@ -1542,8 +1542,8 @@ u16 TryHealPlayerPartyBeforeTrainerBattle(void)
     if (healA == TRAINER_PRE_BATTLE_HEAL_NONE)
         return TRAINER_PRE_BATTLE_HEAL_NONE;
 
-    for (i = 0; i < gPlayerPartyCount; i++)
-        SetMonData(&gPlayerParty[i], MON_DATA_STATUS, &status);
+    for (i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++)
+        SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_STATUS, &status);
 
     return healA;
 }

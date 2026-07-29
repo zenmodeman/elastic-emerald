@@ -22,12 +22,12 @@ bool8 DepositPartyMonToPC_Auto(u8 partyId)
         for (boxPos = 0; boxPos < IN_BOX_COUNT; boxPos++) {
             struct BoxPokemon *slot = GetBoxedMonPtr(boxNo, boxPos);
             if (GetBoxMonData(slot, MON_DATA_SPECIES, NULL) == SPECIES_NONE) {
-                CopyMon(slot, &gPlayerParty[partyId].box, sizeof(gPlayerParty[partyId].box));
+                CopyMon(slot, &gParties[B_TRAINER_PLAYER][partyId].box, sizeof(gParties[B_TRAINER_PLAYER][partyId].box));
 
                 // Move all slots after the boxed mon back by 1 slot
-                for (u8 i = partyId; i + 1 < gPlayerPartyCount; i++)
-                    CopyMon(&gPlayerParty[i], &gPlayerParty[i + 1], sizeof(struct Pokemon));
-                ZeroMonData(&gPlayerParty[--gPlayerPartyCount]);
+                for (u8 i = partyId; i + 1 < gPartiesCount[B_TRAINER_PLAYER]; i++)
+                    CopyMon(&gParties[B_TRAINER_PLAYER][i], &gParties[B_TRAINER_PLAYER][i + 1], sizeof(struct Pokemon));
+                ZeroMonData(&gParties[B_TRAINER_PLAYER][--gPartiesCount[B_TRAINER_PLAYER]]);
 
                 gSpecialVar_MonBoxId  = boxNo;
                 gSpecialVar_MonBoxPos = boxPos;
@@ -62,14 +62,14 @@ u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies)
 {
     u32 total = 0;
     struct Pokemon tempMon;
-    for (u8 i = 0; i < gPlayerPartyCount; i++) {
+    for (u8 i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++) {
         if (i == partyId) {
             // Create temporary mon with new species to calculate points
-            tempMon = gPlayerParty[i];
+            tempMon = gParties[B_TRAINER_PLAYER][i];
             SetMonData(&tempMon, MON_DATA_SPECIES, &newSpecies);
             total += GetMonTierPoints(&tempMon);
         } else {
-            total += GetMonTierPoints(&gPlayerParty[i]);
+            total += GetMonTierPoints(&gParties[B_TRAINER_PLAYER][i]);
         }
     }
     return total;
@@ -79,13 +79,13 @@ u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum)
 {
     u32 total = 0;
     struct Pokemon tempMon;
-    for (u8 i = 0; i < gPlayerPartyCount; i++) {
+    for (u8 i = 0; i < gPartiesCount[B_TRAINER_PLAYER]; i++) {
         if (i == partyId) {
-            tempMon = gPlayerParty[i];
+            tempMon = gParties[B_TRAINER_PLAYER][i];
             SetMonData(&tempMon, MON_DATA_ABILITY_NUM, &newAbilityNum);
             total += GetMonTierPoints(&tempMon);
         } else {
-            total += GetMonTierPoints(&gPlayerParty[i]);
+            total += GetMonTierPoints(&gParties[B_TRAINER_PLAYER][i]);
         }
     }
     return total;
@@ -960,11 +960,11 @@ u32 CountPartyTierPoints(){
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE
-            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES) != SPECIES_NONE
+            && !GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_IS_EGG)
             )
         {
-            tierPoints += GetMonTierPoints(&gPlayerParty[i]);
+            tierPoints += GetMonTierPoints(&gParties[B_TRAINER_PLAYER][i]);
         }
     }
     return tierPoints;

@@ -149,9 +149,9 @@ SlateportCity_OceanicMuseum_1F_EventScript_FamiliarGrunt::
 	applymovement LOCALID_OCEANIC_MUSEUM_FAMILIAR_GRUNT, Common_Movement_Delay48
 	waitmovement 0
 	msgbox SlateportCity_OceanicMuseum_1F_Text_RememberMeTakeThis, MSGBOX_DEFAULT
-	giveitem ITEM_TM_THIEF
-	goto_if_eq VAR_RESULT, 0, SlateportCity_OceanicMuseum_1F_EventScript_NoRoomForThief
-	setflag FLAG_RECEIVED_TM_THIEF
+	giveitem ITEM_TM_SNARL
+	goto_if_eq VAR_RESULT, 0, SlateportCity_OceanicMuseum_1F_EventScript_NoRoomForSnarl
+	setflag FLAG_RECEIVED_TM_SNARL
 	msgbox SlateportCity_OceanicMuseum_1F_Text_HopeINeverSeeYouAgain, MSGBOX_DEFAULT
 	closemessage
 	goto_if_eq VAR_FACING, DIR_NORTH, SlateportCity_OceanicMuseum_1F_EventScript_FamiliarGruntExitNorth
@@ -187,7 +187,7 @@ SlateportCity_OceanicMuseum_1F_EventScript_FamiliarGruntExited::
 	release
 	end
 
-SlateportCity_OceanicMuseum_1F_EventScript_NoRoomForThief::
+SlateportCity_OceanicMuseum_1F_EventScript_NoRoomForSnarl::
 	msgbox SlateportCity_OceanicMuseum_1F_Text_YouHaveToTakeThis, MSGBOX_DEFAULT
 	release
 	end
@@ -375,4 +375,3 @@ SlateportCity_OceanicMuseum_1F_Text_DepthMeasuringMachine:
 	.string "a glass dome.\p"
 	.string "Maybe it's for measuring the depth\n"
 	.string "of something…$"
-

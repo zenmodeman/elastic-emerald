@@ -598,7 +598,7 @@ static void DoMoveRelearnerMain(void)
                 if (sMoveRelearnerStruct->partyMon == PC_MON_CHOSEN)
                     boxmon = GetBoxedMonPtr(gSpecialVar_MonBoxId, gSpecialVar_MonBoxPos);
                 else
-                    boxmon = &(gPlayerParty[sMoveRelearnerStruct->partyMon].box);
+                    boxmon = &(gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon].box);
                 if (GiveMoveToBoxMon(boxmon, GetCurrentSelectedMove()) != MON_HAS_MAX_MOVES)
                 {
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
@@ -752,7 +752,7 @@ static void DoMoveRelearnerMain(void)
     case MENU_STATE_SHOW_MOVE_SUMMARY_SCREEN:
         if (!gPaletteFade.active)
         {
-            ShowSelectMovePokemonSummaryScreen(gPlayerParty, gSpecialVar_0x8004, CB2_InitLearnMoveReturnFromSelectMove, GetCurrentSelectedMove());
+            ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_PLAYER], gSpecialVar_0x8004, CB2_InitLearnMoveReturnFromSelectMove, GetCurrentSelectedMove());
             FreeMoveRelearnerResources();
         }
         break;
@@ -789,10 +789,10 @@ static void DoMoveRelearnerMain(void)
                 switch (gRelearnMode)
                 {
                 case RELEARN_MODE_PSS_PAGE_BATTLE_MOVES:
-                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_BATTLE, gPlayerParty, partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
+                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_BATTLE, gParties[B_TRAINER_PLAYER], partyMon, gPartiesCount[B_TRAINER_PLAYER] - 1, gInitialSummaryScreenCallback);
                     break;
                 case RELEARN_MODE_PSS_PAGE_CONTEST_MOVES:
-                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_CONTEST, gPlayerParty, partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
+                    ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_CONTEST, gParties[B_TRAINER_PLAYER], partyMon, gPartiesCount[B_TRAINER_PLAYER] - 1, gInitialSummaryScreenCallback);
                     break;
                 case RELEARN_MODE_BOX_PSS_PAGE_BATTLE_MOVES:
                     ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_BATTLE, GetBoxedMonPtr(gSpecialVar_MonBoxId, 0), gSpecialVar_MonBoxPos, IN_BOX_COUNT - 1, gInitialSummaryScreenCallback);
@@ -801,7 +801,7 @@ static void DoMoveRelearnerMain(void)
                     ShowPokemonSummaryScreen(SUMMARY_MODE_RELEARNER_CONTEST, GetBoxedMonPtr(gSpecialVar_MonBoxId, 0), gSpecialVar_MonBoxPos, IN_BOX_COUNT - 1, gInitialSummaryScreenCallback);
                     break;
                 default:
-                    ShowPokemonSummaryScreen(SUMMARY_MODE_NORMAL, gPlayerParty, partyMon, gPlayerPartyCount - 1, gInitialSummaryScreenCallback);
+                    ShowPokemonSummaryScreen(SUMMARY_MODE_NORMAL, gParties[B_TRAINER_PLAYER], partyMon, gPartiesCount[B_TRAINER_PLAYER] - 1, gInitialSummaryScreenCallback);
                     break;
                 }
             }
@@ -841,7 +841,7 @@ static void DoMoveRelearnerMain(void)
                 if (sMoveRelearnerStruct->partyMon == PC_MON_CHOSEN)
                     boxmon = GetBoxedMonPtr(gSpecialVar_MonBoxId, gSpecialVar_MonBoxPos);
                 else
-                    boxmon = &(gPlayerParty[sMoveRelearnerStruct->partyMon].box);
+                    boxmon = &(gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon].box);
                 move = GetBoxMonData(boxmon, MON_DATA_MOVE1 + sMoveRelearnerStruct->moveSlot);
                 u8 originalPP = GetBoxMonData(boxmon, MON_DATA_PP1 + sMoveRelearnerStruct->moveSlot);
 
@@ -910,7 +910,7 @@ static void TryDepleteMoveRelearnerPoint(void)
 
     if (FlagGet(FLAG_RESOURCE_MODE)
      && remainingRelearner > 0
-     && !IsMonFreeMoveRelearnerEligible(&gPlayerParty[sMoveRelearnerStruct->partyMon]))
+     && !IsMonFreeMoveRelearnerEligible(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon]))
     {
         VarSet(VAR_REMAINING_RELEARNER, remainingRelearner - 1);
     }
@@ -929,7 +929,7 @@ static void HideHeartSpritesAndShowTeachMoveText(bool8 onlyHideSprites)
     {
         if (FlagGet(FLAG_RESOURCE_MODE)
          && VarGet(VAR_REMAINING_RELEARNER) == 0
-         && IsMonFreeMoveRelearnerEligible(&gPlayerParty[sMoveRelearnerStruct->partyMon]))
+         && IsMonFreeMoveRelearnerEligible(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon]))
         {
             StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_FreeRelearner);
         }
@@ -1015,7 +1015,7 @@ static void ShowTeachMoveText(bool8 shouldDoNothingInstead)
     {
         if (FlagGet(FLAG_RESOURCE_MODE)
          && VarGet(VAR_REMAINING_RELEARNER) == 0
-         && IsMonFreeMoveRelearnerEligible(&gPlayerParty[sMoveRelearnerStruct->partyMon]))
+         && IsMonFreeMoveRelearnerEligible(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon]))
         {
             StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_FreeRelearner);
         }

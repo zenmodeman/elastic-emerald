@@ -363,9 +363,9 @@ static void AddHatchedMonToParty(u8 id)
     u8 name[POKEMON_NAME_LENGTH + 1];
     u16 metLevel;
     metloc_u8_t metLocation;
-    struct Pokemon *mon = &gPlayerParty[id];
+    struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][id];
 
-    CreateHatchedMon(mon, &gEnemyParty[0]);
+    CreateHatchedMon(mon, &gParties[B_TRAINER_OPPONENT_A][0]);
     SetMonData(mon, MON_DATA_IS_EGG, &isEgg);
 
     species = GetMonData(mon, MON_DATA_SPECIES);
@@ -426,13 +426,13 @@ static u8 EggHatchCreateMonSprite(u8 useAlt, u8 state, u8 partyId, u16 *speciesL
 
     if (useAlt == FALSE)
     {
-        mon = &gPlayerParty[partyId];
+        mon = &gParties[B_TRAINER_PLAYER][partyId];
         position = B_POSITION_OPPONENT_LEFT;
     }
     if (useAlt == TRUE)
     {
         // Alternate sprite allocation position. Never reached.
-        mon = &gPlayerParty[partyId];
+        mon = &gParties[B_TRAINER_PLAYER][partyId];
         position = B_POSITION_OPPONENT_RIGHT;
     }
     species = GetMonData(mon, MON_DATA_SPECIES);
@@ -535,7 +535,7 @@ static void CB2_LoadEggHatch(void)
         break;
     case 3:
     {
-        u32 species = GetMonData(&gPlayerParty[sEggHatchData->eggPartyId], MON_DATA_SPECIES);
+        u32 species = GetMonData(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], MON_DATA_SPECIES);
         if (gSpeciesInfo[species].eggId != EGG_ID_NONE)
         {
             u32 *tempSprite = malloc_and_decompress(gEggDatas[gSpeciesInfo[species].eggId].eggHatchGfx, NULL);
@@ -606,7 +606,7 @@ static void CB2_LoadEggHatch(void)
 
 static void EggHatchSetMonNickname(void)
 {
-    SetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_NICKNAME, gStringVar3);
+    SetMonData(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004], MON_DATA_NICKNAME, gStringVar3);
     //Using the global excess tier points value to avoid having to recompute tier points logic
     if (gExcessTierPoints > 0){
         DepositPartyMonToPC_Auto(sEggHatchData->eggPartyId);
@@ -676,7 +676,7 @@ static void CB2_EggHatch(void)
         // Wait for hatching animation to finish
         if (gSprites[sEggHatchData->eggSpriteId].callback == SpriteCallbackDummy)
         {
-            species = GetMonData(&gPlayerParty[sEggHatchData->eggPartyId], MON_DATA_SPECIES);
+            species = GetMonData(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], MON_DATA_SPECIES);
             DoMonFrontSpriteAnimation(&gSprites[sEggHatchData->monSpriteId], species, FALSE, 1);
             sEggHatchData->state++;
         }
@@ -688,7 +688,7 @@ static void CB2_EggHatch(void)
         break;
     case 5:
         // "{mon} hatched from egg" message/fanfare
-        GetMonNickname(&gPlayerParty[sEggHatchData->eggPartyId], gStringVar1);
+        GetMonNickname(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], gStringVar1);
         StringExpandPlaceholders(gStringVar4, gText_HatchedFromEgg);
         EggHatchPrintMessage(sEggHatchData->windowId, gStringVar4, 0, 3, TEXT_SKIP_DRAW);
         PlayFanfare(MUS_EVOLVED);
@@ -708,7 +708,7 @@ static void CB2_EggHatch(void)
                 u32 tierPoints = CountPartyTierPoints();
                 if (tierPoints > TIER_POINTS_CAP){
                     gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
-                    species = GetMonData(&gPlayerParty[sEggHatchData->eggPartyId], MON_DATA_SPECIES);
+                    species = GetMonData(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], MON_DATA_SPECIES);
                     StringCopy(gStringVar3, GetSpeciesName(species));
                     StringExpandPlaceholders(gStringVar4, gText_HatchedPkmnExceedsTierPointsSentToPC);
                     EggHatchPrintMessage(sEggHatchData->windowId, gStringVar4, 0, 3, TEXT_SKIP_DRAW);
@@ -725,7 +725,7 @@ static void CB2_EggHatch(void)
         break;
     case 8:
         // Ready the nickname prompt
-        GetMonNickname(&gPlayerParty[sEggHatchData->eggPartyId], gStringVar1);
+        GetMonNickname(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], gStringVar1);
         StringExpandPlaceholders(gStringVar4, gText_NicknameHatchPrompt);
         EggHatchPrintMessage(sEggHatchData->windowId, gStringVar4, 0, 2, 1);
         sEggHatchData->state++;
@@ -744,10 +744,10 @@ static void CB2_EggHatch(void)
         switch (Menu_ProcessInputNoWrapClearOnChoose())
         {
         case 0: // Yes
-            GetMonNickname(&gPlayerParty[sEggHatchData->eggPartyId], gStringVar3);
-            species = GetMonData(&gPlayerParty[sEggHatchData->eggPartyId], MON_DATA_SPECIES);
-            gender = GetMonGender(&gPlayerParty[sEggHatchData->eggPartyId]);
-            personality = GetMonData(&gPlayerParty[sEggHatchData->eggPartyId], MON_DATA_PERSONALITY, 0);
+            GetMonNickname(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], gStringVar3);
+            species = GetMonData(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], MON_DATA_SPECIES);
+            gender = GetMonGender(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId]);
+            personality = GetMonData(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], MON_DATA_PERSONALITY, 0);
             DoNamingScreen(NAMING_SCREEN_NICKNAME, gStringVar3, species, gender, personality, EggHatchSetMonNickname);
             break;
         case 1: // No
@@ -856,7 +856,7 @@ static void SpriteCB_Egg_Shake3(struct Sprite *sprite)
             u16 UNUSED species;
             sprite->callback = SpriteCB_Egg_WaitHatch;
             sprite->sTimer = 0;
-            species = GetMonData(&gPlayerParty[sEggHatchData->eggPartyId], MON_DATA_SPECIES);
+            species = GetMonData(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], MON_DATA_SPECIES);
             gSprites[sEggHatchData->monSpriteId].x2 = 0;
             gSprites[sEggHatchData->monSpriteId].y2 = 0;
         }
@@ -1000,9 +1000,9 @@ u8 GetEggCyclesToSubtract(void)
     u8 count, i;
     for (count = CalculatePlayerPartyCount(), i = 0; i < count; i++)
     {
-        if (!GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_EGG))
+        if (!GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SANITY_IS_EGG))
         {
-            enum Ability ability = GetMonAbility(&gPlayerParty[i]);
+            enum Ability ability = GetMonAbility(&gParties[B_TRAINER_PLAYER][i]);
             if (ability == ABILITY_MAGMA_ARMOR
              || ability == ABILITY_FLAME_BODY
              || ability == ABILITY_STEAM_ENGINE)

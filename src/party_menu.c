@@ -8135,10 +8135,10 @@ bool8 DoesPlayerFollowItemClause(void)
 {
     for (u32 i = 0; i < PARTY_SIZE; i++)
     {
-        u16 item = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
+        u16 item = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM);
         for (u32 j = i + 1; j < PARTY_SIZE; j++)
         {
-            if (item != ITEM_NONE && item == GetMonData(&gPlayerParty[j], MON_DATA_HELD_ITEM))
+            if (item != ITEM_NONE && item == GetMonData(&gParties[B_TRAINER_PLAYER][j], MON_DATA_HELD_ITEM))
                 return FALSE;
         }
     }
@@ -8160,10 +8160,10 @@ static void CB2_ChooseMonForCenterTutor(void)
     gSpecialVar_0x8004 = GetCursorSelectionMonId();
     if (gSpecialVar_0x8004 >= PARTY_SIZE)
         gSpecialVar_0x8004 = PARTY_NOTHING_CHOSEN;
-    else if (!CanMonUseCenterTutorWithCurrentResources(&gPlayerParty[gSpecialVar_0x8004]))
+    else if (!CanMonUseCenterTutorWithCurrentResources(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004]))
         gSpecialVar_0x8005 = 0;
     else
-        gSpecialVar_0x8005 = GetNumberOfCenterTutorableMoves(&gPlayerParty[gSpecialVar_0x8004]);
+        gSpecialVar_0x8005 = GetNumberOfCenterTutorableMoves(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004]);
     gFieldCallback2 = CB2_FadeFromPartyMenu;
     SetMainCallback2(CB2_ReturnToField);
 }

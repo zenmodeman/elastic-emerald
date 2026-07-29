@@ -1696,7 +1696,7 @@
 #define FLAG_RECEIVED_LAVARIDGE_EGG          0
 #define FLAG_RECEIVED_REVIVED_FOSSIL_MON     0
 #define FLAG_SECRET_BASE_REGISTRY_ENABLED    0
-#define FLAG_RECEIVED_TM_THIEF               0
+#define FLAG_RECEIVED_TM_SNARL               0
 #define FLAG_CONTEST_SKETCH_CREATED          0  // Set but never read
 #define FLAG_EVIL_TEAM_ESCAPED_STERN_SPOKE   0
 #define FLAG_RECEIVED_EXP_SHARE              0

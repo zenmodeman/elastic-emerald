@@ -522,7 +522,7 @@ static void DoMoveTutorMain(void)
 
             if (selection == 0)
             {
-                if (GiveMoveToMon(&gPlayerParty[sMoveTutorStruct->partyMon], GetCurrentSelectedMove()) != MON_HAS_MAX_MOVES)
+                if (GiveMoveToMon(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon], GetCurrentSelectedMove()) != MON_HAS_MAX_MOVES)
                 {
                     PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnLearnedMove);
                     gSpecialVar_0x8004 = TRUE;
@@ -661,7 +661,7 @@ static void DoMoveTutorMain(void)
     case MENU_STATE_SHOW_MOVE_SUMMARY_SCREEN:
         if (!gPaletteFade.active)
         {
-            ShowSelectMovePokemonSummaryScreen(gPlayerParty, sMoveTutorStruct->partyMon, CB2_InitLearnMoveReturnFromSelectMove, GetCurrentSelectedMove());
+            ShowSelectMovePokemonSummaryScreen(gParties[B_TRAINER_PLAYER], sMoveTutorStruct->partyMon, CB2_InitLearnMoveReturnFromSelectMove, GetCurrentSelectedMove());
             FreeMoveTutor();
         }
         break;
@@ -716,10 +716,10 @@ static void DoMoveTutorMain(void)
             }
             else
             {
-                u16 moveId = GetMonData(&gPlayerParty[sMoveTutorStruct->partyMon], MON_DATA_MOVE1 + sMoveTutorStruct->moveSlot);
+                u16 moveId = GetMonData(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon], MON_DATA_MOVE1 + sMoveTutorStruct->moveSlot);
                 StringCopy(gStringVar3, GetMoveName(moveId));
-                RemoveMonPPBonus(&gPlayerParty[sMoveTutorStruct->partyMon], sMoveTutorStruct->moveSlot);
-                SetMonMoveSlot(&gPlayerParty[sMoveTutorStruct->partyMon], GetCurrentSelectedMove(), sMoveTutorStruct->moveSlot);
+                RemoveMonPPBonus(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon], sMoveTutorStruct->moveSlot);
+                SetMonMoveSlot(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon], GetCurrentSelectedMove(), sMoveTutorStruct->moveSlot);
                 StringCopy(gStringVar2, GetMoveName(GetCurrentSelectedMove()));
                 PrintMessageWithPlaceholders(gText_MoveRelearnerAndPoof);
                 sMoveTutorStruct->state = MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE;
@@ -778,7 +778,7 @@ static void TryDepleteCenterTutorPoint(void)
     if (FlagGet(FLAG_RESOURCE_MODE)
      && remainingTutor > 0
      && VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER
-     && !IsMonFreeCenterTutorEligible(&gPlayerParty[sMoveTutorStruct->partyMon]))
+     && !IsMonFreeCenterTutorEligible(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon]))
     {
         VarSet(VAR_REMAINING_TUTOR, remainingTutor - 1);
     }
@@ -927,7 +927,7 @@ static void CreateLearnableMovesList(void)
     s32 i;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
 
-    sMoveTutorStruct->numMenuChoices = GetNPCTutorableMoves(&gPlayerParty[sMoveTutorStruct->partyMon], sMoveTutorStruct->movesToLearn);
+    sMoveTutorStruct->numMenuChoices = GetNPCTutorableMoves(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon], sMoveTutorStruct->movesToLearn);
 
     for (i = 0; i < sMoveTutorStruct->numMenuChoices; i++)
     {
@@ -935,7 +935,7 @@ static void CreateLearnableMovesList(void)
         sMoveTutorStruct->menuItems[i].id = sMoveTutorStruct->movesToLearn[i];
     }
 
-    GetMonData(&gPlayerParty[sMoveTutorStruct->partyMon], MON_DATA_NICKNAME, nickname);
+    GetMonData(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon], MON_DATA_NICKNAME, nickname);
     StringCopy_Nickname(gStringVar1, nickname);
     sMoveTutorStruct->menuItems[sMoveTutorStruct->numMenuChoices].name = gText_Cancel;
     sMoveTutorStruct->menuItems[sMoveTutorStruct->numMenuChoices].id = LIST_CANCEL;

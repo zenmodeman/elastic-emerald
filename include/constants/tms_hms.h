@@ -7,7 +7,7 @@
 #define FOREACH_TM(F) \
     F(FOCUS_PUNCH) \
     F(DRAGON_CLAW) \
-    F(CONFIDE) \
+    F(CHILLING_WATER) \
     F(CALM_MIND) \
     F(ROAR) \
     F(TOXIC) \
@@ -50,7 +50,7 @@
     F(SECRET_POWER) \
     F(REST) \
     F(ATTRACT) \
-    F(THIEF) \
+    F(SNARL) \
     F(STEEL_WING) \
     F(SKILL_SWAP) \
     F(SNATCH) \

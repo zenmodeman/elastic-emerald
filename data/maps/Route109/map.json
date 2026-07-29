@@ -322,9 +322,9 @@
       "movement_range_x": 6,
       "movement_range_y": 1,
       "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "ITEM_TM_CONFIDE",
+      "trainer_sight_or_berry_tree_id": "ITEM_TM_CHILLING_WATER",
       "script": "Common_EventScript_FindItem",
-      "flag": "FLAG_ITEM_ROUTE_109_CONFIDE"
+      "flag": "FLAG_ITEM_ROUTE_109_CHILLING_WATER"
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_MAN_5",

@@ -176,7 +176,7 @@ static struct BoxPokemon *LearnMove_GetBoxMonFromTaskData(u8 partyIndex)
     if (partyIndex == PC_MON_CHOSEN)
         boxmon = GetBoxedMonPtr(gSpecialVar_MonBoxId, gSpecialVar_MonBoxPos);
     else
-        boxmon = &(gPlayerParty[partyIndex].box);
+        boxmon = &(gParties[B_TRAINER_PLAYER][partyIndex].box);
     return boxmon;
 }
 

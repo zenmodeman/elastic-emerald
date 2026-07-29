@@ -45,6 +45,7 @@ const u16 gPreGym3TutorSetup[] = {
     MOVE_STOCKPILE,
     MOVE_TRAILBLAZE,
     MOVE_FLAME_CHARGE,
+    MOVE_SKULL_BASH,
 };
 
 const u16 gPreGym3Tutor[] = {
@@ -67,6 +68,8 @@ const u16 gPreGym3Tutor[] = {
     MOVE_ECHOED_VOICE,
     MOVE_ASSURANCE,
     MOVE_ACID_SPRAY,
+    MOVE_THIEF,
+    MOVE_MAGIC_COAT,
 };
 
 const u16 gPreGym4Tutor[] = {
@@ -82,7 +85,6 @@ const u16 gPreGym4Tutor[] = {
     MOVE_DRAINING_KISS,
     MOVE_WATER_PULSE,
     MOVE_HEX,
-    MOVE_SNARL,
     MOVE_BREAKING_SWIPE,
     MOVE_ENDEAVOR,
     MOVE_PAIN_SPLIT,
@@ -113,8 +115,7 @@ const u16 gPreGym5Tutor[] = {
     MOVE_COUNTER,
     MOVE_COACHING,
     MOVE_PAYBACK,
-
-
+    MOVE_STRING_SHOT,
 };
 
 const u16 gPreGym5TutorSetup[] = {
@@ -152,10 +153,8 @@ const u16 gPreGym6Tutor[] = {
     MOVE_TRI_ATTACK,
     MOVE_DRAIN_PUNCH,
     MOVE_SKITTER_SMACK,
-    MOVE_MAGIC_COAT,
     MOVE_GRASSY_GLIDE,
     MOVE_SCORCHING_SANDS,
-    MOVE_STRING_SHOT,
     MOVE_GIGA_DRAIN,
 };
 
@@ -177,7 +176,6 @@ const u16 gPreGym6TutorSetup[] = {
     MOVE_MINIMIZE,
     MOVE_TAILWIND,
     MOVE_SUBSTITUTE,
-    MOVE_DYNAMIC_PUNCH,
 };
 
 const u16 gPreGym7Tutor[] = {
@@ -401,6 +399,7 @@ const u16 gTechTutor5Badge[] = {
     MOVE_SYNCHRONOISE,
     MOVE_DREAM_EATER,
     MOVE_FOCUS_PUNCH,
+    MOVE_DYNAMIC_PUNCH,
     MOVE_CHARM,
     MOVE_FAKE_TEARS,
     MOVE_SCARY_FACE,
@@ -410,6 +409,8 @@ const u16 gTechTutor5Badge[] = {
     MOVE_SPEED_SWAP,
     MOVE_CAPTIVATE,
     MOVE_FEATHER_DANCE,
+    MOVE_UPROAR,
+    MOVE_INCINERATE,
 };
 
 const u16 gTechTutor6Badge[] = {
@@ -422,6 +423,17 @@ const u16 gTechTutor6Badge[] = {
     MOVE_FIRE_PLEDGE,
     MOVE_WATER_PLEDGE,
     MOVE_GRASS_PLEDGE,
+};
+
+const u16 gTechTutor7Badge[] = {
+    MOVE_SHOCK_WAVE,
+    MOVE_AERIAL_ACE,
+    MOVE_DISARMING_VOICE,
+    MOVE_FEINT_ATTACK,
+    MOVE_MAGICAL_LEAF,
+    MOVE_MAGNET_BOMB,
+    MOVE_SWIFT,
+    MOVE_THIEF,
 };
 
 
