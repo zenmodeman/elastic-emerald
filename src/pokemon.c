@@ -5232,21 +5232,31 @@ u8 GetLevelUpMovesBySpecies(enum Species species, u16 *moves)
      return numMoves;
 }
 
-static u8 AddTutorMoves(enum Species species, u16 *moves, const u16 *tutorMoves, size_t tutorMoveCount, u8 moveCount)
+static u16 AddTutorMoves(enum Species species, u16 *moves, const u16 *tutorMoves, size_t tutorMoveCount, u16 moveCount)
 {
-    u8 addedMoves = 0;
+    u16 addedMoves = 0;
 
     for (u32 i = 0; i < tutorMoveCount; i++)
     {
         if (CanLearnTeachableMove(species, tutorMoves[i]))
-            moves[moveCount + addedMoves++] = tutorMoves[i];
+        {
+            u16 j;
+
+            for (j = 0; j < moveCount + addedMoves; j++)
+            {
+                if (moves[j] == tutorMoves[i])
+                    break;
+            }
+            if (j == moveCount + addedMoves)
+                moves[moveCount + addedMoves++] = tutorMoves[i];
+        }
     }
     return addedMoves;
 }
 
-static u8 GetCenterTutorMoveList(enum Species species, u16 *moves)
+static u16 GetCenterTutorMoveList(enum Species species, u16 *moves)
 {
-    u8 moveCount = 0;
+    u16 moveCount = 0;
 
     moveCount += AddTutorMoves(species, moves, gPreGym1Tutor, ARRAY_COUNT(gPreGym1Tutor), moveCount);
     if (!FlagGet(FLAG_RESTRICTED_MODE))
@@ -5263,12 +5273,47 @@ static u8 GetCenterTutorMoveList(enum Species species, u16 *moves)
         if (!FlagGet(FLAG_RESTRICTED_MODE))
             moveCount += AddTutorMoves(species, moves, gPreGym3TutorSetup, ARRAY_COUNT(gPreGym3TutorSetup), moveCount);
     }
+    if (FlagGet(FLAG_BADGE03_GET))
+    {
+        moveCount += AddTutorMoves(species, moves, gPreGym4Tutor, ARRAY_COUNT(gPreGym4Tutor), moveCount);
+        if (!FlagGet(FLAG_RESTRICTED_MODE))
+            moveCount += AddTutorMoves(species, moves, gPreGym4TutorSetup, ARRAY_COUNT(gPreGym4TutorSetup), moveCount);
+    }
+    if (FlagGet(FLAG_BADGE04_GET))
+    {
+        moveCount += AddTutorMoves(species, moves, gPreGym5Tutor, ARRAY_COUNT(gPreGym5Tutor), moveCount);
+        if (!FlagGet(FLAG_RESTRICTED_MODE))
+            moveCount += AddTutorMoves(species, moves, gPreGym5TutorSetup, ARRAY_COUNT(gPreGym5TutorSetup), moveCount);
+    }
+    if (FlagGet(FLAG_BADGE05_GET))
+    {
+        moveCount += AddTutorMoves(species, moves, gPreGym6Tutor, ARRAY_COUNT(gPreGym6Tutor), moveCount);
+        if (!FlagGet(FLAG_RESTRICTED_MODE))
+            moveCount += AddTutorMoves(species, moves, gPreGym6TutorSetup, ARRAY_COUNT(gPreGym6TutorSetup), moveCount);
+    }
+    if (FlagGet(FLAG_BADGE06_GET))
+    {
+        moveCount += AddTutorMoves(species, moves, gPreGym7Tutor, ARRAY_COUNT(gPreGym7Tutor), moveCount);
+        if (!FlagGet(FLAG_RESTRICTED_MODE))
+            moveCount += AddTutorMoves(species, moves, gPreGym7TutorSetup, ARRAY_COUNT(gPreGym7TutorSetup), moveCount);
+    }
+    if (FlagGet(FLAG_BADGE07_GET))
+    {
+        moveCount += AddTutorMoves(species, moves, gPreGym8Tutor, ARRAY_COUNT(gPreGym8Tutor), moveCount);
+        if (!FlagGet(FLAG_RESTRICTED_MODE))
+            moveCount += AddTutorMoves(species, moves, gPreGym8TutorSetup, ARRAY_COUNT(gPreGym8TutorSetup), moveCount);
+    }
+    if (FlagGet(FLAG_BADGE08_GET))
+        moveCount += AddTutorMoves(species, moves, gEliteFourTutor, ARRAY_COUNT(gEliteFourTutor), moveCount);
+    if (FlagGet(FLAG_IS_CHAMPION))
+        moveCount += AddTutorMoves(species, moves, gLegacyTutor, ARRAY_COUNT(gLegacyTutor), moveCount);
+
     return moveCount;
 }
 
-static u8 GetNPCTutorMoveList(enum Species species, u16 *moves)
+static u16 GetNPCTutorMoveList(enum Species species, u16 *moves)
 {
-    u8 moveCount = 0;
+    u16 moveCount = 0;
 
     if (VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER)
         return GetCenterTutorMoveList(species, moves);
@@ -5277,21 +5322,29 @@ static u8 GetNPCTutorMoveList(enum Species species, u16 *moves)
         moveCount += AddTutorMoves(species, moves, gTechTutorAlways, ARRAY_COUNT(gTechTutorAlways), moveCount);
         if (FlagGet(FLAG_BADGE01_GET))
             moveCount += AddTutorMoves(species, moves, gTechTutor1Badge, ARRAY_COUNT(gTechTutor1Badge), moveCount);
+        if (FlagGet(FLAG_BADGE02_GET))
+            moveCount += AddTutorMoves(species, moves, gTechTutor2Badge, ARRAY_COUNT(gTechTutor2Badge), moveCount);
+        if (FlagGet(FLAG_BADGE03_GET))
+            moveCount += AddTutorMoves(species, moves, gTechTutor3Badge, ARRAY_COUNT(gTechTutor3Badge), moveCount);
+        if (FlagGet(FLAG_BADGE05_GET))
+            moveCount += AddTutorMoves(species, moves, gTechTutor5Badge, ARRAY_COUNT(gTechTutor5Badge), moveCount);
+        if (FlagGet(FLAG_BADGE06_GET))
+            moveCount += AddTutorMoves(species, moves, gTechTutor6Badge, ARRAY_COUNT(gTechTutor6Badge), moveCount);
     }
     return moveCount;
 }
 
-u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
+u16 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
 {
     u16 learnedMoves[MAX_MON_MOVES];
     u16 applicableTutorMoves[MAX_TUTOR_LIST] = {0};
-    u8 moveCount = 0;
+    u16 moveCount = 0;
     enum Species species = GetMonData(mon, MON_DATA_SPECIES);
 
     if (species == SPECIES_EGG)
         return 0;
 
-    u8 applicableMoveCount = GetNPCTutorMoveList(species, applicableTutorMoves);
+    u16 applicableMoveCount = GetNPCTutorMoveList(species, applicableTutorMoves);
     for (u32 i = 0; i < MAX_MON_MOVES; i++)
         learnedMoves[i] = GetMonData(mon, MON_DATA_MOVE1 + i);
     for (u32 i = 0; i < applicableMoveCount; i++)
@@ -5305,7 +5358,7 @@ u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
     return moveCount;
 }
 
-u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
+u16 GetNumberOfCenterTutorableMoves(struct Pokemon *mon)
 {
     u16 moves[MAX_TUTOR_LIST] = {0};
     return GetNPCTutorableMoves(mon, moves);

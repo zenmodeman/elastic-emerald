@@ -15,10 +15,28 @@ import pathlib
 import sys
 
 
+TEACHABLE_MOVE_SOURCES = {
+    "MOVE_MIMIC": {"sv.json", "za.json"},
+    "MOVE_CONFIDE": {"sv.json"},
+    "MOVE_CAPTIVATE": {"sv.json"},
+    "MOVE_TOXIC": {"swsh.json", "sv.json", "la.json", "bdsp.json"},
+    "MOVE_SCALD": {"sv.json", "za.json"},
+    "MOVE_BIDE": {"sv.json"},
+    "MOVE_NATURAL_GIFT": {"sv.json"},
+}
+
+SPECIES_ALIASES = {
+    "FARFETCHÂ€™D": "FARFETCHD",
+    "MR. MIME": "MR_MIME",
+    "MIME JR.": "MIME_JR",
+    "PORYGON-Z": "PORYGON_Z",
+    "FLABÃ©BÃ©": "FLABEBE",
+    "SIRFETCHÂ€™D": "SIRFETCHD",
+    "MR. RIME": "MR_RIME",
+}
+
 
 def from_single(fname: pathlib.Path) -> dict[str, set[str]]:
-    allow_toxic = fname.name in ["swsh.json", "sv.json", "la.json", "bsdp.json"]
-
     with open(fname, "r") as fp:
         data = json.load(fp)
 
@@ -35,15 +53,19 @@ def from_single(fname: pathlib.Path) -> dict[str, set[str]]:
         moves.update(by_method["EggMoves"])
 
         # Tutor
-        moves.update(by_method["TutorMoves"])
+        moves.update(
+            move
+            for move in by_method["TutorMoves"]
+            if move not in TEACHABLE_MOVE_SOURCES or fname.name in TEACHABLE_MOVE_SOURCES[move]
+        )
 
-        # TM (with Toxic filtering)
+        # TM
         for move in by_method["TMMoves"]:
-            if move == "MOVE_TOXIC" and not allow_toxic:
+            if move in TEACHABLE_MOVE_SOURCES and fname.name not in TEACHABLE_MOVE_SOURCES[move]:
                 continue
             moves.add(move)
 
-        out[species] = moves
+        out[SPECIES_ALIASES.get(species, species)] = moves
 
     return out
 

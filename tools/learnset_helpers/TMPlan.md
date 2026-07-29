@@ -28,6 +28,7 @@ TM plan:
 - Magnet Rise
 - Snore
 - Sleep Talk
+- Ally Switch
 
 
 #### Variability
@@ -42,7 +43,9 @@ TM plan:
 - Shadow Ball (Has replacement tutors)
 - Body Slam
 - Brick Break
-- Thunder Punch (Has replacement tutors)
+- Thunder Punch
+- Fire Punch
+- Ice Punch
 - Temper Flare (Has replacement tutors)
 - Dig
 - Waterfall

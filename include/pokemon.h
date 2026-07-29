@@ -970,8 +970,8 @@ bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon);
 bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon);
 bool32 IsMonFreeMoveRelearnerEligible(struct Pokemon *mon);
 bool32 CanMonUseMoveRelearnerWithCurrentResources(struct Pokemon *mon);
-u8 GetNumberOfCenterTutorableMoves(struct Pokemon *mon);
-u8 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves);
+u16 GetNumberOfCenterTutorableMoves(struct Pokemon *mon);
+u16 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves);
 
 static inline u32 OWE_GetMovementTypeFromSpecies(enum Species speciesId)
 {

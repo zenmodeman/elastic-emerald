@@ -168,7 +168,7 @@ static EWRAM_DATA struct
     u8 partyMon;                                         /*0x044*/
     u8 moveSlot;                                         /*0x045*/
     struct ListMenuItem menuItems[MAX_TUTOR_LIST];  /*0x0E8*/
-    u8 numMenuChoices;                                   /*0x110*/
+    u16 numMenuChoices;                                  /*0x110*/
     u8 numToShowAtOnce;                                  /*0x111*/
     u8 moveListMenuTask;                                 /*0x112*/
     u8 moveListScrollArrowTask;                          /*0x113*/

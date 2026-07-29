@@ -18,8 +18,12 @@ import typing
 CONFIG_ENABLED_PAT = re.compile(r"^#define P_LEARNSET_HELPER_TEACHABLE\s+(?P<cfg_val>[^ ]*)", flags=re.MULTILINE)
 INCFILE_HAS_TUTOR_PAT = re.compile(r"special ChooseMonForMoveTutor")
 INCFILE_HAS_TUTOR_PAT2 = re.compile(r"chooseboxmon SELECT_PC_MON_MOVE_TUTOR")
-INCFILE_MOVE_PAT = re.compile(r"setvar VAR_0x8005, (MOVE_[A-Z_]*)")
-INCFILE_MOVE_PAT2 = re.compile(r"move_tutor (MOVE_[A-Z_]*)")
+INCFILE_MOVE_PAT = re.compile(r"setvar VAR_0x8005, (MOVE_[A-Z0-9_]*)")
+INCFILE_MOVE_PAT2 = re.compile(r"move_tutor (MOVE_[A-Z0-9_]*)")
+C_TUTOR_MOVE_PAT = re.compile(r"\b(MOVE_[A-Z0-9_]+)\b")
+C_TUTOR_FILES = (
+    "./src/data/pokemon/center_tutor_moves.h",
+)
 
 def enabled() -> bool:
     """
@@ -45,6 +49,11 @@ def extract_repo_tutors() -> typing.Generator[str, None, None]:
                 yield move.group(1)
 
             for move in INCFILE_MOVE_PAT2.finditer(incfile):
+                yield move.group(1)
+
+    for tutor_fname in C_TUTOR_FILES:
+        with open(tutor_fname, "r") as tutor_fp:
+            for move in C_TUTOR_MOVE_PAT.finditer(tutor_fp.read()):
                 yield move.group(1)
 
 def dump_output(file, data):

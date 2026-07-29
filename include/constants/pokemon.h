@@ -183,7 +183,7 @@ enum OtIdMethod
 
 #define MAX_LEVEL_UP_MOVES       40
 
-#define MAX_TUTOR_LIST 200
+#define MAX_TUTOR_LIST 300
 
 #define MON_MALE       0x00
 #define MON_FEMALE     0xFE

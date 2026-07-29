@@ -37,6 +37,8 @@ const u16 gPreGym2Tutor[] = {
 const u16 gPreGym2TutorSetup[] = {
     MOVE_POWER_SWAP,
     MOVE_PSYCH_UP,
+    MOVE_COPYCAT,
+    MOVE_MIMIC,
 };
 
 const u16 gPreGym3TutorSetup[] = {
@@ -65,8 +67,6 @@ const u16 gPreGym3Tutor[] = {
     MOVE_ECHOED_VOICE,
     MOVE_ASSURANCE,
     MOVE_ACID_SPRAY,
-    MOVE_ROAR,
-    MOVE_WHIRLWIND,
 };
 
 const u16 gPreGym4Tutor[] = {
@@ -86,6 +86,7 @@ const u16 gPreGym4Tutor[] = {
     MOVE_BREAKING_SWIPE,
     MOVE_ENDEAVOR,
     MOVE_PAIN_SPLIT,
+    MOVE_VENOSHOCK,
 };
 
 const u16 gPreGym4TutorSetup[] = {
@@ -103,13 +104,7 @@ const u16 gPreGym5Tutor[] = {
     MOVE_TELEPORT,
     MOVE_MEGA_PUNCH,
     MOVE_HEAL_BELL,
-    MOVE_SCARY_FACE,
-    MOVE_SCREECH,
     MOVE_BEAT_UP,
-    MOVE_DEFOG,
-    MOVE_FAKE_TEARS,
-    MOVE_EERIE_IMPULSE,
-    MOVE_SPEED_SWAP,
     MOVE_PSYCHO_CUT,
     MOVE_CROSS_POISON,
     MOVE_RECYCLE,
@@ -117,6 +112,9 @@ const u16 gPreGym5Tutor[] = {
     MOVE_BURNING_JEALOUSY,
     MOVE_COUNTER,
     MOVE_COACHING,
+    MOVE_PAYBACK,
+
+
 };
 
 const u16 gPreGym5TutorSetup[] = {
@@ -151,14 +149,14 @@ const u16 gPreGym6Tutor[] = {
     MOVE_SHADOW_CLAW,
     MOVE_SELF_DESTRUCT,
     MOVE_MISTY_EXPLOSION,
-    MOVE_PAYBACK,
-    MOVE_VENOSHOCK,
     MOVE_TRI_ATTACK,
     MOVE_DRAIN_PUNCH,
     MOVE_SKITTER_SMACK,
     MOVE_MAGIC_COAT,
     MOVE_GRASSY_GLIDE,
     MOVE_SCORCHING_SANDS,
+    MOVE_STRING_SHOT,
+    MOVE_GIGA_DRAIN,
 };
 
 const u16 gPreGym6TutorSetup[] = {
@@ -183,14 +181,11 @@ const u16 gPreGym6TutorSetup[] = {
 };
 
 const u16 gPreGym7Tutor[] = {
-    MOVE_ROCK_SLIDE,
-    MOVE_HYPER_VOICE,
     MOVE_ROCK_CLIMB,
     MOVE_DUAL_CHOP,
     MOVE_DUAL_WINGBEAT,
     MOVE_THROAT_CHOP,
     MOVE_DRILL_RUN,
-    MOVE_GIGA_DRAIN,
     MOVE_LEECH_LIFE,
     MOVE_POWER_GEM,
     MOVE_AURA_SPHERE,
@@ -325,7 +320,6 @@ const u16 gLegacyTutor[] = {
 };
 
 const u16 gTechTutorAlways[] = {
-MOVE_AFTER_YOU,
 MOVE_AROMATIC_MIST,
 MOVE_AQUA_RING,
 MOVE_ASSIST,
@@ -374,10 +368,11 @@ MOVE_WORRY_SEED,
 MOVE_HOLD_BACK,
 MOVE_WATER_SPORT,
 MOVE_ROLE_PLAY,
+MOVE_ROAR,
+MOVE_WHIRLWIND,
 };
 
 const u16 gTechTutor1Badge[] = {
-MOVE_COPYCAT,
 MOVE_UPPER_HAND,
 MOVE_TWISTER,
 };
@@ -386,17 +381,35 @@ const u16 gTechTutor2Badge[] = {
     MOVE_POWER_SHIFT,
     MOVE_POWER_TRICK,
     MOVE_ATTRACT,
+    MOVE_GROWL,
+    MOVE_CONFIDE,
+    MOVE_LEER,
+    MOVE_TAIL_WHIP,
+    MOVE_PLAY_NICE,
+
 };
 
 const u16 gTechTutor3Badge[] = {
     MOVE_ME_FIRST,
-    //Turn Life Dew into a TM
+    MOVE_AFTER_YOU,
+    MOVE_QUASH,
+    MOVE_SKILL_SWAP,
+    MOVE_DEFOG,
 };
 
 const u16 gTechTutor5Badge[] = {
     MOVE_SYNCHRONOISE,
     MOVE_DREAM_EATER,
     MOVE_FOCUS_PUNCH,
+    MOVE_CHARM,
+    MOVE_FAKE_TEARS,
+    MOVE_SCARY_FACE,
+    MOVE_SCREECH,
+    MOVE_METAL_SOUND,
+    MOVE_EERIE_IMPULSE,
+    MOVE_SPEED_SWAP,
+    MOVE_CAPTIVATE,
+    MOVE_FEATHER_DANCE,
 };
 
 const u16 gTechTutor6Badge[] = {
@@ -411,105 +424,76 @@ const u16 gTechTutor6Badge[] = {
     MOVE_GRASS_PLEDGE,
 };
 
+
+//NOT YET DECIDED FEATURE BELOW
 //In Resource Mode specifically, the center will also have the option to trade a certain TM for some adjacent moves, as an alternative to spending points
 //These trades are only elligble if the corresponding tutor move has been unlocked
 
 //Trades for an Aerial Ace TM
-const u16 gAerialAceTradeTutor[] = {
-    MOVE_SHOCK_WAVE,
-    MOVE_DISARMING_VOICE,
-    MOVE_FEINT_ATTACK,
-    MOVE_MAGICAL_LEAF,
-    MOVE_MAGNET_BOMB,
-    MOVE_SWIFT,
-};
+// const u16 gAerialAceTradeTutor[] = {
+//     MOVE_SHOCK_WAVE,
+//     MOVE_DISARMING_VOICE,
+//     MOVE_FEINT_ATTACK,
+//     MOVE_MAGICAL_LEAF,
+//     MOVE_MAGNET_BOMB,
+//     MOVE_SWIFT,
+// };
 
-//Trades for a Dragon Tail TM
-const u16 gDragonTailTradeTutor[] = {
-    MOVE_ROAR,
-    MOVE_WHIRLWIND,
-    MOVE_CIRCLE_THROW,
-};
+// //Trades for a Dragon Tail TM
+// const u16 gDragonTailTradeTutor[] = {
+//     MOVE_ROAR,
+//     MOVE_WHIRLWIND,
+//     MOVE_CIRCLE_THROW,
+// };
 
-//Trades for a Charm TM
-const u16 gCharmTradeTutor[] = {
-    MOVE_EERIE_IMPULSE,
-    MOVE_SCREECH,
-    MOVE_FAKE_TEARS,
-    MOVE_METAL_SOUND,
-    MOVE_SCARY_FACE,
-};
 
-//Trades for a Rock Tomb TM
-const u16 gRockTombTradeTutor[] = {
-    MOVE_POUNCE,
-    MOVE_LOW_SWEEP,
-};
+// //Trades for a Rock Tomb TM
+// const u16 gRockTombTradeTutor[] = {
+//     MOVE_POUNCE,
+//     MOVE_LOW_SWEEP,
+// };
 
-//Trades for an Icy Wind TM
-const u16 gIcyWindTradeTutor[] = {    
-    MOVE_BULLDOZE,
-    MOVE_ELECTROWEB,
-    MOVE_SNARL,
-    MOVE_STRUGGLE_BUG,
-    MOVE_BREAKING_SWIPE,
-};
+// //Trades for an Icy Wind TM
+// const u16 gIcyWindTradeTutor[] = {
+//     MOVE_BULLDOZE,
+//     MOVE_ELECTROWEB,
+//     MOVE_SNARL,
+//     MOVE_STRUGGLE_BUG,
+//     MOVE_BREAKING_SWIPE,
+// };
 
-//Trades for a Shadow Ball TM
-const u16 gShadowBallTradeTutor[] = {
-    MOVE_DARK_PULSE,
-    MOVE_FLASH_CANNON, 
-    MOVE_DAZZLING_GLEAM,
-    MOVE_DRAGON_PULSE,
-    MOVE_ALLURING_VOICE,
-    MOVE_PSYSHOCK,
-    MOVE_TRI_ATTACK,
-};
+// //Trades for a Shadow Ball TM
+// const u16 gShadowBallTradeTutor[] = {
+//     MOVE_DARK_PULSE,
+//     MOVE_FLASH_CANNON,
+//     MOVE_DAZZLING_GLEAM,
+//     MOVE_DRAGON_PULSE,
+//     MOVE_ALLURING_VOICE,
+//     MOVE_PSYSHOCK,
+//     MOVE_TRI_ATTACK,
+// };
+// //Trades for a Dragon Claw TM
+// const u16 gDragonClawTradeTutor[] = {
+//     MOVE_CRUNCH,
+//     MOVE_X_SCISSOR,
+//     MOVE_DRILL_RUN,
+//     MOVE_IRON_HEAD,
+//     MOVE_POISON_JAB,
+//     MOVE_ZEN_HEADBUTT,
+// };
 
-//Trades for a Dragon Claw TM
-const u16 gDragonClawTradeTutor[] = {
-    MOVE_CRUNCH,
-    MOVE_X_SCISSOR,
-    MOVE_DRILL_RUN,
-    MOVE_IRON_HEAD,
-    MOVE_POISON_JAB,
-    MOVE_ZEN_HEADBUTT,
-};
+// //Trades for a Thunder Punch TM
+// const u16 gThunderPunchTradeTutor[] = {
+//     MOVE_ICE_PUNCH,
+//     MOVE_FIRE_PUNCH,
+// };
 
-//Trades for a Thunder Punch TM
-const u16 gThunderPunchTradeTutor[] = {
-    MOVE_ICE_PUNCH,
-    MOVE_FIRE_PUNCH,
-};
-
-//Trades for a Temper Flare TM
-const u16 gTemperFlareTradeTutor[] = {
-    MOVE_BRINE,
-    MOVE_STOMPING_TANTRUM,
-    MOVE_HEX,
-    MOVE_VENOSHOCK,
-    MOVE_BURNING_JEALOUSY,
-    MOVE_LASH_OUT
-};
-
-//Trades for a Helping Hand TM
-const u16 gHelpingHandTradeTutor[] = {
-    MOVE_QUASH,
-    MOVE_ALLY_SWITCH,
-    MOVE_AFTER_YOU,
-    MOVE_COACHING,
-};
-
-//Trades for an Earthquake TM
-const u16 gEarthquakeTradeTutor[] = {
-    MOVE_EARTH_POWER,
-    MOVE_HIGH_HORSEPOWER,
-};
-
-//Trades for a Fire Blast TM
-const u16 gFireBlastTradeTutor[] = {
-    MOVE_HYDRO_PUMP,
-    MOVE_FOCUS_BLAST,
-    MOVE_MEGAHORN,
-    MOVE_GUNK_SHOT,
-};
+// //Trades for a Temper Flare TM
+// const u16 gTemperFlareTradeTutor[] = {
+//     MOVE_BRINE,
+//     MOVE_STOMPING_TANTRUM,
+//     MOVE_HEX,
+//     MOVE_VENOSHOCK,
+//     MOVE_BURNING_JEALOUSY,
+//     MOVE_LASH_OUT
+// };
