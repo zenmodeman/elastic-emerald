@@ -103,7 +103,6 @@ const u16 gPreGym5Tutor[] = {
     MOVE_TELEPORT,
     MOVE_MEGA_PUNCH,
     MOVE_HEAL_BELL,
-    MOVE_QUASH,
     MOVE_SCARY_FACE,
     MOVE_SCREECH,
     MOVE_BEAT_UP,
@@ -114,7 +113,6 @@ const u16 gPreGym5Tutor[] = {
     MOVE_PSYCHO_CUT,
     MOVE_CROSS_POISON,
     MOVE_RECYCLE,
-    MOVE_AFTER_YOU,
     MOVE_LASH_OUT,
     MOVE_BURNING_JEALOUSY,
     MOVE_COUNTER,
@@ -327,6 +325,7 @@ const u16 gLegacyTutor[] = {
 };
 
 const u16 gTechTutorAlways[] = {
+MOVE_AFTER_YOU,
 MOVE_AROMATIC_MIST,
 MOVE_AQUA_RING,
 MOVE_ASSIST,
@@ -357,6 +356,7 @@ MOVE_MIST,
 MOVE_MUD_SLAP,
 MOVE_MUD_SPORT,
 MOVE_ODOR_SLEUTH,
+MOVE_QUASH,
 MOVE_QUICK_GUARD,
 MOVE_REFRESH,
 MOVE_ROTOTILLER,
@@ -495,7 +495,6 @@ const u16 gTemperFlareTradeTutor[] = {
 //Trades for a Helping Hand TM
 const u16 gHelpingHandTradeTutor[] = {
     MOVE_QUASH,
-    MOVE_LIFE_DEW,
     MOVE_ALLY_SWITCH,
     MOVE_AFTER_YOU,
     MOVE_COACHING,

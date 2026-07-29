@@ -52,3 +52,26 @@ The report unions and deduplicates moves across all bundled game datasets. The
 total learnset includes level-up, pre-evolution, egg, TM/HM, and tutor moves.
 Each Pokémon section includes that complete unique historical move list before
 its standout comparisons.
+
+## Off-type teachable move counts
+
+`off_type_teachable_move_counts.py` ranks every move, including Normal and
+status moves, by the number of fully evolved Pokémon that do not share its type
+and learn it by TM or tutor, but never by level-up or as an egg move in any
+bundled PoryMoves dataset. Learnsets are unioned across all of the JSON
+datasets. The only move-level output filter omits moves with no qualifying
+teachable learners. The report also shows the number of fully evolved off-type
+Pokémon learning each displayed move by level-up and the difference between
+its teachable and level-up counts. Moves are sorted by that difference in
+descending order. The primary section excludes moves named in
+`tmExclusionHelper`, while a secondary section contains only those excluded
+moves so that moves already ruled out as TMs do not distort the priority list.
+
+```sh
+python3 tools/learnset_helpers/off_type_teachable_move_counts.py
+python3 tools/learnset_helpers/off_type_teachable_move_counts.py -o reports/custom_name.md
+```
+
+The Markdown table is written to
+`tools/learnset_helpers/off_type_moves.md` by default. Use `--output` to select
+a different destination.

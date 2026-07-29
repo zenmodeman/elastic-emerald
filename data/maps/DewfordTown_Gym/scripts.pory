@@ -150,6 +150,7 @@ DewfordTown_Gym_EventScript_BrawlyDefeated::
 	msgbox DewfordTown_Gym_Text_KnuckleBadgeInfoTakeThis, MSGBOX_DEFAULT
 	setflag FLAG_DEFEATED_DEWFORD_GYM
 	setflag FLAG_BADGE02_GET
+	special AwardMoveServicePointsForBadge
 	setflag FLAG_HIDE_PETALBURG_GROVE_BIRCH
 	addvar VAR_PETALBURG_GYM_STATE, 1
 	call_if_eq VAR_PETALBURG_GYM_STATE, 6, Common_EventScript_ReadyPetalburgGymForBattle
@@ -512,15 +513,6 @@ script BrawlyFirstGymBattleScript {
 }
 
 script DewfordTown_Gym_EventScript_GiveLowKick {
-	if (var(VAR_MONOTYPE) > 0){
-		addvar(VAR_REMAINING_TUTOR, 2)
-		addvar(VAR_REMAINING_RELEARNER, 2)
-	}else{
-		addvar(VAR_REMAINING_TUTOR, 1)
-		addvar(VAR_REMAINING_RELEARNER, 1)
-	}
-
-
     if (!flag(FLAG_RESOURCE_MODE)) {
         giveitem(ITEM_TM_LOW_KICK)
         goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)

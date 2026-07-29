@@ -24,6 +24,7 @@ RustboroCity_Gym_EventScript_RoxanneDefeated::
 	msgbox RustboroCity_Gym_Text_StoneBadgeInfoTakeThis, MSGBOX_DEFAULT
 	setflag FLAG_DEFEATED_RUSTBORO_GYM
 	setflag FLAG_BADGE01_GET
+	special AwardMoveServicePointsForBadge
 	setvar VAR_RUSTBORO_CITY_STATE, 1
 	addvar VAR_PETALBURG_GYM_STATE, 1
 	setvar VAR_0x8008, 1
@@ -227,7 +228,7 @@ ExplainItemClause:
 	.string "You have Duplicate Held Items. \p"
 	.string "League sanctioned matches, \n"
 	.string "Must have item diversity. \p"
-	.string "Please return without duplicates.$" 
+	.string "Please return without duplicates.$"
 
 RustboroCity_Gym_Text_RoxannePostBattle:
 	.string "Since you are so strong, you should\n"
@@ -338,13 +339,6 @@ script RoxanneFirstGymBattleScript {
 }
 
 script RustboroCity_Gym_EventScript_GiveRockTomb {
-	if (var(VAR_MONOTYPE) > 0){
-		addvar(VAR_REMAINING_TUTOR, 2)
-		addvar(VAR_REMAINING_RELEARNER, 2)
-	}else{
-		addvar(VAR_REMAINING_TUTOR, 1)
-		addvar(VAR_REMAINING_RELEARNER, 1)
-	}
     if (!flag(FLAG_RESOURCE_MODE)) {
         giveitem(ITEM_TM_ROCK_TOMB)
         goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)

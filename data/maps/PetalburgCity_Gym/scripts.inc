@@ -378,6 +378,7 @@ PetalburgCity_Gym_EventScript_NormanBattle::
 	setflag FLAG_DEFEATED_PETALBURG_GYM
 	setvar VAR_PETALBURG_GYM_STATE, 7
 	setflag FLAG_BADGE05_GET
+	special AwardMoveServicePointsForBadge
 	special ResetHealLocationFromDewford
 	call EventScript_HideMrBriney
 	setflag FLAG_HIDE_MAUVILLE_GYM_WATTSON
@@ -1588,4 +1589,3 @@ PetalburgCity_Gym_Text_NormanRematchNeedTwoMons:
 	.string "capable of battle?\p"
 	.string "Sorry, but you'll have to come back\n"
 	.string "with at least two POKéMON.$"
-

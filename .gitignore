@@ -72,4 +72,5 @@ __pycache__
 /tools/elastic_emerald_helpers/ElasticMovesets.csv
 .map_version
 tools/learnset_helpers/move_analysis_output_instance.md
+tools/learnset_helpers/off_type_moves.md
 /tools/elastic_emerald_helpers/trainer_set_analysis.md

@@ -351,6 +351,8 @@ gSpecials::
 	def_special ScriptGetPartyMonSpecies
 	def_special IsSelectedMonEgg
 	def_special Special_HasMoveToRelearn
+	def_special InitializeMoveServicePoints
+	def_special AwardMoveServicePointsForBadge
 	def_special TryInitBattleTowerAwardManObjectEvent
 	def_special MoveOutOfSecretBaseFromOutside
 	def_special LoadPlayerBag
