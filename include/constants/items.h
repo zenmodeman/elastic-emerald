@@ -825,17 +825,18 @@ enum __attribute__((packed)) Item
 
     /* Expands to:
      *   ITEM_TM_FOCUS_PUNCH = ITEM_TM01,
-     *   ...
-     *   ITEM_HM_CUT = ITM_HM01,
      *   ... */
     #define ENUM_TM(n, id) CAT(ITEM_TM_, id) = CAT(ITEM_TM, n),
-    #define ENUM_HM(n, id) CAT(ITEM_HM_, id) = CAT(ITEM_HM, n),
     #define TO_TMHM_NUMS(a, ...) (__VA_ARGS__)
     RECURSIVELY(R_ZIP(ENUM_TM, TO_TMHM_NUMS NUMBERS_256, (FOREACH_TM(APPEND_COMMA))))
-    RECURSIVELY(R_ZIP(ENUM_HM, TO_TMHM_NUMS NUMBERS_256, (FOREACH_HM(APPEND_COMMA))))
     #undef ENUM_TM
-    #undef ENUM_HM
     #undef TO_TMHM_NUMS
+
+    // These released or planned HMs keep their established item IDs. The
+    // remaining field moves use ordinary TM item IDs generated above.
+    ITEM_HM_CUT = ITEM_HM01,
+    ITEM_HM_FLASH = ITEM_HM05,
+    ITEM_HM_ROCK_SMASH = ITEM_HM06,
 
     // Charms
     ITEM_OVAL_CHARM = 690,

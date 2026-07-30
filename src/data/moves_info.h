@@ -9361,7 +9361,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "item held by the foe."),
         .effect = EFFECT_STEAL_ITEM,
         .power = B_UPDATED_MOVE_DATA >= GEN_5 ? 60 : 40,
-        .type = TYPE_NORMAL,
+        .type = TYPE_FAIRY,
         .accuracy = 100,
         .pp = B_UPDATED_MOVE_DATA >= GEN_6 ? 25 : 40,
         .target = TARGET_SELECTED,

@@ -92,6 +92,269 @@ tmExclusionHelper = [
     "Inferno", #Tutor and Accuracy Tutor
     "Cross Chop", #Tutor and Accuracy Tutor
     "Dynamic Punch", #Tutor and Accuracy Tutor
+    "Focus Punch", #Tech Tutor
+    "Scary Face", #Tech Tutor
+    "Curse", #Setup Tutor
+    "Knock Off", #Tutor
+    "Power-Up Punch", #Setup Tutor
+    "Sandstorm", #Setup Tutor / Monotype Tutor
+    "Echoed Voice", #Tutor
+    "Roar", #Tech Tutor
+    "Charge Beam", #Setup Tutor
+    "Drain Punch", #Tutor
+    "Torment", #Tech Tutor
+    "U-Turn", #Tutor
+    "Stealth Rock", #Setup Tutor
+    "Metronome", #Tech Tutor
+    "Safeguard", #Tech Tutor
+    "Hail", #Setup Tutor / Monotype Tutor
+    "Alluring Voice", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Water Pulse", #Tutor
+    "Work Up", #Setup Tutor
+    "Seismic Toss", #Tutor
+    "Foul Play", #Tutor
+    "Smack Down", #Tutor (And eventual Tech Tutor)
+    "Retaliate", #Tutor (And eventual Tech Tutor)
+    "Skull Bash", #Setup tutor
+    "Brutal Swing", #Tutor
+    "Dream Eater", #Tech Tutor
+    "Swords Dance", #Setup Tutor
+    "Calm Mind", #Setup Tutor
+    "High Horsepower", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Ominous Wind", #Tutor (Avoid redundancy with Hex)
+    "Spite", #Tech Tutor
+    "Lash Out", #Tutor (And eventual Tech Tutor)
+    "Block", #Tech Tutor
+    "Fury Cutter", #Tutor
+    "Nature Power", #Tutor
+    "Snatch", #Setup Tutor
+    "Hone Claws", #Setup Tutor
+    "Superpower", #Tutor
+    "Telekinesis", #Tech Tutor
+    "False Swipe", #Tech Tutor
+    "Giga Drain", #Tutor
+    "Heat Wave", #Tutor
+    "Rock Climb", #Tutor
+    "Bulk Up", #Setup Tutor
+    "Covet", #Tutor (and eventual Tech Tutor)
+    "Rage", #Setup Tutor
+    "Outrage", #Tutor
+    "Psychic Fangs", #Tutor
+    "Skitter Smack", #Tutor
+    "Assurance", #Tutor (and eventual Tech Tutor)
+    "Baton Pass", #Setup Tutor
+    "Magic Coat", #Tutor (Depends on how applicable the move becomes in the context of the AI; could potentially be Tech Tutor)
+    "Smart Strike", #Tutor
+    "Scorching Sands", #Tutor
+    "Role Play", #Tech Tutor
+    "Heal Bell", #Tutor
+    "Aqua Tail", #Tutor
+    "Meteor Beam", #Setup Tutor
+    "Snowscape", #Only using Hail
+    "Dual Chop", #Tutor
+    "Dual Wingbeat", #Tutor
+    "Gyro Ball", #Tutor
+    "Pay Day", #Tech Tutor
+    "Self-Destruct", #Tutor
+    "Scale Shot", #Setup Tutor
+    "Trick Room", #Setup Tutor
+    "Whirlpool", #Tutor
+    "Defog", #Tech Tutor
+    "Dragon Tail", #Tutor (And eventual tech tutor)
+    "Circle Throw", #Tutor (And eventual tech tutor)
+    "Stored Power", #Setup Tutor
+    "Bide", #Tech Tutor
+    "Encore", #Setup Tutor
+    "Reversal", #Tutor
+    "Twister", #Tech Tutor
+    "Iron Defense", #Setup Tutor
+    "Vacuum Wave", #Tutor
+    "Will-O-Wisp", #Tutor
+    "Trick", #Exclusive
+    "Close Combat", #Tutor
+    "Razor Wind", #Tutor
+    "Rock Polish", #Setup Tutor
+    "Infestation", #Tutor
+    "Waterfall", #Tutor
+    "Dive", #Tutor
+    "Skill Swap", #Tech Tutor
+    "Triple Axel", #Tutor
+    "After You", #Tech Tutor
+    "Counter", #Tutor
+    "Detect", #Tutor
+    "Embargo", #Tech Tutor
+    "Nightmare", #Tech Tutor
+    "Wonder Room", #Tech Tutor
+    "Comet Punch", #Tutor
+    "Drill Run", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Power Shift", #Tech Tutor
+    "Submission", #Tutor
+    "Tailwind", #Setup Tutor
+    "Air Cutter", #Tutor
+    "Sand Tomb", #Tutor
+    "Roost", #Tutor
+    "Imprison", #Tech Tutor
+    "Scald", #Tutor
+    "Silver Wind", #Tutor
+    "Sludge Wave", #Tutor
+    "Super Fang", #Tutor
+    "Defense Curl", #Setup Tutor
+    "Quash", #Tech Tutor
+    "Steel Roller", #Tech Tutor
+    "Bounce", #Tutor
+    "Darkest Lariat", #Tutor
+    "Fly", #Tutor
+    "Overheat", #Tutor
+    "Upper Hand", #Tech Tutor
+    "Burning Jealousy", #Tutor (And eventual tech tutor)
+    "Lash Out", #Tutor (And eventual tech tutor)
+    "Magnet Bomb", #Tutor (And eventual tech tutor)
+    "Misty Terrain", #Tech Tutor
+    "Grassy Terrain", #Tutor
+    "Psychic Terrain", #Tutor
+    "Electric Terrain", #Tutor
+    "Play Rough", #Tutor
+    "Air Slash", #Tutor
+    "Signal Beam", #Tutor
+    "Bind",
+    "Night Shade",
+    "Fire Spin",
+    "Heat Crash",
+    "Rock Blast",
+    "Solar Blade",
+    "Spikes",
+    "Supercell Slam",
+    "Thunder Fang",
+    "Dragon Cheer",
+    "Heavy Slam",
+    "Draining Kiss",
+    "Terrain Pulse",
+    "Toxic Spikes",
+    "Breaking Swipe",
+    "Electro Ball",
+    "Fissure",
+    "Flame Charge",
+    "Heal Block",
+    "Hurricane",
+    "Icicle Spear",
+    "Magical Leaf",
+    "Nasty Plot",
+    "Poltergeist",
+    "Blaze Kick",
+    "Bubble Beam",
+    "Cross Poison",
+    "First Impression",
+    "Muddy Water",
+    "Psycho Cut",
+    "Tri Attack",
+    "Volt Switch",
+    "Dragon Dance",
+    "Frost Breath",
+    "Leech Life",
+    "Lunge",
+    "Magic Room",
+    "Teleport",
+    "Beat Up",
+    "Brine",
+    "Bug Bite",
+    "Fire Fang",
+    "Guard Swap",
+    "Ice Ball",
+    "Ice Fang",
+    "Last Resort",
+    "Mystical Fire",
+    "Sky Attack",
+    "Sky Drop",
+    "Coaching",
+    "Grassy Glide",
+    "Power Swap",
+    "Razor Shell",
+    "String Shot",
+    "Struggle Bug",
+    "Tail Slap",
+    "Worry Seed",
+    "Acid Spray",
+    "Flip Turn",
+    "Leaf Storm",
+    "Psywave",
+    "Shadow Punch",
+    "Speed Swap",
+    "Steel Beam",
+    "Venom Drench",
+    "Bullet Seed",
+    "Corrosive Gas",
+    "Dragon Breath",
+    "Expanding Force",
+    "Metal Claw",
+    "Misty Explosion",
+    "Petal Dance",
+    "Rising Voltage",
+    "Water Gun",
+    "Aurora Veil",
+    "Blast Burn",
+    "Draco Meteor",
+    "Dragon Rage",
+    "Fire Pledge",
+    "Frenzy Plant",
+    "Gastro Acid",
+    "Grass Pledge",
+    "Hydro Cannon",
+    "Octolock",
+    "Phantom Force",
+    "Shadow Bone",
+    "Soft-Boiled",
+    "Water Pledge",
+    "Bug Buzz",
+    "Camouflage",
+    "Cosmic Power",
+    "Eerie Impulse",
+    "Flame Wheel",
+    "Mega Drain",
+    "Petal Blizzard",
+    "Poison Fang",
+    "Poison Tail",
+    "Synthesis",
+    "Brave Bird",
+    "Charge",
+    "Egg Bomb",
+    "Fake Tears",
+    "Metal Sound",
+    "Sheer Cold",
+    "Wood Hammer",
+    "Horn Drill",
+    "Aura Sphere",
+    "Flare Blitz",
+    "Future Sight",
+    "Leaf Blade",
+    "Pluck",
+    "Discharge",
+    "Mud Sport",
+    "Rollout",
+    "Feather Dance",
+    "Pin Missile",
+    "Sing",
+    "Disarming Voice",
+    "Baby-Doll Eyes",
+    "Charm",
+    "Confuse Ray",
+    "Double Hit",
+    "Explosion",
+    "Haze",
+    "Megahorn",
+    "Psybeam",
+    "Fake Out",
+    "Mist",
+    "Whirlwind",
+    "Sweet Scent",
+    "Smokescreen",
+    "Amnesia",
+    "Night Slash",
+    "Agility",
+    "Sucker Punch",
+    "Focus Energy",
+    "Ancient Power",
+    "Screech",
+    "Crunch",
 ]
 
 @dataclass(frozen=True)
@@ -199,18 +462,25 @@ def build_report(
     tm_candidates = [move for move in ordered if move.display_name not in excluded_names]
     excluded_moves = [move for move in ordered if move.display_name in excluded_names]
 
-    def table(move_group: list[MoveInfo]) -> list[str]:
-        lines = [
-            "| Move | Type | Teachable | Level-up | Difference |",
-            "|---|---|---:|---:|---:|",
-        ]
-        lines.extend(
-            f"| {move.display_name} | {display_constant(move.type)} | "
-            f"{len(teachable_learners[move.name])} | "
-            f"{len(level_up_learners[move.name])} | "
-            f"{len(teachable_learners[move.name]) - len(level_up_learners[move.name])} |"
-            for move in move_group
-        )
+    def table(move_group: list[MoveInfo], ranked: bool = False) -> list[str]:
+        if ranked:
+            lines = [
+                "| Rank | Move | Type | Teachable | Level-up | Difference |",
+                "|---:|---|---|---:|---:|---:|",
+            ]
+        else:
+            lines = [
+                "| Move | Type | Teachable | Level-up | Difference |",
+                "|---|---|---:|---:|---:|",
+            ]
+        for rank, move in enumerate(move_group, start=1):
+            prefix = f"| {rank} " if ranked else ""
+            lines.append(
+                f"{prefix}| {move.display_name} | {display_constant(move.type)} | "
+                f"{len(teachable_learners[move.name])} | "
+                f"{len(level_up_learners[move.name])} | "
+                f"{len(teachable_learners[move.name]) - len(level_up_learners[move.name])} |"
+            )
         return lines
 
     lines = [
@@ -223,7 +493,7 @@ def build_report(
         "Moves listed in `tmExclusionHelper` are omitted from this section.",
         "",
     ]
-    lines.extend(table(tm_candidates))
+    lines.extend(table(tm_candidates, ranked=True))
     lines.extend(
         [
             "",

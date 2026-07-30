@@ -6,9 +6,9 @@ SafariZone_SecretHouse_EventScript_Attendant::
 	faceplayer
 	goto_if_set FLAG_GOT_HM03, SafariZone_SecretHouse_EventScript_ExplainSurf
 	msgbox SafariZone_SecretHouse_Text_CongratsYouveWon
-	checkitemspace ITEM_HM03
+	checkitemspace ITEM_TM_SURF
 	goto_if_eq VAR_RESULT, FALSE, SafariZone_SecretHouse_EventScript_NoRoomForHM03
-	giveitem_msg SafariZone_SecretHouse_Text_ReceivedHM03FromAttendant, ITEM_HM03
+	giveitem_msg SafariZone_SecretHouse_Text_ReceivedHM03FromAttendant, ITEM_TM_SURF
 	msgbox SafariZone_SecretHouse_Text_ExplainSurf
 	setflag FLAG_GOT_HM03
 	release
@@ -36,14 +36,14 @@ SafariZone_SecretHouse_Text_CongratsYouveWon::
 	.string "You have won!$"
 
 SafariZone_SecretHouse_Text_ReceivedHM03FromAttendant::
-	.string "{PLAYER} received HM03\n"
+	.string "{PLAYER} received TM59\n"
 	.string "from the attendant!$"
 
 SafariZone_SecretHouse_Text_ExplainSurf::
-	.string "HM03 is SURF.\p"
+	.string "TM59 is SURF.\p"
 	.string "POKéMON will be able to ferry you\n"
 	.string "across water using it.\p"
-	.string "And, this HM isn't disposable, so\n"
+	.string "And, this TM isn't disposable, so\n"
 	.string "you can use it over and over.\p"
 	.string "You're super lucky for winning this\n"
 	.string "fabulous prize!$"
@@ -51,4 +51,3 @@ SafariZone_SecretHouse_Text_ExplainSurf::
 SafariZone_SecretHouse_Text_DontHaveRoomForPrize::
 	.string "You don't have room for this\n"
 	.string "fabulous prize!$"
-

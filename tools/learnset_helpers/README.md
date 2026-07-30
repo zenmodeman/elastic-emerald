@@ -66,6 +66,7 @@ its teachable and level-up counts. Moves are sorted by that difference in
 descending order. The primary section excludes moves named in
 `tmExclusionHelper`, while a secondary section contains only those excluded
 moves so that moves already ruled out as TMs do not distort the priority list.
+The primary section includes a one-based rank column.
 
 ```sh
 python3 tools/learnset_helpers/off_type_teachable_move_counts.py

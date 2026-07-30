@@ -384,7 +384,6 @@ const u16 gTechTutor2Badge[] = {
     MOVE_LEER,
     MOVE_TAIL_WHIP,
     MOVE_PLAY_NICE,
-
 };
 
 const u16 gTechTutor3Badge[] = {
@@ -393,6 +392,8 @@ const u16 gTechTutor3Badge[] = {
     MOVE_QUASH,
     MOVE_SKILL_SWAP,
     MOVE_DEFOG,
+    MOVE_PAY_DAY,
+    MOVE_MISTY_TERRAIN,
 };
 
 const u16 gTechTutor5Badge[] = {
@@ -437,8 +438,16 @@ const u16 gTechTutor7Badge[] = {
     MOVE_SWIFT,
     MOVE_THIEF,
     MOVE_VITAL_THROW,
+    MOVE_DRAGON_TAIL,
+    MOVE_CIRCLE_THROW,
 };
 
+const u16 gTechTutor8Badge[] = {
+    MOVE_LASH_OUT,
+    MOVE_BURNING_JEALOUSY,
+    MOVE_RETALIATE,
+    MOVE_ASSURANCE,
+};
 
 //NOT YET DECIDED FEATURE BELOW
 //In Resource Mode specifically, the center will also have the option to trade a certain TM for some adjacent moves, as an alternative to spending points

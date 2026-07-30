@@ -61,17 +61,17 @@
     F(TRICK)\
     F(POWER_SPLIT)\
     F(MAGNET_RISE)\
-    F(FLIP_TURN)
-
-#define FOREACH_HM(F) \
-    F(CUT) \
+    F(FLIP_TURN) \
     F(FLY) \
     F(SURF) \
     F(STRENGTH) \
-    F(FLASH) \
-    F(ROCK_SMASH) \
     F(WATERFALL) \
     F(DIVE)
+
+#define FOREACH_HM(F) \
+    F(CUT) \
+    F(FLASH) \
+    F(ROCK_SMASH)
 
 #define FOREACH_TMHM(F) \
     FOREACH_TM(F) \

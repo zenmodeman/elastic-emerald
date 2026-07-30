@@ -23,7 +23,7 @@ FuchsiaCity_WardensHouse_EventScript_GiveGoldTeeth::
 	checkplayergender
 	call_if_eq VAR_RESULT, MALE, FuchsiaCity_WardensHouse_EventScript_WardenThanksMale
 	call_if_eq VAR_RESULT, FEMALE, FuchsiaCity_WardensHouse_EventScript_WardenThanksFemale
-	giveitem_msg FuchsiaCity_WardensHouse_Text_ReceivedHM04FromWarden, ITEM_HM04
+	giveitem_msg FuchsiaCity_WardensHouse_Text_ReceivedHM04FromWarden, ITEM_TM_STRENGTH
 	setflag FLAG_GOT_HM04
 	removeitem ITEM_GOLD_TEETH
 	release
@@ -99,11 +99,11 @@ FuchsiaCity_WardensHouse_Text_ThanksLassieGiveYouSomething::
 	.string "trouble.$"
 
 FuchsiaCity_WardensHouse_Text_ReceivedHM04FromWarden::
-	.string "{PLAYER} received HM04\n"
+	.string "{PLAYER} received TM60\n"
 	.string "from the WARDEN.$"
 
 FuchsiaCity_WardensHouse_Text_ExplainStrength::
-	.string "WARDEN: Inside HM04 you'll find\n"
+	.string "WARDEN: Inside TM60 you'll find\n"
 	.string "STRENGTH.\p"
 	.string "It lets POKéMON move boulders when\n"
 	.string "you're outside of battle.\p"
@@ -122,4 +122,3 @@ FuchsiaCity_WardensHouse_Text_MonPhotosFossilsOnDisplay::
 FuchsiaCity_WardensHouse_Text_OldMonMerchandiseOnDisplay::
 	.string "Old POKéMON merchandise is on\n"
 	.string "display.$"
-

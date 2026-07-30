@@ -30,27 +30,31 @@ TEST("Zenmodeman: Resource mode stores and consumes multi-copy TM rewards")
     EXPECT(CheckBagHasItem(ITEM_TM25, 5));
 }
 
-TEST("Zenmodeman: TM mode handling does not change HMs")
+TEST("Zenmodeman: Migrated field moves are TMs while retained field moves are HMs")
 {
     FlagSet(FLAG_RESOURCE_MODE);
 
-    EXPECT(GetItemImportance(ITEM_HM02));
-    EXPECT(AddBagItem(ITEM_HM02, 2));
-    EXPECT(CheckBagHasItem(ITEM_HM02, 2));
+    EXPECT(!GetItemImportance(ITEM_TM_FLY));
+    EXPECT(AddBagItem(ITEM_TM_FLY, 2));
+    EXPECT(CheckBagHasItem(ITEM_TM_FLY, 2));
+
+    EXPECT(GetItemImportance(ITEM_HM_ROCK_SMASH));
+    EXPECT(AddBagItem(ITEM_HM_ROCK_SMASH, 2));
+    EXPECT(CheckBagHasItem(ITEM_HM_ROCK_SMASH, 2));
 }
 
 TEST("TMs and HMs are sorted correctly in the bag")
 {
     struct BagPocket *pocket = &gBagPockets[POCKET_TM_HM];
 
-    ASSUME(GetItemPocket(ITEM_HM07) == POCKET_TM_HM);
+    ASSUME(GetItemPocket(ITEM_TM_WATERFALL) == POCKET_TM_HM);
     ASSUME(GetItemPocket(ITEM_TM25) == POCKET_TM_HM);
     ASSUME(GetItemPocket(ITEM_TM14) == POCKET_TM_HM);
     ASSUME(GetItemPocket(ITEM_TM42) == POCKET_TM_HM);
-    ASSUME(GetItemPocket(ITEM_HM05) == POCKET_TM_HM);
+    ASSUME(GetItemPocket(ITEM_HM_FLASH) == POCKET_TM_HM);
     ASSUME(GetItemPocket(ITEM_TM05) == POCKET_TM_HM);
     ASSUME(GetItemPocket(ITEM_TM01) == POCKET_TM_HM);
-    ASSUME(GetItemPocket(ITEM_HM02) == POCKET_TM_HM);
+    ASSUME(GetItemPocket(ITEM_TM_FLY) == POCKET_TM_HM);
 
     /*
      * Note: I would add a test to make sure that TMs are sorted correctly by move name,
@@ -58,14 +62,14 @@ TEST("TMs and HMs are sorted correctly in the bag")
      */
 
     RUN_OVERWORLD_SCRIPT(
-        additem ITEM_HM07;
+        additem ITEM_TM_WATERFALL;
         additem ITEM_TM25;
         additem ITEM_TM14;
         additem ITEM_TM42;
-        additem ITEM_HM05;
+        additem ITEM_HM_FLASH;
         additem ITEM_TM05;
         additem ITEM_TM01;
-        additem ITEM_HM02;
+        additem ITEM_TM_FLY;
     );
 
     SortItemsInBag(&gBagPockets[POCKET_TM_HM], SORT_BY_INDEX);
@@ -75,9 +79,9 @@ TEST("TMs and HMs are sorted correctly in the bag")
     EXPECT_EQ(pocket->itemSlots[2].itemId, ITEM_TM14);
     EXPECT_EQ(pocket->itemSlots[3].itemId, ITEM_TM25);
     EXPECT_EQ(pocket->itemSlots[4].itemId, ITEM_TM42);
-    EXPECT_EQ(pocket->itemSlots[5].itemId, ITEM_HM02);
-    EXPECT_EQ(pocket->itemSlots[6].itemId, ITEM_HM05);
-    EXPECT_EQ(pocket->itemSlots[7].itemId, ITEM_HM07);
+    EXPECT_EQ(pocket->itemSlots[5].itemId, ITEM_TM_FLY);
+    EXPECT_EQ(pocket->itemSlots[6].itemId, ITEM_TM_WATERFALL);
+    EXPECT_EQ(pocket->itemSlots[7].itemId, ITEM_HM_FLASH);
     EXPECT_EQ(pocket->itemSlots[8].itemId, ITEM_NONE);
 }
 

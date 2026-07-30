@@ -4106,7 +4106,7 @@ static void CursorCb_FieldMove(u8 taskId)
     }
     else
     {
-        // All field moves before WATERFALL are HMs.
+        // Field-move access is independent of whether the move is taught by a TM or HM.
         if (!IsFieldMoveUnlocked(fieldMove))
         {
             DisplayPartyMenuMessage(gText_CantUseUntilNewBadge, TRUE);

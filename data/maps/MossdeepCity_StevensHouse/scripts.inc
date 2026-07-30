@@ -37,7 +37,7 @@ MossdeepCity_StevensHouse_EventScript_StevenGivesDive::
 	applymovement LOCALID_STEVENS_HOUSE_STEVEN, MossdeepCity_StevensHouse_Movement_StevenApproachPlayer
 	waitmovement 0
 	msgbox MossdeepCity_StevensHouse_Text_YouveEarnedHMDive, MSGBOX_DEFAULT
-	giveitem ITEM_HM_DIVE
+	giveitem ITEM_TM_DIVE
 	setflag FLAG_RECEIVED_HM_DIVE
 	setflag FLAG_OMIT_DIVE_FROM_STEVEN_LETTER
 	msgbox MossdeepCity_StevensHouse_Text_ExplainDive, MSGBOX_DEFAULT
@@ -143,7 +143,7 @@ MossdeepCity_StevensHouse_EventScript_Letter::
 
 @ Unused, leftover from RS
 MossdeepCity_StevensHouse_EventScript_DiveItemBall::
-	finditem ITEM_HM_DIVE
+	finditem ITEM_TM_DIVE
 	setflag FLAG_RECEIVED_HM_DIVE
 	end
 
@@ -153,9 +153,9 @@ MossdeepCity_StevensHouse_Text_YouveEarnedHMDive:
 	.string "but this is my home.\p"
 	.string "Thank you for all that you've done.\p"
 	.string "This is my token of appreciation.\n"
-	.string "It's the HIDDEN MACHINE DIVE.\p"
+	.string "It's the TECHNICAL MACHINE DIVE.\p"
 	.string "No need to be shy--you've earned\n"
-	.string "this HM.$"
+	.string "this TM.$"
 
 MossdeepCity_StevensHouse_Text_ExplainDive:
 	.string "STEVEN: While you're using SURF, you\n"
@@ -211,4 +211,3 @@ MossdeepCity_StevensHouse_Text_LetterFromSteven:
 MossdeepCity_StevensHouse_Text_CollectionOfRareRocks:
 	.string "It's a collection of rare rocks and\n"
 	.string "stones assembled by STEVEN.$"
-

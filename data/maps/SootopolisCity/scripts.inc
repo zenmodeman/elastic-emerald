@@ -1282,7 +1282,7 @@ SootopolisCity_EventScript_Wallace::
 
 SootopolisCity_EventScript_GiveWaterfall::
 	msgbox SootopolisCity_Text_ThankYouForHelpAcceptThis, MSGBOX_DEFAULT
-	giveitem ITEM_HM_WATERFALL
+	giveitem ITEM_TM_WATERFALL
 	setflag FLAG_RECEIVED_HM_WATERFALL
 	msgbox SootopolisCity_Text_ExplainWaterfallGoToGym, MSGBOX_DEFAULT
 	closemessage
@@ -1682,10 +1682,10 @@ SootopolisCity_Text_ThankYouForHelpAcceptThis:
 	.string "Please accept it.$"
 
 SootopolisCity_Text_ExplainWaterfallGoToGym:
-	.string "That HIDDEN MACHINE contains\n"
+	.string "That TECHNICAL MACHINE contains\n"
 	.string "WATERFALL.\p"
 	.string "If you have the RAIN BADGE, a POKéMON\n"
-	.string "that has learned that HM move can\l"
+	.string "that has learned that TM move can\l"
 	.string "force its way up waterfalls.\p"
 	.string "And where does one get the RAIN BADGE?\n"
 	.string "You know, don't you?\p"
