@@ -1054,34 +1054,22 @@ BrawlyFirstGymBattleScript_25:
 
 DewfordTown_Gym_EventScript_GiveLowKick::
 # 516 "data/maps/DewfordTown_Gym/scripts.pory"
-	goto_if_unset FLAG_RESOURCE_MODE, DewfordTown_Gym_EventScript_GiveLowKick_2
-# 521 "data/maps/DewfordTown_Gym/scripts.pory"
 	giveitem ITEM_TM_LOW_KICK, 3
-# 522 "data/maps/DewfordTown_Gym/scripts.pory"
+# 517 "data/maps/DewfordTown_Gym/scripts.pory"
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-# 523 "data/maps/DewfordTown_Gym/scripts.pory"
+# 518 "data/maps/DewfordTown_Gym/scripts.pory"
 	setflag FLAG_RECEIVED_TM_LOW_KICK
-DewfordTown_Gym_EventScript_GiveLowKick_1:
-# 525 "data/maps/DewfordTown_Gym/scripts.pory"
+# 519 "data/maps/DewfordTown_Gym/scripts.pory"
 	msgbox DewfordTown_Gym_EventScript_GiveLowKick_Text_0
-# 526 "data/maps/DewfordTown_Gym/scripts.pory"
+# 520 "data/maps/DewfordTown_Gym/scripts.pory"
 	msgbox DewfordTown_Gym_EventScript_GiveLowKick_Text_1
-# 527 "data/maps/DewfordTown_Gym/scripts.pory"
+# 521 "data/maps/DewfordTown_Gym/scripts.pory"
 	msgbox DewfordTown_Gym_EventScript_GiveLowKick_Text_2
-# 528 "data/maps/DewfordTown_Gym/scripts.pory"
+# 522 "data/maps/DewfordTown_Gym/scripts.pory"
 	msgbox DewfordTown_Gym_EventScript_GiveLowKick_Text_3
-# 529 "data/maps/DewfordTown_Gym/scripts.pory"
+# 523 "data/maps/DewfordTown_Gym/scripts.pory"
 	release
 	end
-
-DewfordTown_Gym_EventScript_GiveLowKick_2:
-# 517 "data/maps/DewfordTown_Gym/scripts.pory"
-	giveitem ITEM_TM_LOW_KICK
-# 518 "data/maps/DewfordTown_Gym/scripts.pory"
-	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-# 519 "data/maps/DewfordTown_Gym/scripts.pory"
-	setflag FLAG_RECEIVED_TM_LOW_KICK
-	goto DewfordTown_Gym_EventScript_GiveLowKick_1
 
 
 BrawlyFirstGymBattleScript_Text_0:
@@ -1130,20 +1118,20 @@ BrawlyFirstGymBattleScript_Text_9:
 	.string "Two on Two? You'll see our pair training!$"
 
 DewfordTown_Gym_EventScript_GiveLowKick_Text_0:
-# 525 "data/maps/DewfordTown_Gym/scripts.pory"
+# 519 "data/maps/DewfordTown_Gym/scripts.pory"
 	.string "Here, take this TM. It's one of my\n"
 	.string "favorite moves. LOW KICK.$"
 
 DewfordTown_Gym_EventScript_GiveLowKick_Text_1:
-# 526 "data/maps/DewfordTown_Gym/scripts.pory"
+# 520 "data/maps/DewfordTown_Gym/scripts.pory"
 	.string "It's all about weight and timing-$"
 
 DewfordTown_Gym_EventScript_GiveLowKick_Text_2:
-# 527 "data/maps/DewfordTown_Gym/scripts.pory"
+# 521 "data/maps/DewfordTown_Gym/scripts.pory"
 	.string "The bigger they are, the harder they\n"
 	.string "fall!$"
 
 DewfordTown_Gym_EventScript_GiveLowKick_Text_3:
-# 528 "data/maps/DewfordTown_Gym/scripts.pory"
+# 522 "data/maps/DewfordTown_Gym/scripts.pory"
 	.string "Use it well, and you'll have 'em hitting\n"
 	.string "the mat in no time!$"

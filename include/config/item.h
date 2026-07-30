@@ -23,7 +23,7 @@
 #define I_LAX_INCENSE_BOOST             GEN_LATEST  // In Gen4+, Lax Incense increases evasion by 10% instead of 5%.
 
 // TM config
-#define I_REUSABLE_TMS          FALSE       // In Gen5-8, TMs are reusable. Setting this to TRUE will make all vanilla TMs reusable, though they can also be cherry-picked by setting their importance to 1.
+#define I_REUSABLE_TMS          FALSE       // Elastic Emerald selects reusable or consumable TMs at runtime based on Resource Mode.
 
 // Exp. Share config
 // To use this feature, replace the 0 with the flag ID you're assigning it to.

@@ -54,7 +54,7 @@ tmExclusionHelper = [
     "Swagger", #Exclusive
     "Rain Dance", #Setup tutor
     "Double Team", #Setup tutor
-    "Fling", #Tutor
+    "Fling", #Exclusive
     "Swift", #Tutor (and later tech tutor)
     "Take Down", #tutor
     "Mud-Slap", #Tech tutor
@@ -75,6 +75,23 @@ tmExclusionHelper = [
     "Mega Punch", #Tutor (Easy to distribute by level-up to whoever needs it)
     "Incinerate", #Tutor (and later Tech Tutor)
     "Thief", #Tutor (and later Tech Tutor)
+    "Sleep Talk", #Tech Tutor
+    "Snore", #Tech Tutor
+    "Natural Gift", #Tutor
+    "Dig", #Tutor (Easy to distribute by level-up to whoever needs it)
+    "Focus Blast", #Tutor and Accuracy Tutor
+    "Iron Tail", #Tutor and Accuracy Tutor
+    "Stone Edge", #Tutor and Accuracy Tutor
+    "Blizzard", #Tutor and Accuracy Tutor
+    "Thunder", #Tutor and Accuracy Tutor
+    "Fire Blast", #Tutor and Accuracy Tutor
+    "Hydro Pump", #Tutor and Accuracy Tutor
+    "Gunk Shot", #Tutor and Accuracy Tutor
+    "Power Whip", #Tutor and Accuracy Tutor
+    "Zap Cannon", #Tutor and Accuracy Tutor
+    "Inferno", #Tutor and Accuracy Tutor
+    "Cross Chop", #Tutor and Accuracy Tutor
+    "Dynamic Punch", #Tutor and Accuracy Tutor
 ]
 
 @dataclass(frozen=True)

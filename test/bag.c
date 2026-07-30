@@ -6,6 +6,39 @@
 #include "test/overworld_script.h"
 #include "test/test.h"
 
+TEST("Zenmodeman: Non-resource mode preserves hidden quantities for reusable TMs")
+{
+    EXPECT(GetItemImportance(ITEM_TM25));
+    EXPECT(AddBagItem(ITEM_TM25, 6));
+    EXPECT(CheckBagHasItem(ITEM_TM25, 6));
+    EXPECT_EQ(GetItemDisplayQuantity(ITEM_TM25, 6), 1);
+
+    FlagSet(FLAG_RESOURCE_MODE);
+    EXPECT(!GetItemImportance(ITEM_TM25));
+    EXPECT(CheckBagHasItem(ITEM_TM25, 6));
+    EXPECT_EQ(GetItemDisplayQuantity(ITEM_TM25, 6), 6);
+}
+
+TEST("Zenmodeman: Resource mode stores and consumes multi-copy TM rewards")
+{
+    FlagSet(FLAG_RESOURCE_MODE);
+
+    EXPECT(!GetItemImportance(ITEM_TM25));
+    EXPECT(AddBagItem(ITEM_TM25, 6));
+    EXPECT(CheckBagHasItem(ITEM_TM25, 6));
+    EXPECT(RemoveBagItem(ITEM_TM25, 1));
+    EXPECT(CheckBagHasItem(ITEM_TM25, 5));
+}
+
+TEST("Zenmodeman: TM mode handling does not change HMs")
+{
+    FlagSet(FLAG_RESOURCE_MODE);
+
+    EXPECT(GetItemImportance(ITEM_HM02));
+    EXPECT(AddBagItem(ITEM_HM02, 2));
+    EXPECT(CheckBagHasItem(ITEM_HM02, 2));
+}
+
 TEST("TMs and HMs are sorted correctly in the bag")
 {
     struct BagPocket *pocket = &gBagPockets[POCKET_TM_HM];

@@ -1249,16 +1249,9 @@ script Route104_EventScript_Boy2{
 	}else{
 		msgbox(format("Hey there! A team works best when everyone helps each other out. That's especially true for Double Battles!"))
 		msgbox(format("Here, take this TM and give it a try!"))
-		if (flag(FLAG_RESOURCE_MODE)){
-			giveitem(ITEM_TM_HELPING_HAND, 6)
-			if (var(VAR_RESULT) == FALSE){
-    			call(Common_EventScript_ShowBagIsFull)
-    		}	
-		}else{
-			giveitem(ITEM_TM_HELPING_HAND)
-			if (var(VAR_RESULT) == FALSE){
-    			call(Common_EventScript_ShowBagIsFull)
-    		}
+		giveitem(ITEM_TM_HELPING_HAND, 6)
+		if (var(VAR_RESULT) == FALSE){
+			call(Common_EventScript_ShowBagIsFull)
 		}
 		msgbox(format("Helping Hand lets your Pokémon boost its ally's power. It's perfect for Double Battles."))
 		setflag(FLAG_RECEIVED_TM_HELPING_HAND)

@@ -528,13 +528,15 @@ static void PrintMessageWithPlaceholders(const u8 *src)
     MoveRelearnerPrintMessage(gStringVar4);
 }
 
-// If reusable TMs is off, remove the TM from the bag
+// If the current mode makes TMs consumable, remove the TM from the bag.
 static void RemoveRelearnerTMFromBag(enum Move move)
 {
     enum Item item = GetTMHMItemIdFromMoveId(move);
+    enum TMHMIndex index = GetItemTMHMIndex(item);
 
-    if (!I_REUSABLE_TMS && !P_ENABLE_ALL_TM_MOVES
-     && gMoveRelearnerState == MOVE_RELEARNER_TM_MOVES && GetItemTMHMIndex(item) <= NUM_TECHNICAL_MACHINES)
+    if (!GetItemImportance(item) && !P_ENABLE_ALL_TM_MOVES
+     && gMoveRelearnerState == MOVE_RELEARNER_TM_MOVES
+     && index > 0 && index <= NUM_TECHNICAL_MACHINES)
     {
         RemoveBagItem(item, 1);
     }

@@ -282,6 +282,21 @@ u32 GetFreeSpaceForItemInBag(enum Item itemId)
     return BagPocket_GetFreeSpaceForItem(&gBagPockets[GetItemPocket(itemId)], itemId);
 }
 
+u16 GetItemDisplayQuantity(enum Item itemId, u16 quantity)
+{
+    enum TMHMIndex index = GetItemTMHMIndex(itemId);
+
+    if (index > 0 && index <= NUM_TECHNICAL_MACHINES && GetItemImportance(itemId))
+        return min(quantity, 1);
+
+    return quantity;
+}
+
+void NormalizeObtainedItemQuantityForDisplay(void)
+{
+    gSpecialVar_0x8001 = GetItemDisplayQuantity(gSpecialVar_0x8000, gSpecialVar_0x8001);
+}
+
 static inline bool32 NONNULL CheckSlotAndUpdateCount(struct BagPocket *pocket, enum Item itemId, u32 pocketPos, u32 *nextPocketPos, u16 *count, u16 *tempPocketSlotQuantities)
 {
     struct ItemSlot tempItem = BagPocket_GetSlotData(pocket, pocketPos);
@@ -861,6 +876,11 @@ const u8 *GetItemDescription(enum Item itemId)
 
 u8 GetItemImportance(enum Item itemId)
 {
+    enum TMHMIndex index = GetItemTMHMIndex(itemId);
+
+    if (index > 0 && index <= NUM_TECHNICAL_MACHINES)
+        return !FlagGet(FLAG_RESOURCE_MODE);
+
     return gItemsInfo[SanitizeItemId(itemId)].importance;
 }
 

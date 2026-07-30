@@ -2427,19 +2427,17 @@ Route104_EventScript_Boy2::
 # 1251 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScript_Boy2_Text_2
 # 1252 "data/maps/Route104/scripts.pory"
-	goto_if_set FLAG_RESOURCE_MODE, Route104_EventScript_Boy2_6
-# 1258 "data/maps/Route104/scripts.pory"
-	giveitem ITEM_TM_HELPING_HAND
-# 1259 "data/maps/Route104/scripts.pory"
+	giveitem ITEM_TM_HELPING_HAND, 6
+# 1253 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, FALSE
-	goto_if_eq Route104_EventScript_Boy2_11
+	goto_if_eq Route104_EventScript_Boy2_6
 Route104_EventScript_Boy2_5:
-# 1263 "data/maps/Route104/scripts.pory"
+# 1256 "data/maps/Route104/scripts.pory"
 	msgbox Route104_EventScript_Boy2_Text_3
-# 1264 "data/maps/Route104/scripts.pory"
+# 1257 "data/maps/Route104/scripts.pory"
 	setflag FLAG_RECEIVED_TM_HELPING_HAND
 Route104_EventScript_Boy2_1:
-# 1266 "data/maps/Route104/scripts.pory"
+# 1259 "data/maps/Route104/scripts.pory"
 	release
 	end
 
@@ -2449,62 +2447,49 @@ Route104_EventScript_Boy2_2:
 	goto Route104_EventScript_Boy2_1
 
 Route104_EventScript_Boy2_6:
-# 1253 "data/maps/Route104/scripts.pory"
-	giveitem ITEM_TM_HELPING_HAND, 6
 # 1254 "data/maps/Route104/scripts.pory"
-	compare VAR_RESULT, FALSE
-	goto_if_eq Route104_EventScript_Boy2_9
-	goto Route104_EventScript_Boy2_5
-
-Route104_EventScript_Boy2_9:
-# 1255 "data/maps/Route104/scripts.pory"
-	call Common_EventScript_ShowBagIsFull
-	goto Route104_EventScript_Boy2_5
-
-Route104_EventScript_Boy2_11:
-# 1260 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_Boy2_5
 
 
 Route104_EventScript_WhiteHerbFlorist::
-# 1271 "data/maps/Route104/scripts.pory"
+# 1264 "data/maps/Route104/scripts.pory"
 	lock
-# 1272 "data/maps/Route104/scripts.pory"
+# 1265 "data/maps/Route104/scripts.pory"
 	faceplayer
-# 1273 "data/maps/Route104/scripts.pory"
+# 1266 "data/maps/Route104/scripts.pory"
 	goto_if_set FLAG_RECEIVED_WHITE_HERB, Route104_EventScript_ReceivedWhiteHerb
-# 1274 "data/maps/Route104/scripts.pory"
+# 1267 "data/maps/Route104/scripts.pory"
 	msgbox Route104_Text_DontNeedThisTakeIt, MSGBOX_DEFAULT
-# 1275 "data/maps/Route104/scripts.pory"
+# 1268 "data/maps/Route104/scripts.pory"
 	goto_if_set FLAG_RESOURCE_MODE, Route104_EventScript_WhiteHerbFlorist_2
-# 1281 "data/maps/Route104/scripts.pory"
+# 1274 "data/maps/Route104/scripts.pory"
 	giveItem ITEM_WHITE_HERB
-# 1282 "data/maps/Route104/scripts.pory"
+# 1275 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq Route104_EventScript_WhiteHerbFlorist_7
 Route104_EventScript_WhiteHerbFlorist_1:
-# 1286 "data/maps/Route104/scripts.pory"
+# 1279 "data/maps/Route104/scripts.pory"
 	setflag FLAG_RECEIVED_WHITE_HERB
-# 1287 "data/maps/Route104/scripts.pory"
+# 1280 "data/maps/Route104/scripts.pory"
 	release
 	end
 
 Route104_EventScript_WhiteHerbFlorist_2:
-# 1276 "data/maps/Route104/scripts.pory"
+# 1269 "data/maps/Route104/scripts.pory"
 	giveitem ITEM_WHITE_HERB, 3
-# 1277 "data/maps/Route104/scripts.pory"
+# 1270 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, FALSE
 	goto_if_eq Route104_EventScript_WhiteHerbFlorist_5
 	goto Route104_EventScript_WhiteHerbFlorist_1
 
 Route104_EventScript_WhiteHerbFlorist_5:
-# 1278 "data/maps/Route104/scripts.pory"
+# 1271 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_WhiteHerbFlorist_1
 
 Route104_EventScript_WhiteHerbFlorist_7:
-# 1283 "data/maps/Route104/scripts.pory"
+# 1276 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_WhiteHerbFlorist_1
 
@@ -2604,7 +2589,7 @@ Route104_EventScript_Boy2_Text_2:
 	.string "Here, take this TM and give it a try!$"
 
 Route104_EventScript_Boy2_Text_3:
-# 1263 "data/maps/Route104/scripts.pory"
+# 1256 "data/maps/Route104/scripts.pory"
 	.string "Helping Hand lets your Pokémon boost\n"
 	.string "its ally's power. It's perfect for Double\l"
 	.string "Battles.$"

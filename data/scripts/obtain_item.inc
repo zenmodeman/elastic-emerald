@@ -5,6 +5,7 @@ Std_ObtainItem::
 	copyvar VAR_0x8006, ITEMID
 	additem ITEMID, AMOUNT
 	copyvar VAR_0x8007, VAR_RESULT
+	special NormalizeObtainedItemQuantityForDisplay
 	call EventScript_ObtainItemMessage
 	return
 
@@ -123,6 +124,8 @@ Std_FindItem::
 EventScript_PickUpItem::
 	removeobject VAR_LAST_TALKED
 	additem VAR_0x8004, VAR_0x8005
+	special NormalizeObtainedItemQuantityForDisplay
+	copyvar VAR_0x8005, AMOUNT
 	copyvar VAR_0x8006 VAR_0x8004
 	specialvar VAR_RESULT, BufferTMHMMoveName
 	copyvar VAR_0x8008, VAR_RESULT
@@ -189,6 +192,10 @@ EventScript_HiddenItemScript::
 EventScript_PickUpHiddenItem::
 	copyvar VAR_0x8008, VAR_0x8004
 	copyvar VAR_0x8004, VAR_0x8005
+	copyvar ITEMID, VAR_0x8005
+	copyvar AMOUNT, VAR_0x8009
+	special NormalizeObtainedItemQuantityForDisplay
+	copyvar VAR_0x8009, AMOUNT
 	specialvar VAR_RESULT, BufferTMHMMoveName
 	goto_if_eq VAR_RESULT, TRUE, EventScript_FoundHiddenTMHM
 	goto_if_eq VAR_RESULT, FALSE, EventScript_FoundHiddenItem

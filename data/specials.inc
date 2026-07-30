@@ -437,6 +437,7 @@ gSpecials::
 	def_special SetMirageTowerVisibility
 	def_special StartPlayerDescendMirageTower, waitstate=1
 	def_special BufferTMHMMoveName
+	def_special NormalizeObtainedItemQuantityForDisplay
 	def_special IsWirelessAdapterConnected
 	def_special TryBecomeLinkLeader, waitstate=1
 	def_special TryJoinLinkGroup, waitstate=1

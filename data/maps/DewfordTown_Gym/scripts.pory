@@ -513,15 +513,9 @@ script BrawlyFirstGymBattleScript {
 }
 
 script DewfordTown_Gym_EventScript_GiveLowKick {
-    if (!flag(FLAG_RESOURCE_MODE)) {
-        giveitem(ITEM_TM_LOW_KICK)
-        goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)
-        setflag(FLAG_RECEIVED_TM_LOW_KICK)
-    } else {
-        giveitem(ITEM_TM_LOW_KICK, 3)
-        goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)
-        setflag(FLAG_RECEIVED_TM_LOW_KICK)
-    }
+    giveitem(ITEM_TM_LOW_KICK, 3)
+    goto_if_eq(VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull)
+    setflag(FLAG_RECEIVED_TM_LOW_KICK)
 	msgbox(format("Here, take this TM. It's one of my favorite moves. LOW KICK."))
 	msgbox(format("It's all about weight and timing-"))
 	msgbox(format("The bigger they are, the harder they fall!"))

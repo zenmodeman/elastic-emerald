@@ -704,28 +704,16 @@ RoxanneFirstGymBattleScript_21:
 
 RustboroCity_Gym_EventScript_GiveRockTomb::
 # 342 "data/maps/RustboroCity_Gym/scripts.pory"
-	goto_if_unset FLAG_RESOURCE_MODE, RustboroCity_Gym_EventScript_GiveRockTomb_2
-# 347 "data/maps/RustboroCity_Gym/scripts.pory"
 	giveitem ITEM_TM_ROCK_TOMB, 3
-# 348 "data/maps/RustboroCity_Gym/scripts.pory"
+# 343 "data/maps/RustboroCity_Gym/scripts.pory"
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-# 349 "data/maps/RustboroCity_Gym/scripts.pory"
+# 344 "data/maps/RustboroCity_Gym/scripts.pory"
 	setflag FLAG_RECEIVED_TM_ROCK_TOMB
-RustboroCity_Gym_EventScript_GiveRockTomb_1:
-# 351 "data/maps/RustboroCity_Gym/scripts.pory"
+# 345 "data/maps/RustboroCity_Gym/scripts.pory"
 	msgbox RustboroCity_Gym_Text_ExplainRockTomb, MSGBOX_DEFAULT
-# 352 "data/maps/RustboroCity_Gym/scripts.pory"
+# 346 "data/maps/RustboroCity_Gym/scripts.pory"
 	release
 	end
-
-RustboroCity_Gym_EventScript_GiveRockTomb_2:
-# 343 "data/maps/RustboroCity_Gym/scripts.pory"
-	giveitem ITEM_TM_ROCK_TOMB
-# 344 "data/maps/RustboroCity_Gym/scripts.pory"
-	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-# 345 "data/maps/RustboroCity_Gym/scripts.pory"
-	setflag FLAG_RECEIVED_TM_ROCK_TOMB
-	goto RustboroCity_Gym_EventScript_GiveRockTomb_1
 
 
 RoxanneFirstGymBattleScript_Text_0:
