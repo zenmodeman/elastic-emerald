@@ -291,6 +291,8 @@ bool32 MoveIsAffectedBySheerForce(enum Move move);
 bool32 IsSheerForceAffected(enum Move move, enum Ability ability);
 void TryRestoreHeldItems(void);
 bool32 CanStealItem(enum BattlerId battlerStealing, enum BattlerId battlerItem, enum Item item);
+bool32 IsConsumableHeldItem(enum Item item);
+bool32 IsResourceModeWildItemTransferBlocked(enum BattlerId battlerGiving, enum BattlerId battlerReceiving, enum Item item);
 void TrySaveExchangedItem(enum BattlerId battler, enum Item stolenItem);
 bool32 IsBattlerAffectedByHazards(enum BattlerId battler, enum HoldEffect holdEffect, bool32 toxicSpikes);
 void SortBattlersByRawSpeed(u8 battlers[]);

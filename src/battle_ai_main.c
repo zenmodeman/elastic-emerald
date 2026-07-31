@@ -2077,6 +2077,8 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
         break;
     case EFFECT_TRICK:
         if ((gBattleMons[battlerAtk].item == ITEM_NONE && aiData->items[battlerDef] == ITEM_NONE)
+          || IsResourceModeWildItemTransferBlocked(battlerDef, battlerAtk, aiData->items[battlerDef])
+          || IsResourceModeWildItemTransferBlocked(battlerAtk, battlerDef, gBattleMons[battlerAtk].item)
           || !CanBattlerGetOrLoseItem(battlerAtk, battlerDef, gBattleMons[battlerAtk].item)
           || !CanBattlerGetOrLoseItem(battlerAtk, battlerDef, aiData->items[battlerDef])
           || !CanBattlerGetOrLoseItem(battlerDef, battlerAtk, aiData->items[battlerDef])

@@ -1,5 +1,22 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
+
+WILD_BATTLE_TEST("Zenmodeman: Magician cannot take a wild Pokemon's consumable in Resource Mode")
+{
+    GIVEN {
+        FlagSet(FLAG_RESOURCE_MODE);
+        PLAYER(SPECIES_DELPHOX) { Ability(ABILITY_MAGICIAN); }
+        OPPONENT(SPECIES_WOBBUFFET) { Item(ITEM_SITRUS_BERRY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH); }
+    } SCENE {
+        NOT ABILITY_POPUP(player, ABILITY_MAGICIAN);
+    } THEN {
+        EXPECT_EQ(player->item, ITEM_NONE);
+        EXPECT_EQ(opponent->item, ITEM_SITRUS_BERRY);
+    }
+}
 
 SINGLE_BATTLE_TEST("Magician gets self-damage recoil after stealing Life Orb")
 {

@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `a2ef6c4bde` ("Add not already target guard for fast KO logic").
-- **Uncommitted AI changes covered by this document:** The post-1.16.2 repair restores the narrow `AI_FLAG_HEAVY_SWITCHING` fast-KO rule, its regular-smart defensive-drop exception, weather-setter preservation, and repeated-switch immunity prediction on the rewritten upstream switching APIs. Eligible-reserve fallback is used when upstream does not pre-rank a suitable switch-in. Repeated-switch prediction uses both the stint counter and revealed party switch-in history, retains the standard prediction RNG gate, and avoids re-running active-target damage comparison after predicted-target scoring. Smart trainers continue to use prediction and assumptions instead of upstream omniscience and PP-stall knowledge. Test adaptations also cover the upstream `AI_FLAG_ASSUME_STAB` knowledge path and unified stat-change contracts for Rock Tomb and Coaching. The custom move Befuddle reuses the modeled random-status additional effect, giving its damaging spread attack paralysis, poison, or sleep possibilities without introducing a separate AI-only approximation. Chilling Water's shared runtime and AI damage calculation now applies an additional 1.5x power modifier when its user is currently Ice-type. All of these AI changes are currently uncommitted.
+- **Last documented code commit:** `67fd498d45` ("Modify Chilling Water for Ice damage; restore lost EV mode logic").
+- **Uncommitted AI changes covered by this document:** Resource Mode's wild-consumable transfer restriction is mirrored in Trick/Switcheroo bad-move scoring, while shared steal-legality checks cover damaging steal effects and item-stealing abilities.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -100,11 +100,15 @@ Key commits: `93531a3cea`, `6e5f7576f7`.
 
 ### Befuddle status modeling
 
-Befuddle is a 70-power special Bug-type spread move with a guaranteed additional effect that independently attempts to paralyze, poison, or put each foe to sleep. It uses the existing per-target random-status handling shared with Dire Claw, so status immunities, Protect, and Sleep Clause remain aligned with ordinary damaging-move execution. This addition is currently uncommitted.
+Befuddle is a 70-power special Bug-type spread move with a guaranteed additional effect that independently attempts to paralyze, poison, or put each foe to sleep. It uses the existing per-target random-status handling shared with Dire Claw, so status immunities, Protect, and Sleep Clause remain aligned with ordinary damaging-move execution.
+
+Key commit: `02b670576c`.
 
 ### Chilling Water Ice-type power boost
 
-Chilling Water receives an additional 1.5x power modifier when its user is currently Ice-type. The check uses the battler's active battle types, including temporary type changes and Terastallization. Because the modifier lives in the shared damage calculation, live battle damage and AI damage estimates use the same rule. This addition is currently uncommitted.
+Chilling Water receives an additional 1.5x power modifier when its user is currently Ice-type. The check uses the battler's active battle types, including temporary type changes and Terastallization. Because the modifier lives in the shared damage calculation, live battle damage and AI damage estimates use the same rule.
+
+Key commit: `67fd498d45`.
 
 ## 3. Imperfect-information switching and counterplay
 
@@ -131,7 +135,7 @@ Regular `AI_FLAG_SMART_SWITCHING` can use the same response without the heavy-sw
 
 Focused regression coverage verifies the heavy-switching flag and ordinary-smart exclusion, plus each defensive-drop origin: Close Combat-style AI self-drops and Obstruct can enable the switch, while Screech trips the prior-targeting hard gate and cannot. Weather-setter coverage separately verifies the suitable-switch-in, 50% roll, HP, Speed, survival, ally-count, and prior-targeting gates.
 
-This replacement is currently uncommitted.
+Key commit: `fbb42101c6`.
 
 ### Scrapped generalized fast-KO experiments
 
@@ -276,7 +280,7 @@ Key commits: `08e1147141`, `f3fb33af5a`, `efda8256b3`.
 
 The following move and custom-mechanic families received explicit AI treatment. These are important examples of how new effects currently enter the heuristic architecture.
 
-- **Knock Off and item manipulation:** avoids generic item-removal bonuses overpowering damage logic; Trick, Switcheroo, Bestow, Sticky Barb, Ring Target, Sticky Hold, substitute, and item-transfer legality receive contextual checks. Commits: `8e63c039d1`, `93531a3cea`, `920ea368f5`, `cd5f2fdc9b`.
+- **Knock Off and item manipulation:** avoids generic item-removal bonuses overpowering damage logic; Trick, Switcheroo, Bestow, Sticky Barb, Ring Target, Sticky Hold, substitute, and item-transfer legality receive contextual checks. Resource Mode additionally treats Trick/Switcheroo as unusable when a wild consumable would move to the player; damaging steal moves keep their damage while their shared legality check suppresses the transfer. Commits: `8e63c039d1`, `93531a3cea`, `920ea368f5`, `cd5f2fdc9b`; the Resource Mode parity update is uncommitted.
 - **Parting Shot and pivoting:** reuses Attack and Special Attack reduction value, switch availability, target state, and pivot safety. Commits: `8e63c039d1`, `8911bb3be4`.
 - **Pain Split:** estimates post-hit HP when moving second and scores the resulting split rather than using static HP thresholds. Commit: `6e5f7576f7`.
 - **Soak:** checks whether the user can exploit Water typing with Electric, Grass, or Freeze-Dry-like effects, whether direct damage already wins quickly, danger to the user, and recent Soak use. Commit: `920ea368f5`.

@@ -6276,6 +6276,9 @@ static void Cmd_removeitem(void)
         gBattleStruct->flungItem = FLUNG_ITEM_REMOVED;
         battler = gBattlerAttacker;
         itemId = gLastUsedItem;
+        if (IsOnPlayerSide(battler)
+         && itemId == gBattleStruct->itemLost[B_SIDE_PLAYER][gBattlerPartyIndexes[battler]].originalItem)
+            gBattleStruct->itemLost[B_SIDE_PLAYER][gBattlerPartyIndexes[battler]].stolen = TRUE;
     }
     else if (gBattleScripting.overrideBerryRequirements
           || gBattleStruct->flungItem == FLUNG_ITEM_REMOVED
@@ -8977,6 +8980,8 @@ static void Cmd_tryswapitems(void)
         // can't swap if two Pokémon don't have an item
         // or if either of them is an enigma berry or a mail
         else if ((gBattleMons[gBattlerAttacker].item == ITEM_NONE && gBattleMons[gBattlerTarget].item == ITEM_NONE)
+                 || IsResourceModeWildItemTransferBlocked(gBattlerTarget, gBattlerAttacker, gBattleMons[gBattlerTarget].item)
+                 || IsResourceModeWildItemTransferBlocked(gBattlerAttacker, gBattlerTarget, gBattleMons[gBattlerAttacker].item)
                  || !CanBattlerGetOrLoseItem(gBattlerAttacker, gBattlerTarget, gBattleMons[gBattlerAttacker].item)
                  || !CanBattlerGetOrLoseItem(gBattlerAttacker, gBattlerTarget, gBattleMons[gBattlerTarget].item)
                  || !CanBattlerGetOrLoseItem(gBattlerTarget, gBattlerAttacker, gBattleMons[gBattlerTarget].item)
@@ -13426,6 +13431,7 @@ void BS_TryBestow(void)
     NATIVE_ARGS(const u8 *failInstr);
     if (gBattleMons[gBattlerAttacker].item == ITEM_NONE
         || gBattleMons[gBattlerTarget].item != ITEM_NONE
+        || IsResourceModeWildItemTransferBlocked(gBattlerAttacker, gBattlerTarget, gBattleMons[gBattlerAttacker].item)
         || !CanBattlerGetOrLoseItem(gBattlerAttacker, gBattlerTarget, gBattleMons[gBattlerAttacker].item)
         || !CanBattlerGetOrLoseItem(gBattlerTarget, gBattlerAttacker, gBattleMons[gBattlerAttacker].item)
         || GetBattlerPartyState(gBattlerTarget)->isKnockedOff)

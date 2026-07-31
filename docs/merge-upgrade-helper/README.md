@@ -6,13 +6,14 @@ The inventory was built from local `git log --author=zenmodeman`, current symbol
 
 ## Documentation Status
 
-- Latest commit whose applicable project changes have been reviewed for this dossier: `f82a47022b` (`More test additions`).
-- Applicable work after that boundary: uncommitted fifth regression batch adding twenty form-normalization, mode, progression, ability, and move-interaction scenarios, plus the Damp and Metal Rush runtime repairs described below; the FRLG integration and current Expansion 1.15.0 and 1.16.2 merge resolutions are also uncommitted, including restoration of the runtime-gated battle debug menu Select hook.
-- The current uncommitted post-1.16.2 test-build repair updates the Toxic and Sheer Cold test-only move-property overrides to pass the renamed `B_*` configuration identifiers through `GetConfig`.
-- The current uncommitted post-1.16.2 warning cleanup removes explicit `waitstate` commands after specials whose `data/specials.inc` definitions now provide `waitstate=1`, and includes `item_menu.h` where Pokémon form-change code reads `gSpecialVar_ItemId`.
-- The current uncommitted party-API warning cleanup replaces deprecated player- and enemy-party compatibility macros in C sources with indexed `gParties`/`gPartiesCount` access for `B_TRAINER_PLAYER` and `B_TRAINER_OPPONENT_A`.
-- The current uncommitted tutor-data parser repair corrects the Tech Tutor six-badge array's integer type, restores terminators on the final three Resource Mode TM-trade arrays, and terminates the added seven-badge Tech Tutor array so the including `pokemon.c` translation unit parses correctly.
-- The current uncommitted EV Mode repair restores the custom badge-based per-stat cap, its derived total cap, the EV Mode gates on battle EV gain, EV items, and trainer EV spreads, and the matching Summary Screen redistribution limit after these hooks were displaced by an upstream Pokémon-core merge.
+- Latest commit whose applicable project changes have been reviewed for this dossier: `67fd498d45` (`Modify Chilling Water for Ice damage; restore lost EV mode logic`).
+- Applicable work after that boundary: the uncommitted Resource Mode held-item persistence and wild-consumable transfer repair described below.
+- The post-1.16.2 test-build repair updates the Toxic and Sheer Cold test-only move-property overrides to pass the renamed `B_*` configuration identifiers through `GetConfig`.
+- The post-1.16.2 warning cleanup removes explicit `waitstate` commands after specials whose `data/specials.inc` definitions now provide `waitstate=1`, and includes `item_menu.h` where Pokémon form-change code reads `gSpecialVar_ItemId`.
+- The party-API warning cleanup replaces deprecated player- and enemy-party compatibility macros in C sources with indexed `gParties`/`gPartiesCount` access for `B_TRAINER_PLAYER` and `B_TRAINER_OPPONENT_A`.
+- The tutor-data parser repair corrects the Tech Tutor six-badge array's integer type, restores terminators on the final three Resource Mode TM-trade arrays, and terminates the added seven-badge Tech Tutor array so the including `pokemon.c` translation unit parses correctly.
+- Commit `67fd498d45` restores the custom badge-based per-stat cap, its derived total cap, the EV Mode gates on battle EV gain, EV items, and trainer EV spreads, and the matching Summary Screen redistribution limit after these hooks were displaced by an upstream Pokémon-core merge.
+- The current uncommitted Resource Mode repair restores its post-battle held-item persistence gate after the upstream Gen 9 restoration rewrite: ordinary consumable activations cost the item only in Resource Mode, while Knock Off, Fling, and theft do not permanently cost the player their original item. It also prevents consumable held items from moving from wild Pokémon to the player through Thief/Covet, Trick/Switcheroo, Magician, Pickpocket, Pickup, Bestow, and shared steal paths; non-consumable transfers and immediate consumption such as Bug Bite/Pluck remain legal.
 - The same repair adapts the Infiltrator/Mist tests from the removed `EFFECT_DEFENSE_DOWN_2` constant to `ASSUME_STAT_CHANGE`, preserving the sharp Defense-drop contract under the unified stat-change move effect.
 - AI regression tests now use the unified stat-minus additional effect and the upstream `AI_FLAG_ASSUME_STAB` knowledge path instead of the removed `MOVE_EFFECT_SPD_MINUS_1` and `GetMovesArrayWithHiddenSTAB` APIs.
 - The Coaching AI regression likewise uses `ASSUME_STAT_CHANGE` instead of the removed dedicated `EFFECT_COACHING` constant.
@@ -250,6 +251,7 @@ Primary anchors:
 - `src/party_menu.c`: item use and ability-change restrictions.
 - `src/pokemon_storage_system.c`: restricted release move ownership checks.
 - `src/data/items.h`, `src/data/pokemon/item_effects.h`, `include/constants/item_effects.h`: EV acquisition items and prices.
+- `src/battle_util.c`, `src/battle_script_commands.c`: Resource Mode held-item consumption/restoration and the wild-consumable transfer guard shared by stealing abilities and moves.
 - `data/maps/*/scripts.pory`: marts, gifts, tutors, and progression requirements that change under modes.
 - `src/battle_terastal.c`: Restricted Mode Tera bans based on tier threshold.
 
@@ -261,6 +263,8 @@ Audit checks:
 - If a merge changes trainer-battle setup callbacks, ensure Restricted Mode item-clause enforcement still runs before standard trainer battles, Battle Pyramid/Trainer Hill battles, and Battle Tower trainer battles.
 - Restricted release logic should prevent releasing the sole owner of certain required moves.
 - Resource Mode shop/gift/tutor scripts should be audited when command names or item constants change.
+- Resource Mode must spend normally activated consumable held items without making forced removal permanent. Preserve the end-of-battle distinction between consumption and Knock Off/Fling/theft when upstream rewrites held-item restoration.
+- In wild battles, do not transfer consumable held items from the wild side to the player. Item-only moves such as Trick/Switcheroo and Bestow fail when that transfer would occur; damaging moves such as Thief/Covet still deal damage without stealing. Pickup, Magician, and Pickpocket use the same restriction. Bug Bite/Pluck are intentionally exempt because they consume the berry immediately, and non-consumables such as Poison Barb remain transferable.
 
 ## Trainer Battle Preparation And Battle-End Status
 

@@ -1,4 +1,5 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
 
 ASSUMPTIONS
@@ -20,6 +21,24 @@ SINGLE_BATTLE_TEST("Pickup grants an item used by another Pokémon")
         MESSAGE("Zigzagoon found one Sitrus Berry!");
     } THEN {
         EXPECT_EQ(player->item, ITEM_SITRUS_BERRY);
+    }
+}
+
+WILD_BATTLE_TEST("Zenmodeman: Pickup cannot transfer a wild Pokemon's consumed item to the player in Resource Mode")
+{
+    GIVEN {
+        FlagSet(FLAG_RESOURCE_MODE);
+        PLAYER(SPECIES_ZIGZAGOON) { Ability(ABILITY_PICKUP); }
+        OPPONENT(SPECIES_WOBBUFFET) { MaxHP(100); HP(51); Item(ITEM_SITRUS_BERRY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH); }
+    } SCENE {
+        NONE_OF {
+            ABILITY_POPUP(player, ABILITY_PICKUP);
+            MESSAGE("Zigzagoon found one Sitrus Berry!");
+        }
+    } THEN {
+        EXPECT_EQ(player->item, ITEM_NONE);
     }
 }
 

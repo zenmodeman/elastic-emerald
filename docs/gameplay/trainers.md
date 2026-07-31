@@ -2267,3 +2267,25 @@ the sync fails if they diverge:
   - Rock Tomb
   - Body Slam
 <!-- trainer-party:end -->
+
+## Route 109
+
+### Tuber Ricky
+<!-- trainer-party:start id=TRAINER_RICKY_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
+**Spheal** @ Wiki Berry
+- **Gender:** Male
+- **Ability:** Ice Body
+- **Level:** 16
+- **EVs:** 84 HP / 84 Def / 4 SpD
+- **Nature:** Bold
+- **IVs:** 13 HP / 12 Atk / 19 Def / 13 SpA / 13 SpD / 10 Spe
+- **Moves:**
+  - Hail
+  - Aurora Beam
+  - Water Pulse
+  - Headbutt
+<!-- trainer-party:end -->

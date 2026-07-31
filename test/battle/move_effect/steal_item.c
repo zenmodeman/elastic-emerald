@@ -1,4 +1,5 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
 
 ASSUMPTIONS
@@ -125,6 +126,26 @@ WILD_BATTLE_TEST("Thief and Covet steal target's held item and it's added to Bag
     } THEN {
         EXPECT_EQ(player->item, ITEM_NONE);
         EXPECT_EQ(opponent->item, ITEM_NONE);
+    }
+}
+
+WILD_BATTLE_TEST("Zenmodeman: Resource Mode blocks stealing wild consumables but permits non-consumable items")
+{
+    enum Item item;
+    bool32 canSteal;
+
+    PARAMETRIZE { item = ITEM_SITRUS_BERRY; canSteal = FALSE; }
+    PARAMETRIZE { item = ITEM_POISON_BARB;   canSteal = TRUE; }
+    GIVEN {
+        WITH_CONFIG(B_STEAL_WILD_ITEMS, GEN_8);
+        FlagSet(FLAG_RESOURCE_MODE);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET) { Item(item); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_THIEF); }
+    } THEN {
+        EXPECT_EQ(player->item, canSteal ? item : ITEM_NONE);
+        EXPECT_EQ(opponent->item, canSteal ? ITEM_NONE : item);
     }
 }
 

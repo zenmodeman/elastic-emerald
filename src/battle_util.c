@@ -9228,23 +9228,68 @@ void TryRestoreHeldItems(void)
 {
     u32 i;
     bool32 returnNPCItems = B_RETURN_STOLEN_NPC_ITEMS >= GEN_5 && gBattleTypeFlags & BATTLE_TYPE_TRAINER;
+    bool32 restoreConsumedItems = !FlagGet(FLAG_RESOURCE_MODE);
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
-        // Check if held items should be restored after battle based on generation
-        if (B_RESTORE_HELD_BATTLE_ITEMS >= GEN_9 || gBattleStruct->itemLost[B_SIDE_PLAYER][i].stolen || returnNPCItems)
+        // Resource Mode spends items consumed normally. Forced removal and theft never permanently
+        // cost the player an item, while non-Resource Mode restores all consumed held items.
+        if ((B_RESTORE_HELD_BATTLE_ITEMS >= GEN_9 && restoreConsumedItems)
+         || gBattleStruct->itemLost[B_SIDE_PLAYER][i].stolen
+         || returnNPCItems)
         {
             u16 lostItem = gBattleStruct->itemLost[B_SIDE_PLAYER][i].originalItem;
 
-            // Check if the lost item is a berry and the mon is not holding it
-            if (GetItemPocket(lostItem) == POCKET_BERRIES && GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM) != lostItem)
-                lostItem = ITEM_NONE;
-
-            // Check if the lost item should be restored
-            if ((lostItem != ITEM_NONE || returnNPCItems) && GetItemPocket(lostItem) != POCKET_BERRIES)
+            if (lostItem != ITEM_NONE || returnNPCItems)
                 SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_HELD_ITEM, &lostItem);
         }
     }
+}
+
+bool32 IsConsumableHeldItem(enum Item item)
+{
+    if (item == ITEM_NONE)
+        return FALSE;
+    if (GetItemPocket(item) == POCKET_BERRIES)
+        return TRUE;
+
+    switch (GetItemHoldEffect(item))
+    {
+    case HOLD_EFFECT_WHITE_HERB:
+    case HOLD_EFFECT_MENTAL_HERB:
+    case HOLD_EFFECT_POWER_HERB:
+    case HOLD_EFFECT_FOCUS_SASH:
+    case HOLD_EFFECT_GEMS:
+    case HOLD_EFFECT_AIR_BALLOON:
+    case HOLD_EFFECT_RED_CARD:
+    case HOLD_EFFECT_EJECT_BUTTON:
+    case HOLD_EFFECT_ABSORB_BULB:
+    case HOLD_EFFECT_CELL_BATTERY:
+    case HOLD_EFFECT_LUMINOUS_MOSS:
+    case HOLD_EFFECT_SNOWBALL:
+    case HOLD_EFFECT_WEAKNESS_POLICY:
+    case HOLD_EFFECT_TERRAIN_SEED:
+    case HOLD_EFFECT_ADRENALINE_ORB:
+    case HOLD_EFFECT_EJECT_PACK:
+    case HOLD_EFFECT_ROOM_SERVICE:
+    case HOLD_EFFECT_BLUNDER_POLICY:
+    case HOLD_EFFECT_THROAT_SPRAY:
+    case HOLD_EFFECT_MIRROR_HERB:
+    case HOLD_EFFECT_BOOSTER_ENERGY:
+    case HOLD_EFFECT_BERSERK_GENE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+bool32 IsResourceModeWildItemTransferBlocked(enum BattlerId battlerGiving, enum BattlerId battlerReceiving, enum Item item)
+{
+    return FlagGet(FLAG_RESOURCE_MODE)
+        && !(gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_PALACE))
+        && !IsOnPlayerSide(battlerGiving)
+        && IsOnPlayerSide(battlerReceiving)
+        && IsConsumableHeldItem(item);
 }
 
 bool32 CanStealItem(enum BattlerId battlerStealing, enum BattlerId battlerItem, enum Item item)
@@ -9252,6 +9297,8 @@ bool32 CanStealItem(enum BattlerId battlerStealing, enum BattlerId battlerItem, 
     enum BattleSide stealerSide = GetBattlerSide(battlerStealing);
 
     if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
+        return FALSE;
+    if (IsResourceModeWildItemTransferBlocked(battlerItem, battlerStealing, item))
         return FALSE;
 
     // Check if the battler trying to steal should be able to
@@ -9350,6 +9397,8 @@ bool32 CantPickupItem(u32 _battler)
     enum BattlerId battler = _battler;
     // Used by RandomUniformExcept() for RNG_PICKUP
     if (battler == gBattlerAttacker && (GetConfig(B_PICKUP_WILD) < GEN_9 || gBattleTypeFlags & (BATTLE_TYPE_TRAINER | BATTLE_TYPE_LINK)))
+        return TRUE;
+    if (IsResourceModeWildItemTransferBlocked(battler, gBattlerAttacker, GetBattlerPartyState(battler)->usedHeldItem))
         return TRUE;
     return !(IsBattlerAlive(battler) && GetBattlerPartyState(battler)->usedHeldItem && gBattleStruct->battlerState[battler].canPickupItem);
 }

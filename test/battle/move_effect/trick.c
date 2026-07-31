@@ -1,4 +1,5 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
 #include "mail.h"
 
@@ -38,6 +39,22 @@ SINGLE_BATTLE_TEST("Trick succeeds if only the target has an item")
     } THEN {
         EXPECT(player->item == ITEM_LUM_BERRY);
         EXPECT(opponent->item == ITEM_NONE);
+    }
+}
+
+WILD_BATTLE_TEST("Zenmodeman: Trick fails rather than transferring a wild consumable to the player in Resource Mode")
+{
+    GIVEN {
+        FlagSet(FLAG_RESOURCE_MODE);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET) { Item(ITEM_SITRUS_BERRY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_TRICK); }
+    } SCENE {
+        MESSAGE("But it failed!");
+    } THEN {
+        EXPECT_EQ(player->item, ITEM_NONE);
+        EXPECT_EQ(opponent->item, ITEM_SITRUS_BERRY);
     }
 }
 

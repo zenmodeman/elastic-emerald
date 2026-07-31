@@ -182,10 +182,18 @@ def _species_gender_ratios() -> dict[str, str]:
                 macro = next((value for name, value in macro_ratios.items() if re.search(rf"\b{name}\s*\(", source[entry.end() : end])), None)
                 if macro is not None:
                     ratios[entry.group(1)] = macro
+    constants_source = SPECIES_CONSTANTS.read_text(encoding="utf-8")
     aliases = re.findall(
         r"^#define\s+(SPECIES_[A-Z0-9_]+)\s+(SPECIES_[A-Z0-9_]+)\s*$",
-        SPECIES_CONSTANTS.read_text(encoding="utf-8"),
+        constants_source,
         re.MULTILINE,
+    )
+    aliases.extend(
+        re.findall(
+            r"^\s*(SPECIES_[A-Z0-9_]+)\s*=\s*(SPECIES_[A-Z0-9_]+)\s*,",
+            constants_source,
+            re.MULTILINE,
+        )
     )
     unresolved = dict(aliases)
     while unresolved:

@@ -1,10 +1,27 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
 
 ASSUMPTIONS
 {
     ASSUME(MoveMakesContact(MOVE_BREAKING_SWIPE));
     ASSUME(MoveMakesContact(MOVE_SCRATCH));
+}
+
+WILD_BATTLE_TEST("Zenmodeman: Pickpocket cannot take a wild Pokemon's consumable in Resource Mode")
+{
+    GIVEN {
+        FlagSet(FLAG_RESOURCE_MODE);
+        PLAYER(SPECIES_SNEASEL) { Ability(ABILITY_PICKPOCKET); }
+        OPPONENT(SPECIES_WOBBUFFET) { Item(ITEM_SITRUS_BERRY); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_SCRATCH); }
+    } SCENE {
+        NOT ABILITY_POPUP(player, ABILITY_PICKPOCKET);
+    } THEN {
+        EXPECT_EQ(player->item, ITEM_NONE);
+        EXPECT_EQ(opponent->item, ITEM_SITRUS_BERRY);
+    }
 }
 
 DOUBLE_BATTLE_TEST("Pickpocket checks contact/effect per target for spread moves")
