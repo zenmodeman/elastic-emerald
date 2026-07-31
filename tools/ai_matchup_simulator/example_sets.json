@@ -1,0 +1,54 @@
+{
+  "sets": [
+    {
+      "name": "Charizard special",
+      "species": "CHARIZARD",
+      "level": 50,
+      "nature": "TIMID",
+      "ability": "BLAZE",
+      "item": "COVERT_CLOAK",
+      "evs": {"sp_attack": 252, "sp_defense": 4, "speed": 252},
+      "moves": ["FLAMETHROWER", "AIR_SLASH", "DRAGON_PULSE", "ROOST"]
+    },
+    {
+      "name": "Blastoise special",
+      "species": "BLASTOISE",
+      "level": 50,
+      "nature": "MODEST",
+      "ability": "TORRENT",
+      "item": "COVERT_CLOAK",
+      "evs": {"hp": 252, "sp_attack": 252, "sp_defense": 4},
+      "moves": ["SURF", "ICE_BEAM", "AURA_SPHERE", "PROTECT"]
+    },
+    {
+      "name": "Breloom physical",
+      "species": "BRELOOM",
+      "level": 50,
+      "nature": "ADAMANT",
+      "ability": "TECHNICIAN",
+      "item": "COVERT_CLOAK",
+      "evs": {"attack": 252, "sp_defense": 4, "speed": 252},
+      "moves": ["MACH_PUNCH", "BULLET_SEED", "ROCK_TOMB", "SPORE"]
+    },
+    {
+      "name": "Lucario physical",
+      "species": "LUCARIO",
+      "level": 50,
+      "nature": "ADAMANT",
+      "ability": "INNER_FOCUS",
+      "item": "COVERT_CLOAK",
+      "evs": {"attack": 252, "sp_defense": 4, "speed": 252},
+      "moves": ["CLOSE_COMBAT", "BULLET_PUNCH", "CRUNCH", "SWORDS_DANCE"]
+    },
+        {
+      "name": "Cacturne Mixed",
+      "species": "CACTURNE",
+      "level": 50,
+      "nature": "MILD",
+      "ability": "WATER_ABSORB",
+      "item": "COVERT_CLOAK",
+      "evs": {"hp": 220, "attack": 128, "defense": 36, "sp_attack": 120, "speed": 4 },
+      "moves": ["LEAF_STORM", "DRAIN_PUNCH", "KNOCK_OFF", "SUCKER_PUNCH"]
+    }
+  ]
+}

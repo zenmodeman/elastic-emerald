@@ -58,7 +58,12 @@ static void AnimateMonAfterKnockout(enum BattlerId battler);
 
 bool32 IsAiVsAiBattle(void)
 {
-    return (B_FLAG_AI_VS_AI_BATTLE && FlagGet(B_FLAG_AI_VS_AI_BATTLE));
+    // Recorded battle setup, including the host test runner, reconstructs the
+    // battle from gBattleTypeFlags. The overworld flag is only the source that
+    // requests this mode before battle setup and is not a reliable runtime
+    // state carrier after that point.
+    return (gBattleTypeFlags & BATTLE_TYPE_AI_VS_AI)
+        || (B_FLAG_AI_VS_AI_BATTLE && FlagGet(B_FLAG_AI_VS_AI_BATTLE));
 }
 
 bool32 BattlerIsPlayer(enum BattlerId battlerId)
@@ -268,7 +273,9 @@ static void InitBtlControllersInternal(void)
         else
         {
             // Player 1
-            if (isRecorded)
+            if (isAIvsAI)
+                gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_0)] = SetControllerToPlayerPartner;
+            else if (isRecorded)
                 gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_0)] = SetControllerToRecordedPlayer;
             else if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
                 gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_0)] = SetControllerToSafari;
@@ -276,8 +283,6 @@ static void InitBtlControllersInternal(void)
                 gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_0)] = IS_FRLG ? SetControllerToOakOrOldMan : SetControllerToWally;
             else if (IS_FRLG && (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE))
                 gBattlerControllerFuncs[gBattlerPositions[B_BATTLER_0]] = SetControllerToOakOrOldMan;
-            else if (isAIvsAI)
-                gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_0)] = SetControllerToPlayerPartner;
             else
                 gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_0)] = SetControllerToPlayer;
 
@@ -288,7 +293,9 @@ static void InitBtlControllersInternal(void)
             else
                 isOpponent1Recorded = isRecorded && isRecordedLink;
 
-            if (isOpponent1Recorded)
+            if (isAIvsAI)
+                gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_1)] = SetControllerToOpponent;
+            else if (isOpponent1Recorded)
                 gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_1)] = SetControllerToRecordedOpponent;
             else
                 gBattlerControllerFuncs[GetBattlerPosition(B_BATTLER_1)] = SetControllerToOpponent;

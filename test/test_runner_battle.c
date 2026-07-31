@@ -208,6 +208,7 @@ static void InvokeTestFunction(const struct BattleTest *test)
     case BATTLE_TEST_WILD:
     case BATTLE_TEST_GHOST:
     case BATTLE_TEST_AI_SINGLES:
+    case BATTLE_TEST_AI_VS_AI_SINGLES:
         InvokeSingleTestFunctionWithStack(STATE->results, STATE->runParameter, &gBattleMons[B_POSITION_PLAYER_LEFT], &gBattleMons[B_POSITION_OPPONENT_LEFT], test->function.singles, &DATA.stack[BATTLE_TEST_STACK_SIZE]);
         break;
     case BATTLE_TEST_DOUBLES:
@@ -248,6 +249,7 @@ bool32 IsAITest(void)
     case BATTLE_TEST_AI_MULTI:
     case BATTLE_TEST_AI_TWO_VS_ONE:
     case BATTLE_TEST_AI_ONE_VS_TWO:
+    case BATTLE_TEST_AI_VS_AI_SINGLES:
         return TRUE;
     }
     return FALSE;
@@ -255,7 +257,9 @@ bool32 IsAITest(void)
 
 static bool32 IsAIDoublesTest(void)
 {
-    return (IsAITest() && (GetBattleTest()->type != BATTLE_TEST_AI_SINGLES));
+    return (IsAITest()
+         && GetBattleTest()->type != BATTLE_TEST_AI_SINGLES
+         && GetBattleTest()->type != BATTLE_TEST_AI_VS_AI_SINGLES);
 }
 
 static enum BattleTrainer Test_GetBattlerTrainer(enum BattlerId battlerId)
@@ -304,6 +308,7 @@ static void BattleTest_SetUp(void *data)
     case BATTLE_TEST_WILD:
     case BATTLE_TEST_GHOST:
     case BATTLE_TEST_AI_SINGLES:
+    case BATTLE_TEST_AI_VS_AI_SINGLES:
         STATE->battlersCount = 2;
         break;
     case BATTLE_TEST_DOUBLES:
@@ -423,6 +428,15 @@ static void BattleTest_Run(void *data)
         DATA.recordedBattle.battleFlags = BATTLE_TYPE_IS_MASTER | BATTLE_TYPE_TRAINER;
         DATA.recordedBattle.opponentA = TRAINER_LEAF_TEST;
         DATA.hasAI = TRUE;
+        for (i = 0; i < STATE->battlersCount; i++)
+            DATA.currentMonIndexes[i] = i / 2;
+        break;
+    case BATTLE_TEST_AI_VS_AI_SINGLES:
+        DATA.recordedBattle.battleFlags = BATTLE_TYPE_IS_MASTER | BATTLE_TYPE_TRAINER | BATTLE_TYPE_AI_VS_AI;
+        DATA.recordedBattle.opponentA = TRAINER_LEAF_TEST;
+        DATA.hasAI = TRUE;
+        DATA.flagId = B_FLAG_AI_VS_AI_BATTLE;
+        FlagSet(B_FLAG_AI_VS_AI_BATTLE);
         for (i = 0; i < STATE->battlersCount; i++)
             DATA.currentMonIndexes[i] = i / 2;
         break;
@@ -581,7 +595,7 @@ static void BattleTest_Run(void *data)
                 Test_ExitWithResult(TEST_RESULT_INVALID, SourceLine(0), "Speed required for all PLAYERs and OPPONENTs");
         }
     }
-    else
+    else if (test->type != BATTLE_TEST_AI_VS_AI_SINGLES)
     {
         SetImplicitSpeeds();
     }
@@ -700,7 +714,8 @@ static u32 BattleTest_RandomUniform(enum RandomTag tag, u32 lo, u32 hi, bool32 (
 {
     //rigged
     const struct BattlerTurn *turn = NULL;
-    if (gCurrentTurnActionNumber < gBattlersCount)
+    if (gBattleResults.battleTurnCounter < MAX_TURNS
+     && gCurrentTurnActionNumber < gBattlersCount)
     {
         enum BattlerId battlerId = gBattlerByTurnOrder[gCurrentTurnActionNumber];
         turn = &DATA.battleRecordTurns[gBattleResults.battleTurnCounter][battlerId];
@@ -762,7 +777,8 @@ static u32 BattleTest_RandomWeightedArray(enum RandomTag tag, u32 sum, u32 n, co
 {
     //rigged
     const struct BattlerTurn *turn = NULL;
-    if (gCurrentTurnActionNumber < gBattlersCount || tag == RNG_SHELL_SIDE_ARM)
+    if (gBattleResults.battleTurnCounter < MAX_TURNS
+     && (gCurrentTurnActionNumber < gBattlersCount || tag == RNG_SHELL_SIDE_ARM))
     {
         enum BattlerId battlerId = gBattlerByTurnOrder[gCurrentTurnActionNumber];
         turn = &DATA.battleRecordTurns[gBattleResults.battleTurnCounter][battlerId];
@@ -807,7 +823,8 @@ static const void *BattleTest_RandomElementArray(enum RandomTag tag, const void 
 {
     //rigged
     const struct BattlerTurn *turn = NULL;
-    if (gCurrentTurnActionNumber < gBattlersCount)
+    if (gBattleResults.battleTurnCounter < MAX_TURNS
+     && gCurrentTurnActionNumber < gBattlersCount)
     {
         enum BattlerId battlerId = gBattlerByTurnOrder[gCurrentTurnActionNumber];
         turn = &DATA.battleRecordTurns[gBattleResults.battleTurnCounter][battlerId];
@@ -1988,7 +2005,8 @@ void TestRunner_Battle_AfterLastTurn(void)
 {
     const struct BattleTest *test = GetBattleTest();
 
-    if (DATA.turns - 1 != DATA.trial.lastActionTurn)
+    if (test->type != BATTLE_TEST_AI_VS_AI_SINGLES
+     && DATA.turns - 1 != DATA.trial.lastActionTurn)
     {
         const char *filename = gTestRunnerState.test->filename;
         Test_ExitWithResult(TEST_RESULT_FAIL, SourceLine(0), "%s:%d: %d TURNs specified, but %d ran", filename, SourceLine(0), DATA.turns, DATA.trial.lastActionTurn + 1);
@@ -2558,6 +2576,49 @@ void SpeedIV_(u32 sourceLine, u32 speedIV)
     INVALID_IF(!DATA.currentMon, "Speed IV outside of PLAYER/OPPONENT");
     INVALID_IF(speedIV > MAX_PER_STAT_IVS, "Illegal speed IV: %d", speedIV);
     SetMonData(DATA.currentMon, MON_DATA_SPEED_IV, &speedIV);
+}
+
+void IVs_(u32 sourceLine, u32 hp, u32 attack, u32 defense, u32 spAttack, u32 spDefense, u32 speed)
+{
+    HPIV_(sourceLine, hp);
+    AttackIV_(sourceLine, attack);
+    DefenseIV_(sourceLine, defense);
+    SpAttackIV_(sourceLine, spAttack);
+    SpDefenseIV_(sourceLine, spDefense);
+    SpeedIV_(sourceLine, speed);
+}
+
+void EVs_(u32 sourceLine, u32 hp, u32 attack, u32 defense, u32 spAttack, u32 spDefense, u32 speed)
+{
+    u32 evs[NUM_STATS] = {hp, attack, defense, speed, spAttack, spDefense};
+    static const enum MonData fields[NUM_STATS] =
+    {
+        MON_DATA_HP_EV,
+        MON_DATA_ATK_EV,
+        MON_DATA_DEF_EV,
+        MON_DATA_SPEED_EV,
+        MON_DATA_SPATK_EV,
+        MON_DATA_SPDEF_EV,
+    };
+    u32 total = 0;
+
+    INVALID_IF(!DATA.currentMon, "EVs outside of PLAYER/OPPONENT");
+    for (u32 i = 0; i < NUM_STATS; i++)
+    {
+        INVALID_IF(evs[i] > MAX_PER_STAT_EVS, "Illegal EV value: %d", evs[i]);
+        total += evs[i];
+    }
+    INVALID_IF(total > MAX_TOTAL_EVS, "Illegal EV total: %d", total);
+
+    for (u32 i = 0; i < NUM_STATS; i++)
+        SetMonData(DATA.currentMon, fields[i], &evs[i]);
+
+    // Nature is normally finalized when the Pokemon block closes. Apply it
+    // now so the recalculated simulator stats include nature, IVs, and EVs.
+    UpdateMonPersonality(&DATA.currentMon->box, GenerateNature(DATA.nature, DATA.gender % NUM_NATURES) | DATA.gender);
+    gMain.inBattle = TRUE;
+    CalculateMonStats(DATA.currentMon);
+    gMain.inBattle = FALSE;
 }
 
 void Item_(u32 sourceLine, u32 item)

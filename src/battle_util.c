@@ -9277,6 +9277,7 @@ bool32 IsConsumableHeldItem(enum Item item)
     case HOLD_EFFECT_MIRROR_HERB:
     case HOLD_EFFECT_BOOSTER_ENERGY:
     case HOLD_EFFECT_BERSERK_GENE:
+    case HOLD_EFFECT_RESTORE_PCT_HP: //Covers Honey
         return TRUE;
     default:
         return FALSE;

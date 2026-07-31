@@ -216,6 +216,13 @@
  * - we still control the player's action the same way
  * - apart from the EXPECTED commands, there's also a new SCORE_ and SCORE__VAL commands
  *
+ * AI_VS_AI_SINGLE_BATTLE_TEST(name, results...)
+ * Defines an autonomous singles simulation. Both sides use the in-game AI,
+ * no TURN commands are supplied, and the ordinary battle engine runs to a
+ * natural outcome. Configure both sides with AI_FLAGS, PLAYER, and OPPONENT.
+ * The outcome and elapsed turns are available from gBattleOutcome and
+ * gBattleResults.battleTurnCounter in THEN.
+ *
  * KNOWN_FAILING
  * Marks a test as not passing due to a bug. If there is an issue number
  * associated with the bug it should be included in a comment. If the
@@ -577,7 +584,8 @@ enum {
     BATTLE_TEST_AI_DOUBLES,
     BATTLE_TEST_AI_MULTI,
     BATTLE_TEST_AI_TWO_VS_ONE,
-    BATTLE_TEST_AI_ONE_VS_TWO
+    BATTLE_TEST_AI_ONE_VS_TWO,
+    BATTLE_TEST_AI_VS_AI_SINGLES
 };
 
 typedef void (*SingleBattleTestFunction)(void *, const u32, struct BattlePokemon *, struct BattlePokemon *);
@@ -969,6 +977,7 @@ bool32 IsAITest(void);
 #define WILD_BATTLE_TEST(_name, ...) BATTLE_TEST_ARGS_SINGLE(_name, BATTLE_TEST_WILD, __VA_ARGS__)
 #define GHOST_BATTLE_TEST(_name, ...) BATTLE_TEST_ARGS_SINGLE(_name, BATTLE_TEST_GHOST, __VA_ARGS__)
 #define AI_SINGLE_BATTLE_TEST(_name, ...) BATTLE_TEST_ARGS_SINGLE(_name, BATTLE_TEST_AI_SINGLES, __VA_ARGS__)
+#define AI_VS_AI_SINGLE_BATTLE_TEST(_name, ...) BATTLE_TEST_ARGS_SINGLE(_name, BATTLE_TEST_AI_VS_AI_SINGLES, __VA_ARGS__)
 
 #define DOUBLE_BATTLE_TEST(_name, ...) BATTLE_TEST_ARGS_DOUBLE(_name, BATTLE_TEST_DOUBLES, __VA_ARGS__)
 #define AI_DOUBLE_BATTLE_TEST(_name, ...) BATTLE_TEST_ARGS_DOUBLE(_name, BATTLE_TEST_AI_DOUBLES, __VA_ARGS__)
@@ -1040,6 +1049,8 @@ struct moveWithPP {
 #define SpAttackIV(spAttackIV) SpAttackIV_(__LINE__, spAttackIV)
 #define SpDefenseIV(spDefenseIV) SpDefenseIV_(__LINE__, spDefenseIV)
 #define SpeedIV(speedIV) SpeedIV_(__LINE__, speedIV)
+#define IVs(hp, attack, defense, spAttack, spDefense, speed) IVs_(__LINE__, hp, attack, defense, spAttack, spDefense, speed)
+#define EVs(hp, attack, defense, spAttack, spDefense, speed) EVs_(__LINE__, hp, attack, defense, spAttack, spDefense, speed)
 #define Item(item) Item_(__LINE__, item)
 #define Moves(move1, ...) do { u16 moves_[MAX_MON_MOVES] = {move1, __VA_ARGS__}; Moves_(__LINE__, moves_); } while(0)
 #define MovesWithPP(movewithpp1, ...) MovesWithPP_(__LINE__, (struct moveWithPP[MAX_MON_MOVES]) {movewithpp1, __VA_ARGS__})
@@ -1084,6 +1095,8 @@ void DefenseIV_(u32 sourceLine, u32 defenseIV);
 void SpAttackIV_(u32 sourceLine, u32 spAttackIV);
 void SpDefenseIV_(u32 sourceLine, u32 spDefenseIV);
 void SpeedIV_(u32 sourceLine, u32 speedIV);
+void IVs_(u32 sourceLine, u32 hp, u32 attack, u32 defense, u32 spAttack, u32 spDefense, u32 speed);
+void EVs_(u32 sourceLine, u32 hp, u32 attack, u32 defense, u32 spAttack, u32 spDefense, u32 speed);
 void Item_(u32 sourceLine, u32 item);
 void Moves_(u32 sourceLine, u16 moves[MAX_MON_MOVES]);
 void MovesWithPP_(u32 sourceLine, struct moveWithPP moveWithPP[MAX_MON_MOVES]);
