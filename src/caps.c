@@ -121,3 +121,25 @@ u32 GetCurrentEVCap(void)
 
     return MAX_TOTAL_EVS;
 }
+
+u32 GetEVStatCap(void)
+{
+    if (!FlagGet(FLAG_EV_MODE))
+        return 0;
+    if (FlagGet(FLAG_BADGE07_GET))
+        return MAX_PER_STAT_EVS;
+    if (FlagGet(FLAG_BADGE06_GET))
+        return 228;
+    if (FlagGet(FLAG_BADGE05_GET))
+        return 192;
+    if (FlagGet(FLAG_BADGE04_GET))
+        return 156;
+    if (FlagGet(FLAG_BADGE03_GET))
+        return 120;
+    if (FlagGet(FLAG_BADGE02_GET))
+        return 84;
+    if (FlagGet(FLAG_BADGE01_GET))
+        return 48;
+
+    return 36;
+}

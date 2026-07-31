@@ -6,3 +6,7 @@ See tools/learnset_helpers/off_types_moves.md for the core set of TMs after filt
 The following are added to that list:
 - Lucky Chant
 - Power Split
+
+The following are potential bring backs if I don't use the remaining lee-way space for something else:
+- Air Slash
+- Play Rough

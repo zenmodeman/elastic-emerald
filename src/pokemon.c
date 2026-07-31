@@ -3500,7 +3500,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, 
     bool8 retVal = TRUE;
     const u8 *itemEffect;
     u8 itemEffectParam = ITEM_EFFECT_ARG_START;
-    u32 temp1, temp2;
+    u32 temp1, temp2, maxAllowedEVs;
     s8 friendshipChange = 0;
     enum HoldEffect holdEffect;
     enum BattlerId battler = MAX_BATTLERS_COUNT;
@@ -3513,8 +3513,9 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, 
     bool8 didLevelUp = FALSE;
     bool8 isLevelUpItem;
 
-    // Determine the EV cap to use
-    u32 maxAllowedEVs = !B_EV_ITEMS_CAP ? MAX_TOTAL_EVS : GetCurrentEVCap();
+    // EV Mode unlocks EVs gradually: two capped stats plus six spare EVs.
+    evCap = GetEVStatCap();
+    maxAllowedEVs = evCap == 0 ? 0 : evCap * 2 + 6;
 
     // Get item hold effect
     heldItem = GetMonData(mon, MON_DATA_HELD_ITEM);
@@ -3651,9 +3652,6 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, 
                             // Check if the total EV limit is reached
                             if (evCount >= maxAllowedEVs)
                                 return TRUE;
-
-                            // Ensure the increase does not exceed the max EV per stat (252)
-                            evCap = (itemEffect[10] & ITEM10_IS_VITAMIN) ? EV_ITEM_RAISE_LIMIT : MAX_PER_STAT_EVS;
 
                             // Check if the per-stat limit is reached
                             if (dataSigned >= evCap)
@@ -3845,9 +3843,6 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, 
                             // Check if the total EV limit is reached
                             if (evCount >= maxAllowedEVs)
                                 return TRUE;
-
-                            // Ensure the increase does not exceed the max EV per stat (252)
-                            evCap = (itemEffect[10] & ITEM10_IS_VITAMIN) ? EV_ITEM_RAISE_LIMIT : MAX_PER_STAT_EVS;
 
                             // Check if the per-stat limit is reached
                             if (dataSigned >= evCap)
@@ -5076,7 +5071,11 @@ void MonGainEVs(struct Pokemon *mon, enum Species defeatedSpecies)
     int multiplier;
     u8 stat;
     u8 bonus;
-    u32 currentEVCap = GetCurrentEVCap();
+    u32 evCap = GetEVStatCap();
+    u32 currentEVCap = evCap == 0 ? 0 : evCap * 2 + 6;
+
+    if (!FlagGet(FLAG_EV_MODE))
+        return;
 
     heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, 0);
     if (heldItem == ITEM_ENIGMA_BERRY_E_READER)
@@ -5162,9 +5161,9 @@ void MonGainEVs(struct Pokemon *mon, enum Species defeatedSpecies)
         if (totalEVs + (s16)evIncrease > currentEVCap)
             evIncrease = ((s16)evIncrease + currentEVCap) - (totalEVs + evIncrease);
 
-        if (evs[i] + (s16)evIncrease > MAX_PER_STAT_EVS)
+        if (evs[i] + (s16)evIncrease > evCap)
         {
-            int val1 = (s16)evIncrease + MAX_PER_STAT_EVS;
+            int val1 = (s16)evIncrease + evCap;
             int val2 = evs[i] + evIncrease;
             evIncrease = val1 - val2;
         }

@@ -3,6 +3,7 @@
 #include "battle.h"
 #include "battle_main.h"
 #include "data.h"
+#include "event_data.h"
 #include "malloc.h"
 #include "random.h"
 #include "string_util.h"
@@ -18,6 +19,7 @@ TEST("CreateNPCTrainerPartyForTrainer generates customized Pokémon")
     struct Pokemon *testParty = Alloc(6 * sizeof(struct Pokemon));
     u32 currTrainer = 3;
     u8 nickBuffer[20];
+    FlagSet(FLAG_EV_MODE);
     CreateNPCTrainerPartyFromTrainer(testParty, GetTrainerStructFromId(currTrainer), TRUE, BATTLE_TYPE_TRAINER);
     EXPECT(IsMonShiny(&testParty[0]));
     EXPECT(!IsMonShiny(&testParty[1]));
@@ -86,6 +88,18 @@ TEST("CreateNPCTrainerPartyForTrainer generates customized Pokémon")
 
     EXPECT_EQ(GetMonData(&testParty[0], MON_DATA_DYNAMAX_LEVEL), 5);
     EXPECT_EQ(GetMonData(&testParty[1], MON_DATA_DYNAMAX_LEVEL), 10);
+
+    Free(testParty);
+}
+
+TEST("Zenmodeman: Merge guard: Trainer EV spreads apply only in EV Mode")
+{
+    struct Pokemon *testParty = Alloc(PARTY_SIZE * sizeof(*testParty));
+    u32 currTrainer = 3;
+
+    CreateNPCTrainerPartyFromTrainer(testParty, GetTrainerStructFromId(currTrainer), TRUE, BATTLE_TYPE_TRAINER);
+
+    EXPECT_EQ(GetMonEVCount(&testParty[0]), 0);
 
     Free(testParty);
 }

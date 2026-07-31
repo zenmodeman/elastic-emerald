@@ -1270,13 +1270,16 @@ Music: Girl
 Battle Type: Singles
 AI: Smart Trainer
 
-Zigzagoon
-Level: 13
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
-- Sand Attack
+Spheal @ Wiki Berry  
+Ability: Ice Body  
+Level: 16  
+EVs: 84 HP / 84 Def / 4 SpD  
+Bold Nature  
+IVs: 13 HP / 12 Atk / 19 Def / 13 SpA / 13 SpD / 10 Spe  
+- Hail  
+- Aurora Beam  
+- Water Pulse  
 - Headbutt
-- Tail Whip
-- Surf
 
 === TRAINER_SIMON ===
 Name: SIMON

@@ -22,5 +22,6 @@ u32 GetCurrentLevelCap(bool32 isHardCap);
 
 u32 GetSoftLevelCapExpValue(u32 level, u32 expValue);
 u32 GetCurrentEVCap(void);
+u32 GetEVStatCap(void);
 
 #endif /* GUARD_CAPS_H */

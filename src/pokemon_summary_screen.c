@@ -2055,7 +2055,7 @@ static void RefreshEvRedistributionStats(void)
 static bool32 IsEvRedistributionValid(void)
 {
     u32 i;
-    s32 evCap = GetCurrentEVCap();
+    s32 evCap = GetEVStatCap();
 
     if (GetEvRedistributionTotal() != sMonSummaryScreen->evRedistOriginalTotal)
         return FALSE;
@@ -2072,7 +2072,7 @@ static bool32 IsEvRedistributionValid(void)
 static bool32 ShouldShowEvRedistribution(void)
 {
     return (FlagGet(FLAG_EV_MODE)
-         && GetCurrentEVCap() > 0
+         && GetEVStatCap() > 0
          && !sMonSummaryScreen->lockMovesFlag
          && !sMonSummaryScreen->summary.isEgg
          && !sMonSummaryScreen->isBoxMon
@@ -2143,7 +2143,7 @@ static void ChangeEvRedistributionValue(s8 delta)
     }
     else
     {
-        s32 evCap = GetCurrentEVCap();
+        s32 evCap = GetEVStatCap();
         u16 pending = GetEvRedistributionPending();
 
         ev = GetSummaryEvByStat(stat);

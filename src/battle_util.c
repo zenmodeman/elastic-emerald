@@ -6519,6 +6519,8 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageContext *ctx)
     for (u32 i = 0; i < gProtectStructs[battlerAtk].helpingHand; i++)
         modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
 
+    if (move == MOVE_CHILLING_WATER && IS_BATTLER_OF_TYPE(battlerAtk, TYPE_ICE))
+        modifier = uq4_12_multiply(modifier, UQ_4_12(1.5));
     if (gSpecialStatuses[battlerAtk].gemBoost)
         modifier = uq4_12_multiply(modifier, PercentToUQ4_12AddOne(gSpecialStatuses[battlerAtk].gemParam));
     if (moveType == TYPE_ELECTRIC && gBattleMons[battlerAtk].volatiles.chargeTimer > 0)

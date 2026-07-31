@@ -21183,8 +21183,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Chilling Water"),
         .description = COMPOUND_STRING(
-            "A shower with ice-cold water\n"
-            "lowers the target's Attack."),
+            "Ice-cold water lowers Attack.\n"
+            "Ice-type users gain more power."),
         .effect = EFFECT_HIT,
         .power = 50,
         .type = TYPE_WATER,

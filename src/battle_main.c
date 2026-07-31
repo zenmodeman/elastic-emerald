@@ -1921,7 +1921,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
 
             CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
             SetMonData(&party[i], MON_DATA_IVS, &(partyData[monIndex].iv));
-            if (partyData[monIndex].ev != NULL)
+            if (partyData[monIndex].ev != NULL && FlagGet(FLAG_EV_MODE))
             {
                 SetMonData(&party[i], MON_DATA_HP_EV, &(partyData[monIndex].ev[0]));
                 SetMonData(&party[i], MON_DATA_ATK_EV, &(partyData[monIndex].ev[1]));

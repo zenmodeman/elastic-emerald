@@ -1,5 +1,6 @@
 #include "global.h"
 #include "battle_setup.h"
+#include "caps.h"
 #include "event_data.h"
 #include "item.h"
 #include "pokemon.h"
@@ -18,6 +19,76 @@ static u8 FindAbilitySlot(u16 species, u16 ability)
     }
 
     return NUM_ABILITY_SLOTS;
+}
+
+TEST("Zenmodeman: Merge guard: EV Mode restores badge-based per-stat caps")
+{
+    EXPECT_EQ(GetEVStatCap(), 0);
+
+    FlagSet(FLAG_EV_MODE);
+    EXPECT_EQ(GetEVStatCap(), 36);
+    FlagSet(FLAG_BADGE01_GET);
+    EXPECT_EQ(GetEVStatCap(), 48);
+    FlagSet(FLAG_BADGE02_GET);
+    EXPECT_EQ(GetEVStatCap(), 84);
+    FlagSet(FLAG_BADGE03_GET);
+    EXPECT_EQ(GetEVStatCap(), 120);
+    FlagSet(FLAG_BADGE04_GET);
+    EXPECT_EQ(GetEVStatCap(), 156);
+    FlagSet(FLAG_BADGE05_GET);
+    EXPECT_EQ(GetEVStatCap(), 192);
+    FlagSet(FLAG_BADGE06_GET);
+    EXPECT_EQ(GetEVStatCap(), 228);
+    FlagSet(FLAG_BADGE07_GET);
+    EXPECT_EQ(GetEVStatCap(), MAX_PER_STAT_EVS);
+}
+
+TEST("Zenmodeman: Merge guard: Pokemon gain EVs only in EV Mode")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_WOBBUFFET, 5, 0, OTID_STRUCT_PLAYER_ID);
+    MonGainEVs(&mon, SPECIES_CATERPIE);
+    EXPECT_EQ(GetMonEVCount(&mon), 0);
+
+    FlagSet(FLAG_EV_MODE);
+    MonGainEVs(&mon, SPECIES_CATERPIE);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HP_EV), gSpeciesInfo[SPECIES_CATERPIE].evYield_HP);
+}
+
+TEST("Zenmodeman: Merge guard: EV items work only in EV Mode")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_WOBBUFFET, 5, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT(PokemonUseItemEffects(&mon, ITEM_HP_UP, 0, 0, FALSE));
+    EXPECT_EQ(GetMonEVCount(&mon), 0);
+
+    FlagSet(FLAG_EV_MODE);
+    EXPECT(!PokemonUseItemEffects(&mon, ITEM_HP_UP, 0, 0, FALSE));
+    EXPECT_GT(GetMonData(&mon, MON_DATA_HP_EV), 0);
+    EXPECT_LE(GetMonData(&mon, MON_DATA_HP_EV), GetEVStatCap());
+}
+
+TEST("Zenmodeman: Merge guard: EV Mode enforces per-stat and derived total caps")
+{
+    struct Pokemon mon;
+    u32 ev;
+
+    FlagSet(FLAG_EV_MODE);
+    CreateMon(&mon, SPECIES_WOBBUFFET, 5, 0, OTID_STRUCT_PLAYER_ID);
+
+    ev = GetEVStatCap();
+    SetMonData(&mon, MON_DATA_HP_EV, &ev);
+    MonGainEVs(&mon, SPECIES_CATERPIE);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HP_EV), GetEVStatCap());
+
+    ev = GetEVStatCap();
+    SetMonData(&mon, MON_DATA_ATK_EV, &ev);
+    ev = 6;
+    SetMonData(&mon, MON_DATA_DEF_EV, &ev);
+    MonGainEVs(&mon, SPECIES_CATERPIE);
+    EXPECT_EQ(GetMonEVCount(&mon), GetEVStatCap() * 2 + 6);
 }
 
 TEST("Zenmodeman: Merge guard: Monotype save values decode across the Fairy type gap")
