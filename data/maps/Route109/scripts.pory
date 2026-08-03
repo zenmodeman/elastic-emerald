@@ -1,0 +1,67 @@
+raw `
+	.include "data/maps/Route109/scripts.raw.inc"
+`
+
+script Route109_EventScript_Cassia {
+    lock
+    faceplayer
+
+    if (flag(TRAINER_FLAGS_START + TRAINER_CASSIA)) {
+        msgbox(format("Keep cultivating that strength. Even the hardiest growth needs patience."))
+        release
+        return
+    }
+
+    if (flag(FLAG_RESTRICTED_MODE) && flag(FLAG_BADGE03_GET)) {
+        msgbox(format("This beach has some up-and-coming trainers. But I see you have three BADGES now!"))
+        msgbox(format("I hope you'll remember the joys and experiences you had here throughout the rest of your journey."))
+        release
+        return
+    }
+
+    if (!flag(TRAINER_FLAGS_START + TRAINER_HUEY)
+     || !flag(TRAINER_FLAGS_START + TRAINER_EDMOND)
+     || !flag(TRAINER_FLAGS_START + TRAINER_RICKY_1)
+     || !flag(TRAINER_FLAGS_START + TRAINER_LOLA_1)
+     || !flag(TRAINER_FLAGS_START + TRAINER_CHANDLER)
+     || !flag(TRAINER_FLAGS_START + TRAINER_HAILEY)
+     || !flag(TRAINER_FLAGS_START + TRAINER_DWAYNE)
+     || !flag(TRAINER_FLAGS_START + TRAINER_JOHANNA)
+     || !flag(TRAINER_FLAGS_START + TRAINER_SIMON)) {
+        msgbox(format("I study Trainers who cross this beach. Defeat every Trainer on the ROUTE 109 beach and inside the SEASHORE HOUSE, then return."))
+        release
+        return
+    }
+
+    msgbox(format("You've weathered every Trainer on this beach, even those in the SEASHORE HOUSE. Your strength has taken root. Shall we see how well it stands against mine?"), MSGBOX_YESNO)
+    if (var(VAR_RESULT) == NO) {
+        msgbox(format("No bloom should be hurried. Return when you are ready."))
+        release
+        return
+    }
+
+    msgbox(format("Excellent. Let our battle bloom!"))
+    trainerbattle_no_intro(TRAINER_CASSIA, Route109_Text_CassiaDefeated)
+    msgbox(format("A promise should always bear fruit. This rare herb is yours."))
+    if (flag(FLAG_RESOURCE_MODE)) {
+        if (var(VAR_MONOTYPE) != 0) {
+            giveItem(ITEM_POWER_HERB, 18)
+        } else {
+            giveItem(ITEM_POWER_HERB, 12)
+        }
+    } else {
+        giveItem(ITEM_POWER_HERB)
+    }
+    if (var(VAR_RESULT) == FALSE) {
+        msgbox(format("There was no room in either your BAG or your PC for the POWER HERB."))
+        release
+        return
+    }
+
+    msgbox(format("A POWER HERB lets a POKéMON use a move that charges up without having to wait. It is consumed, so choose its moment with care."))
+    release
+}
+
+text Route109_Text_CassiaDefeated {
+    "What splendid growth!"
+}

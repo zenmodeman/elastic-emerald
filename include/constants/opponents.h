@@ -74,7 +74,7 @@
 #define TRAINER_RICKY_2                      67
 #define TRAINER_RICKY_3                      68
 #define TRAINER_RICKY_4                      69
-#define TRAINER_RICKY_5                      70
+#define TRAINER_CASSIA                      70
 #define TRAINER_RANDALL                      71
 #define TRAINER_PARKER                       72
 #define TRAINER_GEORGE                       73

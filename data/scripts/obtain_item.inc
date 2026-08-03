@@ -3,6 +3,8 @@
 
 Std_ObtainItem::
 	copyvar VAR_0x8006, ITEMID
+	checkitemspace ITEMID, AMOUNT
+	copyvar VAR_0x800B, VAR_RESULT
 	additem ITEMID, AMOUNT
 	copyvar VAR_0x8007, VAR_RESULT
 	special NormalizeObtainedItemQuantityForDisplay
@@ -63,7 +65,14 @@ EventScript_ContinueObtainedItem:
 	delay 10
 	showitemdescription
 	waitfanfare
+	goto_if_eq VAR_0x800B, FALSE, EventScript_ItemSentToPC
 	msgbox gText_PutItemInPocket, MSGBOX_DEFAULT
+	hideitemdescription
+	setvar VAR_RESULT, TRUE
+	return
+
+EventScript_ItemSentToPC:
+	msgbox gText_ItemSentToPC, MSGBOX_DEFAULT
 	hideitemdescription
 	setvar VAR_RESULT, TRUE
 	return

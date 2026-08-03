@@ -462,6 +462,7 @@ Route110_EventScript_GiveItemfinder::
 	return
 
 Route110_EventScript_RivalExit::
+	setflag FLAG_RIVAL_110_DEFEATED
 	closemessage
 	call_if_eq VAR_0x8008, 1, Route110_EventScript_MoveRival1
 	call_if_eq VAR_0x8008, 2, Route110_EventScript_MoveRival2
@@ -986,4 +987,3 @@ Route110_Text_KeepAnEyeOutForRival:
 	.string "… … … … … …\p"
 	.string "Well, I had better get going.\n"
 	.string "See you again, {PLAYER}{KUN}!$"
-

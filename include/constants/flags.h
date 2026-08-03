@@ -60,7 +60,7 @@
 #define FLAG_CURATED_TERA             0x26
 #define FLAG_AI_AI_BATTLE             0x27
 #define FLAG_DEMO_GUARD               0x28
-#define FLAG_RIVAL_112_DEFEATED       0x29
+#define FLAG_RIVAL_110_DEFEATED       0x29
 #define FLAG_TIERED                   0x2A
 #define FLAG_MIRAGE_ISLAND_UNLOCKED   0x2B
 #define FLAG_UNUSED_0x02C    0x2C // Unused Flag

@@ -1272,10 +1272,10 @@ AI: Smart Trainer
 
 Spheal @ Wiki Berry  
 Ability: Ice Body  
-Level: 16  
-EVs: 84 HP / 84 Def / 4 SpD  
+Level: 18  
+EVs: 80 HP / 80 Def / 12 SpD  
 Bold Nature  
-IVs: 13 HP / 12 Atk / 19 Def / 13 SpA / 13 SpD / 10 Spe  
+IVs: 13 HP / 12 Atk / 19 Def / 13 SpA / 14 SpD / 10 Spe  
 - Hail  
 - Aurora Beam  
 - Water Pulse  
@@ -1362,22 +1362,47 @@ IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 - Tail Whip
 - Surf
 
-=== TRAINER_RICKY_5 ===
-Name: RICKY
-Class: Tuber M
-Pic: Tuber M
-Gender: Male
-Music: Girl
+=== TRAINER_CASSIA ===
+Name: CASSIA
+Class: Aroma Lady
+Pic: Aroma Lady
+Gender: Female
+Music: Female
 Battle Type: Singles
 AI: Smart Trainer
 
-Linoone
-Level: 36
-IVs: 4 HP / 4 Atk / 4 Def / 4 SpA / 4 SpD / 4 Spe
-- Sand Attack
-- Pin Missile
-- Tail Whip
-- Surf
+Ivysaur (F) @ Eviolite
+Ability: Overgrow
+Level: 19
+EVs: 36 HP / 20 Def / 20 SpD
+Calm Nature
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- Razor Leaf
+- Leech Seed
+- Poison Powder
+- Take Down
+
+Carkol (F) @ Sitrus Berry
+Ability: Flame Body
+Level: 20
+EVs: 28 HP / 28 Def / 20 SpD
+Impish Nature
+IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- Flame Charge
+- Smack Down
+- Rapid Spin
+- Rock Polish
+
+Tropius (F) @ Power Herb
+Ability: Chlorophyll
+Level: 21
+EVs: 28 HP / 36 SpA / 12 Spe
+Modest Nature
+IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- Solar Beam
+- Air Cutter
+- Stomp
+- Growth
 
 === TRAINER_RANDALL ===
 Name: RANDALL

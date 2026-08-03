@@ -19,6 +19,20 @@ Use the project skill at `skills/modify-elastic-emerald-ai-logic/SKILL.md` when 
 - AI support for a new or changed move, ability, item, battle mechanic, or Terastalization behavior;
 - battle-AI regressions or tests under `test/battle/ai`.
 
+### Elastic Emerald NPC and route boss skill
+
+Use the project skill at `skills/modify-elastic-emerald-npcs/SKILL.md` when implementing, diagnosing, reviewing, or documenting NPC, trainer, or route-boss content. Autodetect it for work involving:
+
+- overworld NPC placement, map objects, local IDs, map-script entry points, or NPC dialogue and interaction logic;
+- creating or converting a map `scripts.pory`, raw-script migration, or regeneration of a map's `scripts.inc`;
+- trainer IDs, trainer-slot reuse, rematch-table changes, trainer parties, Match Call integration, or trainer documentation;
+- route-boss prerequisites, pre-battle healing, consent flow, rewards, Bag-to-PC fallback, or reward-state flags;
+- Restricted Mode, Resource Mode, badge, rival, trainer-defeat, or other progression gates on NPC encounters;
+- programmatic trainer-level scaling or changes to `GetTrainerLevelModifier`;
+- verification or regression work for any of the above.
+
+If NPC or route-boss work also changes battle-AI decisions or simulation behavior, use both this skill and the Elastic Emerald AI logic skill.
+
 ### Merge upgrade helper
 
 Use the project skill at `skills/merge-upgrade-helper/SKILL.md` automatically when resolving or auditing an upstream merge or version upgrade. Trigger cases include:

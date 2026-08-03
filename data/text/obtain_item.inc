@@ -8,6 +8,10 @@ gText_PutItemInPocket::
 	.string "{PLAYER} put away the {STR_VAR_2}\n"
 	.string "in the {STR_VAR_3} POCKET.$"
 
+gText_ItemSentToPC::
+	.string "The BAG was full, so the {STR_VAR_2}\n"
+	.string "was sent to the PC.$"
+
 gText_PlayerFoundOneItem::
 	.string "{PLAYER} found one {STR_VAR_2}!$"
 

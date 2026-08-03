@@ -1862,7 +1862,7 @@ void CustomTrainerPartyAssignMoves(struct Pokemon *mon, const struct TrainerMon 
     SetMonData(mon, MON_DATA_PP_BONUSES, &partyEntry->ppBonuses);
 }
 
-u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer *trainer, bool32 halfTeam, u32 battleTypeFlags)
+static u8 CreateNPCTrainerPartyFromTrainerWithLevelModifier(struct Pokemon *party, const struct Trainer *trainer, bool32 halfTeam, u32 battleTypeFlags, u32 levelModifier)
 {
     u32 personalityValue;
     u8 monsCount;
@@ -1916,7 +1916,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                 otId.method = OT_ID_PRESET;
                 otId.value = HIHALF(personalityValue) ^ LOHALF(personalityValue);
             }
-            CreateMon(&party[i], partyData[monIndex].species, partyData[monIndex].lvl, personalityValue, otId);
+            CreateMon(&party[i], partyData[monIndex].species, min(partyData[monIndex].lvl + levelModifier, MAX_LEVEL), personalityValue, otId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[monIndex].heldItem);
 
             CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
@@ -1997,6 +1997,64 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
     return trainer->partySize;
 }
 
+u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer *trainer, bool32 halfTeam, u32 battleTypeFlags)
+{
+    return CreateNPCTrainerPartyFromTrainerWithLevelModifier(party, trainer, halfTeam, battleTypeFlags, 0);
+}
+
+static bool32 IsRoute109BeachTrainer(u16 trainerNum)
+{
+    switch (trainerNum)
+    {
+    case TRAINER_LOLA_1:
+    case TRAINER_RICKY_1:
+    case TRAINER_CASSIA: // Aroma Lady Cassia, Route 109 boss
+    case TRAINER_SIMON:
+    case TRAINER_HUEY:
+    case TRAINER_EDMOND:
+    case TRAINER_DWAYNE:
+    case TRAINER_JOHANNA:
+    case TRAINER_HAILEY:
+    case TRAINER_CHANDLER:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+static u32 GetTrainerLevelModifier(u16 trainerNum)
+{
+    u32 levelModifier = 0;
+
+    if (IsRoute109BeachTrainer(trainerNum) && FlagGet(FLAG_RIVAL_110_DEFEATED))
+        levelModifier += 3;
+
+    switch (trainerNum)
+    {
+    case TRAINER_CINDY_1:
+    case TRAINER_CINDY_2:
+    case TRAINER_CINDY_3:
+    case TRAINER_CINDY_4:
+    case TRAINER_CINDY_5:
+    case TRAINER_CINDY_6:
+        if (FlagGet(FLAG_BADGE01_GET))
+            levelModifier += 3;
+        if (FlagGet(FLAG_BADGE02_GET))
+            levelModifier += 4;
+        break;
+    case TRAINER_LYLE:
+    case TRAINER_JAMES_1:
+    case TRAINER_AURELIO:
+        if (FlagGet(TRAINER_FLAGS_START + TRAINER_DARREN))
+            levelModifier += 2;
+        break;
+    default:
+        break;
+    }
+
+    return levelModifier;
+}
+
 static enum BattleTrainer GetBattlerTrainerFromParty(struct Pokemon *party)
 {
     return ((party - gParties[B_TRAINER_PLAYER]) / PARTY_SIZE);
@@ -2005,6 +2063,7 @@ static enum BattleTrainer GetBattlerTrainerFromParty(struct Pokemon *party)
 static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum)
 {
     u8 retVal;
+    u32 levelModifier = GetTrainerLevelModifier(trainerNum);
     bool32 halfTeam = (BattleSideHasTwoTrainers(GetBattlerTrainerFromParty(party) & BIT_SIDE) && !AreMultiPartiesFullTeams());
 
     if (trainerNum == TRAINER_SECRET_BASE)
@@ -2021,11 +2080,11 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum)
         if (tempTrainer.partySize == 0)
             tempTrainer.partySize = origTrainer->partySize;
 
-        retVal = CreateNPCTrainerPartyFromTrainer(party, (const struct Trainer *)(&tempTrainer), halfTeam, gBattleTypeFlags);
+        retVal = CreateNPCTrainerPartyFromTrainerWithLevelModifier(party, (const struct Trainer *)(&tempTrainer), halfTeam, gBattleTypeFlags, levelModifier);
     }
     else
     {
-        retVal = CreateNPCTrainerPartyFromTrainer(party, GetTrainerStructFromId(trainerNum), halfTeam, gBattleTypeFlags);
+        retVal = CreateNPCTrainerPartyFromTrainerWithLevelModifier(party, GetTrainerStructFromId(trainerNum), halfTeam, gBattleTypeFlags, levelModifier);
     }
     return retVal;
 }

@@ -13,14 +13,14 @@ u32 GetCurrentLevelCap(bool32 isHardCap)
         {TRAINER_FLAGS_START + TRAINER_DARREN, 13},
         {FLAG_BADGE01_GET, 15},
         {FLAG_BADGE02_GET, 19},
-        {FLAG_RIVAL_112_DEFEATED, 23},
+        {FLAG_RIVAL_110_DEFEATED, 23},
         {FLAG_BADGE03_GET, 26},
         {FLAG_BADGE04_GET, 33},
         {FLAG_BADGE05_GET, 36},
         {FLAG_BADGE06_GET, 42},
         {FLAG_BADGE07_GET, 50},
         {FLAG_BADGE08_GET, 58},
-        {FLAG_IS_CHAMPION, 67},
+        {FLAG_IS_CHAMPION, 70},
     };
 
     u32 i;

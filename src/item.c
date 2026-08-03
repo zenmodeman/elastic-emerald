@@ -482,6 +482,20 @@ bool32 AddPCItem(enum Item itemId, u16 count)
     return BagPocket_AddItem(&dummyPocket, itemId, count);
 }
 
+bool32 AddBagItemOrPC(enum Item itemId, u16 count)
+{
+    if (AddBagItem(itemId, count))
+        return TRUE;
+
+    if (GetItemImportance(itemId))
+        return FALSE;
+
+    if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG))
+        return FALSE;
+
+    return AddPCItem(itemId, count);
+}
+
 static void NONNULL BagPocket_CompactItems(struct BagPocket *pocket)
 {
     struct ItemSlot tempItem;

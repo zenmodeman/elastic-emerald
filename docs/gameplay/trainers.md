@@ -374,8 +374,8 @@ the sync fails if they diverge:
 
 ### Lady Cindy 1 — *Optional, Rematchable*
 - Lady Cindy is intended to be an easy source of money. Happy Hour and Pay Day have been made to apply to the winner, so her uses of these moves increase the player's money if they win the battle.
-- The first Lady Cindy team increases by 3 levels after beating Roxanne and raises by an additional 3 levels after beating Brawly. These level increases raise her money yield.
-- Cindy's money yield is `200 * total sum of Pokemon levels; multiply by 2 once Happy Hour is used.` Not factoring any Pay Day boosts, this puts her at 9600 to start and 16,800 post-Brawly. 
+- Cindy's teams increase by 3 levels after beating Roxanne and by another 4 levels after beating Brawly.
+- Cindy's money yield is `200 * total sum of Pokemon levels; multiply by 2 once Happy Hour is used.` Not factoring any Pay Day boosts, this puts her first team at 9,600 with Happy Hour.  to start and 18,000 post-Brawly.
 <!-- trainer-party:start id=TRAINER_CINDY_1 -->
 **Items:** Full Restore
 
@@ -2270,6 +2270,17 @@ the sync fails if they diverge:
 
 ## Route 109
 
+Initial Route 109 beach and Seashore House trainer parties gain 3 levels when challenged after defeating the Route 110 rival. Route 109 trainers with map-object coordinates below the beach (`y > 24`) are excluded, as are Ricky and Lola's rematch teams.
+
+### Aroma Lady Cassia — *Optional Route Boss with reward*
+
+- Requires defeating every other trainer on the Route 109 beach (`y <= 24`) and in the Seashore House. Trainers in Route 109's water portions are excluded.
+- In Restricted Mode, Cassia can no longer be challenged after earning the third Badge.
+
+- **Reward:** 1 Power Herb normally, 12 in non-monotype Resource Mode, or 18 in monotype Resource Mode. Scripted item gifts fall back to PC storage when the Bag is full.
+
+
+
 ### Tuber Ricky
 <!-- trainer-party:start id=TRAINER_RICKY_1 -->
 **Battle type:** Singles.
@@ -2279,13 +2290,58 @@ the sync fails if they diverge:
 **Spheal** @ Wiki Berry
 - **Gender:** Male
 - **Ability:** Ice Body
-- **Level:** 16
-- **EVs:** 84 HP / 84 Def / 4 SpD
+- **Level:** 18
+- **EVs:** 80 HP / 80 Def / 12 SpD
 - **Nature:** Bold
-- **IVs:** 13 HP / 12 Atk / 19 Def / 13 SpA / 13 SpD / 10 Spe
+- **IVs:** 13 HP / 12 Atk / 19 Def / 13 SpA / 14 SpD / 10 Spe
 - **Moves:**
   - Hail
   - Aurora Beam
   - Water Pulse
   - Headbutt
+<!-- trainer-party:end -->
+
+<!-- trainer-party:start id=TRAINER_CASSIA -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** Complete heal (route boss override).
+
+**Ivysaur** @ Eviolite
+- **Gender:** Female
+- **Ability:** Overgrow
+- **Level:** 19
+- **EVs:** 36 HP / 20 Def / 20 SpD
+- **Nature:** Calm
+- **IVs:** 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- **Moves:**
+  - Razor Leaf
+  - Leech Seed
+  - Poison Powder
+  - Take Down
+
+**Carkol** @ Sitrus Berry
+- **Gender:** Female
+- **Ability:** Flame Body
+- **Level:** 20
+- **EVs:** 28 HP / 28 Def / 20 SpD
+- **Nature:** Impish
+- **IVs:** 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- **Moves:**
+  - Flame Charge
+  - Smack Down
+  - Rapid Spin
+  - Rock Polish
+
+**Tropius** @ Power Herb
+- **Gender:** Female
+- **Ability:** Chlorophyll
+- **Level:** 21
+- **EVs:** 28 HP / 36 SpA / 12 Spe
+- **Nature:** Modest
+- **IVs:** 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
+- **Moves:**
+  - Solar Beam
+  - Air Cutter
+  - Stomp
+  - Growth
 <!-- trainer-party:end -->
