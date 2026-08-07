@@ -21,6 +21,7 @@ DEFAULT_SPECIES_DIR = REPO_ROOT / "src/data/pokemon/species_info"
 DEFAULT_SPECIES_CONSTANTS = REPO_ROOT / "include/constants/species.h"
 MOVES_INFO = REPO_ROOT / "src/data/moves_info.h"
 TRAINER_SOURCE = REPO_ROOT / "src/data/trainers.party"
+DEFAULT_ABILITY = "Default"
 TYPES = (
     "Normal",
     "Fire",
@@ -90,26 +91,44 @@ def heading_species_name(heading: str) -> str:
 
 def documented_data(
     document: Path,
-) -> tuple[dict[str, str], Counter[str], dict[str, list[tuple[str, ...]]]]:
-    """Return unique species and deduplicated trainer/species move usage."""
+) -> tuple[
+    dict[str, str],
+    dict[str, Counter[str]],
+    Counter[str],
+    dict[str, list[tuple[str, ...]]],
+]:
+    """Return species abilities and deduplicated trainer/species move usage."""
     source = document.read_text(encoding="utf-8")
     source = re.sub(r"```.*?```", "", source, flags=re.DOTALL)
     pokemon: dict[str, str] = {}
+    pokemon_abilities: dict[str, Counter[str]] = defaultdict(Counter)
     moves: Counter[str] = Counter()
     move_trainer_uses: dict[str, list[tuple[str, ...]]] = defaultdict(list)
+    seen_pokemon_abilities: set[tuple[str, str, str]] = set()
     seen_move_uses: set[tuple[str, str, str]] = set()
     for raw_ids, party_block in PARTY_BLOCK_RE.findall(source):
         trainer_id = canonical_trainer_id(raw_ids)
         headings = list(POKEMON_HEADING_RE.finditer(party_block))
         for index, heading_match in enumerate(headings):
             species_name = heading_species_name(heading_match.group(1))
-            pokemon.setdefault(normalize_name(species_name), species_name)
+            normalized_species = normalize_name(species_name)
+            pokemon.setdefault(normalized_species, species_name)
             segment_end = (
                 headings[index + 1].start()
                 if index + 1 < len(headings)
                 else len(party_block)
             )
             pokemon_block = party_block[heading_match.end() : segment_end]
+            ability_match = re.search(
+                r"^- \*\*Ability:\*\* (.+?)\s*$",
+                pokemon_block,
+                re.MULTILINE,
+            )
+            ability = ability_match.group(1).strip() if ability_match else DEFAULT_ABILITY
+            species_ability = (trainer_id, normalized_species, normalize_name(ability))
+            if species_ability not in seen_pokemon_abilities:
+                seen_pokemon_abilities.add(species_ability)
+                pokemon_abilities[normalized_species][ability] += 1
             for move in re.findall(r"^  - (.+?)\s*$", pokemon_block, re.MULTILINE):
                 move = move.strip()
                 use = (trainer_id, normalize_name(species_name), normalize_name(move))
@@ -121,7 +140,7 @@ def documented_data(
         raise ValueError(f"no generated trainer-party Pokemon found in {document}")
     if not moves:
         raise ValueError(f"no moves found in generated trainer-party blocks in {document}")
-    return pokemon, moves, move_trainer_uses
+    return pokemon, pokemon_abilities, moves, move_trainer_uses
 
 
 def trainer_definitions(trainer_source: Path) -> dict[str, tuple[str, str, int]]:
@@ -315,6 +334,31 @@ def species_types(species_dir: Path) -> dict[str, tuple[str, ...]]:
     return result
 
 
+def species_default_abilities(species_dir: Path) -> dict[str, str]:
+    """Read the first ability used when a trainer set omits an override."""
+    result = {}
+    for path in sorted(species_dir.glob("gen_*_families.h")):
+        source = path.read_text(encoding="utf-8")
+        macro_definitions = macros(source)
+        for species, body in initializer_blocks(source, "SPECIES_"):
+            ability_match = re.search(
+                r"\.abilities\s*=\s*\{\s*ABILITY_([A-Z0-9_]+)",
+                body,
+            )
+            if ability_match is None:
+                macro_match = re.search(r"\.abilities\s*=\s*([A-Z0-9_]+)", body)
+                if macro_match and macro_match.group(1) in macro_definitions:
+                    ability_match = re.search(
+                        r"\{\s*ABILITY_([A-Z0-9_]+)",
+                        macro_definitions[macro_match.group(1)][1],
+                    )
+            if ability_match:
+                result[species.removeprefix("SPECIES_")] = (
+                    ability_match.group(1).replace("_", " ").title()
+                )
+    return result
+
+
 def species_aliases(constants_path: Path) -> dict[str, str]:
     source = constants_path.read_text(encoding="utf-8")
     return {
@@ -324,6 +368,22 @@ def species_aliases(constants_path: Path) -> dict[str, str]:
             source,
         )
     }
+
+
+def resolve_default_abilities(
+    pokemon_abilities: dict[str, Counter[str]],
+    aliases: dict[str, str],
+    default_abilities: dict[str, str],
+) -> None:
+    """Replace omitted trainer abilities with each species' first ability."""
+    for species, abilities in pokemon_abilities.items():
+        frequency = abilities.pop(DEFAULT_ABILITY, 0)
+        if not frequency:
+            continue
+        constant = aliases.get(species, species)
+        if constant not in default_abilities:
+            raise ValueError(f"default ability not found for documented Pokemon: {species}")
+        abilities[default_abilities[constant]] += frequency
 
 
 def resolve_species(
@@ -392,6 +452,7 @@ def status_move_analysis(
 
 def render_report(
     resolved: dict[str, tuple[str, ...]],
+    pokemon_abilities: dict[str, Counter[str]],
     status_moves: Counter[str],
     status_move_trainers: dict[str, list[str]],
     unused_status_moves: list[str],
@@ -417,17 +478,31 @@ def render_report(
         "",
         "## Unique Pokémon by Type",
         "",
+        "Ability counts deduplicate numbered, battle-format, and shared rival-team "
+        "branches for the same trainer, Pokémon species, and ability combination.",
+        "",
     ]
     for pokemon_type in ordered_types:
         pokemon = sorted(
             pokemon_by_type[pokemon_type],
             key=lambda name: (normalize_name(name), name),
         )
+        pokemon_labels = []
+        for name in pokemon:
+            abilities = pokemon_abilities[normalize_name(name)]
+            ability_labels = [
+                f"{ability} ({frequency})" if frequency > 1 else ability
+                for ability, frequency in sorted(
+                    abilities.items(),
+                    key=lambda item: (normalize_name(item[0]), item[0]),
+                )
+            ]
+            pokemon_labels.append(f"{name} ({', '.join(ability_labels)})")
         lines.extend(
             [
                 f"### {pokemon_type} ({len(pokemon)})",
                 "",
-                ", ".join(pokemon) if pokemon else "None.",
+                ", ".join(pokemon_labels) if pokemon_labels else "None.",
                 "",
             ]
         )
@@ -485,9 +560,19 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    documented, documented_moves, move_trainer_uses = documented_data(args.document)
+    (
+        documented,
+        pokemon_abilities,
+        documented_moves,
+        move_trainer_uses,
+    ) = documented_data(args.document)
     types_by_species = species_types(DEFAULT_SPECIES_DIR)
     aliases = species_aliases(DEFAULT_SPECIES_CONSTANTS)
+    resolve_default_abilities(
+        pokemon_abilities,
+        aliases,
+        species_default_abilities(DEFAULT_SPECIES_DIR),
+    )
     resolved = resolve_species(documented, types_by_species, aliases)
     status_moves, unused_status_moves = status_move_analysis(documented_moves, MOVES_INFO)
     all_move_trainers = move_trainer_names(
@@ -500,6 +585,7 @@ def main() -> None:
     }
     report = render_report(
         resolved,
+        pokemon_abilities,
         status_moves,
         status_move_trainers,
         unused_status_moves,

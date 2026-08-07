@@ -2270,16 +2270,12 @@ the sync fails if they diverge:
 
 ## Route 109
 
-Initial Route 109 beach and Seashore House trainer parties gain 3 levels when challenged after defeating the Route 110 rival. Route 109 trainers with map-object coordinates below the beach (`y > 24`) are excluded, as are Ricky and Lola's rematch teams.
+**Route 109 beach and Seashore House trainer parties gain 3 levels when challenged after defeating the Route 110 rival.** 
 
-### Aroma Lady Cassia — *Optional Route Boss with reward*
+### Sailor Edmond — *Paired sight-battle reward*
 
-- Requires defeating every other trainer on the Route 109 beach (`y <= 24`) and in the Seashore House. Trainers in Route 109's water portions are excluded.
-- In Restricted Mode, Cassia can no longer be challenged after earning the third Badge.
-
-- **Reward:** 1 Power Herb normally, 12 in non-monotype Resource Mode, or 18 in monotype Resource Mode. Scripted item gifts fall back to PC storage when the Bag is full.
-
-
+- If Edmond and Hailey spot the player simultaneously, their encounter becomes a two-trainer double battle through the standard trainer-sight system.
+- **Reward:** 1 Water Gem in non-Resource Mode, 3 in non-monotype Resource Mode, or 6 in monotype Resource Mode. Scripted item gifts fall back to PC storage when the Bag is full.
 
 ### Tuber Ricky
 <!-- trainer-party:start id=TRAINER_RICKY_1 -->
@@ -2299,7 +2295,26 @@ Initial Route 109 beach and Seashore House trainer parties gain 3 levels when ch
   - Aurora Beam
   - Water Pulse
   - Headbutt
+
+**Goomy** @ Berry Juice
+- **Gender:** Male
+- **Ability:** Gooey
+- **Level:** 18
+- **EVs:** 84 Def / 64 SpA / 8 SpD / 16 Spe
+- **IVs:** 5 HP / 12 Atk / 21 Def / 19 SpA / 15 SpD / 22 Spe
+- **Moves:**
+  - Acid Armor
+  - Life Dew
+  - Dragon Breath
+  - Mud Shot
 <!-- trainer-party:end -->
+
+### Aroma Lady Cassia — *Optional Route Boss with reward*
+
+- Requires defeating every other trainer on the Route 109 beach and in the Seashore House. Trainers in Route 109's water portions are excluded.
+- In Restricted Mode, Cassia can no longer be challenged after earning the third Badge.
+
+- **Reward:** 1 Power Herb in non-Resource Mode, 12 in non-monotype Resource Mode, or 18 in monotype Resource Mode. 
 
 <!-- trainer-party:start id=TRAINER_CASSIA -->
 **Battle type:** Singles.

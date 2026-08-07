@@ -1281,6 +1281,16 @@ IVs: 13 HP / 12 Atk / 19 Def / 13 SpA / 14 SpD / 10 Spe
 - Water Pulse  
 - Headbutt
 
+Goomy @ Berry Juice  
+Ability: Gooey  
+Level: 18  
+EVs: 84 Def / 64 SpA / 8 SpD / 16 Spe  
+IVs: 5 HP / 12 Atk / 21 Def / 19 SpA / 15 SpD / 22 Spe  
+- Acid Armor  
+- Life Dew  
+- Dragon Breath  
+- Mud Shot
+
 === TRAINER_SIMON ===
 Name: SIMON
 Class: Tuber M

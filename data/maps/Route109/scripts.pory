@@ -2,6 +2,37 @@ raw `
 	.include "data/maps/Route109/scripts.raw.inc"
 `
 
+script Route109_EventScript_Edmond {
+    lock
+    faceplayer
+
+    if (flag(TRAINER_FLAGS_START + TRAINER_EDMOND)) {
+        msgbox(Route109_Text_EdmondPostBattle)
+        release
+        return
+    }
+
+    trainerbattle_single(TRAINER_EDMOND, Route109_Text_EdmondIntro, Route109_Text_EdmondDefeated)
+    specialvar(VAR_RESULT, WasTrainerBattleWithTwoOpponents)
+    if (var(VAR_RESULT) == TRUE) {
+        msgbox(format("You steadied us both! Take these WATER GEMS for winning the harder battle."))
+        if (flag(FLAG_RESOURCE_MODE)) {
+            if (var(VAR_MONOTYPE) != 0) {
+                giveItem(ITEM_WATER_GEM, 6)
+            } else {
+                giveItem(ITEM_WATER_GEM, 3)
+            }
+        } else {
+            giveItem(ITEM_WATER_GEM)
+        }
+        if (var(VAR_RESULT) == FALSE) {
+            msgbox(format("There was no room in either your BAG or your PC for the WATER GEMS."))
+        }
+    }
+    msgbox(Route109_Text_EdmondPostBattle)
+    release
+}
+
 script Route109_EventScript_Cassia {
     lock
     faceplayer

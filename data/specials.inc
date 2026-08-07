@@ -84,6 +84,7 @@ gSpecials::
 	def_special PopulateMonotypeResistBerriesInPC
 	def_special ShowPokemonStorageSystemPC, waitstate=1
 	def_special HasEnoughMonsForDoubleBattle
+	def_special WasTrainerBattleWithTwoOpponents
 	def_special TurnOffTVScreen
 	def_special DoTVShow
 	def_special DoPokeNews

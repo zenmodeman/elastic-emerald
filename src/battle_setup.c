@@ -1578,6 +1578,11 @@ void SetTrainerFlag(u16 trainerId)
     FlagSet(TRAINER_FLAGS_START + trainerId);
 }
 
+void WasTrainerBattleWithTwoOpponents(void)
+{
+    gSpecialVar_Result = !!(gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS);
+}
+
 void ClearTrainerFlag(u16 trainerId)
 {
     FlagClear(TRAINER_FLAGS_START + trainerId);

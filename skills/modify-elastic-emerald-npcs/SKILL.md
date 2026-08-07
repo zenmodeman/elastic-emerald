@@ -1,6 +1,6 @@
 ---
 name: modify-elastic-emerald-npcs
-description: Add, change, diagnose, review, or document Elastic Emerald overworld NPCs, ordinary trainers, optional encounters, and route bosses. Use for map object placement, NPC or trainer scripts, Poryscript conversion, trainer-party or trainer-slot changes, route-boss prerequisites and rewards, Restricted/Resource/progression gates, runtime trainer-level scaling, pre-battle healing, item-gift storage behavior, and related trainer documentation.
+description: Add, change, diagnose, review, suggest, or document Elastic Emerald overworld NPCs, ordinary trainers, optional encounters, and route bosses. Use for NPC dialogue-informed team design, map object placement, NPC or trainer scripts, Poryscript conversion, trainer-party or trainer-slot changes, route-boss prerequisites and rewards, Restricted/Resource/progression gates, runtime trainer-level scaling, pre-battle healing, item-gift storage behavior, and related trainer documentation.
 ---
 
 # Modify Elastic Emerald NPCs
@@ -42,6 +42,17 @@ description: Add, change, diagnose, review, or document Elastic Emerald overworl
 - Check the boss's defeated flag before time-limited or Restricted-mode gates so an already-defeated boss remains conversational.
 - Use `FLAG_RESTRICTED_MODE` together with the requested progression flag to close a bounded reward encounter. Do not apply that cutoff outside Restricted Mode unless explicitly requested.
 - Ask for battle consent after prerequisites pass. Keep decline, not-ready, restricted, defeated, and reward outcomes explicit and terminating.
+
+## Trainer-party suggestions
+
+- Read the trainer's intro, defeat, and post-battle dialogue before suggesting Pokémon. Treat characterization, occupation, location, visual jokes, and stated interests as meaningful selection factors rather than relying only on trainer class.
+- Refresh `tools/elastic_emerald_helpers/trainer_set_analysis.md` with `python3 tools/elastic_emerald_helpers/analyze_trainer_types.py` when its source documentation may have changed.
+- Prefer diversity in this order: an unused species; a used species with an unused ability for that species; a repeated species-and-ability combination only when theme, progression, battle design, or team cohesion justifies it.
+- Use the analysis's species-and-ability counts when comparing otherwise suitable candidates. Do not reject a strong dialogue-driven choice merely because it repeats; explain why the repeat earns its place.
+- Favor lesser-covered types when they fit the NPC and encounter. Audit the combined type profile of trainers in the same location so nominal species diversity does not produce repetitive battles or excessive local representation of one type.
+- Allow a reasonable density of types inherent to the setting or trainer classes, such as Water on a beach. Reduce avoidable saturation through secondary typings and non-obligatory party slots rather than stripping away the location's identity.
+- Inspect status-move usage and unused status moves for additional variety. Prefer candidates that can legally and appropriately use uncovered or less-covered status moves at the intended level, without forcing a poor thematic choice or an oppressive early-game set.
+- Account for the trainer's battle format, expected level, nearby parties, rematches, player progression, and team size. Present the thematic and mechanical reason for each suggested Pokémon and call out deliberate repeats.
 
 ## Level scaling
 
