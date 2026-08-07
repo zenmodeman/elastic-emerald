@@ -598,6 +598,7 @@ extern const u8 BattleScript_EffectMoonlight[];
 extern const u8 BattleScript_EffectWeather[];
 extern const u8 BattleScript_EffectStatChange[];
 extern const u8 BattleScript_EffectStatChangeHalfHp[];
+extern const u8 BattleScript_EffectPerplexDance[];
 extern const u8 BattleScript_EffectPsychUp[];
 extern const u8 BattleScript_EffectFutureSight[];
 extern const u8 BattleScript_EffectTeleport[];

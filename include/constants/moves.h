@@ -909,6 +909,7 @@ enum __attribute__((packed)) Move
     MOVE_DRAIN_DOUSE = MOVES_COUNT_GEN9,
     MOVE_METAL_RUSH,
     MOVE_BEFUDDLE,
+    MOVE_PERPLEX_DANCE,
 
     MOVES_COUNT,
 

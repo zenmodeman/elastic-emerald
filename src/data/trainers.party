@@ -9516,9 +9516,16 @@ Music: Male
 Battle Type: Singles
 AI: Smart Trainer
 
-Wingull
-Level: 13
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Spinda @ Mental Herb  
+Ability: Own Tempo  
+Level: 19  
+EVs: 40 HP / 44 Atk / 44 SpD / 44 Spe  
+Careful Nature  
+IVs: 23 HP / 21 Atk / 24 Def / 16 SpA / 18 SpD / 20 Spe  
+- Teeter Dance  
+- Feint Attack  
+- Encore  
+- Rapid Spin
 
 === TRAINER_ERNEST_1 ===
 Name: ERNEST

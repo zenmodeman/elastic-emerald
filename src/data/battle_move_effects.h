@@ -726,6 +726,14 @@ const struct BattleMoveEffect gBattleMoveEffects[NUM_BATTLE_MOVE_EFFECTS] =
         .battleFactoryStyle = FACTORY_STYLE_HIGH_RISK,
     },
 
+    [EFFECT_PERPLEX_DANCE] =
+    {
+        .battleScript = BattleScript_EffectPerplexDance,
+        .battleTvScore = 7,
+        .battleFactoryStyle = FACTORY_STYLE_HIGH_RISK,
+        .encourageEncore = TRUE,
+    },
+
     [EFFECT_FACADE] =
     {
         .battleScript = BattleScript_EffectHit,

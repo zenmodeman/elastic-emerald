@@ -120,6 +120,21 @@ BattleScript_EffectMemento::
     tryfaintmon BS_ATTACKER
 	goto BattleScript_MoveEnd
 
+BattleScript_EffectPerplexDance::
+	attackcanceler
+	trymovestatchanges
+	jumpifability BS_ATTACKER, ABILITY_OWN_TEMPO, BattleScript_PerplexDanceOwnTempo
+	seteffectprimary BS_ATTACKER, BS_ATTACKER, MOVE_EFFECT_CONFUSION
+	goto BattleScript_MoveEnd
+
+BattleScript_PerplexDanceOwnTempo::
+	pause B_WAIT_TIME_SHORT
+	call BattleScript_AbilityPopUp
+	copybyte sBATTLER, gBattlerAttacker
+	printstring STRINGID_PKMNPREVENTSCONFUSIONWITH
+	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_MoveEnd
+
 BattleScript_Memento::
 	setatkhptozero
 	attackanimation

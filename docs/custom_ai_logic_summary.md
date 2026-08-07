@@ -2,9 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `67fd498d45` ("Modify Chilling Water for Ice damage; restore lost EV mode logic").
-- **Uncommitted AI changes covered by this document:** Resource Mode's wild-consumable transfer restriction is mirrored in Trick/Switcheroo bad-move scoring, while shared steal-legality checks cover damaging steal effects and item-stealing abilities.
-- **Uncommitted AI tooling:** The host battle-test runner now has an autonomous singles simulation mode in which both sides use `AI_FLAG_SMART_TRAINER` through the real AI controllers and battle engine. Recorded test reconstruction gives explicit AI-vs-AI mode precedence over recorded player/opponent controllers, preventing autonomous actions from being misread as incomplete scripted turns. A JSON-driven batch tool generates every unordered set pairing, alternates engine sides across independently seeded repetitions, streams completion/elapsed/ETA/throughput progress, and reports raw trials, head-to-head summaries, and aggregate rankings. Batch sets assume six 31 IVs and accept validated per-stat EV spreads, which are incorporated with nature when recalculating battle stats. Autonomous simulation tests use the dedicated `ZenmodemanSim:` prefix so they can be filtered separately from normal `Zenmodeman:` regressions.
+- **Last documented code commit:** `9ebc494153` ("Added AI matchup simulation setup").
+- **Uncommitted AI changes covered by this document:** Perplex Dance is scored as a two-stage Attack and Sp. Atk debuff, with a self-confusion penalty only when the user can actually become confused; duplicate use by doubles partners and use against a fully minimized target are rejected.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -110,6 +109,12 @@ Key commit: `02b670576c`.
 Chilling Water receives an additional 1.5x power modifier when its user is currently Ice-type. The check uses the battler's active battle types, including temporary type changes and Terastallization. Because the modifier lives in the shared damage calculation, live battle damage and AI damage estimates use the same rule.
 
 Key commit: `67fd498d45`.
+
+### Perplex Dance
+
+Perplex Dance is Spinda's priority signature status move. The AI values its two-stage Attack and Sp. Atk drops through the shared stat-change scorer, penalizes the move's self-confusion drawback when applicable, and therefore recognizes Own Tempo as removing that drawback. In doubles, partners avoid redundantly selecting it into the same target, and the move is rejected when both affected stats are already minimized.
+
+Key commit: uncommitted.
 
 ## 3. Imperfect-information switching and counterplay
 
@@ -281,7 +286,7 @@ Key commits: `08e1147141`, `f3fb33af5a`, `efda8256b3`.
 
 The following move and custom-mechanic families received explicit AI treatment. These are important examples of how new effects currently enter the heuristic architecture.
 
-- **Knock Off and item manipulation:** avoids generic item-removal bonuses overpowering damage logic; Trick, Switcheroo, Bestow, Sticky Barb, Ring Target, Sticky Hold, substitute, and item-transfer legality receive contextual checks. Resource Mode additionally treats Trick/Switcheroo as unusable when a wild consumable would move to the player; damaging steal moves keep their damage while their shared legality check suppresses the transfer. Commits: `8e63c039d1`, `93531a3cea`, `920ea368f5`, `cd5f2fdc9b`; the Resource Mode parity update is uncommitted.
+- **Knock Off and item manipulation:** avoids generic item-removal bonuses overpowering damage logic; Trick, Switcheroo, Bestow, Sticky Barb, Ring Target, Sticky Hold, substitute, and item-transfer legality receive contextual checks. Resource Mode additionally treats Trick/Switcheroo as unusable when a wild consumable would move to the player; damaging steal moves keep their damage while their shared legality check suppresses the transfer. Commits: `8e63c039d1`, `93531a3cea`, `920ea368f5`, `cd5f2fdc9b`, `0799104ebb`.
 - **Parting Shot and pivoting:** reuses Attack and Special Attack reduction value, switch availability, target state, and pivot safety. Commits: `8e63c039d1`, `8911bb3be4`.
 - **Pain Split:** estimates post-hit HP when moving second and scores the resulting split rather than using static HP thresholds. Commit: `6e5f7576f7`.
 - **Soak:** checks whether the user can exploit Water typing with Electric, Grass, or Freeze-Dry-like effects, whether direct damage already wins quickly, danger to the user, and recent Soak use. Commit: `920ea368f5`.

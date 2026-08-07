@@ -22050,6 +22050,32 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .battleAnimScript = gBattleAnimMove_GMaxBefuddle,
     },
 
+    [MOVE_PERPLEX_DANCE] =
+    {
+        .name = COMPOUND_STRING("Perplex Dance"),
+        .description = COMPOUND_STRING(
+            "Harshly lowers the foe's\n"
+            "offenses, then confuses the user."),
+        .effect = EFFECT_PERPLEX_DANCE,
+        .power = 0,
+        .type = TYPE_NORMAL,
+        .accuracy = 100,
+        .pp = 20,
+        .target = TARGET_SELECTED,
+        .priority = 1,
+        .category = DAMAGE_CATEGORY_STATUS,
+        .magicCoatAffected = TRUE,
+        .danceMove = TRUE,
+        .contestEffect = CONTEST_EFFECT_JAMS_OTHERS_BUT_MISS_ONE_TURN,
+        .contestCategory = CONTEST_CATEGORY_CUTE,
+        .battleAnimScript = gBattleAnimMove_TeeterDance,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = STAT_CHANGE_EFFECT_MINUS,
+            .attack = 2,
+            .spAtk = 2,
+        }),
+    },
+
     // Z-Moves
     [MOVE_BREAKNECK_BLITZ] =
     {
