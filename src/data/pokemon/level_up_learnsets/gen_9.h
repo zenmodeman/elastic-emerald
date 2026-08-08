@@ -62,6 +62,7 @@ static const struct LevelUpMove sVenusaurLevelUpLearnset[] = {
     LEVEL_UP_MOVE(0, MOVE_PETAL_BLIZZARD),
     LEVEL_UP_MOVE(1, MOVE_INGRAIN),
     LEVEL_UP_MOVE(1, MOVE_WORRY_SEED),
+    LEVEL_UP_MOVE(1, MOVE_AMNESIA),
     LEVEL_UP_MOVE(1, MOVE_TACKLE),
     LEVEL_UP_MOVE(1, MOVE_GROWL),
     LEVEL_UP_MOVE(4, MOVE_VINE_WHIP),
@@ -80,7 +81,7 @@ static const struct LevelUpMove sVenusaurLevelUpLearnset[] = {
     LEVEL_UP_MOVE(46, MOVE_SOLAR_BEAM),
     LEVEL_UP_MOVE(49, MOVE_SLUDGE_WAVE),
     LEVEL_UP_MOVE(52, MOVE_LEECH_SEED),
-    LEVEL_UP_MOVE(55, MOVE_AMNESIA),
+    LEVEL_UP_MOVE(55, MOVE_EARTHQUAKE), //Level-up addition
     LEVEL_UP_MOVE(58, MOVE_GIGA_DRAIN), //Level-up move addition, from egg move
     LEVEL_UP_MOVE(61, MOVE_CURSE), //Level-up move addition, from egg move
     LEVEL_UP_MOVE(64, MOVE_POWER_WHIP), //Repeat move for flavor

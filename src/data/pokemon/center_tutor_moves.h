@@ -335,6 +335,7 @@ MOVE_FORESIGHT,
 MOVE_GASTRO_ACID,
 MOVE_GRUDGE,
 MOVE_GUARD_SWAP,
+MOVE_GUARD_SPLIT,
 MOVE_HEAL_PULSE,
 MOVE_HAPPY_HOUR,
 MOVE_HEAL_BLOCK,
@@ -449,75 +450,3 @@ const u16 gTechTutor8Badge[] = {
     MOVE_ASSURANCE,
 };
 
-//NOT YET DECIDED FEATURE BELOW
-//In Resource Mode specifically, the center will also have the option to trade a certain TM for some adjacent moves, as an alternative to spending points
-//These trades are only elligble if the corresponding tutor move has been unlocked
-
-//Trades for an Aerial Ace TM
-// const u16 gAerialAceTradeTutor[] = {
-//     MOVE_SHOCK_WAVE,
-//     MOVE_DISARMING_VOICE,
-//     MOVE_FEINT_ATTACK,
-//     MOVE_MAGICAL_LEAF,
-//     MOVE_MAGNET_BOMB,
-//     MOVE_SWIFT,
-// };
-
-// //Trades for a Dragon Tail TM
-// const u16 gDragonTailTradeTutor[] = {
-//     MOVE_ROAR,
-//     MOVE_WHIRLWIND,
-//     MOVE_CIRCLE_THROW,
-// };
-
-
-// //Trades for a Rock Tomb TM
-// const u16 gRockTombTradeTutor[] = {
-//     MOVE_POUNCE,
-//     MOVE_LOW_SWEEP,
-// };
-
-// //Trades for an Icy Wind TM
-// const u16 gIcyWindTradeTutor[] = {
-//     MOVE_BULLDOZE,
-//     MOVE_ELECTROWEB,
-//     MOVE_SNARL,
-//     MOVE_STRUGGLE_BUG,
-//     MOVE_BREAKING_SWIPE,
-// };
-
-// //Trades for a Shadow Ball TM
-// const u16 gShadowBallTradeTutor[] = {
-//     MOVE_DARK_PULSE,
-//     MOVE_FLASH_CANNON,
-//     MOVE_DAZZLING_GLEAM,
-//     MOVE_DRAGON_PULSE,
-//     MOVE_ALLURING_VOICE,
-//     MOVE_PSYSHOCK,
-//     MOVE_TRI_ATTACK,
-// };
-// //Trades for a Dragon Claw TM
-// const u16 gDragonClawTradeTutor[] = {
-//     MOVE_CRUNCH,
-//     MOVE_X_SCISSOR,
-//     MOVE_DRILL_RUN,
-//     MOVE_IRON_HEAD,
-//     MOVE_POISON_JAB,
-//     MOVE_ZEN_HEADBUTT,
-// };
-
-// //Trades for a Thunder Punch TM
-// const u16 gThunderPunchTradeTutor[] = {
-//     MOVE_ICE_PUNCH,
-//     MOVE_FIRE_PUNCH,
-// };
-
-// //Trades for a Temper Flare TM
-// const u16 gTemperFlareTradeTutor[] = {
-//     MOVE_BRINE,
-//     MOVE_STOMPING_TANTRUM,
-//     MOVE_HEX,
-//     MOVE_VENOSHOCK,
-//     MOVE_BURNING_JEALOUSY,
-//     MOVE_LASH_OUT
-// };
