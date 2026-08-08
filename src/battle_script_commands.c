@@ -8554,19 +8554,38 @@ static void Cmd_presentdamagecalculation(void)
     }
 }
 
+static bool32 AllOpponentsActed(enum BattlerId battler)
+{
+    enum BattleSide side = GetBattlerSide(battler);
+
+    if (GetBattlerTurnOrderNum(battler) == 0)
+        return FALSE;
+
+    for (enum BattlerId i = 0; i < gBattlersCount; i++)
+    {
+        if (IsBattlerAlive(i) && GetBattlerSide(i) != side
+         && GetBattlerTurnOrderNum(i) > GetBattlerTurnOrderNum(battler))
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
 static void Cmd_setsafeguard(void)
 {
     CMD_ARGS();
+    enum BattlerId battler = gBattlerAttacker;
+    enum BattleSide side = GetBattlerSide(battler);
 
-    if (gSideStatuses[GetBattlerSide(gBattlerAttacker)] & SIDE_STATUS_SAFEGUARD)
+    if (gSideStatuses[side] & SIDE_STATUS_SAFEGUARD)
     {
         gBattleStruct->moveResultFlags[gBattlerTarget] |= MOVE_RESULT_MISSED;
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SIDE_STATUS_FAILED;
     }
     else
     {
-        gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_SAFEGUARD;
-        gSideTimers[GetBattlerSide(gBattlerAttacker)].safeguardTimer = 5;
+        gSideStatuses[side] |= SIDE_STATUS_SAFEGUARD;
+        gSideTimers[side].safeguardTimer = 5 + AllOpponentsActed(battler);
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SET_SAFEGUARD;
     }
 
@@ -13102,10 +13121,17 @@ void BS_SetLuckyChant(void)
 {
     NATIVE_ARGS(const u8 *failInstr);
     enum BattleSide side = GetBattlerSide(gBattlerAttacker);
+    u16 timer = 5;
+
     if (!(gSideStatuses[side] & SIDE_STATUS_LUCKY_CHANT))
     {
+        if (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED)
+            timer += 3;
+        if (AllOpponentsActed(gBattlerAttacker))
+            timer++;
+
         gSideStatuses[side] |= SIDE_STATUS_LUCKY_CHANT;
-        gSideTimers[side].luckyChantTimer = 5;
+        gSideTimers[side].luckyChantTimer = timer;
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
     else

@@ -9236,7 +9236,7 @@ void TryRestoreHeldItems(void)
         // cost the player an item, while non-Resource Mode restores all consumed held items.
         if ((B_RESTORE_HELD_BATTLE_ITEMS >= GEN_9 && restoreConsumedItems)
          || gBattleStruct->itemLost[B_SIDE_PLAYER][i].stolen
-         || returnNPCItems)
+         || (returnNPCItems && restoreConsumedItems))
         {
             u16 lostItem = gBattleStruct->itemLost[B_SIDE_PLAYER][i].originalItem;
 

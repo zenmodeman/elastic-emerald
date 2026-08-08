@@ -22,7 +22,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance lowers both offenses and confuses 
     } THEN {
         EXPECT_EQ(opponent->statStages[STAT_ATK], DEFAULT_STAT_STAGE - 2);
         EXPECT_EQ(opponent->statStages[STAT_SPATK], DEFAULT_STAT_STAGE - 2);
-        EXPECT_GT(player->volatiles.confusionTurns, 0);
+        EXPECT_GT((u32)player->volatiles.confusionTurns, 0);
     }
 }
 
@@ -40,7 +40,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Own Tempo prevents Perplex Dance self-confusion 
     } THEN {
         EXPECT_EQ(opponent->statStages[STAT_ATK], DEFAULT_STAT_STAGE - 2);
         EXPECT_EQ(opponent->statStages[STAT_SPATK], DEFAULT_STAT_STAGE - 2);
-        EXPECT_EQ(player->volatiles.confusionTurns, 0);
+        EXPECT_EQ((u32)player->volatiles.confusionTurns, 0);
     }
 }
 

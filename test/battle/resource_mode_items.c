@@ -20,7 +20,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Non-Resource Mode restores a consumed held item 
 SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode spends a normally consumed held item")
 {
     GIVEN {
-        FlagSet(FLAG_RESOURCE_MODE);
+        FLAG_SET(FLAG_RESOURCE_MODE);
         PLAYER(SPECIES_WOBBUFFET) { MaxHP(100); HP(51); Item(ITEM_SITRUS_BERRY); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
@@ -35,7 +35,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode spends a normally consumed held it
 SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode restores a Flinged held item after battle")
 {
     GIVEN {
-        FlagSet(FLAG_RESOURCE_MODE);
+        FLAG_SET(FLAG_RESOURCE_MODE);
         PLAYER(SPECIES_WOBBUFFET) { Item(ITEM_POISON_BARB); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
@@ -50,7 +50,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode restores a Flinged held item after
 SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode restores a Knocked Off held item after battle")
 {
     GIVEN {
-        FlagSet(FLAG_RESOURCE_MODE);
+        FLAG_SET(FLAG_RESOURCE_MODE);
         PLAYER(SPECIES_WOBBUFFET) { Item(ITEM_SITRUS_BERRY); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
