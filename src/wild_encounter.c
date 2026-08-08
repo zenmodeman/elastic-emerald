@@ -526,10 +526,31 @@ static u8 PickWildMonNature(u32 species)
     return GetSynchronizedNature(WILDMON_ORIGIN, species);
 }
 
+static bool32 IsBurmyCloakType(enum Type type)
+{
+    return type == TYPE_GRASS || type == TYPE_GROUND || type == TYPE_STEEL;
+}
+
+static bool32 IsBurmyExclusiveEvolutionType(enum Type type)
+{
+    return IsBurmyCloakType(type) || type == TYPE_FLYING;
+}
+
 void CreateWildMon(u16 species, u8 level)
 {
+    u8 gender = GetSynchronizedGender(WILDMON_ORIGIN, species);
+    enum Type monotype = GetMonoType();
+
     ZeroEnemyPartyMons();
-    u32 personality = GetMonPersonality(species, GetSynchronizedGender(WILDMON_ORIGIN, species), PickWildMonNature(species), RANDOM_UNOWN_LETTER);
+
+    if (species == SPECIES_SNORUNT && monotype == TYPE_GHOST)
+        gender = MON_FEMALE;
+    else if ((species == SPECIES_RALTS || species == SPECIES_KIRLIA) && monotype == TYPE_FIGHTING)
+        gender = MON_MALE;
+    else if (species == SPECIES_BURMY && IsBurmyExclusiveEvolutionType(monotype))
+        gender = monotype == TYPE_FLYING ? MON_MALE : MON_FEMALE;
+
+    u32 personality = GetMonPersonality(species, gender, PickWildMonNature(species), RANDOM_UNOWN_LETTER);
     CreateMonWithIVs(&gParties[B_TRAINER_OPPONENT_A][0], species, level, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
     GiveMonInitialMoveset(&gParties[B_TRAINER_OPPONENT_A][0]);
 }

@@ -2054,19 +2054,29 @@ static void RefreshEvRedistributionStats(void)
 
 static bool32 IsEvRedistributionValid(void)
 {
+    u8 evs[NUM_STATS];
+    u32 i;
+
+    for (i = 0; i < NUM_STATS; i++)
+        evs[i] = GetSummaryEvByStat(i);
+
+    return IsValidEvRedistribution(evs, sMonSummaryScreen->evRedistOriginalTotal);
+}
+
+bool32 IsValidEvRedistribution(const u8 evs[NUM_STATS], u16 originalTotal)
+{
+    u16 total = 0;
     u32 i;
     s32 evCap = GetEVStatCap();
 
-    if (GetEvRedistributionTotal() != sMonSummaryScreen->evRedistOriginalTotal)
-        return FALSE;
-
     for (i = 0; i < NUM_STATS; i++)
     {
-        if (GetSummaryEvByStat(i) > evCap)
+        total += evs[i];
+        if (evs[i] > evCap)
             return FALSE;
     }
 
-    return TRUE;
+    return total == originalTotal;
 }
 
 static bool32 ShouldShowEvRedistribution(void)

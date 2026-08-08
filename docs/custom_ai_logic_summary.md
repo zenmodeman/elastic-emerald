@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `9ebc494153` ("Added AI matchup simulation setup").
-- **Uncommitted AI changes covered by this document:** Perplex Dance is scored as a two-stage Attack and Sp. Atk debuff, with a self-confusion penalty only when the user can actually become confused; duplicate use by doubles partners and use against a fully minimized target are rejected.
+- **Last documented code commit:** `04e8acf271` ("Add Perplex Dance and add Spinda to Edmond's set").
+- **Uncommitted AI changes covered by this document:** The current historical audit restores partner-aware suppression of a redundant guaranteed Speed drop in doubles and aligns Swallow recovery scoring with the custom one-third-per-Stockpile and Gluttony rules. It also adds direct regression coverage for Perplex Dance preference, exhausted-target rejection, doubles partner de-duplication, unconditional player held-item knowledge outside omniscient AI profiles, and the exact prediction/assumption composition of `AI_FLAG_SMART_TRAINER`.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -26,6 +26,8 @@ The most important implementation files are:
 ### Prediction-oriented smart trainer
 
 The custom `AI_FLAG_SMART_TRAINER` profile removes unconditional omniscience and PP-stall prevention from the upstream smart profile. It instead combines ordinary viability logic with smart switching, incoming-mon prediction, move prediction, and smart Terastalization.
+
+Regression tests pin both sides of that contract: all prediction and imperfect-information assumption flags must remain present, while `AI_FLAG_OMNISCIENT` and `AI_FLAG_PP_STALL_PREVENTION` must remain absent.
 
 This establishes the intended design philosophy: strong trainers should infer likely information and react to observed play rather than simply reading every hidden move and ability.
 
@@ -114,7 +116,7 @@ Key commit: `67fd498d45`.
 
 Perplex Dance is Spinda's priority signature status move. The AI values its two-stage Attack and Sp. Atk drops through the shared stat-change scorer, penalizes the move's self-confusion drawback when applicable, and therefore recognizes Own Tempo as removing that drawback. In doubles, partners avoid redundantly selecting it into the same target, and the move is rejected when both affected stats are already minimized.
 
-Key commit: uncommitted.
+Key commit: `04e8acf271`.
 
 ## 3. Imperfect-information switching and counterplay
 
@@ -221,7 +223,7 @@ Key commits: `c098ddca1c`, `321ef0e57c`.
 
 Speed boosts and drops are judged by whether they actually flip a relevant speed relationship. In doubles, self-speed boosts focus on the faster opponent, while targeted drops consider whether that move is better aimed at the other foe and whether the partner has already covered the drop.
 
-The logic also checks whether the opponent has a fast KO line and uses probabilistic scoring where speed control is helpful but not decisive. Rock Tomb received a dedicated doubles pass using these principles.
+The logic also checks whether the opponent has a fast KO line and uses probabilistic scoring where speed control is helpful but not decisive. Rock Tomb received a dedicated doubles pass using these principles. The restored partner check temporarily applies the partner's guaranteed Speed drop to both the target's stage and the AI's cached Speed value, tests whether that already establishes the desired ordering, and restores both values before continuing. A focused doubles regression test ensures a second Rock Tomb is not rewarded over Rock Slide once the partner has already covered the useful Speed drop.
 
 Key commits: `c098ddca1c`, `321ef0e57c`.
 

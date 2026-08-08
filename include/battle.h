@@ -654,6 +654,7 @@ struct BattleStruct
     u8 debugBattler;
     u8 magnitudeBasePower;
     u8 presentBasePower;
+    u8 stockpilesToUse;
     u8 savedBattlerTarget[5];
     u8 savedBattlerAttacker[5];
     u8 savedTargetCount:4;
@@ -1034,6 +1035,7 @@ extern struct SpecialStatus gSpecialStatuses[MAX_BATTLERS_COUNT];
 extern u16 gBattleWeather;
 extern u16 gIntroSlideFlags;
 extern u8 gSentPokesToOpponent[2];
+extern u8 gBattleTriumphPartyMask;
 extern struct BattleEnigmaBerry gEnigmaBerries[MAX_BATTLERS_COUNT];
 extern struct BattleScripting gBattleScripting;
 extern struct BattleStruct *gBattleStruct;

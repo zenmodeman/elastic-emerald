@@ -3512,18 +3512,32 @@ static enum MoveEndResult MoveEndMoveBlock(struct BattleCalcValues *cv)
         case EFFECT_SWALLOW:
             if (!gBattleStruct->unableToUseMove)
             {
-                gBattleMons[cv->battlerAtk].volatiles.stockpileCounter = 0;
+                u8 stockpilesToUse = gBattleMons[cv->battlerAtk].volatiles.stockpileCounter;
+
+                if (cv->moveEffect == EFFECT_SWALLOW && gBattleStruct->stockpilesToUse == 0)
+                    break;
+
+                if (cv->moveEffect == EFFECT_SWALLOW
+                 && gBattleStruct->stockpilesToUse > 0
+                 && gBattleStruct->stockpilesToUse <= stockpilesToUse)
+                    stockpilesToUse = gBattleStruct->stockpilesToUse;
+
+                gBattleMons[cv->battlerAtk].volatiles.stockpileCounter -= stockpilesToUse;
 
                 if (gBattleMons[cv->battlerAtk].volatiles.stockpileDef > 0)
                 {
-                    SetStatChange(gBattlerAttacker, STAT_DEF, -1 * gBattleMons[gBattlerAttacker].volatiles.stockpileDef);
-                    gBattleMons[gBattlerAttacker].volatiles.stockpileDef = 0;
+                    u8 stages = min(gBattleMons[cv->battlerAtk].volatiles.stockpileDef, stockpilesToUse);
+                    SetStatChange(gBattlerAttacker, STAT_DEF, -stages);
+                    gBattleMons[gBattlerAttacker].volatiles.stockpileDef -= stages;
                 }
                 if (gBattleMons[gBattlerAttacker].volatiles.stockpileSpDef > 0)
                 {
-                    SetStatChange(gBattlerAttacker, STAT_SPDEF, -1 * gBattleMons[gBattlerAttacker].volatiles.stockpileSpDef);
-                    gBattleMons[gBattlerAttacker].volatiles.stockpileSpDef = 0;
+                    u8 stages = min(gBattleMons[cv->battlerAtk].volatiles.stockpileSpDef, stockpilesToUse);
+                    SetStatChange(gBattlerAttacker, STAT_SPDEF, -stages);
+                    gBattleMons[gBattlerAttacker].volatiles.stockpileSpDef -= stages;
                 }
+
+                gBattleStruct->stockpilesToUse = 0;
 
                 BattleScriptCall(BattleScript_MoveEffectStockpileWoreOff);
                 gBattleStruct->eventState.moveEndBattler = 0;

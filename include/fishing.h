@@ -5,5 +5,6 @@ void StartFishing(u8 rod);
 void UpdateChainFishingStreak();
 u32 CalculateChainFishingShinyRolls(void);
 bool32 ShouldUseFishingEnvironmentInBattle();
+bool32 CanPlayerGetSuctionCupsFishingItem(void);
 
 #endif // GUARD_FISHING_H

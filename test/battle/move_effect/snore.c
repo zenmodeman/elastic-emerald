@@ -6,6 +6,18 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_SNORE) == EFFECT_SNORE);
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Snorlax deals one and a half times damage with Snore")
+{
+    GIVEN {
+        PLAYER(SPECIES_SNORLAX) { Status1(STATUS1_SLEEP); Attack(100); }
+        OPPONENT(SPECIES_WOBBUFFET) { Defense(100); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_SNORE); }
+    } SCENE {
+        HP_BAR(opponent, damage: 90);
+    }
+}
+
 SINGLE_BATTLE_TEST("Snore fails if not asleep")
 {
     u32 status;

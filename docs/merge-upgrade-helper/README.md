@@ -6,21 +6,22 @@ The inventory was built from local `git log --author=zenmodeman`, current symbol
 
 ## Documentation Status
 
-- Latest commit whose applicable project changes have been reviewed for this dossier: `d92f4c0db6` (`Add additional tests and fix modifications such as Refresh and Slack Off Truant`).
-- Applicable work after that boundary: the uncommitted mode-aware evolution restriction repair described below.
+- Latest commit whose applicable project changes have been reviewed for this dossier: `0c5750859b` (`Add tests for Evolution level guards and restore some merge losses for such guards`).
+- Applicable work after that boundary: the uncommitted historical coverage audit described below.
 - The post-1.16.2 test-build repair updates the Toxic and Sheer Cold test-only move-property overrides to pass the renamed `B_*` configuration identifiers through `GetConfig`.
 - The post-1.16.2 warning cleanup removes explicit `waitstate` commands after specials whose `data/specials.inc` definitions now provide `waitstate=1`, and includes `item_menu.h` where Pokémon form-change code reads `gSpecialVar_ItemId`.
 - The party-API warning cleanup replaces deprecated player- and enemy-party compatibility macros in C sources with indexed `gParties`/`gPartiesCount` access for `B_TRAINER_PLAYER` and `B_TRAINER_OPPONENT_A`.
 - The tutor-data parser repair corrects the Tech Tutor six-badge array's integer type, restores terminators on the final three Resource Mode TM-trade arrays, and terminates the added seven-badge Tech Tutor array so the including `pokemon.c` translation unit parses correctly.
 - Commit `67fd498d45` restores the custom badge-based per-stat cap, its derived total cap, the EV Mode gates on battle EV gain, EV items, and trainer EV spreads, and the matching Summary Screen redistribution limit after these hooks were displaced by an upstream Pokémon-core merge.
-- The current uncommitted Resource Mode repair restores its post-battle held-item persistence gate after the upstream Gen 9 restoration rewrite: ordinary consumable activations cost the item only in Resource Mode, while Knock Off, Fling, and theft do not permanently cost the player their original item. The generic trainer-battle item-return fallback must not override this Resource Mode consumption gate. Battle initialization clears the complete per-party `partyState` and `itemLost` arrays before recording original items so stale `isKnockedOff` or `stolen` bits cannot leak across battles. The repair also prevents consumable held items from moving from wild Pokémon to the player through Thief/Covet, Trick/Switcheroo, Magician, Pickpocket, Pickup, Bestow, and shared steal paths; non-consumable transfers and immediate consumption such as Bug Bite/Pluck remain legal.
-- The current uncommitted duration repair restores Lucky Chant's three-turn Dedicated extension and its additional turn when every living opponent has already acted. Safeguard now follows the same late-action rule so both five-turn protections provide five full subsequent turns when established after the opposing side has finished acting.
+- Commit `0799104ebb` restores Resource Mode's post-battle held-item persistence gate after the upstream Gen 9 restoration rewrite: ordinary consumable activations cost the item only in Resource Mode, while Knock Off, Fling, and theft do not permanently cost the player their original item. The generic trainer-battle item-return fallback must not override this Resource Mode consumption gate. Battle initialization clears the complete per-party `partyState` and `itemLost` arrays before recording original items so stale `isKnockedOff` or `stolen` bits cannot leak across battles. The repair also prevents consumable held items from moving from wild Pokémon to the player through Thief/Covet, Trick/Switcheroo, Magician, Pickpocket, Pickup, Bestow, and shared steal paths; non-consumable transfers and immediate consumption such as Bug Bite/Pluck remain legal.
+- Commit `5875900b61` restores Lucky Chant's three-turn Dedicated extension and its additional turn when every living opponent has already acted. Safeguard now follows the same late-action rule so both five-turn protections provide five full subsequent turns when established after the opposing side has finished acting.
 - The same repair adapts the Infiltrator/Mist tests from the removed `EFFECT_DEFENSE_DOWN_2` constant to `ASSUME_STAT_CHANGE`, preserving the sharp Defense-drop contract under the unified stat-change move effect.
 - AI regression tests now use the unified stat-minus additional effect and the upstream `AI_FLAG_ASSUME_STAB` knowledge path instead of the removed `MOVE_EFFECT_SPD_MINUS_1` and `GetMovesArrayWithHiddenSTAB` APIs.
 - The Coaching AI regression likewise uses `ASSUME_STAT_CHANGE` instead of the removed dedicated `EFFECT_COACHING` constant.
 - Commit `d92f4c0db6` adds 20 scenarios for Tier Point normalization across Scatterbug, Spewpa, Squawkabilly, Pumpkaboo, Gourgeist, Flabébé, Floette, and Florges forms; Politoed, Pelipper, and Vulpix ability-dependent costs; non-linear badge EV-cap state; Normal, Electric, Ghost, and Dragon monotype resist-berry derivation; independent and egg-separated Restricted Mode item-clause groups; and null/egg free-tutor eligibility. The targeted `Zenmodeman: Merge guard:` suite passes all 55 cases.
 - The same commit's second 20-scenario audit found and repaired post-1.16.2 runtime-hook losses for Solar Core's sun-based special multiplier, Limber's Speed-drop immunity, Inner Focus preserving Focus Punch, Truant's three-quarter Slack Off healing, Razor Wind firing immediately under Tailwind, Refresh curing every major status despite sleep/freeze/paralysis, and Big Pecks preserving physical defensive stages and screens against critical hits and Chip Away. Negative controls cover physical Solar Core attacks, weather suppression, self-inflicted Limber drops, ordinary Focus Punch/Slack Off, and special critical hits through Aurora Veil. All 183 `Zenmodeman:` cases pass after the repairs.
-- The current uncommitted evolution audit restores Restricted Mode's item-evolution minimums: level 25 for Nidorina and Nidorino, and level 32 for Slowpoke, Galarian Slowbro, Kadabra, Graveler, Machoke, and Haunter. The guard applies when an item is consumed while item eligibility checks still expose the evolution, allowing the Party Menu to show `NOT READY`. It also restores Golbat's level-30 Restricted Mode condition alongside friendship. Twenty `Zenmodeman: Evolution restrictions:` scenarios cover enabled and disabled Restricted Mode, threshold boundaries, unrelated item evolutions, preserved item-check visibility, Woobat and Golbat friendship gates, Fire/Flying/Water/incompatible Monotype gates, and combined Restricted-plus-Monotype state; all 20 pass.
+- Commit `0c5750859b` restores Restricted Mode's item-evolution minimums: level 25 for Nidorina and Nidorino, and level 32 for Slowpoke, Galarian Slowbro, Kadabra, Graveler, Machoke, and Haunter. The guard applies when an item is consumed while item eligibility checks still expose the evolution, allowing the Party Menu to show `NOT READY`. It also restores Golbat's level-30 Restricted Mode condition alongside friendship. Twenty `Zenmodeman: Evolution restrictions:` scenarios cover enabled and disabled Restricted Mode, threshold boundaries, unrelated item evolutions, preserved item-check visibility, Woobat and Golbat friendship gates, Fire/Flying/Water/incompatible Monotype gates, and combined Restricted-plus-Monotype state; all 20 pass.
+- The current uncommitted historical audit adds regression contracts for Route 109 trainer scaling and its Briney Fly failsafe, Cassia's route-boss healing classification, the Rival 110 and Champion cap milestones, Edmond's two-opponent reward discriminator, Perplex Dance's AI decision rules, unconditional player-item knowledge, smart-trainer flag composition, partner-aware doubles Speed control, dynamic tutor/relearner point awards and free-service thresholds, the niche-ability tutor, Oldale and Petalburg Grove compiled map content, trainer-class healing, post-battle sleep rerolls, Triumph attribution and awards, Restricted Mode's Defiant, Moxie-family, and Mirror Herb limits, Summary Screen EV redistribution, Suction Cups fishing rewards, one-shot Sweet Scent double encounters, monotype split-evolution genders, Tier Point capture and ability-change projections, Water Veil's Aqua Ring recovery, the custom Swallow/Stockpile/Gluttony rules, curated/random/Monotype Tera assignment, stored Tera creation data, Snorlax's Snore bonus, and the Spoink line's Bounce bonus. The targeted subsets pass all 84 exercised cases. The audit repaired the missing terminator in the niche-ability tutor's species-exception table and restored merge-lost Triumph accounting, Restricted Mode stat-boost guards, Water Veil/Aqua Ring synergy, monotype wild-gender forcing, Tiered capture auto-box integration, Tiered Ability Capsule/Patch guards, doubles redundant-Speed-drop suppression, improved Swallow/Gluttony, the complete curated Tera assignment hook/table, and the species-specific Snore/Bounce modifiers.
 - Maintenance rule: before advancing the commit above, review every applicable change through the proposed boundary. Keep not-yet-committed work labeled as uncommitted, and replace that label with its real commit once committed.
 
 ## Tag-Partitioned Custom Implementation Trace
@@ -78,6 +79,7 @@ Major systems and mechanics:
 - AI and switching: Hidden STAB switch logic, smarter speed-control logic, doubles preference logic for self-benefitting move effects, switch prediction for immunity abuse, defensive Tera calculation, smart Tera/switching adjustments, Coaching AI, simulated stat-change apply/reverse helpers, Reflect/Light Screen/Recovery/Rest/Defense Curl AI tuning, Paralysis/Leech Seed scoring, sport/Damp healing AI, OHKO switch timing, and Collector Darren AI.
 - New or modified abilities: Merry, Dedicated, Inner Focus prevents Focus Punch loss, Astral Charge, Anticipation damage reduction, Covered rename, Forewarn modification, extra burn-damage-reduction exceptions, and additional derived ability work.
 - Move and battle mechanics: Metal Rush, Present formula, more accurate Echoed Voice with battle-struct support, Refresh full-status/unblockable behavior, Drain Douse infinite-loop fix and later move-end absorb rework, Stockpile/Swallow/Gluttony synergy, Restricted evolution-item guards, custom move tests, Snore/Bounce groundwork via species changes, and Lucky Chant follow-up after the tag.
+- Improved Swallow heals one third of maximum HP per Stockpile, consumes only the minimum Stockpiles needed for the missing HP, removes only the matching Defense and Special Defense stages, and preserves its counters when used at full HP. Gluttony doubles healing per Stockpile and doubles Spit Up's base power. AI recovery estimates mirror the one-third/two-thirds/full progression and Gluttony multiplier.
 - Tier Points and restricted Tera: Tier Point display, catch/gift/evolution/PC/withdraw/empty-slot guards, 4-6 point values, Shedinja monotype/tier logic, truck-start integration, Restricted Mode Tera guard, and White Herb florist progression change.
 - Curated Tera: main curated Tera pass, monotype-aware curated/random Tera behavior, curated species adjustments, and Rustboro/Steven/Tera teaching content.
 - QOL and progression: auto-boxing egg hatches, improved egg hatch memo, item recording for defensive items, NPC level badge checks via `FlagGet`, fishing leniency restored, and miscellaneous freeze/flow fixes.
@@ -106,12 +108,13 @@ Confirmed later-merge breakages already repaired in history:
 - Tech Tutor var/slot ordering broke and was repaired in `bb06e1f632` and `e670a4e65b`.
 - Scyther Cut event script was lost and restored in `f6508306a4`.
 - Improved Swallow logic was broken by upstream battle refactors and repaired in `8bd215017a`.
+- The post-1.16.2 move-resolution rewrite displaced that repair again; the uncommitted historical audit re-ports partial Stockpile consumption and stat-stage removal, full-HP preservation, Gluttony healing and Spit Up power, and aligned AI healing estimates onto the current battle pipeline.
 - Honey Gather regressed and was repaired in `23421cb46e`.
 - After `expansion/1.14.0`, monotype filtering, non-monotype modulus behavior, Tier Points catch logic, extra Suction Cups behavior, AI flags, candy cap logic, and Aqua Ring bonus-effect cleanup needed restoration in `5b2db2f453`, `448477bf2e`, `4038c36be7`, `5d34747fa5`, and `86a1b336ef`.
 - After `expansion/1.14.4`, additional minor custom-functionality patches landed in `9865fe909f` and `0cf4955fd9`.
 - During the first `expansion/1.15.0` merge portion, the new generational-config API required bare tags in `GetConfig`, level-cap calls gained an explicit hard/candy-cap argument, and variable config tags required `GetConfigInternal`. The merge also displaced Metal Rush's weight-dependent additional effect, full player held-item AI knowledge, repeated-switch immunity prediction, and weather-setter preservation; these were restored as uncommitted merge work on the 1.15 runtime and AI APIs. Incoming-mon prediction must run its final damaging-move comparison against the temporary predicted battler, then restore the active battler and cached AI damage data. Expansion 1.15's `HandleKOThroughBerryReduction` now provides the consumed-resist-berry follow-up damage model, so the older local temporary-hold-effect simulator should not be duplicated.
 - During the `expansion/1.16.2` merge, broad upstream rewrites conflicted with Elastic Emerald's battle, AI, mode, content, and generated-data files. The uncommitted resolution uses the rewritten upstream battle and AI cores as the framework base, re-ports Drain Douse, Illuminate, Merry, Honey Gather, trainer PP Ups, mode/evolution hooks, and project tuning onto their new APIs, and accepts the upstream deletion of generated `src/data/trainer_parties.h`. The upstream AI now carries dynamic scoring/switch callbacks that were previously local. The custom smart-trainer information policy remains composed from prediction and assumption flags rather than upstream omniscience and PP-stall prevention. Future ports should recheck this flag composition even when `include/constants/battle_ai.h` merges without textual conflict.
-- Merge `13802b4566` accepted Expansion's Pokémon-core EV-cap path without re-porting Elastic Emerald's `GetEVStatCap()` contract. The uncommitted repair restores EV Mode's per-stat progression of 36 before badge 1, then 48/84/120/156/192/228 through badges 1-6, and 252 from badge 7 onward. Its total cap remains `2 * per-stat cap + 6`. Outside EV Mode, battle EV gain and positive EV-item effects are disabled, and trainer-authored EV spreads are not applied. Summary Screen EV redistribution must use the custom per-stat cap rather than Expansion's `GetCurrentEVCap()`, which represents a total EV cap.
+- Merge `13802b4566` accepted Expansion's Pokémon-core EV-cap path without re-porting Elastic Emerald's `GetEVStatCap()` contract. The uncommitted repair restores EV Mode's per-stat progression of 36 before badge 1, then 48/84/120/156/192/228 through badges 1-6, and 252 from badge 7 onward. Its total cap remains `2 * per-stat cap + 6`. Outside EV Mode, battle EV gain and positive EV-item effects are disabled, and trainer-authored EV spreads are not applied. Summary Screen EV redistribution must conserve the Pokémon's original EV total and keep every stat within the custom per-stat cap rather than Expansion's `GetCurrentEVCap()`, which represents a total EV cap. The shared validator and four `Zenmodeman:` cases pin those rules at zero- and one-badge boundaries.
 - Poryscript specials declared with `waitstate=1` in `data/specials.inc` emit their own wait state. An adjacent explicit `waitstate` is redundant and produces an assembler warning; remove the explicit command from the `.pory` source and regenerate its `.inc`. The post-1.16.2 cleanup applies this to party selection, trade scenes, berry selection/watering, and Pokenav tutorial specials. The same cleanup replaces `src/pokemon.c`'s ad hoc `gSpecialVar_ItemId` declaration with the public declaration from `item_menu.h`.
 - Expansion's compatibility declarations mark `gPlayerParty`, `gPlayerPartyCount`, `gEnemyParty`, and `gEnemyPartyCount` deprecated. Current C code should use `gParties[B_TRAINER_PLAYER]`/`gPartiesCount[B_TRAINER_PLAYER]` for the player and `gParties[B_TRAINER_OPPONENT_A]`/`gPartiesCount[B_TRAINER_OPPONENT_A]` for legacy enemy-party call sites; stale macros surface as pointer deprecation warnings at each use.
 - The same merge restored the upstream compile-time `DEBUG_BATTLE_MENU` guard in `HandleInputChooseAction`, disabling Select because Elastic Emerald intentionally keeps that flag false and exposes debug features through the saved runtime Debug Mode option. The uncommitted repair restores `IsDebugModeEnabled()` as the battle debug action gate. Future merges of `src/battle_controller_player.c` must preserve this runtime check alongside the Option-menu, new-game default, and `IsDebugModeEnabled` save-data anchors.
@@ -213,6 +216,7 @@ Audit checks:
 
 - Wild encounter filtering must fall back to a valid compatible slot rather than allowing incompatible species in monotype mode.
 - Exceptions such as Snorunt/Ghost, Ralts/Fighting, Burmy exclusive-evolution types, Shedinja/Ghost, and split-evolution gender forcing must survive refactors.
+- `CreateWildMon` must force female Snorunt for Ghost teams, male Ralts/Kirlia for Fighting teams, male Burmy for Flying teams, and female Burmy for Grass, Ground, or Steel teams so a compatible split evolution remains available.
 - Truck setup should still add 12 copies of each applicable resist berry to PC storage for attack types that are super-effective against the selected monotype.
 - Tera legality must continue to consider both the chosen monotype and Restricted Mode bans.
 - Search for `GetMonoType()` after merges. If only data references remain, runtime hooks likely dropped.
@@ -223,7 +227,7 @@ Tier Points is a party-budget mode that assigns point values to Pokemon, constra
 
 Primary anchors:
 
-- `include/pokemon.h`: `GetMonTierPoints`, `CountPartyTierPoints`, `CalcTierPointsAfterEvolution`, `CalcTierPointsAfterAbilityChange`, `CanMonUseCenterTutorWithCurrentResources`.
+- `include/pokemon.h`: `GetMonTierPoints`, `CountPartyTierPoints`, `GetPartyTierPointExcessWithMon`, `CalcTierPointsAfterEvolution`, `CalcTierPointsAfterAbilityChange`, `CanMonUseCenterTutorWithCurrentResources`.
 - `src/elastic_emerald_pokemon.c`: species/ability-aware tier point calculations, party total, Center Tutor exceptions, and auto-box support.
 - `src/pokemon.c`: Pokémon creation/data paths and curated Tera dependencies.
 - `src/battle_script_commands.c`: catch flow guard/auto-box behavior.
@@ -237,8 +241,10 @@ Primary anchors:
 Audit checks:
 
 - A catch, gift, or evolution that exceeds the cap should not vanish; it should be boxed or blocked according to the pathway.
+- Before a nickname screen or party insertion, Tiered captures project the caught Pokemon against the existing party without mutation. An over-cap capture sets `gExcessTierPoints`, bypasses the normal full-party swap prompt, and returns through the boxing-capable callback.
 - Moving Pokemon from PC to party and moving into empty slots must recompute total party points and report excess points.
 - Ability changes must recalculate tier value using the proposed ability, not the current ability.
+- Ability Capsule and Ability Patch must reject an over-cap proposed ability before confirmation or item consumption; the shared guard is inactive outside Tiered Mode.
 - One-tier-point Center Tutor exceptions should remain free where intended, including species/evolution-chain checks.
 - Summary screen points are diagnostic for players and should survive UI layout refactors.
 
@@ -255,7 +261,7 @@ Primary anchors:
 - `src/party_menu.c`: item use and ability-change restrictions.
 - `src/pokemon_storage_system.c`: restricted release move ownership checks.
 - `src/data/items.h`, `src/data/pokemon/item_effects.h`, `include/constants/item_effects.h`: EV acquisition items and prices.
-- `src/battle_util.c`, `src/battle_script_commands.c`: Resource Mode held-item consumption/restoration and the wild-consumable transfer guard shared by stealing abilities and moves.
+- `src/battle_util.c`, `src/battle_script_commands.c`, `src/battle_stat_change.c`: Resource Mode held-item consumption/restoration, the wild-consumable transfer guard shared by stealing abilities and moves, and Restricted Mode player stat-boost limits.
 - `data/maps/*/scripts.pory`: marts, gifts, tutors, and progression requirements that change under modes.
 - `src/battle_terastal.c`: Restricted Mode Tera bans based on tier threshold.
 
@@ -266,6 +272,9 @@ Audit checks:
 - If a merge changes item-use, tutor, or evolution APIs, re-thread Restricted Mode checks through the new helper path.
 - If a merge changes trainer-battle setup callbacks, ensure Restricted Mode item-clause enforcement still runs before standard trainer battles, Battle Pyramid/Trainer Hill battles, and Battle Tower trainer battles.
 - Restricted release logic should prevent releasing the sole owner of certain required moves.
+- Restricted Mode caps player Defiant and Competitive at two positive stages, including a partial final one-stage raise when necessary; opponents retain the normal two-stage trigger.
+- Player Moxie, Chilling Neigh, Grim Neigh, Beast Boost, and Soul Heart may raise their relevant stat from neutral or below, but may not stack another boost once it is already positive. Opponent abilities are unaffected.
+- A player's Mirror Herb in Restricted Mode may copy only boosts directly applied to its target by Swagger, Flatter, Spicy Extract, or Decorate. It must ignore an opponent's self-setup, while unrestricted and opponent-side Mirror Herbs retain normal behavior.
 - Resource Mode shop/gift/tutor scripts should be audited when command names or item constants change.
 - Resource Mode must spend normally activated consumable held items without making forced removal permanent. Preserve the end-of-battle distinction between consumption and Knock Off/Fling/theft when upstream rewrites held-item restoration.
 - In wild battles, do not transfer consumable held items from the wild side to the player. Item-only moves such as Trick/Switcheroo and Bestow fail when that transfer would occur; damaging moves such as Thief/Covet still deal damage without stealing. Pickup, Magician, and Pickpocket use the same restriction. Bug Bite/Pluck are intentionally exempt because they consume the berry immediately, and non-consumables such as Poison Barb remain transferable.
@@ -299,7 +308,7 @@ Elastic Emerald supports curated species-specific Tera choices, random Tera fall
 
 Primary anchors:
 
-- `src/pokemon.c`: `getCuratedOrRandomTeraType`, `GetTeraTypeFromPersonality`, `MON_DATA_TERA_TYPE` handling.
+- `src/pokemon.c`: `GetCustomTeraType`, `GetTeraTypeFromPersonality`, Pokémon-creation assignment, and `MON_DATA_TERA_TYPE` handling.
 - `include/pokemon.h`: `teraType` substruct field, `forceTeraType`, Tera prototypes.
 - `include/config/battle.h`: `B_FLAG_TERA_ORB_CHARGED` and `B_FLAG_TERA_ORB_NO_COST` are intentionally both `FLAG_TERA_CHARGED`.
 - `src/battle_terastal.c`: `IsRestrictedModeTeraBanned`, `CanTerastallize`, `GetBattlerTeraType`.
@@ -311,6 +320,8 @@ Audit checks:
 
 - `TYPE_NONE` and invalid scripted Tera values should fall back safely.
 - Forced species Tera types must override personality-derived types.
+- Random assignment uses the personality to span every ordinary type, mapping the otherwise-invalid Mystery slot to Stellar. When Monotype Mode's selected type matches that random result (or the result is Stellar), the compatible random result deliberately takes precedence over a curated species entry.
+- Current curated examples include Fire Jolteon, Grass Vikavolt, and Normal Alolan Raichu; these are compact sentinels for detecting an older curated table after a merge.
 - Monotype runs may bypass curated assignment only when the random type is compatible or Stellar.
 - Restricted Mode bans should remain tied to tier points unless deliberately redesigned.
 - AI-side Tera decisions should mirror player legality and not assume the player side can always Tera.
@@ -368,7 +379,7 @@ Known custom or materially modified behaviors:
 - `Metal Rush`: custom move with weight/metal interactions and speed-boost planning.
 - `Echoed Voice`: more accurate consecutive-use behavior tracked through battle structs and AI damage prediction.
 - `Refresh`: heals all status conditions and is not blocked by those statuses.
-- `Aqua Ring` and Water Veil interaction: modified bonus effect cleanup and AI valuation.
+- `Aqua Ring` and Water Veil interaction: Water Veil doubles the final Aqua Ring recovery after Big Root adjustment; AI valuation should recognize the same synergy.
 - `Stockpile` / `Swallow`: Gluttony synergy, efficient healing, stat-wearoff handling.
 - Binding/wrapping moves: AI best-damage logic includes residual damage with Magic Guard and tempo exceptions.
 - `Snore` and `Bounce`: species-specific modifications.
@@ -459,6 +470,7 @@ Known AI systems:
 - Simulated stat changes support Coaching and similar doubles decisions, with apply/reverse guards.
 - Doubles targeting prefers damage-optimized targets and self-benefitting effects where appropriate.
 - Special cases include Rock Tomb doubles logic, Sweet Scent double-battle logic, Focus Punch on predicted switches, Recovery/Rest/Reflect/Light Screen scoring, Paralysis/Leech Seed scoring, Sport/Damp Healing awareness, and immunity abuse.
+- Partner-aware Speed control must update and restore both the simulated target stage and cached Speed while asking whether the partner's guaranteed drop already flips turn order; otherwise stale cached Speed can cause a redundant second Rock Tomb to receive extra score.
 
 Audit checks:
 
@@ -497,7 +509,11 @@ Known content areas:
 
 - Petalburg Grove, Oldale Ruins, Sandfront, Rustboro Grass, Dewford Garden, Brawly Gym script/content, Granite Cave trainers/encounters, Steven's Room/Tera Orb, Trainer School event, Tech House, early Route 101/102/104/115/116 changes.
 - Rival, Cindy rematches, Collector Darren, Aurelio, Brawly, Roxanne, Dewford/Granite Cave trainers, and multiple early-game trainer AI/set revisions.
+- Route 109's Cassia encounter requires every beach and Seashore House trainer, heals the party through the route-boss classifier, closes after badge 3 only in Restricted Mode, and awards one Power Herb normally, 12 in Resource Mode, or 18 when Resource and Monotype modes are combined. Rival 110 completion raises the complete Route 109 beach trainer group by three levels. Edmond separately awards Water Gems only when his battle actually had two opponents, with quantities of one, three, or six under the same mode progression.
+- Pre-battle healing is trainer-driven: route bosses and accomplished/professional classes restore the full party, selected status-oriented classes cure status with class-flavored medicine, ordinary and villainous classes do not heal, and a full healer takes precedence in a two-opponent battle. Facility challenges retain their own healing rules. After every ordinary battle exit, sleeping party members receive a fresh two-to-four-turn sleep counter while other major statuses remain unchanged.
+- Triumphs credit player Pokemon that participate when a comparably leveled opposing trainer Pokemon faints. A sole eligible battler receives presence credit; with multiple eligible battlers, only the direct attacker receives credit. Opponents more than five levels below the player are excluded, counts cap at 30, and already-defeated trainers plus link, recorded, Frontier, Trainer Hill, and e-Reader battles cannot be farmed. The per-battle participation mask resets at battle initialization and after every award attempt.
 - Demo guards, progression requirements, White Herb florist progression, Rustboro trade monotype guard, Bottle Cap/Hyper Training NPCs, Oldale/Rustboro/Petalburg mart changes.
+- Petalburg Grove's first-badge scene includes Birch and ambient Bulbasaur, Chikorita, and Vulpix objects. Birch hides after his conversation and is also hidden when Brawly awards the second badge, so delayed visitors cannot encounter stale first-badge dialogue.
 
 Audit checks:
 
@@ -523,11 +539,15 @@ Primary anchors:
 Known QOL/content systems:
 
 - MenuFly, custom Cut HM users, HM deletion, Party Nickname option, Box Link, Pokedex Plus, no-whiteout battles, AI-vs-AI/player-side backsprite support.
+- Oldale's Corviknight ride caller grants MenuFly through either direct interaction or nine surrounding coordinate triggers while `VAR_OLDALE_TOWN_STATE` is 1; receiving Fly advances the state to 2 so the approach triggers stop firing. The caller's map local ID is deliberately stable because every approach movement script targets it.
 - Route 109 MenuFly softlock prevention: if Fly is used from Route 109 before Slateport is visited and Briney/boat are still present there, `SetFlyDestination` returns Briney and the boat to Dewford.
 - Fake RTC and in-game time advancement.
 - Reduced egg steps, auto-boxing egg hatches, improved hatch memo.
 - Split EXP progression scaling and level/candy caps.
-- Fishing behavior changes and lead Suction Cups item logic.
+- Resource Mode move services begin with three tutor and relearner points, or five for Monotype teams. Badge awards add one point normally or two for Monotype, with one additional affordability point when prior use meets the badge-dependent depletion threshold; tutor and relearner balances are evaluated independently.
+- When Resource Mode points are exhausted, the center tutor is free only for Pokemon whose current ability and every reachable evolution stay at one tier point or less; the move relearner uses the analogous two-point threshold. Beedrill is an explicit exception to both free-service rules.
+- Oldale's niche-ability tutor can expose up to two distinct viable alternate abilities, applies the player's selected slot, and treats Moxie as tutor-worthy specifically for Litleo and Pyroar. Its species-exception table must remain `SPECIES_NONE`-terminated.
+- Failed fishing bites can award the lead Suction Cups user a Plain Bottle Cap, Bottle Cap, then Gold Bottle Cap. The third guaranteed reward waits for badge two; later rewards are chance-based and disabled in Resource Mode. Eggs, Sticky Hold, and other abilities do not qualify.
 - Berry availability and minimum yield changes.
 
 Audit checks:

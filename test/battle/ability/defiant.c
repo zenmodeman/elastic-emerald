@@ -1,5 +1,40 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
+
+SINGLE_BATTLE_TEST("Zenmodeman: Restricted Defiant stops at plus two with a partial final raise")
+{
+    GIVEN {
+        FlagSet(FLAG_RESTRICTED_MODE);
+        ASSUME_STAT_CHANGE(MOVE_HOWL, attack: +1);
+        ASSUME_STAT_CHANGE(MOVE_GROWL, attack: -1);
+        PLAYER(SPECIES_MANKEY) { Ability(ABILITY_DEFIANT); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_HOWL); }
+        TURN { MOVE(player, MOVE_HOWL); }
+        TURN { MOVE(opponent, MOVE_GROWL); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 2);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Restricted Defiant limits only the player side")
+{
+    GIVEN {
+        FlagSet(FLAG_RESTRICTED_MODE);
+        ASSUME_STAT_CHANGE(MOVE_HOWL, attack: +1);
+        ASSUME_STAT_CHANGE(MOVE_GROWL, attack: -1);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_MANKEY) { Ability(ABILITY_DEFIANT); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_HOWL); }
+        TURN { MOVE(opponent, MOVE_HOWL); }
+        TURN { MOVE(player, MOVE_GROWL); }
+    } THEN {
+        EXPECT_EQ(opponent->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 3);
+    }
+}
 
 DOUBLE_BATTLE_TEST("Defiant sharply raises player's Attack after Intimidate")
 {

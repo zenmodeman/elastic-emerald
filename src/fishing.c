@@ -5,6 +5,7 @@
 #include "fieldmap.h"
 #include "field_effect_helpers.h"
 #include "field_player_avatar.h"
+#include "fishing.h"
 #include "item.h"
 #include "menu.h"
 #include "metatile_behavior.h"
@@ -43,7 +44,6 @@ static bool32 Fishing_EndNoMon(struct Task *);
 static void AlignFishingAnimationFrames(void);
 static bool32 DoesFishingMinigameAllowCancel(void);
 static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
-static bool32 Fishing_CanPlayerGetSuctionCupsItem(void);
 static void Fishing_GiveItem(void);
 static bool32 Fishing_RollForBite(u32, bool32);
 static u32 CalculateFishingBiteOdds(u32, bool32);
@@ -422,7 +422,7 @@ static bool32 Fishing_NotEvenNibble(struct Task *task)
     StartSpriteAnim(&gSprites[gPlayerAvatar.spriteId], GetFishingNoCatchDirectionAnimNum(GetPlayerFacingDirection()));
     FillWindowPixelBuffer(0, PIXEL_FILL(1));
     AddTextPrinterParameterized2(0, FONT_NORMAL, sText_NotEvenANibble, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
-    if (Fishing_CanPlayerGetSuctionCupsItem())
+    if (CanPlayerGetSuctionCupsFishingItem())
         Fishing_GiveItem();
     task->tStep = FISHING_NO_MON;
     return TRUE;
@@ -504,7 +504,7 @@ static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
     return (ability == ABILITY_SUCTION_CUPS || ability == ABILITY_STICKY_HOLD);
 }
 
-static bool32 Fishing_CanPlayerGetSuctionCupsItem(void)
+bool32 CanPlayerGetSuctionCupsFishingItem(void)
 {
     enum Ability ability;
 

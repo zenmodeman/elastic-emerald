@@ -17,6 +17,26 @@ ASSUMPTIONS
     ASSUME(GetMoveTwoTurnAttackStatus(MOVE_SHADOW_FORCE) == STATE_PHANTOM_FORCE);
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Spoink and Grumpig deal double damage with Bounce", s16 damage)
+{
+    enum Species species;
+    PARAMETRIZE { species = SPECIES_WOBBUFFET; }
+    PARAMETRIZE { species = SPECIES_SPOINK; }
+    PARAMETRIZE { species = SPECIES_GRUMPIG; }
+    GIVEN {
+        PLAYER(species) { Attack(100); }
+        OPPONENT(SPECIES_WOBBUFFET) { Defense(100); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_BOUNCE); }
+        TURN { SKIP_TURN(player); }
+    } SCENE {
+        HP_BAR(opponent, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_MUL_EQ(results[0].damage, UQ_4_12(2.0), results[1].damage);
+        EXPECT_MUL_EQ(results[0].damage, UQ_4_12(2.0), results[2].damage);
+    }
+}
+
 SINGLE_BATTLE_TEST("Semi-invulnerable moves make the user semi-invulnerable turn 1, then strike turn 2")
 {
     enum Move move;

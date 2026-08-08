@@ -2,8 +2,10 @@
 #include "battle_setup.h"
 #include "caps.h"
 #include "event_data.h"
+#include "field_specials.h"
 #include "item.h"
 #include "pokemon.h"
+#include "string_util.h"
 #include "test/test.h"
 
 void PopulateMonotypeResistBerriesInPC(void);
@@ -696,6 +698,74 @@ TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects eggs")
 
     CreateMon(&mon, SPECIES_CATERPIE, 5, 0, OTID_STRUCT_PLAYER_ID);
     SetMonData(&mon, MON_DATA_IS_EGG, &isEgg);
+    EXPECT(!IsMonFreeCenterTutorEligible(&mon));
+    EXPECT(!IsMonFreeMoveRelearnerEligible(&mon));
+}
+
+TEST("Zenmodeman: Ability tutor offers and applies either distinct niche ability")
+{
+    u8 abilitySlot = FindAbilitySlot(SPECIES_LITLEO, ABILITY_RIVALRY);
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_LITLEO, 20, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_ABILITY_NUM, &abilitySlot);
+    gSpecialVar_0x8004 = 0;
+
+    EXPECT_EQ(GetTutorAbility(), 2);
+    EXPECT_EQ(StringCompare(gStringVar2, gAbilitiesInfo[ABILITY_UNNERVE].name), 0);
+    EXPECT_EQ(StringCompare(gStringVar3, gAbilitiesInfo[ABILITY_MOXIE].name), 0);
+
+    gSpecialVar_Result = 1;
+    SetTutorAbility();
+    EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_MOXIE);
+}
+
+TEST("Zenmodeman: Ability tutor applies its only option regardless of stale menu result")
+{
+    u8 abilitySlot = FindAbilitySlot(SPECIES_FLETCHLING, ABILITY_GALE_WINGS);
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_FLETCHLING, 20, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_ABILITY_NUM, &abilitySlot);
+    gSpecialVar_0x8004 = 0;
+
+    EXPECT_EQ(GetTutorAbility(), 1);
+    EXPECT_EQ(StringCompare(gStringVar2, gAbilitiesInfo[ABILITY_BIG_PECKS].name), 0);
+
+    gSpecialVar_Result = 99;
+    SetTutorAbility();
+    EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_BIG_PECKS);
+}
+
+TEST("Zenmodeman: Ability tutor leaves Pokemon with no niche option unchanged")
+{
+    u8 abilitySlot = FindAbilitySlot(SPECIES_BULBASAUR, ABILITY_OVERGROW);
+
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_BULBASAUR, 20, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[0], MON_DATA_ABILITY_NUM, &abilitySlot);
+    gSpecialVar_0x8004 = 0;
+
+    EXPECT_EQ(GetTutorAbility(), 0);
+    gSpecialVar_Result = 0;
+    SetTutorAbility();
+    EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_OVERGROW);
+}
+
+TEST("Zenmodeman: Resource free tutors reject Beedrill's explicit tier exception")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_BEEDRILL, 20, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT(!IsMonFreeCenterTutorEligible(&mon));
+    EXPECT(!IsMonFreeMoveRelearnerEligible(&mon));
+}
+
+TEST("Zenmodeman: Resource free tutors inspect stronger future evolutions")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_CATERPIE, 5, 0, OTID_STRUCT_PLAYER_ID);
     EXPECT(!IsMonFreeCenterTutorEligible(&mon));
     EXPECT(!IsMonFreeMoveRelearnerEligible(&mon));
 }

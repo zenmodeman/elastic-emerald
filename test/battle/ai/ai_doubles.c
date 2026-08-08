@@ -2,6 +2,24 @@
 #include "test/battle.h"
 #include "battle_ai_util.h"
 
+AI_DOUBLE_BATTLE_TEST("Zenmodeman: Doubles Speed control does not reward a redundant second Rock Tomb")
+{
+    GIVEN {
+        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100));
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_WOBBUFFET) { Speed(100); Moves(MOVE_CELEBRATE); }
+        PLAYER(SPECIES_WOBBUFFET) { Speed(50); Moves(MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_GEODUDE) { Speed(80); Moves(MOVE_ROCK_TOMB); }
+        OPPONENT(SPECIES_GEODUDE) { Speed(70); Moves(MOVE_ROCK_TOMB, MOVE_ROCK_SLIDE); }
+    } WHEN {
+        TURN {
+            EXPECT_MOVE(opponentLeft, MOVE_ROCK_TOMB, target: playerLeft);
+            SCORE_EQ_VAL(opponentRight, MOVE_ROCK_SLIDE, AI_SCORE_DEFAULT, target: playerLeft);
+            SCORE_EQ_VAL(opponentRight, MOVE_ROCK_TOMB, AI_SCORE_DEFAULT + 1, target: playerLeft);
+        }
+    }
+}
+
 AI_DOUBLE_BATTLE_TEST("AI won't use a Weather changing move if partner already chose such move")
 {
     enum Move j, k;

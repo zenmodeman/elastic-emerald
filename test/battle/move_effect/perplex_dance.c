@@ -56,3 +56,38 @@ SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance acts at plus one priority")
         ANIMATION(ANIM_TYPE_MOVE, MOVE_CELEBRATE, opponent);
     }
 }
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI prefers its dual debuff when confusion is prevented")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_SPINDA) { Ability(ABILITY_OWN_TEMPO); Moves(MOVE_PERPLEX_DANCE, MOVE_SPLASH); }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponent, MOVE_PERPLEX_DANCE); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI rejects targets with both offenses minimized")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY);
+        PLAYER(SPECIES_WOBBUFFET) { Attack(1); SpAttack(1); }
+        OPPONENT(SPECIES_SPINDA) { Ability(ABILITY_OWN_TEMPO); Moves(MOVE_PERPLEX_DANCE, MOVE_SCRATCH); }
+    } WHEN {
+        TURN { NOT_EXPECT_MOVE(opponent, MOVE_PERPLEX_DANCE); }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI partners do not duplicate the effect into one target")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY);
+        PLAYER(SPECIES_WOBBUFFET);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_SPINDA) { Ability(ABILITY_OWN_TEMPO); Moves(MOVE_PERPLEX_DANCE); }
+        OPPONENT(SPECIES_SPINDA) { Ability(ABILITY_OWN_TEMPO); Moves(MOVE_PERPLEX_DANCE, MOVE_SCRATCH); }
+    } WHEN {
+        TURN { NOT_EXPECT_MOVE(opponentRight, MOVE_PERPLEX_DANCE); }
+    }
+}

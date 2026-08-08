@@ -98,6 +98,7 @@ static void EndLinkBattleInSteps(void);
 static void CB2_InitAskRecordBattle(void);
 static void CB2_AskRecordBattle(void);
 static void AskRecordBattle(void);
+static bool32 HasBattleTriumphTrainerBeenFought(void);
 static void SpriteCB_MoveWildMonToRight(struct Sprite *sprite);
 static void SpriteCB_WildMonShowHealthbox(struct Sprite *sprite);
 static void SpriteCB_WildMonAnimate(struct Sprite *sprite);
@@ -205,6 +206,7 @@ EWRAM_DATA struct SpecialStatus gSpecialStatuses[MAX_BATTLERS_COUNT] = {0};
 EWRAM_DATA u16 gBattleWeather = 0;
 EWRAM_DATA u16 gIntroSlideFlags = 0;
 EWRAM_DATA u8 gSentPokesToOpponent[2] = {0};
+ALIGNED(4) EWRAM_DATA u8 gBattleTriumphPartyMask = 0;
 EWRAM_DATA struct BattleEnigmaBerry gEnigmaBerries[MAX_BATTLERS_COUNT] = {0};
 EWRAM_DATA struct BattleScripting gBattleScripting = {0};
 EWRAM_DATA struct BattleStruct *gBattleStruct = NULL;
@@ -2022,7 +2024,7 @@ static bool32 IsRoute109BeachTrainer(u16 trainerNum)
     }
 }
 
-static u32 GetTrainerLevelModifier(u16 trainerNum)
+u32 GetTrainerLevelModifier(u16 trainerNum)
 {
     u32 levelModifier = 0;
 
@@ -3113,6 +3115,7 @@ static void BattleStartClearSetData(void)
 
     gMultiHitCounter = 0;
     gBattleOutcome = 0;
+    gBattleTriumphPartyMask = 0;
     gBattleControllerExecFlags = 0;
     gPaydayMoney = 0;
     gBattleResources->battleScriptsStack->size = 0;
@@ -5397,6 +5400,7 @@ static void HandleEndTurn_BattleWon(void)
     {
         BattleStopLowHpSound();
         gBattlescriptCurrInstr = BattleScript_LocalTrainerBattleWon;
+        AwardBattleTriumphs();
 
         switch (GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA))
         {
@@ -5426,6 +5430,53 @@ static void HandleEndTurn_BattleWon(void)
     }
 
     gBattleMainFunc = HandleEndTurn_FinishBattle;
+}
+
+static bool32 HasBattleTriumphTrainerBeenFought(void)
+{
+    if (GetTrainerFlag())
+        return TRUE;
+    if (TRAINER_BATTLE_PARAM.opponentB != TRAINER_NONE
+     && TRAINER_BATTLE_PARAM.opponentB != TRAINER_UNION_ROOM
+     && TRAINER_BATTLE_PARAM.opponentB != 0xFFFF
+     && HasTrainerBeenFought(TRAINER_BATTLE_PARAM.opponentB))
+        return TRUE;
+
+    return FALSE;
+}
+
+void AwardBattleTriumphs(void)
+{
+    u32 i;
+
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+     || (gBattleTypeFlags & (BATTLE_TYPE_LINK
+                           | BATTLE_TYPE_RECORDED_LINK
+                           | BATTLE_TYPE_FRONTIER
+                           | BATTLE_TYPE_TRAINER_HILL
+                           | BATTLE_TYPE_EREADER_TRAINER))
+     || HasBattleTriumphTrainerBeenFought())
+    {
+        gBattleTriumphPartyMask = 0;
+        return;
+    }
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u32 triumph;
+
+        if (!(gBattleTriumphPartyMask & (1u << i)))
+            continue;
+
+        triumph = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_TRIUMPH);
+        if (triumph < MAX_TRIUMPH_COUNT)
+        {
+            triumph++;
+            SetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_TRIUMPH, &triumph);
+        }
+    }
+
+    gBattleTriumphPartyMask = 0;
 }
 
 static void HandleEndTurn_BattleLost(void)

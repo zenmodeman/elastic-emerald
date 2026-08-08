@@ -446,7 +446,12 @@ static bool32 HandleEndTurnAquaRing(enum BattlerId battler)
      && !IsBattlerAtMaxHp(battler)
      && IsBattlerPresent(battler))
     {
-        SetHealAmount(battler, GetDrainedBigRootHp(battler, GetNonDynamaxMaxHP(battler) / 16));
+        s32 healAmount = GetDrainedBigRootHp(battler, GetNonDynamaxMaxHP(battler) / 16);
+
+        if (GetBattlerAbility(battler) == ABILITY_WATER_VEIL)
+            healAmount *= 2;
+
+        SetHealAmount(battler, healAmount);
         BattleScriptCall(BattleScript_AquaRingHeal);
         effect = TRUE;
     }

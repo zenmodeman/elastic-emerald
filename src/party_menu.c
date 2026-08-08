@@ -4966,6 +4966,12 @@ void ItemUseCB_Medicine(u8 taskId, TaskFunc task)
 #define tMonId      data[3]
 #define tOldFunc    4
 
+bool32 IsTierPointAbilityChangeAllowed(u8 partyId, u8 newAbilityNum)
+{
+    return !FlagGet(FLAG_TIERED)
+        || CalcTierPointsAfterAbilityChange(partyId, newAbilityNum) <= TIER_POINTS_CAP;
+}
+
 void Task_AbilityCapsule(u8 taskId)
 {
     s16 *data = gTasks[taskId].data;
@@ -4982,6 +4988,15 @@ void Task_AbilityCapsule(u8 taskId)
             gPartyMenuUseExitCallback = FALSE;
             PlaySE(SE_SELECT);
             DisplayPartyMenuMessage(gText_WontHaveEffect, 1);
+            ScheduleBgCopyTilemapToVram(2);
+            gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+            return;
+        }
+        if (!IsTierPointAbilityChangeAllowed(tMonId, tAbilityNum))
+        {
+            gPartyMenuUseExitCallback = FALSE;
+            PlaySE(SE_SELECT);
+            DisplayPartyMenuMessage(gText_AbilityChangeExceedsTierPoints, 1);
             ScheduleBgCopyTilemapToVram(2);
             gTasks[taskId].func = Task_ClosePartyMenuAfterText;
             return;
@@ -5067,6 +5082,15 @@ void Task_AbilityPatch(u8 taskId)
             gPartyMenuUseExitCallback = FALSE;
             PlaySE(SE_SELECT);
             DisplayPartyMenuMessage(gText_WontHaveEffect, 1);
+            ScheduleBgCopyTilemapToVram(2);
+            gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+            return;
+        }
+        if (!IsTierPointAbilityChangeAllowed(tMonId, tAbilityNum))
+        {
+            gPartyMenuUseExitCallback = FALSE;
+            PlaySE(SE_SELECT);
+            DisplayPartyMenuMessage(gText_AbilityChangeExceedsTierPoints, 1);
             ScheduleBgCopyTilemapToVram(2);
             gTasks[taskId].func = Task_ClosePartyMenuAfterText;
             return;

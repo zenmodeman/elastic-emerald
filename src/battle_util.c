@@ -1156,10 +1156,18 @@ bool32 ShouldDefiantCompetitiveActivate(enum BattlerId battler, enum Ability abi
     switch (ability)
     {
     case ABILITY_DEFIANT:
+        if (FlagGet(FLAG_RESTRICTED_MODE)
+         && IsOnPlayerSide(battler)
+         && gBattleMons[battler].statStages[STAT_ATK] >= DEFAULT_STAT_STAGE + 2)
+            return FALSE;
         if (CompareStat(battler, STAT_ATK, MAX_STAT_STAGE, CMP_EQUAL, ability))
             return FALSE;
         break;
     case ABILITY_COMPETITIVE:
+        if (FlagGet(FLAG_RESTRICTED_MODE)
+         && IsOnPlayerSide(battler)
+         && gBattleMons[battler].statStages[STAT_SPATK] >= DEFAULT_STAT_STAGE + 2)
+            return FALSE;
         if (CompareStat(battler, STAT_SPATK, MAX_STAT_STAGE, CMP_EQUAL, ability))
             return FALSE;
         break;
@@ -1172,6 +1180,48 @@ bool32 ShouldDefiantCompetitiveActivate(enum BattlerId battler, enum Ability abi
 
     // only activate Defiant/Competitive if Web was setup by foe
     return gSideTimers[side].stickyWebBattlerSide != side;
+}
+
+u32 GetDefiantCompetitiveStatRaise(enum BattlerId battler, enum Ability ability)
+{
+    enum Stat stat;
+    u32 restrictedModeCap;
+
+    if (!ShouldDefiantCompetitiveActivate(battler, ability))
+        return 0;
+
+    if (!FlagGet(FLAG_RESTRICTED_MODE) || !IsOnPlayerSide(battler))
+        return 2;
+
+    stat = ability == ABILITY_DEFIANT ? STAT_ATK : STAT_SPATK;
+    restrictedModeCap = DEFAULT_STAT_STAGE + 2;
+    return min(2, restrictedModeCap - gBattleMons[battler].statStages[stat]);
+}
+
+bool32 CanRestrictedModePlayerStatBoost(enum BattlerId battler, enum Stat stat)
+{
+    return !FlagGet(FLAG_RESTRICTED_MODE)
+        || !IsOnPlayerSide(battler)
+        || gBattleMons[battler].statStages[stat] <= DEFAULT_STAT_STAGE;
+}
+
+bool32 CanMirrorHerbCopyStatBoost(enum BattlerId battler, enum BattlerId boostedBattler)
+{
+    if (!FlagGet(FLAG_RESTRICTED_MODE) || !IsOnPlayerSide(battler))
+        return TRUE;
+    if (boostedBattler != gBattlerTarget)
+        return FALSE;
+
+    switch (gCurrentMove)
+    {
+    case MOVE_SWAGGER:
+    case MOVE_FLATTER:
+    case MOVE_SPICY_EXTRACT:
+    case MOVE_DECORATE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
 }
 
 void PrepareStringBattle(enum StringID stringId, enum BattlerId battler)
@@ -4552,7 +4602,9 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                 else if (ability == ABILITY_GRIM_NEIGH || ability == ABILITY_AS_ONE_SHADOW_RIDER)
                     stat = STAT_SPATK;
 
-                if (numMonsFainted && CompareStat(battler, stat, MAX_STAT_STAGE, CMP_LESS_THAN, ability))
+                if (numMonsFainted
+                 && CompareStat(battler, stat, MAX_STAT_STAGE, CMP_LESS_THAN, ability)
+                 && CanRestrictedModePlayerStatBoost(battler, stat))
                 {
                     gLastUsedAbility = ability;
                     if (ability == ABILITY_AS_ONE_ICE_RIDER)
@@ -6251,6 +6303,8 @@ static inline u32 CalcMoveBasePower(struct DamageContext *ctx)
         break;
     case EFFECT_SPIT_UP:
         basePower = 100 * gBattleMons[battlerAtk].volatiles.stockpileCounter;
+        if (ctx->abilities[battlerAtk] == ABILITY_GLUTTONY)
+            basePower *= 2;
         break;
     case EFFECT_REVENGE:
         if (gProtectStructs[battlerAtk].revengeDoubled & 1u << battlerDef)
@@ -7649,6 +7703,12 @@ static inline uq4_12_t GetOtherModifiers(struct DamageContext *ctx)
     DAMAGE_MULTIPLY_MODIFIER(GetUndergroundModifier(ctx->move, ctx->battlerDef));
     DAMAGE_MULTIPLY_MODIFIER(GetDiveModifier(ctx->move, ctx->battlerDef));
     DAMAGE_MULTIPLY_MODIFIER(GetAirborneModifier(ctx->move, ctx->battlerDef));
+    if (ctx->move == MOVE_SNORE && gBattleMons[ctx->battlerAtk].species == SPECIES_SNORLAX)
+        DAMAGE_MULTIPLY_MODIFIER(UQ_4_12(1.5));
+    if (ctx->move == MOVE_BOUNCE
+     && (gBattleMons[ctx->battlerAtk].species == SPECIES_SPOINK
+      || gBattleMons[ctx->battlerAtk].species == SPECIES_GRUMPIG))
+        DAMAGE_MULTIPLY_MODIFIER(UQ_4_12(2.0));
     DAMAGE_MULTIPLY_MODIFIER(GetScreensModifier(ctx));
     DAMAGE_MULTIPLY_MODIFIER(GetCollisionCourseElectroDriftModifier(ctx->move, ctx->typeEffectivenessModifier));
 

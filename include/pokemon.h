@@ -23,6 +23,8 @@
 #define FORM_SPECIES_END (0xffff)
 #define TIER_POINTS_CAP 20
 
+extern u32 gExcessTierPoints;
+
 // Property labels for Get(Box)MonData / Set(Box)MonData
 enum MonData {
     MON_DATA_PERSONALITY,
@@ -950,6 +952,7 @@ uq4_12_t GetDynamaxLevelHPMultiplier(u32 dynamaxLevel, bool32 inverseMultiplier)
 u32 GetRegionalFormByRegion(enum Species species, u32 region);
 bool32 IsSpeciesForeignRegionalForm(enum Species species, u32 currentRegion);
 enum Type GetTeraTypeFromPersonality(struct Pokemon *mon);
+enum Type GetCustomTeraType(enum Species species, u32 personality);
 bool8 ShouldSkipFriendshipChange(void);
 struct Pokemon *GetSavedPlayerPartyMon(u32 index);
 u8 *GetSavedPlayerPartyCount(void);
@@ -964,6 +967,7 @@ bool32 HasShedinjaHPHandling(enum Species species);
 u8 GetMonoType(void);
 u8 GetMonTierPoints(struct Pokemon *mon);
 u32 CountPartyTierPoints(void);
+u32 GetPartyTierPointExcessWithMon(struct Pokemon *mon);
 bool8 DepositPartyMonToPC_Auto(u8 partyId);
 u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies);
 u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum);

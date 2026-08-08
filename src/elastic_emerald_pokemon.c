@@ -969,3 +969,14 @@ u32 CountPartyTierPoints(){
     }
     return tierPoints;
 }
+
+u32 GetPartyTierPointExcessWithMon(struct Pokemon *mon)
+{
+    u32 tierPoints;
+
+    if (!FlagGet(FLAG_TIERED) || mon == NULL)
+        return 0;
+
+    tierPoints = CountPartyTierPoints() + GetMonTierPoints(mon);
+    return tierPoints > TIER_POINTS_CAP ? tierPoints - TIER_POINTS_CAP : 0;
+}

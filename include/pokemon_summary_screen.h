@@ -55,5 +55,6 @@ void ShowSelectMovePokemonSummaryScreen(struct Pokemon *mons, u8 monIndex, void 
 u8 GetMoveSlotToReplace(void);
 void SummaryScreen_SetAnimDelayTaskId(u8 taskId);
 bool32 CheckRelearnerStateFlag(enum MoveRelearnerStates state);
+bool32 IsValidEvRedistribution(const u8 evs[NUM_STATS], u16 originalTotal);
 
 #endif // GUARD_POKEMON_SUMMARY_SCREEN_H

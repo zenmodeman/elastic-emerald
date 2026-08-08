@@ -36,6 +36,18 @@ SINGLE_BATTLE_TEST("Aqua Ring recovers 1/16th HP at end of turn")
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Water Veil doubles Aqua Ring recovery")
+{
+    GIVEN {
+        PLAYER(SPECIES_BUIZEL) { Ability(ABILITY_WATER_VEIL); HP(50); MaxHP(128); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_AQUA_RING); }
+    } THEN {
+        EXPECT_EQ(player->hp, 66);
+    }
+}
+
 SINGLE_BATTLE_TEST("Aqua Ring restores 30% more HP when holding Big Root")
 {
     u32 item;

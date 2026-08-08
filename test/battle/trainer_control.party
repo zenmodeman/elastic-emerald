@@ -151,6 +151,46 @@ Oddish
 Tags: Ace
 
 Aron
+
+=== TRAINER_CASSIA ===
+Name: CASSIA
+Class: Aroma Lady
+Pic: Aroma Lady
+Gender: Female
+Music: Female
+Battle Type: Singles
+
+Oddish
+
+=== TRAINER_PATRICIA ===
+Name: PATRICIA
+Class: Hex Maniac
+Pic: Hex Maniac
+Gender: Female
+Music: Suspicious
+Battle Type: Singles
+
+Shuppet
+
+=== TRAINER_ROXANNE_1 ===
+Name: ROXANNE
+Class: Leader
+Pic: Leader Roxanne
+Gender: Female
+Music: Female
+Battle Type: Singles
+
+Geodude
+
+=== TRAINER_CALVIN_1 ===
+Name: CALVIN
+Class: Youngster
+Pic: Youngster
+Gender: Male
+Music: Male
+Battle Type: Singles
+
+Poochyena
 Tags: Lead
 
 === 8 ===

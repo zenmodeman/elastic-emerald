@@ -1,9 +1,38 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
 
 ASSUMPTIONS
 {
     ASSUME(gItemsInfo[ITEM_MIRROR_HERB].holdEffect == HOLD_EFFECT_MIRROR_HERB);
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Restricted Mirror Herb ignores a foe's self boost")
+{
+    GIVEN {
+        FlagSet(FLAG_RESTRICTED_MODE);
+        PLAYER(SPECIES_WOBBUFFET) { Item(ITEM_MIRROR_HERB); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_SWORDS_DANCE); }
+    } THEN {
+        EXPECT_EQ(player->item, ITEM_MIRROR_HERB);
+        EXPECT_EQ(player->statStages[STAT_ATK], DEFAULT_STAT_STAGE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Restricted Mirror Herb copies a boost directly inflicted on its target")
+{
+    GIVEN {
+        FlagSet(FLAG_RESTRICTED_MODE);
+        PLAYER(SPECIES_WOBBUFFET) { Item(ITEM_MIRROR_HERB); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_SWAGGER); }
+    } THEN {
+        EXPECT_EQ(player->item, ITEM_NONE);
+        EXPECT_EQ(player->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 2);
+    }
 }
 
 SINGLE_BATTLE_TEST("Mirror Herb copies all of foe's positive stat changes in a turn", s16 damage)
@@ -154,4 +183,3 @@ SINGLE_BATTLE_TEST("Mirror Herb activates with Contrary if stat is at +6")
         EXPECT_EQ(player->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 4);
     }
 }
-

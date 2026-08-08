@@ -4457,10 +4457,10 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
             switch (gBattleMons[battlerAtk].volatiles.stockpileCounter)
             {
             case 1:
-                healPercent = 25;
+                healPercent = 33;
                 break;
             case 2:
-                healPercent = 50;
+                healPercent = 66;
                 break;
             case 3:
                 healPercent = 100;
@@ -4468,6 +4468,9 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
             default:
                 break;
             }
+
+            if (aiData->abilities[battlerAtk] == ABILITY_GLUTTONY)
+                healPercent = min(healPercent * 2, 100);
 
             if (ShouldRecover(battlerAtk, battlerDef, move, healPercent))
                 ADJUST_SCORE(DECENT_EFFECT);
@@ -5604,6 +5607,59 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     return score;
 }
 
+static bool32 PartnerSpeedDropAlreadyHandlesTarget(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData)
+{
+    enum BattlerId partner = BATTLE_PARTNER(battlerAtk);
+    enum Move partnerMove;
+    enum BattlerId partnerTarget;
+    u8 savedSpeedStage;
+    u32 savedSpeedValue;
+    s32 speedDrop = 0;
+    bool32 attackerIsFaster;
+
+    if (BattlerHasAi(partner) && partner < battlerAtk)
+    {
+        partnerMove = GetAIChosenMove(partner);
+        partnerTarget = gAiBattleData->chosenTarget[partner];
+    }
+    else
+    {
+        partnerMove = GetAllyChosenMove(battlerAtk);
+        partnerTarget = gBattleStruct->moveTarget[partner];
+    }
+
+    if (!IsDoubleBattle()
+     || partnerMove == MOVE_NONE
+     || partnerTarget != battlerDef
+     || !CanLowerStat(partner, battlerDef, aiData, STAT_SPEED))
+        return FALSE;
+
+    for (u32 effectId = 0; effectId < GetMoveAdditionalEffectCount(partnerMove); effectId++)
+    {
+        const struct AdditionalEffect *effect = GetMoveAdditionalEffectById(partnerMove, effectId);
+
+        if (!effect->self && effect->moveEffect == MOVE_EFFECT_STAT_MINUS && effect->chance == 100)
+        {
+            speedDrop = GetStatStage(STAT_SPEED, effect);
+            if (speedDrop > 0)
+                break;
+        }
+    }
+
+    if (speedDrop == 0)
+        return FALSE;
+
+    savedSpeedStage = gBattleMons[battlerDef].statStages[STAT_SPEED];
+    savedSpeedValue = aiData->speedStats[battlerDef];
+    gBattleMons[battlerDef].statStages[STAT_SPEED] = max(MIN_STAT_STAGE, savedSpeedStage - speedDrop);
+    aiData->speedStats[battlerDef] = GetBattlerTotalSpeedStat(battlerDef, aiData->abilities[battlerDef], aiData->holdEffects[battlerDef]);
+    attackerIsFaster = AI_IsFaster(battlerAtk, battlerDef, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY);
+    gBattleMons[battlerDef].statStages[STAT_SPEED] = savedSpeedStage;
+    aiData->speedStats[battlerDef] = savedSpeedValue;
+
+    return attackerIsFaster;
+}
+
 static s32 AI_CalcAdditionalEffectScore(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move, struct AiLogicData *aiData)
 {
     // move data
@@ -5721,6 +5777,9 @@ static s32 AI_CalcAdditionalEffectScore(enum BattlerId battlerAtk, enum BattlerI
                         stage = -1 * stage;
 
                     if (stage > 0)
+                        continue;
+
+                    if (stat == STAT_SPEED && PartnerSpeedDropAlreadyHandlesTarget(battlerAtk, battlerDef, aiData))
                         continue;
 
                     ADJUST_SCORE(IncreaseStatDownScore(battlerAtk, battlerDef, stat));

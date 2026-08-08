@@ -82,7 +82,7 @@ static void CB2_StartFirstBattle(void);
 static void CB2_EndFirstBattle(void);
 static void SaveChangesToPlayerParty(void);
 static void HandleBattleVariantEndParty(void);
-static void RerollSleepTurnsAfterBattle(void);
+void RerollSleepTurnsAfterBattle(void);
 static void CB2_EndTrainerBattle(void);
 static bool32 IsPlayerDefeated(u32 battleOutcome);
 
@@ -653,7 +653,7 @@ static void DowngradeBadPoison(void)
     }
 }
 
-static void RerollSleepTurnsAfterBattle(void)
+void RerollSleepTurnsAfterBattle(void)
 {
     u32 i;
 
@@ -1441,7 +1441,7 @@ static bool8 TrainerClassHealsBeforeBattle(u8 trainerClass)
     }
 }
 
-static bool8 IsRouteBossTrainer(u16 trainerId)
+bool8 IsRouteBossTrainer(u16 trainerId)
 {
     switch (trainerId)
     {

@@ -4644,6 +4644,7 @@ static const struct TutorAbilityException sTutorAbilitySpeciesExceptions[] =
     // Add species/ability pairs here when an ability is only niche for a specific Pokemon.
     {SPECIES_PYROAR, ABILITY_MOXIE},
     {SPECIES_LITLEO, ABILITY_MOXIE},
+    {SPECIES_NONE, ABILITY_NONE},
 };
 
 static bool32 IsAbilityTutorViable(u16 species, u16 ability){

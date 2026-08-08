@@ -11,6 +11,80 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_SPIT_UP) == EFFECT_SPIT_UP);
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Swallow consumes only the Stockpiles needed to heal")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_NONE); HP(450), MaxHP(600); }
+        OPPONENT(SPECIES_WOBBUFFET) { Ability(ABILITY_NONE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_STOCKPILE); }
+        TURN { MOVE(player, MOVE_STOCKPILE); }
+        TURN { MOVE(player, MOVE_STOCKPILE); }
+        TURN { MOVE(player, MOVE_SWALLOW); }
+    } SCENE {
+        HP_BAR(player);
+    } THEN {
+        EXPECT_EQ((u32)gBattleMons[B_POSITION_PLAYER_LEFT].volatiles.stockpileCounter, 2);
+        EXPECT_EQ(player->statStages[STAT_DEF], DEFAULT_STAT_STAGE + 2);
+        EXPECT_EQ(player->statStages[STAT_SPDEF], DEFAULT_STAT_STAGE + 2);
+        EXPECT_EQ(player->hp, 600);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Swallow at full HP preserves Stockpiles")
+{
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_NONE); }
+        OPPONENT(SPECIES_WOBBUFFET) { Ability(ABILITY_NONE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_STOCKPILE); }
+        TURN { MOVE(player, MOVE_SWALLOW); }
+    } SCENE {
+        NOT ANIMATION(ANIM_TYPE_MOVE, MOVE_SWALLOW, player);
+    } THEN {
+        EXPECT_EQ((u32)gBattleMons[B_POSITION_PLAYER_LEFT].volatiles.stockpileCounter, 1);
+        EXPECT_EQ(player->statStages[STAT_DEF], DEFAULT_STAT_STAGE + 1);
+        EXPECT_EQ(player->statStages[STAT_SPDEF], DEFAULT_STAT_STAGE + 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Gluttony doubles healing from each Stockpile", s16 healing)
+{
+    enum Ability ability;
+    PARAMETRIZE { ability = ABILITY_NONE; }
+    PARAMETRIZE { ability = ABILITY_GLUTTONY; }
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ability); HP(1), MaxHP(600); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_STOCKPILE); }
+        TURN { MOVE(player, MOVE_SWALLOW); }
+    } SCENE {
+        HP_BAR(player, captureDamage: &results[i].healing);
+    } FINALLY {
+        EXPECT_EQ(results[0].healing, -200);
+        EXPECT_EQ(results[1].healing, -400);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Gluttony doubles Spit Up power", s16 damage)
+{
+    enum Ability ability;
+    PARAMETRIZE { ability = ABILITY_NONE; }
+    PARAMETRIZE { ability = ABILITY_GLUTTONY; }
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ability); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_STOCKPILE); }
+        TURN { MOVE(player, MOVE_SPIT_UP); }
+    } SCENE {
+        HP_BAR(opponent, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[1].damage);
+    }
+}
+
 SINGLE_BATTLE_TEST("Stockpile's count can go up only to 3")
 {
     GIVEN {

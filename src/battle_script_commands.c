@@ -371,6 +371,7 @@ static void Cmd_setadditionaleffects(void);
 static void Cmd_seteffectprimary(void);
 static void Cmd_seteffectsecondary(void);
 static void Cmd_clearvolatile(void);
+static bool32 IsTriumphPlayerBattlerEligible(u32 playerBattler, u32 opponentBattler);
 static void Cmd_tryfaintmon(void);
 static void Cmd_dofaintanimation(void);
 static void Cmd_cleareffectsonfaint(void);
@@ -3652,6 +3653,7 @@ static void Cmd_tryfaintmon(void)
                 }
             }
 
+            TryMarkBattleTriumph(battler, cmd->battler == BS_TARGET && gCurrentMove != MOVE_NONE);
             SetValuesOnFaint(battler);
             BattleScriptPush(cmd->nextInstr);
             gBattlescriptCurrInstr = BattleScript_FaintBattler;
@@ -3661,6 +3663,50 @@ static void Cmd_tryfaintmon(void)
             gBattlescriptCurrInstr = cmd->nextInstr;
         }
     }
+}
+
+static bool32 IsTriumphPlayerBattlerEligible(u32 playerBattler, u32 opponentBattler)
+{
+    if (playerBattler >= gBattlersCount
+     || (gAbsentBattlerFlags & (1u << playerBattler))
+     || !IsOnPlayerSide(playerBattler)
+     || IsOnPlayerSide(opponentBattler)
+     || gBattleMons[playerBattler].species == SPECIES_NONE
+     || gBattlerPartyIndexes[playerBattler] >= PARTY_SIZE)
+        return FALSE;
+
+    if ((gBattleTypeFlags & (BATTLE_TYPE_INGAME_PARTNER | BATTLE_TYPE_MULTI))
+     && GetBattlerPosition(playerBattler) != B_POSITION_PLAYER_LEFT)
+        return FALSE;
+
+    return gBattleMons[opponentBattler].level + 5 >= gBattleMons[playerBattler].level;
+}
+
+void TryMarkBattleTriumph(u32 opponentBattler, bool32 directMoveFaint)
+{
+    u32 i;
+    u32 eligiblePlayerBattlers = 0;
+    u32 lastEligiblePlayerBattler = 0;
+
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER) || IsOnPlayerSide(opponentBattler))
+        return;
+
+    for (i = 0; i < gBattlersCount; i++)
+    {
+        if (IsTriumphPlayerBattlerEligible(i, opponentBattler))
+        {
+            eligiblePlayerBattlers++;
+            lastEligiblePlayerBattler = i;
+        }
+    }
+
+    if (eligiblePlayerBattlers == 1)
+        gBattleTriumphPartyMask |= 1u << gBattlerPartyIndexes[lastEligiblePlayerBattler];
+    else if (eligiblePlayerBattlers > 1
+          && directMoveFaint
+          && IsTriumphPlayerBattlerEligible(gBattlerAttacker, opponentBattler)
+          && !IsBattlerAlly(gBattlerAttacker, opponentBattler))
+        gBattleTriumphPartyMask |= 1u << gBattlerPartyIndexes[gBattlerAttacker];
 }
 
 static void Cmd_dofaintanimation(void)
@@ -7251,9 +7297,10 @@ static void Cmd_stockpiletohpheal(void)
 
     const u8 *failInstr = cmd->failInstr;
 
+    gBattleStruct->stockpilesToUse = 0;
+
     if (gBattleMons[gBattlerAttacker].maxHP == gBattleMons[gBattlerAttacker].hp)
     {
-        gBattleMons[gBattlerAttacker].volatiles.stockpileCounter = 0;
         gBattlescriptCurrInstr = failInstr;
         gBattlerTarget = gBattlerAttacker;
     }
@@ -7261,8 +7308,20 @@ static void Cmd_stockpiletohpheal(void)
     {
         if (gBattleMons[gBattlerAttacker].volatiles.stockpileCounter > 0)
         {
-            SetHealAmount(gBattlerAttacker, GetNonDynamaxMaxHP(gBattlerAttacker) / (1 << (3 - gBattleMons[gBattlerAttacker].volatiles.stockpileCounter)));
-            gBattleScripting.animTurn = gBattleMons[gBattlerAttacker].volatiles.stockpileCounter;
+            s32 hpMissing = gBattleMons[gBattlerAttacker].maxHP - gBattleMons[gBattlerAttacker].hp;
+            s32 hpPerStockpile = GetNonDynamaxMaxHP(gBattlerAttacker) / 3;
+            u8 stockpilesToUse = 1;
+
+            if (GetBattlerAbility(gBattlerAttacker) == ABILITY_GLUTTONY)
+                hpPerStockpile *= 2;
+
+            while (stockpilesToUse < gBattleMons[gBattlerAttacker].volatiles.stockpileCounter
+                && hpPerStockpile * stockpilesToUse < hpMissing)
+                stockpilesToUse++;
+
+            SetHealAmount(gBattlerAttacker, hpPerStockpile * stockpilesToUse);
+            gBattleStruct->stockpilesToUse = stockpilesToUse;
+            gBattleScripting.animTurn = stockpilesToUse;
         }
         else // Snatched move
         {
@@ -10227,7 +10286,9 @@ static void Cmd_givecaughtmon(void)
     switch (state)
     {
     case GIVECAUGHTMON_CHECK_PARTY_SIZE:
-        if (CalculatePlayerPartyCount() == PARTY_SIZE && B_CATCH_SWAP_INTO_PARTY >= GEN_7)
+        if (CalculatePlayerPartyCount() == PARTY_SIZE
+         && B_CATCH_SWAP_INTO_PARTY >= GEN_7
+         && !FlagGet(FLAG_TIERED))
         {
             PrepareStringBattle(STRINGID_SENDCAUGHTMONPARTYORBOX, gBattlerAttacker);
             gBattleCommunication[MSG_DISPLAY] = 1;
@@ -10236,6 +10297,12 @@ static void Cmd_givecaughtmon(void)
         else
         {
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_NO_MESSAGE_SKIP;
+            if (CalculatePlayerPartyCount() < PARTY_SIZE
+             && GetPartyTierPointExcessWithMon(GetBattlerMon(GetCatchingBattler())) > 0)
+            {
+                PrepareStringBattle(STRINGID_CAUGHTMONEXCEEEDSPOINTS, gBattlerAttacker);
+                gBattleCommunication[MSG_DISPLAY] = 1;
+            }
             gBattleCommunication[MULTIUSE_STATE] = GIVECAUGHTMON_GIVE_AND_SHOW_MSG;
         }
         break;
@@ -10576,9 +10643,12 @@ static void Cmd_trygivecaughtmonnick(void)
         if (!gPaletteFade.active)
         {
             struct Pokemon *caughtMon = GetBattlerMon(gBattlerTarget);
+            gExcessTierPoints = GetPartyTierPointExcessWithMon(caughtMon);
             GetMonData(caughtMon, MON_DATA_NICKNAME, gBattleStruct->caughtMonNick);
             CloseMainBattleScreen();
-            MainCallback callback = CalculatePlayerPartyCount() == PARTY_SIZE ? ReshowBlankBattleScreenAfterMenu : BattleMainCB2;
+            MainCallback callback = (CalculatePlayerPartyCount() == PARTY_SIZE || gExcessTierPoints > 0)
+                                  ? ReshowBlankBattleScreenAfterMenu
+                                  : BattleMainCB2;
 
             DoNamingScreen(NAMING_SCREEN_CAUGHT_MON, gBattleStruct->caughtMonNick,
                            GetMonData(caughtMon, MON_DATA_SPECIES),
@@ -13088,7 +13158,8 @@ void BS_TryActivateSoulheart(void)
         if (ability == ABILITY_SOUL_HEART
             && IsBattlerAlive(gBattlerAbility)
             && !NoAliveMonsForEitherParty()
-            && CompareStat(gBattlerAbility, STAT_SPATK, MAX_STAT_STAGE, CMP_LESS_THAN, ability))
+            && CompareStat(gBattlerAbility, STAT_SPATK, MAX_STAT_STAGE, CMP_LESS_THAN, ability)
+            && CanRestrictedModePlayerStatBoost(gBattlerAbility, STAT_SPATK))
         {
             SetStatChange(gBattlerAbility, STAT_SPATK, 1);
             BattleScriptCall(BattleScript_AbilityStatChange);
@@ -14013,12 +14084,15 @@ void BS_TryDefiantRattled(void)
     {
     case ABILITY_DEFIANT:
     case ABILITY_COMPETITIVE:
-        if (ShouldDefiantCompetitiveActivate(battler, ability))
         {
+            u32 statRaise = GetDefiantCompetitiveStatRaise(battler, ability);
+
+            if (statRaise == 0)
+                break;
             if (ability == ABILITY_DEFIANT)
-                SetStatChange2(battler, STAT_ATK, 2);
+                SetStatChange2(battler, STAT_ATK, statRaise);
             else
-                SetStatChange2(battler, STAT_SPATK, 2);
+                SetStatChange2(battler, STAT_SPATK, statRaise);
             gBattlerAbility = battler;
             RecordAbilityBattle(battler, ability);
             BattleScriptPush(cmd->nextInstr);

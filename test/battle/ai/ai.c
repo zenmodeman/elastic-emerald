@@ -1122,6 +1122,17 @@ AI_SINGLE_BATTLE_TEST("AI will see 2HKOs through resist berries")
     }
 }
 
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI knows player resist berries without omniscient knowledge")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
+        PLAYER(SPECIES_ZIGZAGOON) { HP(117); Moves(MOVE_CELEBRATE); Item(ITEM_CHOPLE_BERRY); }
+        OPPONENT(SPECIES_ZIGZAGOON) { Moves(MOVE_JUMP_KICK, MOVE_HEADBUTT); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_JUMP_KICK); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("AI will prioritize a regular OHKO over a berry-ignoring OHKO")
 {
     GIVEN {

@@ -440,7 +440,9 @@ static enum StatChangeResult IncreaseStat(struct BattleCalcValues *cv, struct St
                 if (cv->abilities[battler] == ABILITY_OPPORTUNIST && !st->opportunistActivation)
                     gProtectStructs[battler].activateOpportunist = TRUE;
 
-                if (cv->holdEffects[battler] == HOLD_EFFECT_MIRROR_HERB && !st->mirrorHerbActivation)
+                if (cv->holdEffects[battler] == HOLD_EFFECT_MIRROR_HERB
+                 && !st->mirrorHerbActivation
+                 && CanMirrorHerbCopyStatBoost(battler, cv->battlerDef))
                     gProtectStructs[battler].eatMirrorHerb = TRUE;
 
                 if (gProtectStructs[battler].activateOpportunist || gProtectStructs[battler].eatMirrorHerb)

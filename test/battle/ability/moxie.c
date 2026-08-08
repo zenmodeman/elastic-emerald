@@ -1,5 +1,36 @@
 #include "global.h"
+#include "event_data.h"
 #include "test/battle.h"
+
+SINGLE_BATTLE_TEST("Zenmodeman: Restricted Moxie cannot stack after a prior Attack boost")
+{
+    GIVEN {
+        FlagSet(FLAG_RESTRICTED_MODE);
+        ASSUME_STAT_CHANGE(MOVE_HOWL, attack: +1);
+        PLAYER(SPECIES_SALAMENCE) { Ability(ABILITY_MOXIE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_HOWL); }
+        TURN { MOVE(player, MOVE_QUICK_ATTACK); SEND_OUT(opponent, 1); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Restricted Moxie still grants its first Attack boost")
+{
+    GIVEN {
+        FlagSet(FLAG_RESTRICTED_MODE);
+        PLAYER(SPECIES_SALAMENCE) { Ability(ABILITY_MOXIE); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_QUICK_ATTACK); SEND_OUT(opponent, 1); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_ATK], DEFAULT_STAT_STAGE + 1);
+    }
+}
 
 DOUBLE_BATTLE_TEST("Moxie/Chilling Neigh raises Attack by one stage after directly causing a Pokemon to faint")
 {
