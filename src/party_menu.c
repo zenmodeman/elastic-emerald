@@ -1183,7 +1183,14 @@ static bool8 DisplayPartyPokemonDataForMoveTutorOrEvolutionItem(u8 slot)
             break;
         case ITEM_IS_EVOLUTION_STONE: // Evolution stone
             if (!GetMonData(currentPokemon, MON_DATA_IS_EGG) && GetEvolutionTargetSpecies(currentPokemon, EVO_MODE_ITEM_CHECK, item, NULL, NULL, CHECK_EVO) != SPECIES_NONE)
+            {
+                if (DoesNotMeetRestrictedEvoItemConditions(currentPokemon, item))
+                {
+                    DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NOT_READY);
+                    return TRUE;
+                }
                 return FALSE;
+            }
             DisplayPartyPokemonDescriptionData(slot, PARTYBOX_DESC_NO_USE);
             break;
         }

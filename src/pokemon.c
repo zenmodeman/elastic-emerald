@@ -3362,6 +3362,34 @@ const struct Evolution *GetSpeciesEvolutions(enum Species species)
     return evolutions;
 }
 
+bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, enum Item item)
+{
+    enum Species species;
+    u32 level;
+
+    if (!FlagGet(FLAG_RESTRICTED_MODE))
+        return FALSE;
+
+    species = GetMonData(mon, MON_DATA_SPECIES);
+    level = GetMonData(mon, MON_DATA_LEVEL);
+
+    switch (species)
+    {
+    case SPECIES_NIDORINA:
+    case SPECIES_NIDORINO:
+        return level < 25;
+    case SPECIES_SLOWPOKE:
+    case SPECIES_SLOWBRO_GALAR:
+    case SPECIES_KADABRA:
+    case SPECIES_GRAVELER:
+    case SPECIES_MACHOKE:
+    case SPECIES_HAUNTER:
+        return level < 32;
+    default:
+        return FALSE;
+    }
+}
+
 const u16 *GetSpeciesFormTable(enum Species species)
 {
     const u16 *formTable = gSpeciesInfo[SanitizeSpeciesId(species)].formSpeciesIdTable;
@@ -3803,7 +3831,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, enum Item item, u8 partyIndex, 
                             bool32 canStopEvo = TRUE;
                             enum Species targetSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_ITEM_USE, item, NULL, &canStopEvo, CHECK_EVO);
 
-                            if (targetSpecies != SPECIES_NONE)
+                            if (targetSpecies != SPECIES_NONE && !DoesNotMeetRestrictedEvoItemConditions(mon, item))
                             {
                                 GetEvolutionTargetSpecies(mon, EVO_MODE_ITEM_USE, item, NULL, &canStopEvo, DO_EVO);
                                 BeginEvolutionScene(mon, targetSpecies, canStopEvo, partyIndex);

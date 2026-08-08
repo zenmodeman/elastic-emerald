@@ -13877,9 +13877,26 @@ Music: Girl
 Battle Type: Singles
 AI: Smart Trainer
 
-Marill
-Level: 13
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Buizel @ Lum Berry  
+Ability: Water Veil  
+Level: 20  
+EVs: 20 Atk / 80 SpA / 72 Spe  
+Careful Nature  
+IVs: 23 HP / 15 Atk / 19 Def / 20 SpA / 21 SpD / 17 Spe  
+- Taunt  
+- Growl  
+- Aqua Jet  
+- Swift
+
+Pincurchin @ Sitrus Berry  
+Ability: Lightning Rod  
+Level: 20  
+EVs: 80 HP / 20 SpA / 72 SpD  
+IVs: 19 HP / 14 Atk / 16 Def / 13 SpA / 12 SpD / 7 Spe  
+- Electroweb  
+- Charge  
+- Bubble Beam  
+- Peck
 
 === TRAINER_CHANDLER ===
 Name: CHANDLER

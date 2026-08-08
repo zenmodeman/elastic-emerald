@@ -2273,11 +2273,11 @@ the sync fails if they diverge:
 
 **Route 109 beach and Seashore House trainer parties gain 3 levels when challenged after defeating the Route 110 rival.** 
 
-**Conditional Mandatory**: At least one of Huey, Lola, Edmond, and Ricky is a mandatory battle.
+**Conditional Mandatory**: At least one of Huey, Lola, Edmond, and Ricky is a mandatory battle based on their positioning. All other trainers on the beach are optional, but they're all required if the goal is to battle Route Boss Cassia.
 
 
-### Sailor Edmond — Single Battle or Double Battle with Lola
-- If battled alongside Lola, defeating Edmond grants a Water Gem reward: 1 Water Gem in non-Resource Mode, 3 in non-monotype Resource Mode, or 6 in monotype Resource Mode. 
+### Sailor Edmond — Optional Double Battle with Hailey
+- If battled alongside Hailey, defeating Edmond grants a Water Gem reward: 1 Water Gem in non-Resource Mode, 3 in non-monotype Resource Mode, or 6 in monotype Resource Mode. 
 
 <!-- trainer-party:start id=TRAINER_EDMOND -->
 **Battle type:** Singles.
@@ -2310,6 +2310,40 @@ the sync fails if they diverge:
   - Destiny Bond
   - Night Shade
 <!-- trainer-party:end -->
+
+### Tuber Hailey — Optional Double Battle with Edmond
+<!-- trainer-party:start id=TRAINER_HAILEY -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
+**Buizel** @ Lum Berry
+- **Gender:** Female
+- **Ability:** Water Veil
+- **Level:** 20
+- **EVs:** 20 Atk / 80 SpA / 72 Spe
+- **Nature:** Careful
+- **IVs:** 23 HP / 15 Atk / 19 Def / 20 SpA / 21 SpD / 17 Spe
+- **Moves:**
+  - Taunt
+  - Growl
+  - Aqua Jet
+  - Swift
+
+**Pincurchin** @ Sitrus Berry
+- **Gender:** Female
+- **Ability:** Lightning Rod
+- **Level:** 20
+- **EVs:** 80 HP / 20 SpA / 72 SpD
+- **IVs:** 19 HP / 14 Atk / 16 Def / 13 SpA / 12 SpD / 7 Spe
+- **Moves:**
+  - Electroweb
+  - Charge
+  - Bubble Beam
+  - Peck
+<!-- trainer-party:end -->
+
+Note: Tuber Hailey's Lum Berry on Buizel helps incentivize Sailor Edmond's Spinda Teeter Dance.
 
 ### Tuber Ricky
 <!-- trainer-party:start id=TRAINER_RICKY_1 -->
