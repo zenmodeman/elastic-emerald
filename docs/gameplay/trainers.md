@@ -654,20 +654,22 @@ the sync fails if they diverge:
 
 **Marill** @ Cell Battery
 - **Gender:** Female
-- **Ability:** Huge Power
-- **Level:** 9
-- **EVs:** 12 Def / 12 SpD
-- **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
+- **Ability:** Sap Sipper
+- **Level:** 11
+- **Tera Type:** Water
+- **EVs:** 12 HP / 24 Atk / 28 Def / 8 SpD
+- **Nature:** Adamant
+- **IVs:** 12 HP / 27 Atk / 12 Def / 10 SpA / 8 SpD / 13 Spe
 - **Moves:**
   - Aqua Jet
   - Covet
-  - Aqua Ring
   - Fling
+  - Aqua Ring
 
 **Vulpix-Alola** @ Persim Berry
 - **Gender:** Female
 - **Ability:** Snow Cloak
-- **Level:** 9
+- **Level:** 11
 - **EVs:** 8 HP / 12 SpA
 - **Nature:** Docile
 - **IVs:** 10 HP / 10 Atk / 10 Def / 10 SpA / 10 SpD / 10 Spe
@@ -1035,8 +1037,7 @@ the sync fails if they diverge:
 
 ---
 
-### Youngster Tommy and Hiker Marc — *Mandatory Double Battle*
-
+### Youngster Tommy and Hiker Marc — *Mandatory Paired Double Battle*
 #### Youngster Tommy
 <!-- trainer-party:start id=TRAINER_TOMMY -->
 **Battle type:** Singles.
@@ -2272,10 +2273,43 @@ the sync fails if they diverge:
 
 **Route 109 beach and Seashore House trainer parties gain 3 levels when challenged after defeating the Route 110 rival.** 
 
-### Sailor Edmond — *Paired sight-battle reward*
+**Conditional Mandatory**: At least one of Huey, Lola, Edmond, and Ricky is a mandatory battle.
 
-- If Edmond and Hailey spot the player simultaneously, their encounter becomes a two-trainer double battle through the standard trainer-sight system.
-- **Reward:** 1 Water Gem in non-Resource Mode, 3 in non-monotype Resource Mode, or 6 in monotype Resource Mode. Scripted item gifts fall back to PC storage when the Bag is full.
+
+### Sailor Edmond — Single Battle or Double Battle with Lola
+- If battled alongside Lola, defeating Edmond grants a Water Gem reward: 1 Water Gem in non-Resource Mode, 3 in non-monotype Resource Mode, or 6 in monotype Resource Mode. 
+
+<!-- trainer-party:start id=TRAINER_EDMOND -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
+**Spinda** @ Mental Herb
+- **Gender:** Male
+- **Ability:** Own Tempo
+- **Level:** 20
+- **EVs:** 40 HP / 44 Atk / 44 SpD / 44 Spe
+- **Nature:** Careful
+- **IVs:** 23 HP / 21 Atk / 24 Def / 16 SpA / 18 SpD / 20 Spe
+- **Moves:**
+  - Teeter Dance
+  - Feint Attack
+  - Encore
+  - Rapid Spin
+
+**Frillish** @ Destiny Knot
+- **Gender:** Male
+- **Ability:** Cursed Body
+- **Level:** 21
+- **EVs:** 32 HP / 20 Def / 16 SpA / 72 SpD / 28 Spe
+- **Nature:** Hardy
+- **IVs:** 16 HP / 12 Atk / 19 Def / 14 SpA / 22 SpD / 28 Spe
+- **Moves:**
+  - Ominous Wind
+  - Bubble Beam
+  - Destiny Bond
+  - Night Shade
+<!-- trainer-party:end -->
 
 ### Tuber Ricky
 <!-- trainer-party:start id=TRAINER_RICKY_1 -->
@@ -2286,7 +2320,7 @@ the sync fails if they diverge:
 **Spheal** @ Wiki Berry
 - **Gender:** Male
 - **Ability:** Ice Body
-- **Level:** 18
+- **Level:** 20
 - **EVs:** 80 HP / 80 Def / 12 SpD
 - **Nature:** Bold
 - **IVs:** 13 HP / 12 Atk / 19 Def / 13 SpA / 14 SpD / 10 Spe
@@ -2299,7 +2333,7 @@ the sync fails if they diverge:
 **Goomy** @ Berry Juice
 - **Gender:** Male
 - **Ability:** Gooey
-- **Level:** 18
+- **Level:** 20
 - **EVs:** 84 Def / 64 SpA / 8 SpD / 16 Spe
 - **IVs:** 5 HP / 12 Atk / 21 Def / 19 SpA / 15 SpD / 22 Spe
 - **Moves:**

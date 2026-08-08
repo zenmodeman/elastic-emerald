@@ -847,6 +847,8 @@ static bool32 AbilityPreventsSpecificStatDrop(u32 ability, u32 stat)
         return stat == STAT_ATK;
     case ABILITY_BIG_PECKS:
         return stat == STAT_DEF;
+    case ABILITY_LIMBER:
+        return stat == STAT_SPEED;
     default:
         return FALSE;
     }

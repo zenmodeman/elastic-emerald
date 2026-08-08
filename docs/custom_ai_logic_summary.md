@@ -304,6 +304,7 @@ The following move and custom-mechanic families received explicit AI treatment. 
 - **Drain Douse:** custom draining behavior was integrated into move-end absorption processing, and AI/test maintenance preserves its classification with other drain effects. Commits: `432b00e197`, `f3744907b1`, `be3390bd51`.
 - **Metal Rush:** runtime chooses its Speed boost or Defense drop from effective weight. The Defense rider now follows ordinary stat-loss prevention, consistent with the AI's generic `CanLowerStat` policy; the custom weight-selected rider is not otherwise given bespoke AI utility scoring.
 - **Custom defensive abilities:** AI calculations were adapted for Covered/Fur Layer, Illuminate accuracy behavior, Frisk item interactions, Forewarn's warned move, Damp healing, and other project-specific ability effects. Commits: `751228c71d`, `51107271f3`, `ece86112ff`, `1f6633f157`, `8911bb3be4`.
+- **Solar Core and Big Pecks parity:** the shared damage calculation again applies Solar Core's doubled special Attack in effective sun and preserves Big Pecks' physical defensive stages and Reflect/Aurora Veil protection against critical hits and Chip Away, so runtime and AI damage estimates use the same restored custom rules. Current restoration is uncommitted.
 
 ## 7. Terastalization logic
 

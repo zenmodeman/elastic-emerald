@@ -7099,7 +7099,10 @@ static void Cmd_tryhealhalfhealth(void)
     if (cmd->battler == BS_ATTACKER)
         gBattlerTarget = gBattlerAttacker;
 
-    SetHealAmount(gBattlerTarget, GetNonDynamaxMaxHP(gBattlerTarget) / 2);
+    if (gCurrentMove == MOVE_SLACK_OFF && GetBattlerAbility(gBattlerAttacker) == ABILITY_TRUANT)
+        SetHealAmount(gBattlerTarget, (GetNonDynamaxMaxHP(gBattlerTarget) * 3) / 4);
+    else
+        SetHealAmount(gBattlerTarget, GetNonDynamaxMaxHP(gBattlerTarget) / 2);
     if (gBattleMons[gBattlerTarget].hp == gBattleMons[gBattlerTarget].maxHP)
         gBattlescriptCurrInstr = failInstr;
     else
@@ -8855,7 +8858,7 @@ static void Cmd_curestatuswithmove(void)
 {
     CMD_ARGS(const u8 *failInstr);
     u32 status = gBattleMons[gBattlerAttacker].status1;
-    u32 shouldHeal = status & STATUS1_CAN_MOVE;
+    u32 shouldHeal = status & STATUS1_ANY;
 
     if (shouldHeal)
     {

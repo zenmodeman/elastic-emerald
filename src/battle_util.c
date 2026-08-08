@@ -6895,6 +6895,10 @@ static inline u32 CalcAttackStat(struct DamageContext *ctx)
         if (IsBattleMoveSpecial(move) && IsBattlerWeatherAffected(ctx->holdEffects[ctx->battlerAtk], ctx->weather, B_WEATHER_SUN))
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(1.5));
         break;
+    case ABILITY_SOLAR_CORE:
+        if (IsBattleMoveSpecial(move) && IsBattlerWeatherAffected(ctx->holdEffects[ctx->battlerAtk], ctx->weather, B_WEATHER_SUN))
+            modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(2.0));
+        break;
     case ABILITY_DEFEATIST:
         if (gBattleMons[battlerAtk].hp <= (gBattleMons[battlerAtk].maxHP / 2))
             modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(0.5));
@@ -7151,13 +7155,16 @@ static inline u32 CalcDefenseStat(struct DamageContext *ctx)
         defStat /= 2;
 
     // critical hits ignore positive stat changes
-    if (ctx->isCrit && defStage > DEFAULT_STAT_STAGE)
+    if (ctx->isCrit
+     && defStage > DEFAULT_STAT_STAGE
+     && !(ctx->abilities[battlerDef] == ABILITY_BIG_PECKS && IsBattleMovePhysical(move)))
         defStage = DEFAULT_STAT_STAGE;
     // Pokémon with unaware ignore defense stat changes while dealing damage
     if (ctx->abilities[ctx->battlerAtk] == ABILITY_UNAWARE)
         defStage = DEFAULT_STAT_STAGE;
     // certain moves also ignore stat changes
-    if (MoveIgnoresDefenseEvasionStages(move))
+    if (MoveIgnoresDefenseEvasionStages(move)
+     && !(ctx->abilities[battlerDef] == ABILITY_BIG_PECKS && IsBattleMovePhysical(move)))
         defStage = DEFAULT_STAT_STAGE;
 
     defStat *= gStatStageRatios[defStage][0];
@@ -7436,7 +7443,10 @@ static inline uq4_12_t GetScreensModifier(struct DamageContext *ctx)
     bool32 reflect = (sideStatus & SIDE_STATUS_REFLECT) && IsBattleMovePhysical(ctx->move);
     bool32 auroraVeil = sideStatus & SIDE_STATUS_AURORA_VEIL;
 
-    if (ctx->isCrit || ctx->isSelfInflicted)
+    bool32 bigPecksPreservesScreen = ctx->abilities[ctx->battlerDef] == ABILITY_BIG_PECKS
+                                  && (reflect || (auroraVeil && IsBattleMovePhysical(ctx->move)));
+
+    if ((ctx->isCrit && !bigPecksPreservesScreen) || ctx->isSelfInflicted)
     {
         return UQ_4_12(1.0);
     }

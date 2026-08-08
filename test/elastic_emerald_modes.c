@@ -475,3 +475,227 @@ TEST("Zenmodeman: Merge guard: Egg items do not reserve an item-clause slot")
 
     EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
 }
+
+TEST("Zenmodeman: Merge guard: Scatterbug patterns share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_SCATTERBUG, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_SCATTERBUG_POKEBALL, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Spewpa patterns share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_SPEWPA, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_SPEWPA_POKEBALL, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Squawkabilly colors share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_SQUAWKABILLY, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_SQUAWKABILLY_WHITE, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Pumpkaboo sizes share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_PUMPKABOO, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_PUMPKABOO_SUPER, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Gourgeist sizes share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_GOURGEIST, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_GOURGEIST_SUPER, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Flabebe colors share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_FLABEBE, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_FLABEBE_WHITE, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Floette colors share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_FLOETTE, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_FLOETTE_WHITE, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Florges colors share Tier Points")
+{
+    struct Pokemon base;
+    struct Pokemon form;
+
+    CreateMon(&base, SPECIES_FLORGES, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&form, SPECIES_FLORGES_WHITE, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
+}
+
+TEST("Zenmodeman: Merge guard: Politoed without Drizzle keeps its base Tier Points")
+{
+    struct Pokemon mon;
+    u8 abilitySlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DAMP);
+
+    EXPECT_NE(abilitySlot, NUM_ABILITY_SLOTS);
+    CreateMon(&mon, SPECIES_POLITOED, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&mon, MON_DATA_ABILITY_NUM, &abilitySlot);
+    EXPECT_EQ(GetMonTierPoints(&mon), 3);
+}
+
+TEST("Zenmodeman: Merge guard: Pelipper with Drizzle costs six Tier Points")
+{
+    struct Pokemon mon;
+    u8 abilitySlot = FindAbilitySlot(SPECIES_PELIPPER, ABILITY_DRIZZLE);
+
+    EXPECT_NE(abilitySlot, NUM_ABILITY_SLOTS);
+    CreateMon(&mon, SPECIES_PELIPPER, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&mon, MON_DATA_ABILITY_NUM, &abilitySlot);
+    EXPECT_EQ(GetMonTierPoints(&mon), 6);
+}
+
+TEST("Zenmodeman: Merge guard: Vulpix with Drought drops after badge eight")
+{
+    struct Pokemon mon;
+    u8 abilitySlot = FindAbilitySlot(SPECIES_VULPIX, ABILITY_DROUGHT);
+
+    EXPECT_NE(abilitySlot, NUM_ABILITY_SLOTS);
+    CreateMon(&mon, SPECIES_VULPIX, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&mon, MON_DATA_ABILITY_NUM, &abilitySlot);
+    EXPECT_EQ(GetMonTierPoints(&mon), 6);
+    FlagSet(FLAG_BADGE08_GET);
+    EXPECT_EQ(GetMonTierPoints(&mon), 5);
+}
+
+TEST("Zenmodeman: Merge guard: EV cap uses the highest earned badge without requiring earlier flags")
+{
+    FlagSet(FLAG_EV_MODE);
+    FlagSet(FLAG_BADGE06_GET);
+    EXPECT_EQ(GetEVStatCap(), 228);
+}
+
+TEST("Zenmodeman: Merge guard: Electric monotype seeds only its Ground resist berry")
+{
+    VarSet(VAR_MONOTYPE, TYPE_ELECTRIC - 1);
+    PopulateMonotypeResistBerriesInPC();
+
+    EXPECT(CheckPCHasItem(ITEM_SHUCA_BERRY, 12));
+    EXPECT(!CheckPCHasItem(ITEM_CHOPLE_BERRY, 1));
+    EXPECT(!CheckPCHasItem(ITEM_YACHE_BERRY, 1));
+}
+
+TEST("Zenmodeman: Merge guard: Normal monotype seeds only its Fighting resist berry")
+{
+    VarSet(VAR_MONOTYPE, TYPE_NORMAL);
+    PopulateMonotypeResistBerriesInPC();
+
+    EXPECT(CheckPCHasItem(ITEM_CHOPLE_BERRY, 12));
+    EXPECT(!CheckPCHasItem(ITEM_COLBUR_BERRY, 1));
+}
+
+TEST("Zenmodeman: Merge guard: Dragon monotype seeds Ice Dragon and Fairy resist berries")
+{
+    VarSet(VAR_MONOTYPE, TYPE_DRAGON - 1);
+    PopulateMonotypeResistBerriesInPC();
+
+    EXPECT(CheckPCHasItem(ITEM_YACHE_BERRY, 12));
+    EXPECT(CheckPCHasItem(ITEM_HABAN_BERRY, 12));
+    EXPECT(CheckPCHasItem(ITEM_ROSELI_BERRY, 12));
+    EXPECT(!CheckPCHasItem(ITEM_CHOPLE_BERRY, 1));
+}
+
+TEST("Zenmodeman: Merge guard: Ghost monotype seeds Ghost and Dark resist berries")
+{
+    VarSet(VAR_MONOTYPE, TYPE_GHOST);
+    PopulateMonotypeResistBerriesInPC();
+
+    EXPECT(CheckPCHasItem(ITEM_KASIB_BERRY, 12));
+    EXPECT(CheckPCHasItem(ITEM_COLBUR_BERRY, 12));
+    EXPECT(!CheckPCHasItem(ITEM_CHOPLE_BERRY, 1));
+}
+
+TEST("Zenmodeman: Merge guard: Restricted item clause handles two duplicate groups independently")
+{
+    u16 leftovers = ITEM_LEFTOVERS;
+    u16 blackSludge = ITEM_BLACK_SLUDGE;
+
+    ZeroPlayerPartyMons();
+    for (u32 i = 0; i < 4; i++)
+        CreateMon(&gParties[B_TRAINER_PLAYER][i], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_HELD_ITEM, &leftovers);
+    SetMonData(&gParties[B_TRAINER_PLAYER][1], MON_DATA_HELD_ITEM, &blackSludge);
+    SetMonData(&gParties[B_TRAINER_PLAYER][2], MON_DATA_HELD_ITEM, &leftovers);
+    SetMonData(&gParties[B_TRAINER_PLAYER][3], MON_DATA_HELD_ITEM, &blackSludge);
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][1], MON_DATA_HELD_ITEM), ITEM_BLACK_SLUDGE);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][2], MON_DATA_HELD_ITEM), ITEM_NONE);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][3], MON_DATA_HELD_ITEM), ITEM_NONE);
+    EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 1));
+    EXPECT(CheckBagHasItem(ITEM_BLACK_SLUDGE, 1));
+}
+
+TEST("Zenmodeman: Merge guard: Restricted item clause detects duplicates separated by an egg")
+{
+    u16 item = ITEM_LEFTOVERS;
+    u8 isEgg = TRUE;
+
+    ZeroPlayerPartyMons();
+    for (u32 i = 0; i < 3; i++)
+        CreateMon(&gParties[B_TRAINER_PLAYER][i], SPECIES_WOBBUFFET, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_HELD_ITEM, &item);
+    SetMonData(&gParties[B_TRAINER_PLAYER][1], MON_DATA_IS_EGG, &isEgg);
+    SetMonData(&gParties[B_TRAINER_PLAYER][1], MON_DATA_HELD_ITEM, &item);
+    SetMonData(&gParties[B_TRAINER_PLAYER][2], MON_DATA_HELD_ITEM, &item);
+    FlagSet(FLAG_RESTRICTED_MODE);
+
+    BattleSetup_EnforceRestrictedModeItemClause();
+
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][2], MON_DATA_HELD_ITEM), ITEM_NONE);
+    EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 1));
+}
+
+TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects null Pokemon")
+{
+    EXPECT(!IsMonFreeCenterTutorEligible(NULL));
+    EXPECT(!IsMonFreeMoveRelearnerEligible(NULL));
+}
+
+TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects eggs")
+{
+    struct Pokemon mon;
+    u8 isEgg = TRUE;
+
+    CreateMon(&mon, SPECIES_CATERPIE, 5, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&mon, MON_DATA_IS_EGG, &isEgg);
+    EXPECT(!IsMonFreeCenterTutorEligible(&mon));
+    EXPECT(!IsMonFreeMoveRelearnerEligible(&mon));
+}

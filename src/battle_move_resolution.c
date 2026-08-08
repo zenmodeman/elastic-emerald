@@ -148,7 +148,7 @@ static enum CancelerResult CancelerAsleepOrFrozen(struct BattleCalcValues *cv)
                     BattleScriptCall(BattleScript_BeforeSnoreMessage);
                     result = CANCELER_RESULT_RUN_SCRIPT_AND_INCREMENT;
                 }
-                else if (cv->moveEffect == EFFECT_SLEEP_TALK)
+                else if (cv->moveEffect == EFFECT_SLEEP_TALK || cv->moveEffect == EFFECT_REFRESH)
                 {
                     result = CANCELER_RESULT_RUN_SCRIPT_AND_INCREMENT;
                 }
@@ -169,7 +169,9 @@ static enum CancelerResult CancelerAsleepOrFrozen(struct BattleCalcValues *cv)
         }
         RequestNonVolatileChange(cv->battlerAtk);
     }
-    else if (gBattleMons[cv->battlerAtk].status1 & STATUS1_FREEZE && !MoveThawsUser(cv->move))
+    else if (gBattleMons[cv->battlerAtk].status1 & STATUS1_FREEZE
+          && !MoveThawsUser(cv->move)
+          && cv->moveEffect != EFFECT_REFRESH)
     {
         if (!RandomPercentage(RNG_FROZEN, 20))
         {
@@ -279,7 +281,8 @@ static enum CancelerResult CancelerFocus(struct BattleCalcValues *cv)
     if ((gProtectStructs[cv->battlerAtk].physicalDmg || gProtectStructs[cv->battlerAtk].specialDmg)
      && (focusPunchFailureConfig < GEN_5 || GetMoveEffect(gChosenMoveByBattler[cv->battlerAtk]) == EFFECT_FOCUS_PUNCH)
      && (focusPunchFailureConfig == GEN_5 || focusPunchFailureConfig == GEN_6 || cv->moveEffect == EFFECT_FOCUS_PUNCH)
-     && !gProtectStructs[cv->battlerAtk].survivedOHKO)
+     && !gProtectStructs[cv->battlerAtk].survivedOHKO
+     && cv->abilities[cv->battlerAtk] != ABILITY_INNER_FOCUS)
     {
         CancelMultiTurnMoves(cv->battlerAtk);
         gBattlescriptCurrInstr = BattleScript_FocusPunchLostFocus;
@@ -447,6 +450,7 @@ static enum CancelerResult CancelerGhost(struct BattleCalcValues *cv) // GHOST i
 static enum CancelerResult CancelerParalyzed(struct BattleCalcValues *cv)
 {
     if (gBattleMons[cv->battlerAtk].status1 & STATUS1_PARALYSIS
+        && cv->moveEffect != EFFECT_REFRESH
         && !(B_MAGIC_GUARD == GEN_4 && IsAbilityAndRecord(cv->battlerAtk, cv->abilities[cv->battlerAtk], ABILITY_MAGIC_GUARD))
         && !RandomPercentage(RNG_PARALYSIS, 75))
     {
@@ -1665,6 +1669,10 @@ static bool32 CanTwoTurnMoveFireThisTurn(struct BattleCalcValues *cv)
 {
     if (cv->moveEffect == EFFECT_GEOMANCY || gBattleMoveEffects[cv->moveEffect].semiInvulnerableEffect)
         return FALSE;
+
+    if (cv->move == MOVE_RAZOR_WIND
+     && gSideStatuses[GetBattlerSide(cv->battlerAtk)] & SIDE_STATUS_TAILWIND)
+        return TRUE;
 
     u32 weather = GetWeather();
     u32 attackerWeather = GetAttackerWeather(cv->holdEffects[cv->battlerAtk], cv->abilities[cv->battlerAtk], weather);

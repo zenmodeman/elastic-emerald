@@ -40,9 +40,8 @@ SINGLE_BATTLE_TEST("Refresh cures the user of burn, frostbite, poison, and paral
     }
 }
 
-SINGLE_BATTLE_TEST("Refresh does not cure the user of Freeze")
+SINGLE_BATTLE_TEST("Refresh cures the user of Freeze")
 {
-    PASSES_RANDOMLY(20, 100, RNG_FROZEN);
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Status1(STATUS1_FREEZE); }
         OPPONENT(SPECIES_WOBBUFFET);
@@ -50,15 +49,12 @@ SINGLE_BATTLE_TEST("Refresh does not cure the user of Freeze")
         TURN { MOVE(player, MOVE_REFRESH); }
     } SCENE {
         MESSAGE("Wobbuffet used Refresh!");
-        NONE_OF {
-            ANIMATION(ANIM_TYPE_MOVE, MOVE_REFRESH, player);
-            STATUS_ICON(player, none: TRUE);
-        }
-        MESSAGE("But it failed!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_REFRESH, player);
+        STATUS_ICON(player, none: TRUE);
     }
 }
 
-SINGLE_BATTLE_TEST("Refresh does not cure sleep when used by Sleep Talk")
+SINGLE_BATTLE_TEST("Refresh cures sleep when called by Sleep Talk")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_SPORE) == EFFECT_NON_VOLATILE_STATUS);
@@ -77,10 +73,7 @@ SINGLE_BATTLE_TEST("Refresh does not cure sleep when used by Sleep Talk")
         MESSAGE("The opposing Wobbuffet used Sleep Talk!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_SLEEP_TALK, opponent);
         MESSAGE("The opposing Wobbuffet used Refresh!");
-        NONE_OF {
-            ANIMATION(ANIM_TYPE_MOVE, MOVE_REFRESH, player);
-            STATUS_ICON(player, none: TRUE);
-        }
-        MESSAGE("But it failed!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_REFRESH, opponent);
+        STATUS_ICON(opponent, none: TRUE);
     }
 }
