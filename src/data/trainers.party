@@ -1145,13 +1145,25 @@ Music: Girl
 Battle Type: Singles
 AI: Smart Trainer
 
-Azurill
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Smoliv @ Chesto Berry  
+Ability: Harvest  
+Level: 20  
+EVs: 68 HP / 4 Atk / 20 Def / 12 SpA / 36 SpD / 32 Spe  
+IVs: 21 HP / 0 Atk / 20 Def / 21 SpA / 14 SpD / 17 Spe  
+- Rest  
+- Leech Seed  
+- Mega Drain  
+- Swift
 
-Azurill
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Cutiefly @ Big Root  
+Ability: Shield Dust  
+Level: 21  
+EVs: 52 HP / 32 Def / 36 SpA / 24 SpD / 28 Spe  
+IVs: 12 HP / 13 Atk / 17 Def / 15 SpA / 19 SpD / 21 Spe  
+- Aromatherapy  
+- Draining Kiss  
+- Bug Bite  
+- Stun Spore
 
 === TRAINER_AUSTINA ===
 Name: AUSTINA
@@ -1374,45 +1386,47 @@ IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 
 === TRAINER_CASSIA ===
 Name: CASSIA
-Class: Aroma Lady
-Pic: Aroma Lady
+Class: Cooltrainer
+Pic: Cooltrainer
 Gender: Female
 Music: Female
 Battle Type: Singles
 AI: Smart Trainer
 
-Ivysaur (F) @ Eviolite
-Ability: Overgrow
-Level: 19
-EVs: 36 HP / 20 Def / 20 SpD
-Calm Nature
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
-- Razor Leaf
-- Leech Seed
-- Poison Powder
-- Take Down
+Absol @ Power Herb  
+Ability: Justified  
+Level: 21  
+EVs: 8 HP / 80 Def / 84 Spe  
+Lonely Nature  
+IVs: 16 HP / 15 Atk / 22 Def / 15 SpD / 29 Spe  
+- Razor Wind  
+- Cut  
+- Shock Wave  
+- Snarl
 
-Carkol (F) @ Sitrus Berry
-Ability: Flame Body
-Level: 20
-EVs: 28 HP / 28 Def / 20 SpD
-Impish Nature
-IVs: 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
-- Flame Charge
-- Smack Down
-- Rapid Spin
-- Rock Polish
-
-Tropius (F) @ Power Herb
-Ability: Chlorophyll
-Level: 21
-EVs: 28 HP / 36 SpA / 12 Spe
-Modest Nature
-IVs: 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
-- Solar Beam
-- Air Cutter
+Skiddo @ Power Herb  
+Ability: Grass Pelt  
+Level: 21  
+EVs: 84 HP / 44 Def / 32 SpD / 12 Spe  
+Careful Nature  
+IVs: 19 HP / 15 Atk / 13 Def / 11 SpA / 21 SpD / 17 Spe  
+- Dig  
+- Grassy Terrain  
+- Grassy Glide  
 - Stomp
-- Growth
+
+Wigglytuff @ Sitrus Berry  
+Ability: Competitive  
+Level: 22  
+Tera Type: Normal  
+EVs: 76 HP / 84 Def / 12 SpA  
+Relaxed Nature  
+IVs: 15 HP / 11 Atk / 17 Def / 18 SpA / 15 SpD / 11 Spe  
+- Calm Mind  
+- Skull Bash  
+- Draining Kiss  
+- Moonlight
+
 
 === TRAINER_RANDALL ===
 Name: RANDALL
@@ -13921,13 +13935,27 @@ Music: Girl
 Battle Type: Singles
 AI: Smart Trainer
 
-Tentacool
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Qwilfish @ Black Sludge  
+Ability: Poison Point  
+Level: 20  
+Serious Nature
+EVs: 32 HP / 40 Atk / 24 Def / 4 SpA / 16 SpD / 48 Spe  
+IVs: 17 HP / 20 Atk / 14 Def / 19 SpA / 21 SpD / 13 Spe  
+- Stockpile  
+- Rest  
+- Snore  
+- Barb Barrage
 
-Tentacool
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Voltorb @ Flame Orb  
+Ability: Aftermath  
+Level: 20  
+EVs: 40 HP / 16 Atk / 28 Def / 48 SpA / 16 SpD / 24 Spe  
+Careful Nature  
+IVs: 15 HP / 16 Atk / 18 Def / 23 SpA / 16 SpD / 19 Spe  
+- Switcheroo  
+- Metal Sound  
+- Shock Wave  
+- Sonic Boom
 
 === TRAINER_KALEB ===
 Name: KALEB

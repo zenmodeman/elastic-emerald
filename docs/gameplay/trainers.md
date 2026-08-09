@@ -4,6 +4,7 @@
 -  Any specified EVs apply only to EV mode. 
 - There are some additional information such as some select AI notes for particular fights. 
 	- Note that unlike in vanilla Emerald, the best damaging move gets a +1 score, so moves with a +1 score usually will tie with the best damaging move.
+- For a lot of less important and especially early trainers, IVs and EVs are jumbled up for flavor reasons. Sometimes I tweak these values slightly to hit certain stat thresholds or to meet the progression EV caps, but there's also a level of arbitrariness here. This is to mirror the fact that the only controllable IV values in universe are 0, 15, and 31; thus it'd be odd for a lower-class trainer to have all say 5IV values in stats. But I make some occasionaly fine-tuned adjustments for balance sake when I feel it's warranted.
 
 The following tags are used to automate trainer data from source code, while the rest of the text is inputted manually:
 ```text
@@ -817,7 +818,7 @@ the sync fails if they diverge:
   - Grass Knot
 <!-- trainer-party:end -->
 
-**Mechanics Note:** Cut is still **Normal-type** but is SE against **Grass**.
+**Mechanics Note:** Cut gets a +1 crit stage against Grass types.
 
 ---
 
@@ -2377,7 +2378,107 @@ Note: Tuber Hailey's Lum Berry on Buizel helps incentivize Sailor Edmond's Spind
   - Mud Shot
 <!-- trainer-party:end -->
 
-### Aroma Lady Cassia — *Optional Route Boss with reward*
+### Sailor Huey
+
+<!-- trainer-party:start id=TRAINER_HUEY -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
+**Chatot** @ Figy Berry
+- **Gender:** Male
+- **Ability:** Tangled Feet
+- **Level:** 20
+- **EVs:** 24 HP / 24 Def / 8 SpA / 32 SpD / 84 Spe
+- **Nature:** Calm
+- **IVs:** 22 HP / 0 Atk / 24 Def / 19 SpA / 23 SpD / 17 Spe
+- **Moves:**
+  - Air Cutter
+  - Round
+  - Mirror Move
+  - Substitute
+
+**Clauncher** @ Hard Stone
+- **Gender:** Male
+- **Ability:** Mega Launcher
+- **Level:** 21
+- **EVs:** 28 HP / 44 Atk / 32 Def / 24 SpA / 24 SpD / 20 Spe
+- **Nature:** Quirky
+- **IVs:** 13 HP / 31 Atk / 16 Def / 17 SpA / 11 SpD / 12 Spe
+- **Moves:**
+  - Terrain Pulse
+  - Water Pulse
+  - Water Sport
+  - Smack Down
+<!-- trainer-party:end -->
+
+### Tuber Lola
+
+<!-- trainer-party:start id=TRAINER_LOLA_1 -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
+**Smoliv** @ Chesto Berry
+- **Gender:** Female
+- **Ability:** Harvest
+- **Level:** 20
+- **EVs:** 68 HP / 4 Atk / 20 Def / 12 SpA / 36 SpD / 32 Spe
+- **IVs:** 21 HP / 0 Atk / 20 Def / 21 SpA / 14 SpD / 17 Spe
+- **Moves:**
+  - Rest
+  - Leech Seed
+  - Mega Drain
+  - Swift
+
+**Cutiefly** @ Big Root
+- **Gender:** Female
+- **Ability:** Shield Dust
+- **Level:** 21
+- **EVs:** 52 HP / 32 Def / 36 SpA / 24 SpD / 28 Spe
+- **IVs:** 12 HP / 13 Atk / 17 Def / 15 SpA / 19 SpD / 21 Spe
+- **Moves:**
+  - Aromatherapy
+  - Draining Kiss
+  - Bug Bite
+  - Stun Spore
+<!-- trainer-party:end -->
+
+
+### Tuber Chandler
+<!-- trainer-party:start id=TRAINER_CHANDLER -->
+**Battle type:** Singles.
+
+**Pre-battle healing:** None.
+
+**Qwilfish** @ Black Sludge
+- **Gender:** Male
+- **Ability:** Poison Point
+- **Level:** 20
+- **Nature:** Serious
+- **EVs:** 32 HP / 40 Atk / 24 Def / 4 SpA / 16 SpD / 48 Spe
+- **IVs:** 17 HP / 20 Atk / 14 Def / 19 SpA / 21 SpD / 13 Spe
+- **Moves:**
+  - Stockpile
+  - Rest
+  - Snore
+  - Barb Barrage
+
+**Voltorb** @ Flame Orb
+- **Gender:** Genderless
+- **Ability:** Aftermath
+- **Level:** 20
+- **EVs:** 40 HP / 16 Atk / 28 Def / 48 SpA / 16 SpD / 24 Spe
+- **Nature:** Careful
+- **IVs:** 15 HP / 16 Atk / 18 Def / 23 SpA / 16 SpD / 19 Spe
+- **Moves:**
+  - Switcheroo
+  - Metal Sound
+  - Shock Wave
+  - Sonic Boom
+<!-- trainer-party:end -->
+
+### Cooltrainer Cassia — *Optional Route Boss with reward*
 
 - Requires defeating every other trainer on the Route 109 beach and in the Seashore House. Trainers in Route 109's water portions are excluded.
 - In Restricted Mode, Cassia can no longer be challenged after earning the third Badge.
@@ -2389,31 +2490,45 @@ Note: Tuber Hailey's Lum Berry on Buizel helps incentivize Sailor Edmond's Spind
 
 **Pre-battle healing:** Complete heal (route boss override).
 
-**Ivysaur** @ Eviolite
+**Absol** @ Power Herb
 - **Gender:** Female
-- **Ability:** Overgrow
-- **Level:** 19
-- **EVs:** 36 HP / 20 Def / 20 SpD
-- **Nature:** Calm
-- **IVs:** 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- **Ability:** Justified
+- **Level:** 21
+- **EVs:** 8 HP / 80 Def / 84 Spe
+- **Nature:** Lonely
+- **IVs:** 16 HP / 15 Atk / 22 Def / 31 SpA / 15 SpD / 29 Spe
 - **Moves:**
-  - Razor Leaf
-  - Leech Seed
-  - Poison Powder
-  - Take Down
+  - Razor Wind
+  - Cut
+  - Shock Wave
+  - Snarl
 
-**Carkol** @ Sitrus Berry
+**Skiddo** @ Power Herb
 - **Gender:** Female
-- **Ability:** Flame Body
-- **Level:** 20
-- **EVs:** 28 HP / 28 Def / 20 SpD
-- **Nature:** Impish
-- **IVs:** 18 HP / 18 Atk / 18 Def / 18 SpA / 18 SpD / 18 Spe
+- **Ability:** Grass Pelt
+- **Level:** 21
+- **EVs:** 84 HP / 44 Def / 32 SpD / 12 Spe
+- **Nature:** Careful
+- **IVs:** 19 HP / 15 Atk / 13 Def / 11 SpA / 21 SpD / 17 Spe
 - **Moves:**
-  - Flame Charge
-  - Smack Down
-  - Rapid Spin
-  - Rock Polish
+  - Dig
+  - Grassy Terrain
+  - Grassy Glide
+  - Stomp
+
+**Wigglytuff** @ Sitrus Berry
+- **Gender:** Female
+- **Ability:** Competitive
+- **Level:** 22
+- **Tera Type:** Normal
+- **EVs:** 76 HP / 84 Def / 12 SpA
+- **Nature:** Relaxed
+- **IVs:** 15 HP / 11 Atk / 17 Def / 18 SpA / 15 SpD / 11 Spe
+- **Moves:**
+  - Calm Mind
+  - Skull Bash
+  - Draining Kiss
+  - Moonlight
 
 **Tropius** @ Power Herb
 - **Gender:** Female

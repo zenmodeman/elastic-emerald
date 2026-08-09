@@ -414,8 +414,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Cut"),
         .description = COMPOUND_STRING(
-            "Cuts the foe with sharp\n"
-            "scythes, claws, etc."),
+            "More likely to critically hit\n"
+            "Grass-type targets."),
         .effect = EFFECT_HIT,
         .power = 50,
         .type = TYPE_NORMAL,

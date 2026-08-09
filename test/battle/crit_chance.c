@@ -24,6 +24,29 @@ SINGLE_BATTLE_TEST("Critical hits without modifiers occur at different rates by 
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Cut gains one critical-hit stage against Grass-type targets")
+{
+    enum Species target;
+    u32 passes, trials;
+
+    PARAMETRIZE { target = SPECIES_TANGROWTH; passes = 1; trials = 8; }
+    PARAMETRIZE { target = SPECIES_WOBBUFFET; passes = 1; trials = 24; }
+    PASSES_RANDOMLY(passes, trials, RNG_CRITICAL_HIT);
+    GIVEN {
+        WITH_CONFIG(B_CRIT_CHANCE, GEN_9);
+        ASSUME(GetSpeciesType(SPECIES_TANGROWTH, 0) == TYPE_GRASS);
+        ASSUME(GetSpeciesType(SPECIES_TANGROWTH, 1) == TYPE_GRASS);
+        ASSUME(!IsSpeciesOfType(SPECIES_WOBBUFFET, TYPE_GRASS));
+        ASSUME(GetMoveCriticalHitStage(MOVE_CUT) == 0);
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(target);
+    } WHEN {
+        TURN { MOVE(player, MOVE_CUT); }
+    } SCENE {
+        MESSAGE("A critical hit!");
+    }
+}
+
 SINGLE_BATTLE_TEST("Crit Chance: Raising critical hit rate to 3 guarantees a critical hit (Gen 6+)")
 {
     u32 genConfig = 0, passes, trials;

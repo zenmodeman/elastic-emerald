@@ -8009,6 +8009,14 @@ static inline u32 GetHoldEffectCritChanceIncrease(enum BattlerId battler, enum H
     return critStageIncrease;
 }
 
+static inline u32 GetMoveTargetCritChanceIncrease(struct DamageContext *ctx)
+{
+    if (ctx->move == MOVE_CUT && IS_BATTLER_OF_TYPE(ctx->battlerDef, TYPE_GRASS))
+        return 1;
+
+    return 0;
+}
+
 s32 CalcCritChanceStage(struct DamageContext *ctx)
 {
     s32 critChance = 0;
@@ -8028,6 +8036,7 @@ s32 CalcCritChanceStage(struct DamageContext *ctx)
         critChance  = (gBattleMons[ctx->battlerAtk].volatiles.focusEnergy != 0 ? 2 : 0)
                     + (gBattleMons[ctx->battlerAtk].volatiles.dragonCheer != 0 ? 1 : 0)
                     + GetMoveCriticalHitStage(ctx->move)
+                    + GetMoveTargetCritChanceIncrease(ctx)
                     + GetHoldEffectCritChanceIncrease(ctx->battlerAtk, ctx->holdEffects[ctx->battlerAtk])
                     + ((B_AFFECTION_MECHANICS == TRUE && GetBattlerAffectionHearts(ctx->battlerAtk) == AFFECTION_FIVE_HEARTS) ? 2 : 0)
                     + (ctx->abilities[ctx->battlerAtk] == ABILITY_SUPER_LUCK ? 1 : 0)
@@ -8061,7 +8070,7 @@ s32 CalcCritChanceStage(struct DamageContext *ctx)
 s32 CalcCritChanceStageGen1(struct DamageContext *ctx)
 {
     s32 critChance = 0;
-    s32 moveCritStage = GetMoveCriticalHitStage(ctx->move);
+    s32 moveCritStage = GetMoveCriticalHitStage(ctx->move) + GetMoveTargetCritChanceIncrease(ctx);
     s32 bonusCritStage = gBattleMons[ctx->battlerAtk].volatiles.bonusCritStages; // G-Max Chi Strike
     u32 holdEffectCritStage = GetHoldEffectCritChanceIncrease(ctx->battlerAtk, ctx->holdEffects[ctx->battlerAtk]);
     u16 baseSpeed = GetSpeciesBaseSpeed(gBattleMons[ctx->battlerAtk].species);
