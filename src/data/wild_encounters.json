@@ -2843,7 +2843,7 @@
               {
                 "min_level": 7,
                 "max_level": 9,
-                "species": "SPECIES_DRIFLOON"
+                "species": "SPECIES_NOIBAT"
               },
               {
                 "min_level": 6,
@@ -25099,7 +25099,7 @@
               {
                 "min_level": 2,
                 "max_level": 4,
-                "species": "SPECIES_NOIBAT"
+                "species": "SPECIES_VULLABY"
               },
               {
                 "min_level": 2,
@@ -25169,7 +25169,7 @@
               {
                 "min_level": 5,
                 "max_level": 5,
-                "species": "SPECIES_NONE"
+                "species": "SPECIES_AXEW"
               },
               {
                 "min_level": 5,

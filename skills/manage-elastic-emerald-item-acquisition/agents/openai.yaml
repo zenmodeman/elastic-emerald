@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Item Acquisition Documentation"
+  short_description: "Maintain source-linked item acquisition rows"
+  default_prompt: "Use $manage-elastic-emerald-item-acquisition to add or refresh source-linked item acquisition documentation while preserving user-authored context."

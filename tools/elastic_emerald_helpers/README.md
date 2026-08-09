@@ -4,8 +4,41 @@ These scripts keep spreadsheet/reference workflows beside the source data they r
 
 ```sh
 python -m tools.elastic_emerald_helpers.audit_encounters
+python -m tools.elastic_emerald_helpers.audit_encounters --by-location
+python -m tools.elastic_emerald_helpers.update_encounters_spreadsheet --dry-run
+python -m tools.elastic_emerald_helpers.update_item_acquisition_spreadsheet --dry-run
 python -m tools.elastic_emerald_helpers.update_moves_spreadsheet --dry-run --start 0 --end 2
 ```
+
+## Encounter availability audit
+
+`audit_encounters.py` summarizes the standard and Monotype-only species obtainable
+through the current early-game checkpoint. The audited locations and currently
+available traversal methods are declared at the top of the script; encounter slot
+groups and probabilities are read from `src/data/wild_encounters.json`, and the
+normal-mode land-slot boundary is read from `src/wild_encounter.c`. Surfing, Rock
+Smash, and Super Rod encounters are currently excluded. Use `--by-location` to see
+which standard-mode species each independently counted area contributes.
+
+`update_encounters_spreadsheet.py` writes only Column C of source-backed rows in
+`EncountersUnreleased`. It resolves rows through the configured Column A location
+and Column B encounter-type keys, derives normal and Monotype encounters from the
+same source data and runtime type-selection rules, and applies the existing colored
+Monotype labels. Gift rows, unavailable encounter methods, and the versioned
+`Encounters` worksheet are not modified. Run with `--dry-run` to inspect generated
+cell contents without credentials or network access.
+
+`update_item_acquisition_spreadsheet.py` uses Column F of
+`ItemAcquisitionUnreleased` as a stable automation-tag column. Generic sheet tags
+such as `HiddenItem1`, `GroundItem1`, and `MartInventory` are resolved through a
+code-side mapping to map item flags, berry-tree IDs, mart definitions, item arrays,
+or held-item commands. Source-symbol renames therefore require changes only in the
+script. Row-specific code templates preserve explanatory prose, mode conditions,
+positional notes, and combined rewards while substituting the source-backed item
+names and quantities; only tagged rows have their Column C value regenerated. Use
+`--initialize-tags` once after establishing new rows, and review `--dry-run` before
+running an update. Complex scripted rewards remain untagged until they receive a
+stable source mapping, so their manually maintained prose is preserved.
 
 The spreadsheet updater can also be launched directly from this directory:
 

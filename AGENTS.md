@@ -33,6 +33,22 @@ Use the project skill at `skills/modify-elastic-emerald-npcs/SKILL.md` when impl
 
 If NPC or route-boss work also changes battle-AI decisions or simulation behavior, use both this skill and the Elastic Emerald AI logic skill.
 
+### Elastic Emerald encounter management skill
+
+Use the project skill at `skills/manage-elastic-emerald-encounters/SKILL.md` when auditing encounter availability or maintaining the source-backed encounter spreadsheet automation. Autodetect it for work involving:
+
+- `audit_encounters.py`, reachable-location or available-method policy, encounter weighting, or Monotype-only availability;
+- `update_encounters_spreadsheet.py`, encounter row mappings, encounter rendering, or the `EncountersUnreleased` worksheet;
+- adding a newly reachable route or fishing method to encounter documentation.
+
+### Elastic Emerald item acquisition management skill
+
+Use the project skill at `skills/manage-elastic-emerald-item-acquisition/SKILL.md` when maintaining source-linked item acquisition documentation. Autodetect it for work involving:
+
+- `update_item_acquisition_spreadsheet.py` or the `ItemAcquisitionUnreleased` worksheet;
+- generic automation tags, source mappings, NPC gifts, trainer rewards, marts, berries, ground items, or hidden items;
+- refreshing source-side presentation templates after user edits to spreadsheet wording or layout.
+
 ### Merge upgrade helper
 
 Use the project skill at `skills/merge-upgrade-helper/SKILL.md` automatically when resolving or auditing an upstream merge or version upgrade. Trigger cases include:

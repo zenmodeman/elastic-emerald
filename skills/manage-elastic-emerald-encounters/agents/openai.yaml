@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Elastic Emerald Encounters"
+  short_description: "Audit encounters and update encounter sheets"
+  default_prompt: "Use $manage-elastic-emerald-encounters to audit encounter availability and safely update the unreleased encounter documentation."

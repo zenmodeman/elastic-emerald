@@ -9499,13 +9499,27 @@ Music: Male
 Battle Type: Singles
 AI: Smart Trainer
 
-Wingull
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Chatot @ Figy Berry  
+Ability: Tangled Feet  
+Level: 20  
+EVs: 24 HP / 24 Def / 8 SpA / 32 SpD / 84 Spe  
+Calm Nature  
+IVs: 22 HP / 0 Atk / 24 Def / 19 SpA / 23 SpD / 17 Spe  
+- Air Cutter  
+- Round  
+- Mirror Move  
+- Substitute
 
-Machop
-Level: 12
-IVs: 1 HP / 1 Atk / 1 Def / 1 SpA / 1 SpD / 1 Spe
+Clauncher @ Hard Stone  
+Ability: Mega Launcher  
+Level: 21  
+EVs: 28 HP / 44 Atk / 32 Def / 24 SpA / 24 SpD / 20 Spe  
+Quirky Nature  
+IVs: 13 HP / 16 Def / 17 SpA / 11 SpD / 12 Spe  
+- Terrain Pulse  
+- Water Pulse  
+- Water Sport  
+- Smack Down
 
 === TRAINER_EDMOND ===
 Name: EDMOND
