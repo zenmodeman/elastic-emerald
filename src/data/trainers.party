@@ -1312,13 +1312,27 @@ Music: Girl
 Battle Type: Singles
 AI: Smart Trainer
 
-Azurill
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Munchlax @ Figy Berry  
+Ability: Gluttony  
+Level: 20  
+EVs: 76 HP / 12 Atk / 84 Def  
+Impish Nature  
+IVs: 6 HP / 22 Atk / 29 Def / 13 SpA / 18 SpD / 12 Spe  
+- Surf  
+- Recycle  
+- Facade  
+- Counter
 
-Marill
-Level: 12
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Helioptile @ Electric Seed  
+Ability: Dry Skin  
+Level: 20  
+EVs: 40 HP / 8 Atk / 36 Def / 32 SpA / 44 SpD / 12 Spe  
+Docile Nature  
+IVs: 12 HP / 7 Atk / 15 Def / 20 SpA / 18 SpD / 22 Spe  
+- Glare  
+- Parabolic Charge  
+- Electric Terrain  
+- Swift
 
 === TRAINER_CHARLIE ===
 Name: CHARLIE
@@ -1387,7 +1401,7 @@ IVs: 3 HP / 3 Atk / 3 Def / 3 SpA / 3 SpD / 3 Spe
 === TRAINER_CASSIA ===
 Name: CASSIA
 Class: Cooltrainer
-Pic: Cooltrainer
+Pic: Cooltrainer F
 Gender: Female
 Music: Female
 Battle Type: Singles
@@ -1415,7 +1429,7 @@ IVs: 19 HP / 15 Atk / 13 Def / 11 SpA / 21 SpD / 17 Spe
 - Grassy Glide  
 - Stomp
 
-Wigglytuff @ Sitrus Berry  
+Wigglytuff @ Power Herb  
 Ability: Competitive  
 Level: 22  
 Tera Type: Normal  
@@ -9592,17 +9606,30 @@ Music: Male
 Battle Type: Singles
 AI: Smart Trainer
 
-Wingull
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Darumaka @ Micle Berry  
+Ability: Hustle  
+Level: 20  
+Tera Type: Fire  
+EVs: 52 HP / 36 Atk / 76 Def / 8 Spe  
+Relaxed Nature  
+IVs: 17 HP / 16 Atk / 11 Def / 10 SpA / 19 SpD / 2 Spe  
+- Fire Fang  
+- Headbutt  
+- Yawn  
+- Snatch
 
-Machop
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Vanillite @ White Herb  
+Ability: Weak Armor  
+Level: 21  
+EVs: 40 HP / 28 Atk / 24 Def / 32 SpA / 24 SpD / 20 Spe  
+Bold Nature  
+IVs: 14 HP / 8 Atk / 18 Def / 20 SpA / 27 SpD / 17 Spe  
+- Icicle Spear  
+- Chilling Water  
+- Mirror Coat  
+- Attract
 
-Tentacool
-Level: 11
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+
 
 === TRAINER_PHILLIP ===
 Name: PHILLIP
@@ -12743,9 +12770,27 @@ Music: Female
 Battle Type: Singles
 AI: Smart Trainer
 
-Goldeen
-Level: 13
-IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+Volbeat @ Aguav Berry  
+Ability: Prankster  
+Level: 20  
+EVs: 52 HP / 36 Atk / 4 Def / 12 SpD / 68 Spe  
+Careful Nature  
+IVs: 12 HP / 15 Atk / 19 Def / 9 SpA / 22 SpD / 13 Spe  
+- Lucky Chant  
+- Lunge  
+- Skitter Smack  
+- Moonlight
+
+Braixen @ Sitrus Berry  
+Ability: Magician  
+Level: 21  
+EVs: 4 HP / 36 Def / 20 SpA / 28 SpD / 84 Spe  
+Timid Nature  
+IVs: 15 HP / 0 Atk / 23 Def / 5 SpA / 15 SpD / 24 Spe  
+- Lucky Chant  
+- Mystical Fire  
+- Charm  
+- Psybeam
 
 === TRAINER_GERALD ===
 Name: GERALD

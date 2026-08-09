@@ -5,6 +5,7 @@
 - There are some additional information such as some select AI notes for particular fights. 
 	- Note that unlike in vanilla Emerald, the best damaging move gets a +1 score, so moves with a +1 score usually will tie with the best damaging move.
 - For a lot of less important and especially early trainers, IVs and EVs are jumbled up for flavor reasons. Sometimes I tweak these values slightly to hit certain stat thresholds or to meet the progression EV caps, but there's also a level of arbitrariness here. This is to mirror the fact that the only controllable IV values in universe are 0, 15, and 31; thus it'd be odd for a lower-class trainer to have all say 5IV values in stats. But I make some occasionaly fine-tuned adjustments for balance sake when I feel it's warranted.
+- Runtime trainer-level increases evolve a Pokémon when the increase newly satisfies its evolution conditions. Pokémon that could already evolve at their documented base level remain intentionally unevolved. The evolved Pokémon retains the configured ability slot, moves, item, nature, and other party properties.
 
 The following tags are used to automate trainer data from source code, while the rest of the text is inputted manually:
 ```text
@@ -2529,17 +2530,6 @@ Note: Tuber Hailey's Lum Berry on Buizel helps incentivize Sailor Edmond's Spind
   - Skull Bash
   - Draining Kiss
   - Moonlight
-
-**Tropius** @ Power Herb
-- **Gender:** Female
-- **Ability:** Chlorophyll
-- **Level:** 21
-- **EVs:** 28 HP / 36 SpA / 12 Spe
-- **Nature:** Modest
-- **IVs:** 20 HP / 20 Atk / 20 Def / 20 SpA / 20 SpD / 20 Spe
-- **Moves:**
-  - Solar Beam
-  - Air Cutter
-  - Stomp
-  - Growth
 <!-- trainer-party:end -->
+
+**Mechanics Note:** Cut gets a +1 crit stage against Grass types.

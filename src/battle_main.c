@@ -1864,6 +1864,42 @@ void CustomTrainerPartyAssignMoves(struct Pokemon *mon, const struct TrainerMon 
     SetMonData(mon, MON_DATA_PP_BONUSES, &partyEntry->ppBonuses);
 }
 
+static void TryEvolveTrainerMonForLevelModifier(struct Pokemon *mon, u8 baseLevel, u32 levelModifier)
+{
+    struct Pokemon baseLevelMon;
+    enum Species oldSpecies, targetSpecies;
+    u8 scaledLevel = GetMonData(mon, MON_DATA_LEVEL);
+
+    if (levelModifier == 0 || scaledLevel <= baseLevel)
+        return;
+
+    // Preserve an intentionally unevolved trainer Pokémon when its authored
+    // level already qualifies it to evolve.
+    baseLevelMon = *mon;
+    SetMonData(&baseLevelMon, MON_DATA_LEVEL, &baseLevel);
+    CalculateMonStats(&baseLevelMon);
+    if (GetEvolutionTargetSpecies(&baseLevelMon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, CHECK_EVO) != SPECIES_NONE)
+        return;
+
+    while ((targetSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, CHECK_EVO)) != SPECIES_NONE)
+    {
+        oldSpecies = GetMonData(mon, MON_DATA_SPECIES);
+        if (targetSpecies == oldSpecies)
+            break;
+
+        SetMonData(mon, MON_DATA_SPECIES, &targetSpecies);
+        EvolutionRenameMon(mon, oldSpecies, targetSpecies);
+        CalculateMonStats(mon);
+    }
+}
+
+#if TESTING
+void Test_TryEvolveTrainerMonForLevelModifier(struct Pokemon *mon, u8 baseLevel, u32 levelModifier)
+{
+    TryEvolveTrainerMonForLevelModifier(mon, baseLevel, levelModifier);
+}
+#endif
+
 static u8 CreateNPCTrainerPartyFromTrainerWithLevelModifier(struct Pokemon *party, const struct Trainer *trainer, bool32 halfTeam, u32 battleTypeFlags, u32 levelModifier)
 {
     u32 personalityValue;
@@ -1987,6 +2023,7 @@ static u8 CreateNPCTrainerPartyFromTrainerWithLevelModifier(struct Pokemon *part
                 SetMonData(&party[i], MON_DATA_TERA_TYPE, &data);
             }
             CalculateMonStats(&party[i]);
+            TryEvolveTrainerMonForLevelModifier(&party[i], partyData[monIndex].lvl, levelModifier);
 
             if (B_TRAINER_CLASS_POKE_BALLS >= GEN_7 && ball == -1)
             {

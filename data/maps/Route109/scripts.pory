@@ -3,16 +3,12 @@ raw `
 `
 
 script Route109_EventScript_Edmond {
-    lock
-    faceplayer
+    trainerbattle_single(TRAINER_EDMOND, Route109_Text_EdmondIntro, Route109_Text_EdmondDefeated, Route109_EventScript_EdmondPostBattle)
+    msgbox(Route109_Text_EdmondPostBattle, MSGBOX_AUTOCLOSE)
+    end
+}
 
-    if (flag(TRAINER_FLAGS_START + TRAINER_EDMOND)) {
-        msgbox(Route109_Text_EdmondPostBattle)
-        release
-        return
-    }
-
-    trainerbattle_single(TRAINER_EDMOND, Route109_Text_EdmondIntro, Route109_Text_EdmondDefeated)
+script Route109_EventScript_EdmondPostBattle {
     specialvar(VAR_RESULT, WasTrainerBattleWithTwoOpponents)
     if (var(VAR_RESULT) == TRUE) {
         msgbox(format("You steadied us both! Take these WATER GEMS for winning the harder battle."))
@@ -30,7 +26,8 @@ script Route109_EventScript_Edmond {
         }
     }
     msgbox(Route109_Text_EdmondPostBattle)
-    release
+    releaseall
+    end
 }
 
 script Route109_EventScript_Cassia {

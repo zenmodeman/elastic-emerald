@@ -114,6 +114,9 @@ void AwardBattleTriumphs(void);
 void ModifyPersonalityForNature(u32 *personality, u32 newNature);
 u32 GeneratePersonalityForGender(u32 gender, enum Species species);
 void CustomTrainerPartyAssignMoves(struct Pokemon *mon, const struct TrainerMon *partyEntry);
+#if TESTING
+void Test_TryEvolveTrainerMonForLevelModifier(struct Pokemon *mon, u8 baseLevel, u32 levelModifier);
+#endif
 bool32 CanPlayerForfeitNormalTrainerBattle(void);
 bool32 DidPlayerForfeitNormalTrainerBattle(void);
 void BattleDebug_WonBattle(void);

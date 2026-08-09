@@ -155,6 +155,7 @@ bool32 SetUpFieldMove_RockClimb(void);
 
 #if TESTING
 s8 Test_UpdatePartySelectionSingleLayout(s8 slotId, s8 movementDir, bool8 chooseHalf, u8 lastSelectedSlot);
+bool32 Test_CanUseLevelUpCandy(u32 level);
 #endif
 
 #endif // GUARD_PARTY_MENU_H

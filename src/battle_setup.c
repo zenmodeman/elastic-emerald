@@ -1580,7 +1580,11 @@ void SetTrainerFlag(u16 trainerId)
 
 void WasTrainerBattleWithTwoOpponents(void)
 {
-    gSpecialVar_Result = !!(gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS);
+    // The battle type flags are transient and may no longer describe the
+    // completed battle by the time a trainer's post-battle script runs.
+    // The configured second opponent remains available for that callback.
+    gSpecialVar_Result = TRAINER_BATTLE_PARAM.opponentB != TRAINER_NONE
+                      && TRAINER_BATTLE_PARAM.opponentB != 0xFFFF;
 }
 
 void ClearTrainerFlag(u16 trainerId)

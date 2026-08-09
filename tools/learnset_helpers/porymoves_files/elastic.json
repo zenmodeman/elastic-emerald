@@ -392,5 +392,23 @@
     ],
     "EggMoves": [],
     "TutorMoves": []
+  },
+  "FENNEKIN": {
+    "LevelMoves": [],
+    "PreEvoMoves": [],
+    "TMMoves": [
+      "MOVE_MYSTICAL_FIRE"
+    ],
+    "EggMoves": [],
+    "TutorMoves": []
+  },
+    "BRAIXEL": {
+    "LevelMoves": [],
+    "PreEvoMoves": [],
+    "TMMoves": [
+      "MOVE_MYSTICAL_FIRE"
+    ],
+    "EggMoves": [],
+    "TutorMoves": []
   }
 }

@@ -108,13 +108,21 @@ TEST("Zenmodeman: Route 109: rival and Champion milestones use the revised level
 
 TEST("Zenmodeman: Route 109: Edmond reward detection distinguishes two-opponent battles")
 {
+    TRAINER_BATTLE_PARAM.opponentA = TRAINER_EDMOND;
+    TRAINER_BATTLE_PARAM.opponentB = TRAINER_NONE;
     gBattleTypeFlags = 0;
     WasTrainerBattleWithTwoOpponents();
     EXPECT_EQ(gSpecialVar_Result, FALSE);
 
-    gBattleTypeFlags = BATTLE_TYPE_TRAINER | BATTLE_TYPE_TWO_OPPONENTS;
+    TRAINER_BATTLE_PARAM.opponentB = TRAINER_HAILEY;
     WasTrainerBattleWithTwoOpponents();
     EXPECT_EQ(gSpecialVar_Result, TRUE);
+
+    // An in-game partner uses this sentinel without representing a second
+    // opposing NPC and therefore must not qualify for Edmond's reward.
+    TRAINER_BATTLE_PARAM.opponentB = 0xFFFF;
+    WasTrainerBattleWithTwoOpponents();
+    EXPECT_EQ(gSpecialVar_Result, FALSE);
 }
 
 TEST("Zenmodeman: Route 109 Fly failsafe returns stranded Briney to Dewford")
