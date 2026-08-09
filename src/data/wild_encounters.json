@@ -6375,7 +6375,7 @@
               {
                 "min_level": 10,
                 "max_level": 15,
-                "species": "SPECIES_CORSOLA"
+                "species": "SPECIES_CHEWTLE"
               },
               {
                 "min_level": 25,
@@ -6538,21 +6538,21 @@
               {
                 "min_level": 5,
                 "max_level": 10,
+                "species": "SPECIES_FINNEON"
+              },
+              {
+                "min_level": 14,
+                "max_level": 18,
                 "species": "SPECIES_TENTACOOL"
               },
               {
-                "min_level": 10,
-                "max_level": 30,
-                "species": "SPECIES_MAGIKARP"
+                "min_level": 14,
+                "max_level": 18,
+                "species": "SPECIES_CORSOLA"
               },
               {
-                "min_level": 10,
-                "max_level": 30,
-                "species": "SPECIES_TENTACOOL"
-              },
-              {
-                "min_level": 10,
-                "max_level": 30,
+                "min_level": 14,
+                "max_level": 18,
                 "species": "SPECIES_WAILMER"
               },
               {

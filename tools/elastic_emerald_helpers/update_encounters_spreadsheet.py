@@ -105,7 +105,7 @@ AUTOMATED_ROWS = {
         "petalburg grove (below petalburg city; requires cut)": ("grass",),
         "petalburg grove": ("tree",),
         "dewford town": ("fishing",),
-        "route 107": ("old rod",),
+        "route 107": ("fishing",),
         "route 106": ("fishing",),
         "dewford garden": ("grass", "tree"),
         "granite cave 1f": ("cave",),
