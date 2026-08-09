@@ -1266,10 +1266,14 @@ script Route104_EventScript_WhiteHerbFlorist{
 	goto_if_set(FLAG_RECEIVED_WHITE_HERB, Route104_EventScript_ReceivedWhiteHerb)
 	msgbox(Route104_Text_DontNeedThisTakeIt, MSGBOX_DEFAULT)
 	if (flag(FLAG_RESOURCE_MODE)){
-		giveitem(ITEM_WHITE_HERB, 3)
+		if (var(VAR_MONOTYPE) == TYPE_NONE){
+			giveitem(ITEM_WHITE_HERB, 4)
+		}else{
+			giveitem(ITEM_WHITE_HERB, 8)
+		}
 		if (var(VAR_RESULT) == FALSE){
 			call(Common_EventScript_ShowBagIsFull)
-		}	
+		}
 	}else{
 		giveItem(ITEM_WHITE_HERB)
 		if (var(VAR_RESULT) == FALSE){

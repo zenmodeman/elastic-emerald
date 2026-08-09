@@ -33,6 +33,13 @@ class BootstrapTag:
     current_item: str = ""
 
 
+@dataclass(frozen=True)
+class MapItem:
+    item: str
+    amount: int
+    source_type: str
+
+
 def _normalize(value: str) -> str:
     return " ".join(value.split()).strip().lower()
 
@@ -162,9 +169,9 @@ def _item_names() -> dict[str, tuple[str, str]]:
     return result
 
 
-def _display_item(item: str, amount: int, names: dict[str, tuple[str, str]]) -> str:
+def _display_item_name(item: str, pluralize: bool, names: dict[str, tuple[str, str]]) -> str:
     singular, plural = ITEM_DISPLAY_OVERRIDES.get(item, names.get(item, (item.removeprefix("ITEM_").replace("_", " ").title(), "")))
-    if amount == 1:
+    if not pluralize:
         return singular
     if not plural:
         if singular in {"Honey", "Luminous Moss"}:
@@ -173,10 +180,15 @@ def _display_item(item: str, amount: int, names: dict[str, tuple[str, str]]) -> 
             plural = f"{singular[:-1]}ies"
         else:
             plural = f"{singular}s"
-    return f"{amount} {plural}"
+    return plural
 
 
-def _map_items(map_name: str, flags: list[str], names: dict[str, tuple[str, str]]) -> str:
+def _display_item(item: str, amount: int, names: dict[str, tuple[str, str]]) -> str:
+    name = _display_item_name(item, amount != 1, names)
+    return name if amount == 1 else f"{amount} {name}"
+
+
+def _map_item_entries(map_name: str, flags: list[str]) -> list[MapItem]:
     data = json.loads((REPO_ROOT / f"data/maps/{map_name}/map.json").read_text(encoding="utf-8"))
     found: dict[str, tuple[str, int, str]] = {}
     for event in data.get("object_events", []):
@@ -189,10 +201,14 @@ def _map_items(map_name: str, flags: list[str], names: dict[str, tuple[str, str]
     missing = [flag for flag in flags if flag not in found]
     if missing:
         raise ValueError(f"{map_name} item flags not found: {', '.join(missing)}")
+    return [MapItem(*found[flag]) for flag in flags]
+
+
+def _map_items(map_name: str, flags: list[str], names: dict[str, tuple[str, str]]) -> str:
     grouped: dict[tuple[str, str], int] = {}
-    for flag in flags:
-        item, amount, source_type = found[flag]
-        grouped[(item, source_type)] = grouped.get((item, source_type), 0) + amount
+    for entry in _map_item_entries(map_name, flags):
+        key = (entry.item, entry.source_type)
+        grouped[key] = grouped.get(key, 0) + entry.amount
     rendered = []
     for (item, source_type), amount in grouped.items():
         rendered.append(f"{_display_item(item, amount, names)} ({source_type})" if len(flags) > 1 else _display_item(item, amount, names))
@@ -244,29 +260,42 @@ def _source_section(content: str, label: str) -> str:
     raise ValueError(f"script label not found: {label}")
 
 
-def _script_items(path: str, labels: list[str], names: dict[str, tuple[str, str]]) -> str:
+def _script_item_occurrences(path: str, labels: list[str]) -> dict[str, tuple[int, ...]]:
     content = (REPO_ROOT / path).read_text(encoding="utf-8")
-    amounts: dict[str, set[int]] = {}
+    amounts: dict[str, list[int]] = {}
     order = []
     for label in labels:
         section = _source_section(content, label)
         for item, amount in re.findall(r"\bgiveitem\s*\(?\s*(ITEM_[A-Z0-9_]+)(?:\s*,\s*(\d+))?", section, re.IGNORECASE):
             if item not in amounts:
                 order.append(item)
-                amounts[item] = set()
-            amounts[item].add(int(amount or 1))
+                amounts[item] = []
+            amounts[item].append(int(amount or 1))
     if not order:
         raise ValueError(f"no gift items found in {path}: {', '.join(labels)}")
+    return {item: tuple(amounts[item]) for item in order}
+
+
+def _script_item_amounts(path: str, labels: list[str]) -> dict[str, tuple[int, ...]]:
+    occurrences = _script_item_occurrences(path, labels)
+    return {item: tuple(sorted(set(amounts))) for item, amounts in occurrences.items()}
+
+
+def _script_items(path: str, labels: list[str], names: dict[str, tuple[str, str]]) -> str:
     rendered = []
-    for item in order:
-        item_amounts = sorted(amounts[item])
+    for item, item_amounts in _script_item_amounts(path, labels).items():
         if len(item_amounts) == 1:
             rendered.append(_display_item(item, item_amounts[0], names))
         else:
-            singular, plural = names[item]
-            name = plural or (f"{singular[:-1]}ies" if singular.endswith("Berry") else f"{singular}s")
+            name = _display_item_name(item, True, names)
             rendered.append(f"{'/'.join(map(str, item_amounts))} {name}")
     return ", ".join(rendered)
+
+
+def _expect_one_item(items: dict[str, tuple[int, ...]], context: str) -> tuple[str, tuple[int, ...]]:
+    if len(items) != 1:
+        raise ValueError(f"expected one source-backed item for {context}, found: {tuple(items)}")
+    return next(iter(items.items()))
 
 
 def _random_berries(path: str, label: str, names: dict[str, tuple[str, str]]) -> str:
@@ -404,37 +433,88 @@ def _render_tag(location: str, tag: str, names: dict[str, tuple[str, str]]) -> s
 
     if key == ("route 104, below petalburg woods", "HiddenItems1"):
         parts = source_tag.split("|")
-        gifts = _script_items(parts[1], [parts[2]], names).split(", ")
-        hidden = [_display_item(item, 1, names) for item in ("ITEM_QUICK_BALL", "ITEM_HEART_SCALE")]
+        gifts = list(_script_item_amounts(parts[1], [parts[2]]).items())
+        hidden = _map_item_entries(parts[3], parts[4].split(","))
+        if len(gifts) != 2 or any(len(amounts) != 1 for _, amounts in gifts) or len(hidden) != 2:
+            raise ValueError("Youngster Billy's presentation expects two gifts and two hidden items")
         return (
-            f"{hidden[0]} (bottom hidden item in image)\n"
-            f"{hidden[1]} (top hidden item in image)\n\n"
+            f"{_display_item(hidden[0].item, hidden[0].amount, names)} (bottom hidden item in image)\n"
+            f"{_display_item(hidden[1].item, hidden[1].amount, names)} (top hidden item in image)\n\n"
             "Beating Youngster Billy:\n"
-            f"- before Petalburg Woods Aqua Grunt: {gifts[1]}\n"
-            f"- after Petalburg Woods Aqua Grunt: {gifts[0]}"
+            f"- before Petalburg Woods Aqua Grunt: {_display_item(gifts[1][0], gifts[1][1][0], names)}\n"
+            f"- after Petalburg Woods Aqua Grunt: {_display_item(gifts[0][0], gifts[0][1][0], names)}"
         )
     if key == ("petalburg woods", "TrainerReward1"):
-        return rendered + "\n\n3 of each are given in Resource Mode; 1 otherwise"
+        parts = source_tag.split("|")
+        labels = parts[2].split(",")
+        resource_rewards = _script_item_occurrences(parts[1], [labels[0]])
+        other_rewards = _script_item_occurrences(parts[1], [labels[1]])
+        if resource_rewards.keys() != other_rewards.keys():
+            raise ValueError("Aurelio's Resource and non-Resource rewards must contain the same items")
+        resource_amounts = {amounts for amounts in resource_rewards.values()}
+        other_amounts = {amounts for amounts in other_rewards.values()}
+        if len(resource_amounts) != 1 or len(other_amounts) != 1:
+            raise ValueError("Aurelio's rewards must use one shared quantity per mode")
+        resource_amount = next(iter(resource_amounts))
+        other_amount = next(iter(other_amounts))
+        if len(resource_amount) != 1 or len(other_amount) != 1:
+            raise ValueError("Aurelio's presentation expects one quantity per mode")
+        return rendered + f"\n\n{resource_amount[0]} of each are given in Resource Mode; {other_amount[0]} otherwise"
     if key == ("route 104, pretty petal flower shop", "NPCGift1"):
         return rendered.replace("Random: ", "Random between ") + "\n\nIn Resource Mode, this triggers only once and does not regenerate daily"
     if key == ("route 104, outside pretty petal flower shop (after beating roxanne)", "NPCGift1"):
-        return "White Herb\n\n3 in Resource Mode; 1 otherwise"
-    if key == ("route 116", "TrainerReward1"):
+        parts = source_tag.split("|")
+        item, amounts = _expect_one_item(_script_item_occurrences(parts[1], parts[2].split(",")), "White Herb florist")
+        if len(amounts) != 3:
+            raise ValueError("White Herb florist presentation expects Resource, Monotype Resource, and normal quantities")
         return (
-            "1/3/6 Eject Buttons for beating Camper Elias\n"
-            "3 in non-Monotype Resource Mode; 6 in Monotype Resource Mode; 1 otherwise\n\n"
-            "Ability Capsule (Ground Item)"
+            f"{_display_item_name(item, False, names)}\n\n"
+            f"{amounts[0]} in non-Monotype Resource Mode; "
+            f"{amounts[1]} in Monotype Resource Mode; {amounts[2]} otherwise"
+        )
+    if key == ("route 116", "TrainerReward1"):
+        parts = source_tag.split("|")
+        item, amounts = _expect_one_item(_script_item_occurrences(parts[1], [parts[2]]), "Camper Elias")
+        ground = _map_item_entries(parts[3], parts[4].split(","))
+        if len(amounts) != 3 or len(ground) != 1:
+            raise ValueError("Camper Elias's presentation expects three reward quantities and one ground item")
+        return (
+            f"{_display_item_name(item, True, names)} for beating Camper Elias: "
+            f"{amounts[0]} in non-Monotype Resource Mode; "
+            f"{amounts[1]} in Monotype Resource Mode; {amounts[2]} otherwise\n\n"
+            f"{_display_item(ground[0].item, ground[0].amount, names)} ({ground[0].source_type})"
         )
     if key == ("granite cave 1f", "TrainerReward1"):
+        parts = source_tag.split("|")
+        labels = parts[2].split(",")
+        rewards = [_expect_one_item(_script_item_amounts(parts[1], [label]), label) for label in labels]
+        if any(len(amounts) != 1 for _, amounts in rewards):
+            raise ValueError("Black Belt presentation expects one quantity per reward")
         return (
-            "Muscle Band for beating the leftmost Black Belt\n"
-            "Protective Pads for beating the centermost Black Belt\n"
-            "Black Belt for beating the rightmost Black Belt"
+            f"{_display_item(rewards[1][0], rewards[1][1][0], names)} for beating the leftmost Black Belt\n"
+            f"{_display_item(rewards[0][0], rewards[0][1][0], names)} for beating the centermost Black Belt\n"
+            f"{_display_item(rewards[2][0], rewards[2][1][0], names)} for beating the rightmost Black Belt"
         )
     if key == ("granite cave: steven's room", "ItemAndGift1"):
-        return "Ground Item: 3 Rock Gems\nGift from Steven: Tera Orb"
+        parts = source_tag.split("|")
+        gift_item, gift_amounts = _expect_one_item(_script_item_amounts(parts[1], [parts[2]]), "Steven's gift")
+        ground = _map_item_entries(parts[3], parts[4].split(","))
+        if len(gift_amounts) != 1 or len(ground) != 1:
+            raise ValueError("Steven's Room presentation expects one gift and one ground item")
+        return (
+            f"Ground Item: {_display_item(ground[0].item, ground[0].amount, names)}\n"
+            f"Gift from Steven: {_display_item(gift_item, gift_amounts[0], names)}"
+        )
     if key == ("route 104, above petalburg woods", "ItemGroup1"):
-        return "Shed Shell (Ground Item)\n\nGreat Ball (bottom Hidden Item in image)\nEther (top Hidden Item in image)"
+        parts = source_tag.split("|")
+        items = _map_item_entries(parts[1], parts[2].split(","))
+        if len(items) != 3:
+            raise ValueError("Route 104 item-group presentation expects three mapped items")
+        return (
+            f"{_display_item(items[0].item, items[0].amount, names)} ({items[0].source_type})\n\n"
+            f"{_display_item(items[1].item, items[1].amount, names)} (bottom {items[1].source_type} in image)\n"
+            f"{_display_item(items[2].item, items[2].amount, names)} (top {items[2].source_type} in image)"
+        )
     return rendered
 
 

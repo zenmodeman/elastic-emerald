@@ -2463,33 +2463,42 @@ Route104_EventScript_WhiteHerbFlorist::
 	msgbox Route104_Text_DontNeedThisTakeIt, MSGBOX_DEFAULT
 # 1268 "data/maps/Route104/scripts.pory"
 	goto_if_set FLAG_RESOURCE_MODE, Route104_EventScript_WhiteHerbFlorist_2
-# 1274 "data/maps/Route104/scripts.pory"
+# 1278 "data/maps/Route104/scripts.pory"
 	giveItem ITEM_WHITE_HERB
-# 1275 "data/maps/Route104/scripts.pory"
-	compare VAR_RESULT, FALSE
-	goto_if_eq Route104_EventScript_WhiteHerbFlorist_7
-Route104_EventScript_WhiteHerbFlorist_1:
 # 1279 "data/maps/Route104/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq Route104_EventScript_WhiteHerbFlorist_9
+Route104_EventScript_WhiteHerbFlorist_1:
+# 1283 "data/maps/Route104/scripts.pory"
 	setflag FLAG_RECEIVED_WHITE_HERB
-# 1280 "data/maps/Route104/scripts.pory"
+# 1284 "data/maps/Route104/scripts.pory"
 	release
 	end
 
 Route104_EventScript_WhiteHerbFlorist_2:
 # 1269 "data/maps/Route104/scripts.pory"
-	giveitem ITEM_WHITE_HERB, 3
-# 1270 "data/maps/Route104/scripts.pory"
+	compare VAR_MONOTYPE, TYPE_NONE
+	goto_if_eq Route104_EventScript_WhiteHerbFlorist_6
+# 1272 "data/maps/Route104/scripts.pory"
+	giveitem ITEM_WHITE_HERB, 8
+Route104_EventScript_WhiteHerbFlorist_5:
+# 1274 "data/maps/Route104/scripts.pory"
 	compare VAR_RESULT, FALSE
-	goto_if_eq Route104_EventScript_WhiteHerbFlorist_5
+	goto_if_eq Route104_EventScript_WhiteHerbFlorist_11
 	goto Route104_EventScript_WhiteHerbFlorist_1
 
-Route104_EventScript_WhiteHerbFlorist_5:
-# 1271 "data/maps/Route104/scripts.pory"
+Route104_EventScript_WhiteHerbFlorist_6:
+# 1270 "data/maps/Route104/scripts.pory"
+	giveitem ITEM_WHITE_HERB, 4
+	goto Route104_EventScript_WhiteHerbFlorist_5
+
+Route104_EventScript_WhiteHerbFlorist_9:
+# 1280 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_WhiteHerbFlorist_1
 
-Route104_EventScript_WhiteHerbFlorist_7:
-# 1276 "data/maps/Route104/scripts.pory"
+Route104_EventScript_WhiteHerbFlorist_11:
+# 1275 "data/maps/Route104/scripts.pory"
 	call Common_EventScript_ShowBagIsFull
 	goto Route104_EventScript_WhiteHerbFlorist_1
 
