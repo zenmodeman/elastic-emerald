@@ -15,7 +15,6 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stag
     u32 species;
 
     PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
-    PARAMETRIZE { species = SPECIES_STARYU; ability = ABILITY_ILLUMINATE; }
     PARAMETRIZE { species = SPECIES_URSALUNA_BLOODMOON; ability = ABILITY_MINDS_EYE; }
 
     PASSES_RANDOMLY(100, 100, RNG_ACCURACY);

@@ -87,6 +87,18 @@ u32 GetSoftLevelCapExpValue(u32 level, u32 expValue)
     }
 }
 
+u32 GetSplitExpProgressionValue(u32 expValue, u32 participants, u32 badgeCount)
+{
+    if (participants <= 1 || badgeCount >= NUM_BADGES)
+        return expValue;
+
+    // At zero badges this is ordinary split Exp. Each badge shifts one
+    // eighth of the reward from the shared portion into every participant's
+    // personal reward, reaching full Exp after badge eight.
+    return expValue * (badgeCount * participants + NUM_BADGES - badgeCount)
+         / (NUM_BADGES * participants);
+}
+
 u32 GetCurrentEVCap(void)
 {
     static const u16 sEvCapFlagMap[][2] = {

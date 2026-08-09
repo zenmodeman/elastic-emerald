@@ -2051,6 +2051,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_SOLAR_BEAM] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Solar Beam"),
         .description = COMPOUND_STRING(
             "Absorbs light in one turn,\n"
@@ -2247,7 +2248,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .effect = EFFECT_HIT,
         .power = B_UPDATED_MOVE_DATA >= GEN_5 ? 35 : 15,
         .type = TYPE_FIRE,
-        .accuracy = B_UPDATED_MOVE_DATA >= GEN_5 ? 85 : 70,
+        .accuracy = 95,
         .pp = 15,
         .target = TARGET_SELECTED,
         .priority = 0,
@@ -2379,7 +2380,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .effect = EFFECT_HIT,
         .power = 50,
         .type = TYPE_ROCK,
-        .accuracy = B_UPDATED_MOVE_DATA >= GEN_2 ? 90 : 65,
+        .accuracy = 100,
         .pp = 15,
         .target = TARGET_SELECTED,
         .priority = 0,
@@ -2956,6 +2957,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_CONFUSE_RAY] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Confuse Ray"),
         .description = COMPOUND_STRING(
             "A sinister ray that\n"
@@ -3070,6 +3072,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_LIGHT_SCREEN] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Light Screen"),
         .description = COMPOUND_STRING(
             "Wall of light cuts special\n"
@@ -4038,6 +4041,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_FLASH] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Flash"),
         .description = COMPOUND_STRING(
             "Looses a powerful blast of\n"
@@ -4607,6 +4611,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_THIEF] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Thief"),
         .description = COMPOUND_STRING(
             "While attacking, it may\n"
@@ -5589,6 +5594,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_CHARM] =
     {
+        .enticingMove = TRUE,
         .name = COMPOUND_STRING("Charm"),
         .description = COMPOUND_STRING(
             "Charms the foe and sharply\n"
@@ -5721,6 +5727,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_SPARK] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Spark"),
         .description = COMPOUND_STRING(
             "An electrified tackle that\n"
@@ -5947,9 +5954,10 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .effect = EFFECT_PRESENT,
         .power = 1,
         .type = TYPE_NORMAL,
-        .accuracy = 90,
+        .accuracy = 100,
         .pp = 15,
         .target = TARGET_SELECTED,
+        .giftingMove = TRUE,
         .priority = 0,
         .category = DAMAGE_CATEGORY_PHYSICAL,
         .ignoresKingsRock = (B_UPDATED_MOVE_FLAGS == GEN_3 || B_UPDATED_MOVE_FLAGS == GEN_4),
@@ -6394,6 +6402,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_MORNING_SUN] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Morning Sun"),
         .description = COMPOUND_STRING(
             "Restores HP. The amount\n"
@@ -6448,6 +6457,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_MOONLIGHT] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Moonlight"),
         .description = COMPOUND_STRING(
             "Restores HP. The amount\n"
@@ -7431,6 +7441,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_TRICK] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Trick"),
         .description = COMPOUND_STRING(
             "Tricks the foe into trading\n"
@@ -7723,6 +7734,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_KNOCK_OFF] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Knock Off"),
         .description = COMPOUND_STRING(
             "Knocks down the foe's held\n"
@@ -7985,7 +7997,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Straight-arm punches that\n"
             "strike the foe 2 to 5 times."),
         .effect = EFFECT_HIT,
-        .power = 15,
+        .power = 25,
         .type = TYPE_FIGHTING,
         .accuracy = 100,
         .pp = 20,
@@ -8029,6 +8041,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_TAIL_GLOW] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Tail Glow"),
         .description = COMPOUND_STRING(
         #if B_UPDATED_MOVE_DATA >= GEN_5
@@ -8063,6 +8076,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_LUSTER_PURGE] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Luster Purge"),
         .description = COMPOUND_STRING(
             "Attacks with a burst of\n"
@@ -8211,7 +8225,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .accuracy = 0,
         .pp = 15,
         .target = TARGET_FIELD,
-        .priority = 0,
+        .priority = 1,
         .category = DAMAGE_CATEGORY_STATUS,
         .zMove = { .effect = Z_EFFECT_SPDEF_UP_1 },
         .ignoresProtect = TRUE,
@@ -8547,6 +8561,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_FAKE_TEARS] =
     {
+        .enticingMove = TRUE,
         .name = COMPOUND_STRING("Fake Tears"),
         .description = COMPOUND_STRING(
             "Feigns crying to sharply\n"
@@ -8582,7 +8597,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .effect = EFFECT_HIT,
         .power = B_UPDATED_MOVE_DATA >= GEN_6 ? 60 : 55,
         .type = TYPE_FLYING,
-        .accuracy = 95,
+        .accuracy = 100,
         .criticalHitStage = B_UPDATED_MOVE_DATA >= GEN_3 ? 1 : 2,
         .pp = 25,
         .target = TARGET_BOTH,
@@ -9355,6 +9370,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_COVET] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Covet"),
         .description = COMPOUND_STRING(
             "Cutely begs to obtain an\n"
@@ -9382,6 +9398,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_VOLT_TACKLE] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Volt Tackle"),
         #if B_UPDATED_MOVE_DATA >= GEN_4
         .description = COMPOUND_STRING(
@@ -9451,7 +9468,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .accuracy = 0,
         .pp = 15,
         .target = TARGET_FIELD,
-        .priority = 0,
+        .priority = 1,
         .category = DAMAGE_CATEGORY_STATUS,
         .zMove = { .effect = Z_EFFECT_SPDEF_UP_1 },
         .ignoresProtect = TRUE,
@@ -9578,6 +9595,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_SHOCK_WAVE] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Shock Wave"),
         .description = COMPOUND_STRING(
             "A fast and unavoidable\n"
@@ -10127,6 +10145,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_EMBARGO] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Embargo"),
         .description = COMPOUND_STRING(
             "Prevents the foe from\n"
@@ -11165,6 +11184,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_SWITCHEROO] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Switcheroo"),
         .description = COMPOUND_STRING(
             "Swaps items with the foe\n"
@@ -11560,6 +11580,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_FLASH_CANNON] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Flash Cannon"),
         .description = COMPOUND_STRING(
             "Releases a blast of light\n"
@@ -11941,6 +11962,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_CAPTIVATE] =
     {
+        .enticingMove = TRUE,
         .name = COMPOUND_STRING("Captivate"),
         .description = COMPOUND_STRING(
             "Makes the opposite gender\n"
@@ -12080,6 +12102,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_BUG_BITE] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Bug Bite"),
         .description = COMPOUND_STRING(
             "Eats the foe's held Berry\n"
@@ -13474,6 +13497,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .accuracy = 0,
         .pp = 10,
         .target = TARGET_SELECTED,
+        .giftingMove = TRUE,
         .priority = 0,
         .category = DAMAGE_CATEGORY_STATUS,
         .zMove = { .effect = Z_EFFECT_RESET_STATS },
@@ -13594,6 +13618,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_INCINERATE] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Incinerate"),
         .description = COMPOUND_STRING(
             "Burns up Berries and Gems\n"
@@ -13743,6 +13768,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .accuracy = 0,
         .pp = 15,
         .target = TARGET_SELECTED,
+        .giftingMove = TRUE,
         .priority = 0,
         .category = DAMAGE_CATEGORY_STATUS,
         .zMove = { .effect = Z_EFFECT_SPD_UP_2 },
@@ -14745,7 +14771,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .effect = EFFECT_HIT,
         .power = 55,
         .type = TYPE_DARK,
-        .accuracy = 95,
+        .accuracy = 100,
         .pp = 15,
         .target = TARGET_BOTH,
         .priority = 0,
@@ -15116,6 +15142,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_ION_DELUGE] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Ion Deluge"),
         .description = COMPOUND_STRING(
             "Electrifies Normal-type\n"
@@ -15622,6 +15649,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_PLAY_NICE] =
     {
+        .enticingMove = TRUE,
         .name = COMPOUND_STRING("Play Nice"),
         .description = COMPOUND_STRING(
             "Befriend the foe, lowering\n"
@@ -15651,6 +15679,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_CONFIDE] =
     {
+        .enticingMove = TRUE,
         .name = COMPOUND_STRING("Confide"),
         .description = COMPOUND_STRING(
             "Shares a secret with the\n"
@@ -16066,6 +16095,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_DAZZLING_GLEAM] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Dazzling Gleam"),
         .description = COMPOUND_STRING(
             "Damages foes by emitting\n"
@@ -16147,6 +16177,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_BABY_DOLL_EYES] =
     {
+        .enticingMove = TRUE,
         .name = COMPOUND_STRING("Baby-Doll Eyes"),
         .description = COMPOUND_STRING(
             "Lowers the foe's Attack\n"
@@ -16808,6 +16839,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_SPOTLIGHT] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Spotlight"),
         .description = COMPOUND_STRING(
             "Makes the foe attack the\n"
@@ -17242,7 +17274,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "An intense kick from the\n"
             "tropics. Lowers Attack."),
         .effect = EFFECT_HIT,
-        .power = 70,
+        .power = 80,
         .type = TYPE_GRASS,
         .accuracy = 100,
         .pp = 15,
@@ -17706,6 +17738,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_TEARFUL_LOOK] =
     {
+        .enticingMove = TRUE,
         .name = COMPOUND_STRING("Tearful Look"),
         .description = COMPOUND_STRING(
             "The user tears up, dropping\n"
@@ -19098,6 +19131,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_STEEL_BEAM] =
     {
+        .illuminatingMove = TRUE,
         .name = COMPOUND_STRING("Steel Beam"),
         .description = COMPOUND_STRING(
             "Fires a beam of steel from\n"
@@ -19421,6 +19455,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
 
     [MOVE_POLTERGEIST] =
     {
+        .itemInteractingMove = TRUE,
         .name = COMPOUND_STRING("Poltergeist"),
         .description = COMPOUND_STRING(
             "Control foe's item to attack.\n"

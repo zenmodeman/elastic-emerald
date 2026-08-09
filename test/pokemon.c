@@ -251,6 +251,40 @@ TEST("givemon [simple]")
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_LEVEL), 100);
 }
 
+TEST("Zenmodeman: ordinary scripted gifts receive at least three perfect IVs")
+{
+    u32 i;
+    u32 perfectIvCount = 0;
+
+    ZeroPlayerPartyMons();
+    ASSUME(gSpeciesInfo[SPECIES_WOBBUFFET].perfectIVCount == 0);
+    RUN_OVERWORLD_SCRIPT(
+        givemon SPECIES_WOBBUFFET, 20;
+    );
+
+    for (i = 0; i < NUM_STATS; i++)
+    {
+        if (GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_HP_IV + i) == MAX_PER_STAT_IVS)
+            perfectIvCount++;
+    }
+    EXPECT_GE(perfectIvCount, 3);
+}
+
+TEST("Zenmodeman: explicit scripted gift IVs bypass the three perfect IV floor")
+{
+    ZeroPlayerPartyMons();
+    RUN_OVERWORLD_SCRIPT(
+        givemon SPECIES_WOBBUFFET, 20, hpIv=1, atkIv=2, defIv=3, speedIv=4, spAtkIv=5, spDefIv=6;
+    );
+
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_HP_IV), 1);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_ATK_IV), 2);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_DEF_IV), 3);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_SPEED_IV), 4);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_SPATK_IV), 5);
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_SPDEF_IV), 6);
+}
+
 TEST("givemon respects perfectIVCount")
 {
     ZeroPlayerPartyMons();

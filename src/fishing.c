@@ -43,6 +43,33 @@ static bool32 Fishing_PutRodAway(struct Task *);
 static bool32 Fishing_EndNoMon(struct Task *);
 static void AlignFishingAnimationFrames(void);
 static bool32 DoesFishingMinigameAllowCancel(void);
+
+u8 GetFishingMinRoundsRange(u8 rod)
+{
+    static const u8 ranges[] = { [OLD_ROD] = 1, [GOOD_ROD] = 2, [SUPER_ROD] = 3 };
+    return rod <= SUPER_ROD ? ranges[rod] : 1;
+}
+
+u8 GetFishingReelTimeout(u8 rod)
+{
+    static const u8 timeouts[] = { [OLD_ROD] = 45, [GOOD_ROD] = 42, [SUPER_ROD] = 39 };
+    return rod <= SUPER_ROD ? timeouts[rod] : timeouts[OLD_ROD];
+}
+
+u8 GetFishingMoreDotsChance(u8 rod, u8 stage)
+{
+    static const u8 chances[][2] = {
+        [OLD_ROD] = {0, 0},
+        [GOOD_ROD] = {15, 3},
+        [SUPER_ROD] = {30, 15},
+    };
+    return rod <= SUPER_ROD && stage < 2 ? chances[rod][stage] : 0;
+}
+
+bool32 ShouldForgiveFishingEarlyPress(u8 roundsPlayed, u8 numDots, u8 dotsRequired, u8 roll)
+{
+    return roundsPlayed > 0 && numDots + 2 >= dotsRequired && roll < 40;
+}
 static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
 static void Fishing_GiveItem(void);
 static bool32 Fishing_RollForBite(u32, bool32);
@@ -176,14 +203,8 @@ static bool32 Fishing_GetRodOut(struct Task *task)
         [GOOD_ROD]  = 1,
         [SUPER_ROD] = 1
     };
-    const s16 minRounds2[] = {
-        [OLD_ROD]   = 1,
-        [GOOD_ROD]  = 3,
-        [SUPER_ROD] = 6
-    };
-
     task->tRoundsPlayed = 0;
-    task->tMinRoundsRequired = minRounds1[task->tFishingRod] + (Random() % minRounds2[task->tFishingRod]);
+    task->tMinRoundsRequired = minRounds1[task->tFishingRod] + (Random() % GetFishingMinRoundsRange(task->tFishingRod));
     task->tPlayerGfxId = gObjectEvents[gPlayerAvatar.objectEventId].graphicsId;
     playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     ObjectEventClearHeldMovementIfActive(playerObjEvent);
@@ -233,9 +254,14 @@ static bool32 Fishing_ShowDots(struct Task *task)
         if (!DoesFishingMinigameAllowCancel())
             return FALSE;
 
-        task->tStep = FISHING_NOT_EVEN_NIBBLE;
-        if (task->tRoundsPlayed != 0)
-            task->tStep = FISHING_GOT_AWAY;
+        if (ShouldForgiveFishingEarlyPress(task->tRoundsPlayed, task->tNumDots, task->tDotsRequired, Random() % 100))
+            task->tStep = FISHING_CHECK_FOR_BITE;
+        else
+        {
+            task->tStep = FISHING_NOT_EVEN_NIBBLE;
+            if (task->tRoundsPlayed != 0)
+                task->tStep = FISHING_GOT_AWAY;
+        }
         return TRUE;
     }
     else
@@ -319,15 +345,9 @@ static bool32 Fishing_ChangeMinigame(struct Task *task)
 // We have a bite. Now, wait for the player to press A, or the timer to expire.
 static bool32 Fishing_WaitForA(struct Task *task)
 {
-    const s16 reelTimeouts[3] = {
-        [OLD_ROD]   = 36,
-        [GOOD_ROD]  = 33,
-        [SUPER_ROD] = 30
-    };
-
     AlignFishingAnimationFrames();
     task->tFrameCounter++;
-    if (task->tFrameCounter >= reelTimeouts[task->tFishingRod])
+    if (task->tFrameCounter >= GetFishingReelTimeout(task->tFishingRod))
         task->tStep = FISHING_GOT_AWAY;
     else if (JOY_NEW(A_BUTTON))
         task->tStep = FISHING_CHECK_MORE_DOTS;
@@ -345,13 +365,6 @@ static bool32 Fishing_APressNoMinigame(struct Task *task)
 // Determine if we're going to play the dot game again
 static bool32 Fishing_CheckMoreDots(struct Task *task)
 {
-    const s16 moreDotsChance[][2] =
-    {
-        [OLD_ROD]   = {0, 0},
-        [GOOD_ROD]  = {40, 10},
-        [SUPER_ROD] = {70, 30}
-    };
-
     AlignFishingAnimationFrames();
     task->tStep = FISHING_MON_ON_HOOK;
     if (task->tRoundsPlayed < task->tMinRoundsRequired)
@@ -363,7 +376,7 @@ static bool32 Fishing_CheckMoreDots(struct Task *task)
         // probability of having to play another round
         s16 probability = Random() % 100;
 
-        if (moreDotsChance[task->tFishingRod][task->tRoundsPlayed] > probability)
+        if (GetFishingMoreDotsChance(task->tFishingRod, task->tRoundsPlayed) > probability)
             task->tStep = FISHING_INIT_DOTS;
     }
     return FALSE;

@@ -1,6 +1,7 @@
 #include "global.h"
 #include "event_data.h"
 #include "pokemon.h"
+#include "rtc.h"
 #include "test/test.h"
 
 static void SetMonotype(enum Type type)
@@ -32,6 +33,61 @@ TEST("Zenmodeman: Evolution restrictions: normal mode ignores item evolution lev
 
     CreateMon(&mon, SPECIES_NIDORINO, 20, 0, OTID_STRUCT_PLAYER_ID);
     EXPECT(!DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_MOON_STONE));
+}
+
+TEST("Zenmodeman: Evolution restrictions: Wurmple monotype branches still require level seven")
+{
+    struct Pokemon mon;
+
+    SetMonotype(TYPE_FLYING);
+    CreateMon(&mon, SPECIES_WURMPLE, 6, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
+
+    SetMonotype(TYPE_POISON);
+    CreateMon(&mon, SPECIES_WURMPLE, 6, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
+}
+
+TEST("Zenmodeman: Evolution restrictions: Flying and Poison monotypes choose Wurmple branches")
+{
+    struct Pokemon mon;
+
+    SetMonotype(TYPE_FLYING);
+    CreateMon(&mon, SPECIES_WURMPLE, 7, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_SILCOON);
+
+    SetMonotype(TYPE_POISON);
+    CreateMon(&mon, SPECIES_WURMPLE, 7, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_CASCOON);
+}
+
+TEST("Zenmodeman: Evolution restrictions: Ghost monotype evolves Nincada directly into Shedinja")
+{
+    struct Pokemon mon;
+
+    SetMonotype(TYPE_GHOST);
+    CreateMon(&mon, SPECIES_NINCADA, 19, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
+    CreateMon(&mon, SPECIES_NINCADA, 20, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_SHEDINJA);
+}
+
+TEST("Zenmodeman: Evolution restrictions: ordinary Nincada evolution remains Ninjask")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_NINCADA, 20, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NINJASK);
+}
+
+TEST("Zenmodeman: Evolution restrictions: ordinary Wurmple keeps both personality branches")
+{
+    struct Pokemon mon;
+
+    CreateMonWithIVsPersonality(&mon, SPECIES_WURMPLE, 7, 0, 0);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_CASCOON);
+    CreateMonWithIVsPersonality(&mon, SPECIES_WURMPLE, 7, 0, 9 << 16);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_SILCOON);
 }
 
 TEST("Zenmodeman: Evolution restrictions: Nidorina and Nidorino require level 25 in Restricted Mode")
@@ -223,4 +279,41 @@ TEST("Zenmodeman: Evolution restrictions: Restricted and monotype gates compose 
     SetMonotype(TYPE_FIRE);
     CreateMon(&mon, SPECIES_FLETCHLING, 17, 0, OTID_STRUCT_PLAYER_ID);
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_FLETCHINDER);
+}
+
+TEST("Zenmodeman: Evolution restrictions: Restricted Snom friendship evolution requires level eighteen")
+{
+    gLocalTime.hours = 22;
+    FlagSet(FLAG_RESTRICTED_MODE);
+    CreateHappyMon(&gParties[B_TRAINER_PLAYER][0], SPECIES_SNOM, 17);
+    gPartiesCount[B_TRAINER_PLAYER] = 1;
+    EXPECT_EQ(GetNormalEvolution(&gParties[B_TRAINER_PLAYER][0]), SPECIES_NONE);
+
+    CreateHappyMon(&gParties[B_TRAINER_PLAYER][0], SPECIES_SNOM, 18);
+    EXPECT_EQ(GetNormalEvolution(&gParties[B_TRAINER_PLAYER][0]), SPECIES_FROSMOTH);
+}
+
+TEST("Zenmodeman: Evolution restrictions: Restricted walking evolutions retain their level floors")
+{
+    static const struct
+    {
+        enum Species species;
+        u32 minimumLevel;
+    } cases[] =
+    {
+        { SPECIES_RELLOR, 20 },
+        { SPECIES_PAWMO, 25 },
+        { SPECIES_BRAMBLIN, 25 },
+    };
+    u32 i;
+
+    for (i = 0; i < ARRAY_COUNT(cases); i++)
+    {
+        const struct Evolution *evolution = GetSpeciesEvolutions(cases[i].species);
+
+        EXPECT_EQ(evolution[0].params[0].condition, IF_MIN_OVERWORLD_STEPS);
+        EXPECT_EQ(evolution[0].params[0].arg1, 1000);
+        EXPECT_EQ(evolution[0].params[1].condition, IF_MIN_RESTRICTED_LEVEL);
+        EXPECT_EQ(evolution[0].params[1].arg1, cases[i].minimumLevel);
+    }
 }

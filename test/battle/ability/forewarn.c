@@ -1,6 +1,40 @@
 #include "global.h"
 #include "test/battle.h"
 
+SINGLE_BATTLE_TEST("Zenmodeman: Forewarn halves damage from the move it identifies", s16 damage)
+{
+    enum Ability ability;
+    PARAMETRIZE { ability = ABILITY_SYNCHRONIZE; }
+    PARAMETRIZE { ability = ABILITY_FOREWARN; }
+    GIVEN {
+        PLAYER(SPECIES_MUSHARNA) { Ability(ability); SpDefense(100); }
+        OPPONENT(SPECIES_ALAKAZAM) { SpAttack(100); Moves(MOVE_PSYCHIC, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_PSYCHIC); }
+    } SCENE {
+        HP_BAR(player, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_MUL_EQ(results[0].damage, UQ_4_12(0.5), results[1].damage);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Forewarn does not reduce a different unannounced move", s16 damage)
+{
+    enum Ability ability;
+    PARAMETRIZE { ability = ABILITY_SYNCHRONIZE; }
+    PARAMETRIZE { ability = ABILITY_FOREWARN; }
+    GIVEN {
+        PLAYER(SPECIES_MUSHARNA) { Ability(ability); Defense(100); }
+        OPPONENT(SPECIES_ALAKAZAM) { Attack(100); Moves(MOVE_PSYCHIC, MOVE_POUND); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_POUND); }
+    } SCENE {
+        HP_BAR(player, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_EQ(results[0].damage, results[1].damage);
+    }
+}
+
 DOUBLE_BATTLE_TEST("Forewarn warns about the highest power move among all opposing battlers")
 {
     GIVEN {

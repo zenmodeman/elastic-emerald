@@ -266,6 +266,9 @@ static enum CancelerResult CancelerTruant(struct BattleCalcValues *cv)
         gBattlerAbility = cv->battlerAtk;
         gBattlescriptCurrInstr = BattleScript_TruantLoafingAround;
         gBattleStruct->moveResultFlags[cv->battlerDef] |= MOVE_RESULT_MISSED;
+        // Preserve Elastic Emerald's Truant / Stomping Tantrum synergy even
+        // though failed attack-canceler actions no longer reach normal move end.
+        gBattleStruct->battlerState[cv->battlerAtk].stompingTantrumTimer = 2;
         return CANCELER_RESULT_FAILURE;
     }
     return CANCELER_RESULT_SUCCESS;
@@ -1315,11 +1318,11 @@ static enum CancelerResult CancelerMoveFailure(struct BattleCalcValues *cv)
     case EFFECT_PRESENT:
     {
         u32 rand = RandomUniform(RNG_PRESENT, 0, 0xFF);
-        if (rand < 102)
+        if (rand < 50)
             gBattleStruct->presentBasePower = 40;
-        else if (rand < 178)
-            gBattleStruct->presentBasePower = 80;
         else if (rand < 204)
+            gBattleStruct->presentBasePower = 80;
+        else if (rand < 229)
             gBattleStruct->presentBasePower = 120;
         else
             gBattleStruct->presentBasePower = 0; // Healing

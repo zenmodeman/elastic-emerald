@@ -55,32 +55,30 @@ void ApplyBattlerVisualsForTeraAnim(enum BattlerId battler)
     BlendPalette(OBJ_PLTT_ID(battler), 16, 16, RGB_WHITEALPHA);
 }
 
+bool32 IsRestrictedModeTeraCombinationBanned(enum Species species, enum Ability ability, u32 tierPoints)
+{
+    if (tierPoints < 4)
+        return FALSE;
+    if (species == SPECIES_AZUMARILL && ability == ABILITY_THICK_FAT)
+        return FALSE;
+    if (species == SPECIES_DIGGERSBY && ability != ABILITY_HUGE_POWER)
+        return FALSE;
+    if (species == SPECIES_MEDICHAM && ability != ABILITY_PURE_POWER)
+        return FALSE;
+    if (species == SPECIES_GIGALITH && ability != ABILITY_SAND_STREAM)
+        return FALSE;
+    if (species == SPECIES_BLAZIKEN && ability != ABILITY_SPEED_BOOST)
+        return FALSE;
+    if (species == SPECIES_POLTEAGEIST && ability != ABILITY_WEAK_ARMOR)
+        return FALSE;
+    return TRUE;
+}
+
 bool32 IsRestrictedModeTeraBanned(u32 battler)
 {
-    u16 species = gBattleMons[battler].species;
-    //Instead of handpicked filtering, using the tiering system to systematically decide on bans.
-    u32 bannedTierThreshold = 4;
-
-    if (GetMonTierPoints(GetBattlerMon(battler)) >= bannedTierThreshold){
-        if (species == SPECIES_AZUMARILL && GetBattlerAbility(battler) == ABILITY_THICK_FAT){
-            return FALSE;
-        }else if (species == SPECIES_DIGGERSBY && GetBattlerAbility(battler) != ABILITY_HUGE_POWER){
-            return FALSE;
-        }else if (species == SPECIES_MEDICHAM && GetBattlerAbility(battler) != ABILITY_PURE_POWER){
-            return FALSE;
-        }else if (species == SPECIES_GIGALITH && GetBattlerAbility(battler) != ABILITY_SAND_STREAM){
-            return FALSE;
-        }
-        else if ((species == SPECIES_BLAZIKEN)
-         && GetBattlerAbility(battler) != ABILITY_SPEED_BOOST){
-            return FALSE;
-         }
-         else if ((species == SPECIES_POLTEAGEIST) && GetBattlerAbility(battler) != ABILITY_WEAK_ARMOR){
-            return FALSE;
-         }
-        return TRUE;
-    }
-    return FALSE;
+    return IsRestrictedModeTeraCombinationBanned(gBattleMons[battler].species,
+                                                   GetBattlerAbility(battler),
+                                                   GetMonTierPoints(GetBattlerMon(battler)));
 }
 
 // Returns whether a battler can Terastallize.

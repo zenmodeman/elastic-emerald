@@ -1515,8 +1515,8 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sWurmpleLevelUpLearnset,
         .teachableLearnset = sWurmpleTeachableLearnset,
         .evolutions = EVOLUTION(
-            {EVO_LEVEL, 7, SPECIES_SILCOON, CONDITIONS({IF_MONOTYPE_MATCHES_ONE_OF_TWO_TYPES, TYPE_FLYING, TYPE_FLYING})},
-            {EVO_LEVEL, 7, SPECIES_CASCOON, CONDITIONS({IF_MONOTYPE_MATCHES_ONE_OF_TWO_TYPES, TYPE_POISON, TYPE_POISON})},
+            {EVO_LEVEL, 7, SPECIES_SILCOON, CONDITIONS({IF_MONOTYPE_STRICTLY_MATCHES_ONE_OF_TWO_TYPES, TYPE_FLYING, TYPE_FLYING})},
+            {EVO_LEVEL, 7, SPECIES_CASCOON, CONDITIONS({IF_MONOTYPE_STRICTLY_MATCHES_ONE_OF_TWO_TYPES, TYPE_POISON, TYPE_POISON})},
             {EVO_LEVEL, 7, SPECIES_SILCOON, CONDITIONS({IF_PID_UPPER_MODULO_10_GT, 4})},
             {EVO_LEVEL, 7, SPECIES_CASCOON, CONDITIONS({IF_PID_UPPER_MODULO_10_LT, 5})}),
     },
@@ -3739,7 +3739,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .levelUpLearnset = sNincadaLevelUpLearnset,
         .teachableLearnset = sNincadaTeachableLearnset,
         .eggMoveLearnset = sNincadaEggMoveLearnset,
-        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_SHEDINJA, CONDITIONS({IF_MONOTYPE_MATCHES_ONE_OF_TWO_TYPES, TYPE_GHOST, TYPE_GHOST})},
+        .evolutions = EVOLUTION({EVO_LEVEL, 20, SPECIES_SHEDINJA, CONDITIONS({IF_MONOTYPE_STRICTLY_MATCHES_ONE_OF_TWO_TYPES, TYPE_GHOST, TYPE_GHOST})},
             {EVO_LEVEL, 20, SPECIES_NINJASK},
                             #if P_SHEDINJA_BALL >= GEN_4
                                 {EVO_SPLIT_FROM_EVO, SPECIES_NINJASK, SPECIES_SHEDINJA, CONDITIONS({IF_BAG_ITEM_COUNT, ITEM_POKE_BALL, 1})}),

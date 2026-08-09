@@ -2093,7 +2093,8 @@ static inline bool32 TrySetReflect(enum BattlerId battler)
     if (!(gSideStatuses[side] & SIDE_STATUS_REFLECT))
     {
         gSideStatuses[side] |= SIDE_STATUS_REFLECT;
-        if (GetBattlerHoldEffect(battler) == HOLD_EFFECT_LIGHT_CLAY)
+        if (GetBattlerHoldEffect(battler) == HOLD_EFFECT_LIGHT_CLAY
+         || GetBattlerAbility(battler) == ABILITY_DEDICATED)
             gSideTimers[side].reflectTimer = 8;
         else
             gSideTimers[side].reflectTimer = 5;
@@ -2114,7 +2115,8 @@ static inline bool32 TrySetLightScreen(enum BattlerId battler)
     if (!(gSideStatuses[side] & SIDE_STATUS_LIGHTSCREEN))
     {
         gSideStatuses[side] |= SIDE_STATUS_LIGHTSCREEN;
-        if (GetBattlerHoldEffect(battler) == HOLD_EFFECT_LIGHT_CLAY)
+        if (GetBattlerHoldEffect(battler) == HOLD_EFFECT_LIGHT_CLAY
+         || GetBattlerAbility(battler) == ABILITY_DEDICATED)
             gSideTimers[side].lightscreenTimer = 8;
         else
             gSideTimers[side].lightscreenTimer = 5;
@@ -4025,11 +4027,18 @@ static void Cmd_getexp(void)
             if (B_TRAINER_EXP_MULTIPLIER <= GEN_7 && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
                 calculatedExp = (calculatedExp * 150) / 100;
 
-            if (B_SPLIT_EXP < GEN_6)
+            u32 badgeCount = 0;
+            for (i = 0; i < NUM_BADGES; i++)
+            {
+                if (FlagGet(gBadgeFlags[i]))
+                    badgeCount++;
+            }
+
+            if (badgeCount < NUM_BADGES && viaSentIn > 1)
             {
                 if (viaExpShare) // at least one mon is getting exp via exp share
                 {
-                    *exp = SAFE_DIV(calculatedExp / 2, viaSentIn);
+                    *exp = GetSplitExpProgressionValue(calculatedExp / 2, viaSentIn, badgeCount);
                     if (*exp == 0)
                         *exp = 1;
 
@@ -4039,7 +4048,7 @@ static void Cmd_getexp(void)
                 }
                 else
                 {
-                    *exp = SAFE_DIV(calculatedExp, viaSentIn);
+                    *exp = GetSplitExpProgressionValue(calculatedExp, viaSentIn, badgeCount);
                     if (*exp == 0)
                         *exp = 1;
                     gBattleStruct->expShareExpValue = 0;
@@ -7847,7 +7856,8 @@ static void Cmd_setmist(void)
     }
     else
     {
-        gSideTimers[GetBattlerSide(gBattlerAttacker)].mistTimer = 5;
+        gSideTimers[GetBattlerSide(gBattlerAttacker)].mistTimer =
+            5 + (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED ? 3 : 0);
         gSideStatuses[GetBattlerSide(gBattlerAttacker)] |= SIDE_STATUS_MIST;
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SET_MIST;
     }
@@ -8317,7 +8327,8 @@ static void Cmd_settailwind(void)
     if (!(gSideStatuses[side] & SIDE_STATUS_TAILWIND))
     {
         gSideStatuses[side] |= SIDE_STATUS_TAILWIND;
-        gSideTimers[side].tailwindTimer = (GetConfig(B_TAILWIND_TURNS) >= GEN_5 ? 4 : 3);
+        gSideTimers[side].tailwindTimer = (GetConfig(B_TAILWIND_TURNS) >= GEN_5 ? 4 : 3)
+                                      + (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED ? 3 : 0);
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
     else
@@ -8647,7 +8658,8 @@ static void Cmd_setsafeguard(void)
     else
     {
         gSideStatuses[side] |= SIDE_STATUS_SAFEGUARD;
-        gSideTimers[side].safeguardTimer = 5 + AllOpponentsActed(battler);
+        gSideTimers[side].safeguardTimer = 5 + AllOpponentsActed(battler)
+                                            + (GetBattlerAbility(battler) == ABILITY_DEDICATED ? 3 : 0);
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SET_SAFEGUARD;
     }
 
@@ -9289,7 +9301,7 @@ static void HandleRoomMove(u32 statusFlag, u16 *timer, u8 stringId)
     else
     {
         gFieldStatuses |= statusFlag;
-        *timer = 5;
+        *timer = 5 + (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED ? 3 : 0);
         gBattleCommunication[MULTISTRING_CHOOSER] = stringId;
     }
 }
@@ -9634,7 +9646,8 @@ static void Cmd_settypebasedhalvers(void)
                 if (!(gFieldStatuses & STATUS_FIELD_MUDSPORT))
                 {
                     gFieldStatuses |= STATUS_FIELD_MUDSPORT;
-                    gFieldTimers.mudSportTimer = 5;
+                    gFieldTimers.mudSportTimer = 5
+                        + (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED ? 3 : 0);
                     gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_ELECTRIC;
                     worked = TRUE;
                 }
@@ -9656,7 +9669,8 @@ static void Cmd_settypebasedhalvers(void)
                 if (!(gFieldStatuses & STATUS_FIELD_WATERSPORT))
                 {
                     gFieldStatuses |= STATUS_FIELD_WATERSPORT;
-                    gFieldTimers.waterSportTimer = 5;
+                    gFieldTimers.waterSportTimer = 5
+                        + (GetBattlerAbility(gBattlerAttacker) == ABILITY_DEDICATED ? 3 : 0);
                     gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_WEAKEN_FIRE;
                     worked = TRUE;
                 }

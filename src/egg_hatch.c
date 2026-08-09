@@ -705,9 +705,8 @@ static void CB2_EggHatch(void)
             if (FlagGet(FLAG_TIERED)){
                 //Reset global excess tier points value before computing
                 gExcessTierPoints = 0;
-                u32 tierPoints = CountPartyTierPoints();
-                if (tierPoints > TIER_POINTS_CAP){
-                    gExcessTierPoints = tierPoints - TIER_POINTS_CAP;
+                gExcessTierPoints = GetCurrentPartyTierPointExcess();
+                if (gExcessTierPoints > 0){
                     species = GetMonData(&gParties[B_TRAINER_PLAYER][sEggHatchData->eggPartyId], MON_DATA_SPECIES);
                     StringCopy(gStringVar3, GetSpeciesName(species));
                     StringExpandPlaceholders(gStringVar4, gText_HatchedPkmnExceedsTierPointsSentToPC);

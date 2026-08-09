@@ -5,6 +5,7 @@
 #include "field_specials.h"
 #include "item.h"
 #include "pokemon.h"
+#include "pokemon_storage_system.h"
 #include "string_util.h"
 #include "test/test.h"
 
@@ -157,6 +158,18 @@ TEST("Zenmodeman: Merge guard: Tier Points preserve the default value for a null
     EXPECT_EQ(GetMonTierPoints(NULL), 3);
 }
 
+TEST("Zenmodeman: Original expanded Tier Points preserve representative four five and six point species")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_CHARIZARD, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&mon), 4);
+    CreateMon(&mon, SPECIES_SNORLAX, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&mon), 5);
+    CreateMon(&mon, SPECIES_SHEDINJA, 50, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&mon), 6);
+}
+
 TEST("Zenmodeman: Merge guard: Party Tier Points exclude eggs and empty slots")
 {
     u8 isEgg = TRUE;
@@ -166,6 +179,39 @@ TEST("Zenmodeman: Merge guard: Party Tier Points exclude eggs and empty slots")
     CreateMon(&gPlayerParty[1], SPECIES_DRAGAPULT, 50, 0, OTID_STRUCT_PLAYER_ID);
     SetMonData(&gPlayerParty[1], MON_DATA_IS_EGG, &isEgg);
     EXPECT_EQ(CountPartyTierPoints(), 6);
+}
+
+TEST("Zenmodeman: Tiered PC placement computes the party budget around the destination slot")
+{
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_SNORLAX, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_CHARIZARD, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[2], SPECIES_SHEDINJA, 50, 0, OTID_STRUCT_PLAYER_ID);
+
+    EXPECT_EQ(CountPartyPointsExcept(1), 11);
+    EXPECT_EQ(CountPartyPointsExcept(2), 9);
+    EXPECT_EQ(CountPartyPointsExcept(5), 15);
+}
+
+TEST("Zenmodeman: Tiered egg hatch detects current-party excess only after the egg becomes a Pokemon")
+{
+    u8 isEgg = TRUE;
+
+    FlagSet(FLAG_TIERED);
+    ZeroPlayerPartyMons();
+    CreateMon(&gPlayerParty[0], SPECIES_CHANSEY, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[1], SPECIES_CHANSEY, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[2], SPECIES_CHANSEY, 50, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&gPlayerParty[3], SPECIES_CHARIZARD, 50, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&gPlayerParty[3], MON_DATA_IS_EGG, &isEgg);
+
+    EXPECT_EQ(GetCurrentPartyTierPointExcess(), 0);
+    isEgg = FALSE;
+    SetMonData(&gPlayerParty[3], MON_DATA_IS_EGG, &isEgg);
+    EXPECT_EQ(GetCurrentPartyTierPointExcess(), 2);
+
+    FlagClear(FLAG_TIERED);
+    EXPECT_EQ(GetCurrentPartyTierPointExcess(), 0);
 }
 
 TEST("Zenmodeman: Merge guard: Evolution Tier Point projection does not mutate the party")

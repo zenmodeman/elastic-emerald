@@ -186,6 +186,20 @@ bool32 AI_RandLessThan(u32 val)
     return FALSE;
 }
 
+enum Move FindMoveUsedXTurnsAgo(enum BattlerId battler, u32 turnsAgo)
+{
+    s32 index = gBattleHistory->moveHistoryIndex[battler];
+    u32 i;
+
+    for (i = 0; i < turnsAgo; i++)
+    {
+        if (--index < 0)
+            index = AI_MOVE_HISTORY_COUNT - 1;
+    }
+
+    return gBattleHistory->moveHistory[battler][index];
+}
+
 bool32 IsAiFlagPresent(u64 flag)
 {
     for (enum BattlerId battlerIndex = 0; battlerIndex < MAX_BATTLERS_COUNT; battlerIndex++)
@@ -2319,10 +2333,6 @@ bool32 CanLowerStat(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct
             if (stat == STAT_DEF)
                 return FALSE;
             break;
-        case ABILITY_ILLUMINATE:
-            if (GetConfig(B_ILLUMINATE_EFFECT) >= GEN_9 && stat == STAT_ACC)
-                return FALSE;
-            break;
         case ABILITY_KEEN_EYE:
         case ABILITY_MINDS_EYE:
             if (stat == STAT_ACC)
@@ -3918,13 +3928,17 @@ bool32 ShouldSetScreen(enum BattlerId battlerAtk, enum BattlerId battlerDef, enu
         break;
     case EFFECT_REFLECT:
         // Use only if the player has a physical move and AI doesn't already have Reflect itself active.
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
+        if ((HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL)
+          || (!IsAiBattlerAware(battlerDef) && !HasDamagingMove(battlerDef)
+           && gBattleMons[battlerDef].attack >= gBattleMons[battlerDef].spAttack))
             && !(gSideStatuses[atkSide] & (SIDE_STATUS_REFLECT | SIDE_STATUS_AURORA_VEIL)))
             return TRUE;
         break;
     case EFFECT_LIGHT_SCREEN:
         // Use only if the player has a special move and AI doesn't already have Light Screen itself active.
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
+        if ((HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL)
+          || (!IsAiBattlerAware(battlerDef) && !HasDamagingMove(battlerDef)
+           && gBattleMons[battlerDef].spAttack >= gBattleMons[battlerDef].attack))
             && !(gSideStatuses[atkSide] & (SIDE_STATUS_LIGHTSCREEN | SIDE_STATUS_AURORA_VEIL)))
             return TRUE;
         break;

@@ -5,7 +5,7 @@
 // complete battle engine, so a designated set can use every PLAYER/OPPONENT
 // field supported by ordinary battle tests.
 
-AI_VS_AI_SINGLE_BATTLE_TEST("ZenmodemanSim: AI-vs-AI simulator runs simplified special attackers to completion")
+AI_VS_AI_SINGLE_BATTLE_TEST("Zenmodeman: AI-vs-AI simulator runs simplified special attackers to completion")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_SMART_TRAINER);
@@ -30,7 +30,7 @@ AI_VS_AI_SINGLE_BATTLE_TEST("ZenmodemanSim: AI-vs-AI simulator runs simplified s
     }
 }
 
-AI_VS_AI_SINGLE_BATTLE_TEST("ZenmodemanSim: AI-vs-AI simulator supports physical designated sets")
+AI_VS_AI_SINGLE_BATTLE_TEST("Zenmodeman: AI-vs-AI simulator supports physical designated sets")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_SMART_TRAINER);

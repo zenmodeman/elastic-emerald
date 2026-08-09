@@ -166,7 +166,7 @@ AI_SINGLE_BATTLE_TEST("AI prefers moves which deal more damage instead of moves 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI damage comparison does not assume speculative binding turns")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI damage comparison does not assume speculative binding turns")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -181,7 +181,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI damage comparison does not assume specu
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not consider binding residual if it loses in tempo")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not consider binding residual if it loses in tempo")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -196,7 +196,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not consider binding residual if i
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not consider binding residual against Magic Guard")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not consider binding residual against Magic Guard")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -211,7 +211,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not consider binding residual agai
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not prefer binding residual if it expects too few actions")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not prefer binding residual if it expects too few actions")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -473,7 +473,7 @@ AI_SINGLE_BATTLE_TEST("AI will choose either Rock Tomb or Bulldoze if Stat drop 
 
 
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI values Rock Tomb when the simulated Speed drop lets it move first")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI values Rock Tomb when the simulated Speed drop lets it move first")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100) == TRUE);
@@ -487,7 +487,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI values Rock Tomb when the simulated Spe
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not prioritize Rock Tomb when the simulated Speed drop not let it move first")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not prioritize Rock Tomb when the simulated Speed drop not let it move first")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100) == TRUE);
@@ -502,7 +502,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not prioritize Rock Tomb when the 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI_FLAG_ASSUME_STAB records unrevealed STAB moves but not unrevealed non-STAB moves")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_ASSUME_STAB records unrevealed STAB moves but not unrevealed non-STAB moves")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_ASSUME_STAB);
@@ -520,7 +520,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI_FLAG_ASSUME_STAB records unrevealed STA
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman AI: AI does not restore a below-default damaging move with best damage logic")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not restore a below-default damaging move with best damage logic")
 {
     GIVEN {
         ASSUME(GetMoveType(MOVE_THUNDERBOLT) == TYPE_ELECTRIC);

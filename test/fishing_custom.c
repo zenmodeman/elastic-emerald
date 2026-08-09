@@ -16,6 +16,28 @@ static u8 FindAbilitySlot(enum Species species, enum Ability ability)
     return NUM_ABILITY_SLOTS;
 }
 
+TEST("Zenmodeman: Fishing retains its shortened rounds and extended reel windows")
+{
+    EXPECT_EQ(GetFishingMinRoundsRange(OLD_ROD), 1);
+    EXPECT_EQ(GetFishingMinRoundsRange(GOOD_ROD), 2);
+    EXPECT_EQ(GetFishingMinRoundsRange(SUPER_ROD), 3);
+    EXPECT_EQ(GetFishingReelTimeout(OLD_ROD), 45);
+    EXPECT_EQ(GetFishingReelTimeout(GOOD_ROD), 42);
+    EXPECT_EQ(GetFishingReelTimeout(SUPER_ROD), 39);
+    EXPECT_EQ(GetFishingMoreDotsChance(GOOD_ROD, 0), 15);
+    EXPECT_EQ(GetFishingMoreDotsChance(GOOD_ROD, 1), 3);
+    EXPECT_EQ(GetFishingMoreDotsChance(SUPER_ROD, 0), 30);
+    EXPECT_EQ(GetFishingMoreDotsChance(SUPER_ROD, 1), 15);
+}
+
+TEST("Zenmodeman: Fishing early-input grace requires a later round near completion and a roll below forty")
+{
+    EXPECT(ShouldForgiveFishingEarlyPress(1, 4, 6, 39));
+    EXPECT(!ShouldForgiveFishingEarlyPress(0, 4, 6, 39));
+    EXPECT(!ShouldForgiveFishingEarlyPress(1, 3, 6, 39));
+    EXPECT(!ShouldForgiveFishingEarlyPress(1, 4, 6, 40));
+}
+
 static void SetFishingLead(enum Species species, enum Ability ability)
 {
     u8 abilitySlot = FindAbilitySlot(species, ability);

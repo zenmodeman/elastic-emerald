@@ -320,6 +320,7 @@ enum EvolutionConditions {
     IF_BAG_ITEM_COUNT,                  // The Player has the specific amount of an item in the bag. It then removes those items.
     IF_MIN_RESTRICTED_LEVEL,            //In Restricted Mode, the mon has to be the minimum designated level
     IF_MONOTYPE_MATCHES_ONE_OF_TWO_TYPES, //In Monotype Mode, the type must match
+    IF_MONOTYPE_STRICTLY_MATCHES_ONE_OF_TWO_TYPES, //The monotype must be active and match
     IF_REGION,                          // The Player is in the specific region.
     IF_NOT_REGION,                      // The Player is NOT in the specific region.
     CONDITIONS_END

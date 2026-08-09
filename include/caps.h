@@ -21,6 +21,7 @@
 u32 GetCurrentLevelCap(bool32 isHardCap);
 
 u32 GetSoftLevelCapExpValue(u32 level, u32 expValue);
+u32 GetSplitExpProgressionValue(u32 expValue, u32 participants, u32 badgeCount);
 u32 GetCurrentEVCap(void);
 u32 GetEVStatCap(void);
 

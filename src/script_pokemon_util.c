@@ -595,17 +595,22 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
         }
     }
 
-    // Perfect IV calculation
-    if (gSpeciesInfo[species].perfectIVCount != 0)
+    // All ordinary scripted gifts receive Elastic Emerald's three-perfect-IV
+    // floor unless the script supplied any IV explicitly. Species-specific
+    // perfect-IV guarantees continue to apply to the remaining random IVs.
+    u32 perfectIvCount = gSpeciesInfo[species].perfectIVCount;
+    if (nonFixedIvCount == NUM_STATS && perfectIvCount < NUMBER_OF_GIVE_MON_PERFECT_IVS)
+        perfectIvCount = NUMBER_OF_GIVE_MON_PERFECT_IVS;
+    if (perfectIvCount != 0)
     {
         // Select the IVs that will be perfected.
-        for (i = 0; i < nonFixedIvCount && i < gSpeciesInfo[species].perfectIVCount; i++)
+        for (i = 0; i < nonFixedIvCount && i < perfectIvCount; i++)
         {
             u8 index = Random() % (nonFixedIvCount - i);
             selectedIvs[i] = availableIVs[index];
             RemoveIVIndexFromList(availableIVs, index);
         }
-        for (i = 0; i < nonFixedIvCount && i < gSpeciesInfo[species].perfectIVCount; i++)
+        for (i = 0; i < nonFixedIvCount && i < perfectIvCount; i++)
         {
             ivs[selectedIvs[i]] = MAX_PER_STAT_IVS;
         }

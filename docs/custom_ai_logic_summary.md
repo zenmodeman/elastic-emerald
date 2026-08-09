@@ -2,8 +2,8 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `04e8acf271` ("Add Perplex Dance and add Spinda to Edmond's set").
-- **Uncommitted AI changes covered by this document:** The current historical audit restores partner-aware suppression of a redundant guaranteed Speed drop in doubles and aligns Swallow recovery scoring with the custom one-third-per-Stockpile and Gluttony rules. It also adds direct regression coverage for Perplex Dance preference, exhausted-target rejection, doubles partner de-duplication, unconditional player held-item knowledge outside omniscient AI profiles, and the exact prediction/assumption composition of `AI_FLAG_SMART_TRAINER`.
+- **Last documented code commit:** `3cbf01e171` ("First batch of commit history tests and feature restorations: March-August 2026").
+- **Uncommitted AI changes covered by this document:** The current backward-history batches restore Forewarn's warned-move reduction, Hyper Cutter/Flare Boost burn exceptions, Mystic's Psychic multiplier, Dominate's Download-like switch-in boost, and Merry's activated power modifier in shared runtime/AI calculation paths; visible Float Stone/Eviolite/Assault Vest item inference; the custom Sport/Damp decision rules; raw-stat screen inference under incomplete move knowledge; Defense Curl's two-hit survival gate for its Rollout synergy; Illuminate's intended accuracy model; Ring Target's positive Trick/Switcheroo valuation; and Soak's quick-KO and immediate-danger gates on the current runtime and AI APIs. The three-turn move-history accessor is also restored so repeated Trick suppression remains tied to observed use instead of hidden information. Illuminate ignores opposing evasion stages, abilities, and items but remains vulnerable to accuracy drops, so AI move scoring must continue to value lowering its accuracy. They add positive and negative runtime contracts and normalize legacy custom AI and simulator test labels to the required `Zenmodeman:` prefix. Coaching's post-boost KO recomputation is now directly included by that aggregate prefix.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -52,7 +52,7 @@ Key commits: `59b76d3fcd`, `4bb634c651`, `829ec9c367`, `7ee8501957`.
 
 ### Item and ability revelation hooks
 
-Earlier iterations recorded inferable items when their effects became visible, including Life Orb, Float Stone, Eviolite, and Assault Vest. Frisk was expanded to interact with item-manipulating moves, and Forewarn stores a warned move so its defensive effect can be included in effectiveness calculations.
+Earlier iterations recorded inferable items when their effects became visible, including Life Orb, Float Stone, Eviolite, and Assault Vest. Frisk was expanded to interact with item-manipulating moves. Forewarn stores its announced move in switch-cleared volatile state and halves damage from that move only; because this modifier is in the shared damage path, AI estimates and live damage remain aligned.
 
 The current policy goes further and gives the AI complete player held-item knowledge, including benched party members. This is deliberately more permissive than its move and ability knowledge model and feeds both damage simulation and switching.
 
@@ -111,6 +111,12 @@ Key commit: `02b670576c`.
 Chilling Water receives an additional 1.5x power modifier when its user is currently Ice-type. The check uses the battler's active battle types, including temporary type changes and Terastallization. Because the modifier lives in the shared damage calculation, live battle damage and AI damage estimates use the same rule.
 
 Key commit: `67fd498d45`.
+
+### Merry activation and calculation parity
+
+Merry activates once its user completes Present, Heal Pulse, or Bestow. The resulting volatile state multiplies power, accuracy, and Speed by 1.5. Power is applied in the shared damage context and Speed and accuracy use the same helpers consumed by AI evaluation, so the AI's damage estimates, move reliability, and turn-order model stay aligned with live execution.
+
+Key commit: `78fdff7719`.
 
 ### Perplex Dance
 
@@ -264,6 +270,8 @@ Key commit: `50a6b64898`.
 
 Reflect and Light Screen infer the opponent's likely attacking split from revealed attacks or raw stats. They account for screen-breaking moves and reduce repeated use when the opponent has demonstrated repeated screen removal. Move-history helpers provide consecutive-use and turns-ago queries for these decisions.
 
+The raw-stat fallback is used only while the opponent's complete moveset is not known and no damaging move has been revealed or inferred. Once the AI knows an attack category, that evidence takes precedence over the fallback.
+
 Key commits: `9b1bdd30a6`, `ab155b1388`.
 
 ### Recovery and Rest
@@ -295,8 +303,8 @@ The following move and custom-mechanic families received explicit AI treatment. 
 - **Camouflage:** considers defensive value against inferred STABs, new STAB opportunities, terrain type, Flower Veil/Flower Shield synergy, and whether direct offense already 2HKOs. Commit: `6e5f7576f7`.
 - **Mist and anti-stat-drop effects:** valued when the matchup is expected to last and the user is not in immediate lethal danger. Commit: `6e5f7576f7`.
 - **Leech Seed:** values long-term progress only when immediate KO lines do not make it unnecessary and integrates seed pressure with recovery decisions. Commits: `50a6b64898`, `a9de966b7a`.
-- **Water Sport and Mud Sport:** checks whether the opponent has known or inferred Fire/Electric offense, whether the user is weak to it, and custom Damp healing interactions. Commits: `9b7f7206c0`, `9fe2bc8d56`, `8911bb3be4`.
-- **Damp healing and pivot synergy:** evaluates the custom Water Sport/Rain healing effect, survival after healing, and Flip Turn access. Commit: `8911bb3be4`.
+- **Water Sport and Mud Sport:** checks only opposing targets for known damaging Fire/Electric offense and rewards the protection only when the user does not resist that type. The older generic any-move heuristic was a merge regression; the current uncommitted port uses current move-knowledge and type APIs. Commits: `9b7f7206c0`, `9fe2bc8d56`, `8911bb3be4`.
+- **Damp healing and pivot synergy:** Water Sport gains extra value when a Damp user has a damaging pivot, a usable reserve, and survives after the one-third heal; once Water Sport is active, Damp adds an extra incentive to hit-and-switch effects. Commit: `8911bb3be4`; current API port and contracts are uncommitted.
 - **Swallow and Stockpile:** uses the custom healing formula, HP bands, Stockpile count, and Gluttony synergy rather than upstream fixed assumptions. Commits: `c3e648e71c`, `8bd215017a`.
 - **Echoed Voice:** recognizes its escalating custom effect and gives limited incentive when immediate offensive pressure is low and Torment does not block the sequence. Commits: `83efbbf34e`, `cd5f2fdc9b`.
 - **Defense Curl and Rollout:** explicitly values the combo if the user can survive its setup turn. Commit: `f3fb33af5a`.
@@ -305,7 +313,7 @@ The following move and custom-mechanic families received explicit AI treatment. 
 - **Tailwind, Magnet Rise, and speed support:** fixes target/type checks and evaluates whether speed changes cross actual thresholds for the user or ally. Commits: `c098ddca1c`, `6cf60d5e69`.
 - **Drain Douse:** custom draining behavior was integrated into move-end absorption processing, and AI/test maintenance preserves its classification with other drain effects. Commits: `432b00e197`, `f3744907b1`, `be3390bd51`.
 - **Metal Rush:** runtime chooses its Speed boost or Defense drop from effective weight. The Defense rider now follows ordinary stat-loss prevention, consistent with the AI's generic `CanLowerStat` policy; the custom weight-selected rider is not otherwise given bespoke AI utility scoring.
-- **Custom defensive abilities:** AI calculations were adapted for Covered/Fur Layer, Illuminate accuracy behavior, Frisk item interactions, Forewarn's warned move, Damp healing, and other project-specific ability effects. Commits: `751228c71d`, `51107271f3`, `ece86112ff`, `1f6633f157`, `8911bb3be4`.
+- **Custom defensive, offensive, and status abilities:** AI calculations were adapted for Covered/Fur Layer, Illuminate accuracy behavior, Frisk item interactions, Forewarn's warned move, Damp healing, and other project-specific ability effects. Mystic multiplies Psychic move power by 1.5 in the shared damage pipeline, while Dominate follows Download's switch-in comparison and raises Attack or Special Attack accordingly. Astral Charge raises Special Attack by one stage after its bearer takes an effective damaging Psychic- or Fairy-type hit; status moves and ineffective hits do not trigger it. The shared burn modifier also treats Hyper Cutter and Flare Boost like Guts for physical attacks, so live damage and AI estimates omit burn's halving penalty for those abilities. Commits: `751228c71d`, `51107271f3`, `ece86112ff`, `1f6633f157`, `8911bb3be4`, `06ed994876`, `007c0519bb`, `9fcc4a7c21`, `9129bf865f`; the current Mystic/Dominate and Hyper Cutter/Flare Boost restorations are uncommitted.
 - **Solar Core and Big Pecks parity:** the shared damage calculation again applies Solar Core's doubled special Attack in effective sun and preserves Big Pecks' physical defensive stages and Reflect/Aurora Veil protection against critical hits and Chip Away, so runtime and AI damage estimates use the same restored custom rules. Current restoration is uncommitted.
 
 ## 7. Terastalization logic

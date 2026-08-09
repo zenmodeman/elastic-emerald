@@ -44,6 +44,32 @@ SINGLE_BATTLE_TEST("Burn reduces Attack by 50%", s16 damage)
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Hyper Cutter and Flare Boost ignore burn's physical damage penalty", s16 damage)
+{
+    u16 ability;
+    bool32 burned;
+
+    PARAMETRIZE { ability = ABILITY_HYPER_CUTTER; burned = FALSE; }
+    PARAMETRIZE { ability = ABILITY_HYPER_CUTTER; burned = TRUE; }
+    PARAMETRIZE { ability = ABILITY_FLARE_BOOST; burned = FALSE; }
+    PARAMETRIZE { ability = ABILITY_FLARE_BOOST; burned = TRUE; }
+    PARAMETRIZE { ability = ABILITY_KEEN_EYE; burned = FALSE; }
+    PARAMETRIZE { ability = ABILITY_KEEN_EYE; burned = TRUE; }
+    GIVEN {
+        ASSUME(GetMoveCategory(MOVE_SCRATCH) == DAMAGE_CATEGORY_PHYSICAL);
+        PLAYER(SPECIES_WOBBUFFET) { Ability(ability); if (burned) Status1(STATUS1_BURN); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_SCRATCH); }
+    } SCENE {
+        HP_BAR(opponent, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_EQ(results[0].damage, results[1].damage);
+        EXPECT_EQ(results[2].damage, results[3].damage);
+        EXPECT_MUL_EQ(results[4].damage, Q_4_12(0.5), results[5].damage);
+    }
+}
+
 SINGLE_BATTLE_TEST("Will-O-Wisp burns target")
 {
     GIVEN {

@@ -6797,6 +6797,7 @@ static void PrintEvolutionTargetSpeciesAndMethod(u8 taskId, enum Species species
                     StringAppend(gStringVar4, COMPOUND_STRING("+"));
                     break;
                 case IF_MONOTYPE_MATCHES_ONE_OF_TWO_TYPES:
+                case IF_MONOTYPE_STRICTLY_MATCHES_ONE_OF_TWO_TYPES:
                     if (evolutions[i].params[j].arg1 == evolutions[i].params[j].arg2)
                     {
                         StringAppend(gStringVar4, COMPOUND_STRING("Monotype: "));

@@ -4543,6 +4543,10 @@ bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct Evoluti
              || GetMonoType() == params[i].arg2)
                 currentCondition = TRUE;
             break;
+        case IF_MONOTYPE_STRICTLY_MATCHES_ONE_OF_TWO_TYPES:
+            if (GetMonoType() == params[i].arg1 || GetMonoType() == params[i].arg2)
+                currentCondition = TRUE;
+            break;
         case IF_REGION:
             if (GetCurrentRegion() == params[i].arg1)
                 currentCondition = TRUE;

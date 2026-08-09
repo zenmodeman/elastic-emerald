@@ -11,7 +11,6 @@ AI_SINGLE_BATTLE_TEST("AI will not try to lower opposing stats if target is prot
     PARAMETRIZE { ability = ABILITY_SPEED_BOOST;  species = SPECIES_TORCHIC; move = MOVE_SCARY_FACE; }
     PARAMETRIZE { ability = ABILITY_HYPER_CUTTER; species = SPECIES_KRABBY;  move = MOVE_GROWL; }
     PARAMETRIZE { ability = ABILITY_BIG_PECKS;    species = SPECIES_PIDGEY;  move = MOVE_SCREECH; }
-    PARAMETRIZE { ability = ABILITY_ILLUMINATE;   species = SPECIES_STARYU;  move = MOVE_SAND_ATTACK; }
     PARAMETRIZE { ability = ABILITY_KEEN_EYE;     species = SPECIES_PIDGEY;  move = MOVE_SAND_ATTACK; }
     PARAMETRIZE { ability = ABILITY_CONTRARY;     species = SPECIES_SNIVY;   move = MOVE_NOBLE_ROAR; }
     PARAMETRIZE { ability = ABILITY_CLEAR_BODY;   species = SPECIES_BELDUM;  move = MOVE_NOBLE_ROAR; }
@@ -23,6 +22,18 @@ AI_SINGLE_BATTLE_TEST("AI will not try to lower opposing stats if target is prot
         OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_TACKLE, move); }
     } WHEN {
         TURN { SCORE_LT_VAL(opponent, move, AI_SCORE_DEFAULT); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI knows Illuminate accuracy can be lowered")
+{
+    GIVEN {
+        WITH_CONFIG(B_ILLUMINATE_EFFECT, GEN_9);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_STARYU) { Ability(ABILITY_ILLUMINATE); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_TACKLE, MOVE_SAND_ATTACK); }
+    } WHEN {
+        TURN { SCORE_EQ_VAL(opponent, MOVE_SAND_ATTACK, AI_SCORE_DEFAULT); }
     }
 }
 

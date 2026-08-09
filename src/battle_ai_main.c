@@ -49,6 +49,7 @@ static bool32 IsPinchBerryItemEffect(enum HoldEffect holdEffect);
 static bool32 DoesAbilityBenefitFromSunOrRain(enum BattlerId battler, enum Ability ability, u32 weather);
 static void AI_CompareDamagingMoves(enum BattlerId battlerAtk, enum BattlerId battlerDef);
 static u32 GetWindAbilityScore(enum BattlerId battlerAtk, enum BattlerId battlerDef, struct AiLogicData *aiData);
+static bool32 SportTypeThreatensBattler(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Type type);
 
 // ewram
 EWRAM_DATA const u8 *gAIScriptPtr = NULL;   // Still used in contests
@@ -3872,6 +3873,21 @@ static u32 GetWindAbilityScore(enum BattlerId battlerAtk, enum BattlerId battler
     return score;
 }
 
+static bool32 SportTypeThreatensBattler(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Type type)
+{
+    uq4_12_t effectiveness;
+
+    if (GetBattlerSide(battlerAtk) == GetBattlerSide(battlerDef)
+     || !HasDamagingMoveOfType(battlerDef, type))
+        return FALSE;
+
+    effectiveness = GetTypeModifier(type, gBattleMons[battlerAtk].types[0]);
+    if (gBattleMons[battlerAtk].types[1] != gBattleMons[battlerAtk].types[0])
+        effectiveness = uq4_12_multiply(effectiveness, GetTypeModifier(type, gBattleMons[battlerAtk].types[1]));
+
+    return effectiveness >= UQ_4_12(1.0);
+}
+
 static enum MoveComparisonResult CompareMoveAccuracies(enum BattlerId battlerAtk, enum BattlerId battlerDef, u32 moveSlot1, u32 moveSlot2)
 {
     u32 acc1 = gAiLogicData->moveAccuracy[battlerAtk][battlerDef][moveSlot1];
@@ -4362,7 +4378,9 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         ADJUST_SCORE(GetStatChangeScore(battlerAtk, battlerDef, move));
         break;
     case EFFECT_DEFENSE_CURL:
-        if (HasMoveWithEffect(battlerAtk, EFFECT_ROLLOUT) && !gBattleMons[battlerAtk].volatiles.defenseCurl)
+        if (HasMoveWithEffect(battlerAtk, EFFECT_ROLLOUT)
+         && !gBattleMons[battlerAtk].volatiles.defenseCurl
+         && !CanTargetFaintAiWithMod(battlerDef, battlerAtk, 0, 2))
             ADJUST_SCORE(DECENT_EFFECT);
         ADJUST_SCORE(GetStatChangeScore(battlerAtk, battlerDef, move));
         break;
@@ -4586,6 +4604,10 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
     case EFFECT_HIT_ESCAPE:
     case EFFECT_PARTING_SHOT:
     case EFFECT_WEATHER_AND_SWITCH:
+        if (aiData->abilities[battlerAtk] == ABILITY_DAMP
+         && gBattleMons[battlerAtk].volatiles.waterSport
+         && CountUsablePartyMons(battlerAtk) > 0)
+            ADJUST_SCORE(WEAK_EFFECT);
         switch (ShouldPivot(battlerAtk, battlerDef, move))
         {
         case DONT_PIVOT:
@@ -4937,6 +4959,10 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         break;
     case EFFECT_TRICK:
     case EFFECT_BESTOW:
+        if (GetMoveEffect(move) == EFFECT_TRICK
+         && FindMoveUsedXTurnsAgo(battlerAtk, 1) == move
+         && AI_RandLessThan(127))
+            break;
         switch (aiData->holdEffects[battlerAtk])
         {
         case HOLD_EFFECT_CHOICE_SCARF:
@@ -4949,6 +4975,9 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
         case HOLD_EFFECT_CHOICE_SPECS:
             if (!HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
                 ADJUST_SCORE(DECENT_EFFECT);
+            break;
+        case HOLD_EFFECT_RING_TARGET:
+            ADJUST_SCORE(WEAK_EFFECT);
             break;
         case HOLD_EFFECT_TOXIC_ORB:
             if (!ShouldPoison(battlerAtk, battlerAtk)
@@ -5119,12 +5148,23 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
             ADJUST_SCORE(GOOD_EFFECT); // Steal move
         break;
     case EFFECT_MUD_SPORT:
-        if (!HasMoveWithType(battlerAtk, TYPE_ELECTRIC) && HasMoveWithType(battlerDef, TYPE_ELECTRIC))
-            ADJUST_SCORE(WEAK_EFFECT);
+        if (SportTypeThreatensBattler(battlerAtk, battlerDef, TYPE_ELECTRIC))
+            ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_WATER_SPORT:
-        if (!HasMoveWithType(battlerAtk, TYPE_FIRE) && (HasMoveWithType(battlerDef, TYPE_FIRE)))
-            ADJUST_SCORE(WEAK_EFFECT);
+        if (SportTypeThreatensBattler(battlerAtk, battlerDef, TYPE_FIRE))
+            ADJUST_SCORE(DECENT_EFFECT);
+        if (aiData->abilities[battlerAtk] == ABILITY_DAMP
+         && HasMoveWithEffect(battlerAtk, EFFECT_HIT_ESCAPE)
+         && CountUsablePartyMons(battlerAtk) > 0)
+        {
+            s32 healAmount = gBattleMons[battlerAtk].maxHP / 3;
+            bool32 isFaster = AI_IsFaster(battlerAtk, battlerDef, move, GetPredictedMove(battlerAtk, battlerDef, aiData), CONSIDER_PRIORITY);
+
+            if ((isFaster && !CanTargetFaintAiWithMod(battlerDef, battlerAtk, healAmount, 0))
+             || !CanTargetFaintAiWithMod(battlerDef, battlerAtk, healAmount, 2))
+                ADJUST_SCORE(WEAK_EFFECT);
+        }
         break;
     case EFFECT_GUARD_SWAP:
         if (gBattleMons[battlerDef].statStages[STAT_DEF] > gBattleMons[battlerAtk].statStages[STAT_DEF]
@@ -5365,6 +5405,9 @@ static s32 AI_CalcMoveEffectScore(enum BattlerId battlerAtk, enum BattlerId batt
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_SOAK:
+        if (CanAIFaintTarget(battlerAtk, battlerDef, 2)
+         || CanTargetFaintAi(battlerDef, battlerAtk))
+            break;
         if (HasMoveWithType(battlerAtk, TYPE_ELECTRIC) || HasMoveWithType(battlerAtk, TYPE_GRASS)
         || HasMoveWithType(BATTLE_PARTNER(battlerAtk), TYPE_ELECTRIC) || HasMoveWithType(BATTLE_PARTNER(battlerAtk), TYPE_GRASS)
         || (HasBattlerSideMoveWithEffect(battlerAtk, EFFECT_SUPER_EFFECTIVE_ON_ARG) && GetMoveArgType(move) == TYPE_WATER) )

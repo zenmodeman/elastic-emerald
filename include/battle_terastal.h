@@ -1,9 +1,12 @@
 #ifndef GUARD_BATTLE_TERASTAL_H
 #define GUARD_BATTLE_TERASTAL_H
 
+struct DamageContext;
+
 void ActivateTera(enum BattlerId battler);
 void ApplyBattlerVisualsForTeraAnim(enum BattlerId battler);
 bool32 CanTerastallize(enum BattlerId battler);
+bool32 IsRestrictedModeTeraCombinationBanned(enum Species species, enum Ability ability, u32 tierPoints);
 enum Type GetBattlerTeraType(enum BattlerId battler);
 void ExpendTypeStellarBoost(enum BattlerId battler, enum Type type);
 bool32 IsTypeStellarBoosted(enum BattlerId battler, enum Type type);

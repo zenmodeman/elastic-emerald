@@ -6,6 +6,18 @@
 #include "test/overworld_script.h"
 #include "test/test.h"
 
+TEST("Zenmodeman: Roost and Nature Power retain their custom TM assignments")
+{
+    EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_ROOST), MOVE_ROOST);
+    EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_NATURE_POWER), MOVE_NATURE_POWER);
+}
+
+TEST("Zenmodeman: Trick and Power Split retain their custom TM assignments")
+{
+    EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_TRICK), MOVE_TRICK);
+    EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_POWER_SPLIT), MOVE_POWER_SPLIT);
+}
+
 TEST("Zenmodeman: Non-resource mode preserves hidden quantities for reusable TMs")
 {
     EXPECT(GetItemImportance(ITEM_TM25));

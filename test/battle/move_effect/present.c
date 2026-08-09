@@ -6,6 +6,48 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_PRESENT) == EFFECT_PRESENT);
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Present retains its custom 40 80 and 120 power boundaries", s16 damage)
+{
+    u32 roll;
+
+    PARAMETRIZE { roll = 49; }
+    PARAMETRIZE { roll = 50; }
+    PARAMETRIZE { roll = 203; }
+    PARAMETRIZE { roll = 204; }
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Attack(100); }
+        OPPONENT(SPECIES_WOBBUFFET) { Defense(100); HP(1000); MaxHP(1000); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_PRESENT, WITH_RNG(RNG_PRESENT, roll)); }
+    } SCENE {
+        HP_BAR(opponent, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_GT(results[1].damage, results[0].damage);
+        EXPECT_GT(results[3].damage, results[2].damage);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Present begins healing at roll 229")
+{
+    u32 roll;
+    bool32 heals;
+
+    PARAMETRIZE { roll = 228; heals = FALSE; }
+    PARAMETRIZE { roll = 229; heals = TRUE; }
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET) { HP(50); MaxHP(100); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_PRESENT, WITH_RNG(RNG_PRESENT, roll)); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_PRESENT, player);
+        if (heals)
+            HP_BAR(opponent, damage: -25);
+        else
+            HP_BAR(opponent);
+    }
+}
+
 SINGLE_BATTLE_TEST("Present healing through Wonder Guard is still considered to have affected the target")
 {
     GIVEN {

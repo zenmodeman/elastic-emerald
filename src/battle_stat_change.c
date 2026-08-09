@@ -805,6 +805,13 @@ static void AdjustStatStage(struct BattleCalcValues *cv, struct StatChange *st)
     if (st->stage == STAT_CHANGE_FORCE_MAX)
         st->stage = 12;
 
+    if (st->stage < 0
+     && cv->abilities[cv->battlerAtk] == ABILITY_CUTE_CHARM
+     && cv->abilities[cv->battlerDef] != ABILITY_OBLIVIOUS
+     && AreBattlersOfOppositeGender(cv->battlerAtk, cv->battlerDef)
+     && IsEnticingMove(cv->move))
+        st->stage--;
+
     switch (cv->abilities[cv->battlerDef])
     {
     case ABILITY_CONTRARY:
@@ -839,9 +846,6 @@ static bool32 AbilityPreventsSpecificStatDrop(u32 ability, u32 stat)
 {
     switch (ability)
     {
-    case ABILITY_ILLUMINATE:
-        if (B_ILLUMINATE_EFFECT < GEN_9)
-            return FALSE;
     case ABILITY_KEEN_EYE:
     case ABILITY_MINDS_EYE:
         return stat == STAT_ACC;

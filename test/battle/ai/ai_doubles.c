@@ -619,7 +619,7 @@ AI_DOUBLE_BATTLE_TEST("AI will choose Earthquake if it kills both opposing mons"
 
 
 
-AI_DOUBLE_BATTLE_TEST("Zenmodeman AI: Coaching receives no major bonus if simulated boosts still leave the ally in KO range")
+AI_DOUBLE_BATTLE_TEST("Zenmodeman: Coaching receives no major bonus if simulated boosts still leave the ally in KO range")
 {
     GIVEN {
         ASSUME_STAT_CHANGE(MOVE_COACHING, attack: +1, defense: +1);

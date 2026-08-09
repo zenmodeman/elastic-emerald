@@ -980,3 +980,14 @@ u32 GetPartyTierPointExcessWithMon(struct Pokemon *mon)
     tierPoints = CountPartyTierPoints() + GetMonTierPoints(mon);
     return tierPoints > TIER_POINTS_CAP ? tierPoints - TIER_POINTS_CAP : 0;
 }
+
+u32 GetCurrentPartyTierPointExcess(void)
+{
+    u32 tierPoints;
+
+    if (!FlagGet(FLAG_TIERED))
+        return 0;
+
+    tierPoints = CountPartyTierPoints();
+    return tierPoints > TIER_POINTS_CAP ? tierPoints - TIER_POINTS_CAP : 0;
+}

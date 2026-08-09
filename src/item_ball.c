@@ -1,6 +1,7 @@
 #include "global.h"
 #include "item_ball.h"
 #include "event_data.h"
+#include "item.h"
 #include "constants/event_objects.h"
 #include "constants/items.h"
 
@@ -10,6 +11,10 @@ static u32 GetItemBallIdFromTemplate(u32);
 static u32 GetItemBallAmountFromTemplate(u32 itemBallId)
 {
     u32 amount = gMapHeader.events->objectEvents[itemBallId].movementRangeX;
+
+    if (!FlagGet(FLAG_RESOURCE_MODE)
+     && GetItemPocket(GetItemBallIdFromTemplate(itemBallId)) == POCKET_TM_HM)
+        amount = 1;
 
     if (amount > MAX_BAG_ITEM_CAPACITY)
         return MAX_BAG_ITEM_CAPACITY;
