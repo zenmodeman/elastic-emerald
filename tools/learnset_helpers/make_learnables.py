@@ -16,13 +16,13 @@ import sys
 
 
 TEACHABLE_MOVE_SOURCES = {
-    "MOVE_MIMIC": {"sv.json", "za.json"},
-    "MOVE_CONFIDE": {"sv.json"},
-    "MOVE_CAPTIVATE": {"sv.json"},
-    "MOVE_TOXIC": {"swsh.json", "sv.json", "la.json", "bdsp.json"},
-    "MOVE_SCALD": {"sv.json", "za.json"},
-    "MOVE_BIDE": {"sv.json"},
-    "MOVE_NATURAL_GIFT": {"sv.json"},
+    "MOVE_MIMIC": {"sv.json", "za.json", "elastic.json"},
+    "MOVE_CONFIDE": {"sv.json", "elastic.json"},
+    "MOVE_CAPTIVATE": {"sv.json", "elastic.json"},
+    "MOVE_TOXIC": {"swsh.json", "sv.json", "la.json", "bdsp.json", "elastic.json"},
+    "MOVE_SCALD": {"sv.json", "za.json", "elastic.json"},
+    "MOVE_BIDE": {"sv.json", "elastic.json"},
+    "MOVE_NATURAL_GIFT": {"sv.json", "elastic.json"},
 }
 
 SPECIES_ALIASES = {
