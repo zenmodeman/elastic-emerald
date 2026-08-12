@@ -27,7 +27,7 @@ SPECIES_DIR = ROOT / "src/data/pokemon/species_info"
 MOVES_INFO = ROOT / "src/data/moves_info.h"
 TUTORS = ROOT / "src/data/pokemon/center_tutor_moves.h"
 TIER_DOC = ROOT / "docs/gameplay/tier-points.md"
-OUTPUT = ROOT / "docs/gameplay/standout-learnset-flourishes.md"
+OUTPUT = ROOT / "tools/learnset_helpers/standout-learnset-flourishes.md"
 
 
 SETUP_MOVES = {

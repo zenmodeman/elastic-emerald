@@ -2,7 +2,7 @@
 
 > Design workbook, not an implementation list. Each entry is a compact shortlist for review against encounter timing, evolution level, and the final trainer curve.
 
-This pass covers **583** fully evolved species or mechanically distinct forms represented in both the repository and the bundled historical learnset corpus. Cosmetic forms and Mega Evolutions are omitted. Historical precedent is unioned across **22** game datasets. Repository Pokédex prose is the default flavor source; external species references should be used for borderline calls before implementation.
+This pass covers **583** fully evolved species or mechanically distinct forms represented in both the repository and the bundled historical learnset corpus. Cosmetic forms and Mega Evolutions are omitted. Historical precedent is unioned across **23** game datasets. Repository Pokédex prose is the default flavor source; external species references should be used for borderline calls before implementation.
 
 ## Reading the entries
 
@@ -668,8 +668,8 @@ Compatibility gaps are assessed separately. Presence is inferred directly from w
 **Role profile:** Atk 45 / Sp. Atk 90 / Spe 70 · Compound Eyes, Honey Gather, Tinted Lens
 **Modern-game datasets:** Sword/Shield present · Scarlet/Violet absent
 
+- **Add — Razor Wind:** Historical compatibility supplies precedent; level-up access would turn that quiet trait into a visible niche. *Precedent: TM; type-cohort prevalence 11%; no Center/Tech Tutor overlap.*
 - **Add — Energy Ball:** Historical compatibility supplies precedent; level-up access would turn that quiet trait into a visible niche. *Precedent: TM; type-cohort prevalence 17%; Center Tutor (before Gym 8).*
-- **Add — Struggle Bug:** Historical compatibility supplies precedent; level-up access would turn that quiet trait into a visible niche. *Precedent: TM; type-cohort prevalence 14%; Center Tutor (before Gym 2).*
 - **Earlier power — Energy Ball around Lv. 52:** 90 BP; coverage. Treat this as the curve target, not a fixed slot.
 
 ### Buzzwole
@@ -3557,8 +3557,8 @@ Compatibility gaps are assessed separately. Presence is inferred directly from w
 **Role profile:** Atk 70 / Sp. Atk 97 / Spe 123 · Frisk, Infiltrator, Telepathy
 **Modern-game datasets:** Sword/Shield present · Scarlet/Violet present
 
-- **Add — Outrage:** Its aerial anatomy makes this a visible extension of how it already fights. *Precedent: egg/TM/tutor; type-cohort prevalence 17%; Center Tutor (before Gym 7).*
-- **Earlier power — Outrage around Lv. 58:** 120 BP; STAB. Treat this as the curve target, not a fixed slot.
+- **Add — Razor Wind:** Its aerial anatomy makes this a visible extension of how it already fights. *Precedent: level-up/TM; type-cohort prevalence 17%; no Center/Tech Tutor overlap.*
+- **Earlier power — Razor Wind around Lv. 50:** 80 BP; STAB. Treat this as the curve target, not a fixed slot.
 
 ### Obstagoon
 
@@ -5642,7 +5642,7 @@ Compatibility gaps are assessed separately. Presence is inferred directly from w
 
 - **Add — Razor Wind:** Its aerial anatomy makes this a visible extension of how it already fights. *Precedent: level-up/TM; type-cohort prevalence 13%; no Center/Tech Tutor overlap.*
 - **Add — Sky Drop:** Its aerial anatomy makes this a visible extension of how it already fights. *Precedent: TM; type-cohort prevalence 2%; Center Tutor (before Gym 3).*
-- **Earlier power — Razor Wind around Lv. 48:** 80 BP; coverage. Treat this as the curve target, not a fixed slot.
+- **Earlier power — Razor Wind around Lv. 50:** 80 BP; STAB. Treat this as the curve target, not a fixed slot.
 
 ### Zangoose
 

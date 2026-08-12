@@ -4639,11 +4639,19 @@ struct TutorAbilityException
 static u8 sTutorAbilitySlots[NUM_ABILITY_SLOTS];
 static u8 sTutorAbilityCount;
 
+static const u16 sTutorAbilitySpeciesAllAbilities[] =
+{
+    // Add species here when all of their alternate abilities should be tutor-viable.
+    SPECIES_BEEDRILL,
+    SPECIES_NONE,
+};
+
 static const struct TutorAbilityException sTutorAbilitySpeciesExceptions[] =
 {
     // Add species/ability pairs here when an ability is only niche for a specific Pokemon.
     {SPECIES_PYROAR, ABILITY_MOXIE},
     {SPECIES_LITLEO, ABILITY_MOXIE},
+
     {SPECIES_NONE, ABILITY_NONE},
 };
 
@@ -4665,6 +4673,12 @@ static bool32 IsAbilityTutorViable(u16 species, u16 ability){
         case ABILITY_WONDER_SKIN:
         case ABILITY_NORMALIZE:
         case ABILITY_STEADFAST:
+            return TRUE;
+    }
+
+    for (i = 0; sTutorAbilitySpeciesAllAbilities[i] != SPECIES_NONE; i++)
+    {
+        if (sTutorAbilitySpeciesAllAbilities[i] == species)
             return TRUE;
     }
 

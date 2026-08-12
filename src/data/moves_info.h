@@ -839,9 +839,9 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             "Jabs the foe 2 to 5 times\n"
             "with sharp horns, etc."),
         .effect = EFFECT_HIT,
-        .power = 15,
+        .power = 20,
         .type = TYPE_NORMAL,
-        .accuracy = 85,
+        .accuracy = 100,
         .pp = 20,
         .target = TARGET_SELECTED,
         .priority = 0,

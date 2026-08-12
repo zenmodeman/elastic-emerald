@@ -1305,7 +1305,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .baseHP        = 60,
         .baseAttack    = 45,
         .baseDefense   = 50,
-        .baseSpeed     = 70,
+        .baseSpeed     = 80, //+10 Speed
         .baseSpAttack  = P_UPDATED_STATS >= GEN_6 ? 90 : 80,
         .baseSpDefense = 80,
         .types = MON_TYPES(TYPE_BUG, TYPE_FLYING),
@@ -1616,7 +1616,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .baseHP        = 65,
         .baseAttack    = P_UPDATED_STATS >= GEN_6 ? 90 : 80,
         .baseDefense   = 40,
-        .baseSpeed     = 75,
+        .baseSpeed     = 85, //+10 Speed
         .baseSpAttack  = 45,
         .baseSpDefense = P_UPDATED_STATS >= GEN_2 ? 80 : 45,
         .types = MON_TYPES(TYPE_BUG, TYPE_POISON),
@@ -1702,7 +1702,7 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .baseAttack    = 150,
         .baseDefense   = 40,
         .baseSpeed     = 145,
-        .baseSpAttack  = 15,
+        .baseSpAttack  = 25, //+10 Sp.Atk
         .baseSpDefense = 80,
         .types = MON_TYPES(TYPE_BUG, TYPE_POISON),
         .catchRate = 45,
