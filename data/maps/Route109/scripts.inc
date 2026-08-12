@@ -5,55 +5,55 @@
 
 Route109_EventScript_Edmond::
 # 6 "data/maps/Route109/scripts.pory"
-	trainerbattle_single TRAINER_EDMOND, Route109_Text_EdmondIntro, Route109_Text_EdmondDefeated, Route109_EventScript_EdmondPostBattle
+	trainerbattle_single TRAINER_EDMOND, Route109_Text_EdmondIntro, Route109_Text_EdmondDefeated, Route109_EventScript_EdmondDefeated
 # 7 "data/maps/Route109/scripts.pory"
 	msgbox Route109_Text_EdmondPostBattle, MSGBOX_AUTOCLOSE
 	end
 
 
-Route109_EventScript_EdmondPostBattle::
+Route109_EventScript_EdmondDefeated::
 # 12 "data/maps/Route109/scripts.pory"
 	specialvar VAR_RESULT, WasTrainerBattleWithTwoOpponents
 # 13 "data/maps/Route109/scripts.pory"
 	compare VAR_RESULT, TRUE
-	goto_if_eq Route109_EventScript_EdmondPostBattle_2
-Route109_EventScript_EdmondPostBattle_1:
+	goto_if_eq Route109_EventScript_EdmondDefeated_2
+Route109_EventScript_EdmondDefeated_1:
 # 28 "data/maps/Route109/scripts.pory"
 	msgbox Route109_Text_EdmondPostBattle
 # 29 "data/maps/Route109/scripts.pory"
 	releaseall
 	end
 
-Route109_EventScript_EdmondPostBattle_2:
+Route109_EventScript_EdmondDefeated_2:
 # 14 "data/maps/Route109/scripts.pory"
-	msgbox Route109_EventScript_EdmondPostBattle_Text_0
+	msgbox Route109_EventScript_EdmondDefeated_Text_0
 # 15 "data/maps/Route109/scripts.pory"
-	goto_if_set FLAG_RESOURCE_MODE, Route109_EventScript_EdmondPostBattle_5
+	goto_if_set FLAG_RESOURCE_MODE, Route109_EventScript_EdmondDefeated_5
 # 22 "data/maps/Route109/scripts.pory"
 	giveItem ITEM_WATER_GEM
-Route109_EventScript_EdmondPostBattle_4:
+Route109_EventScript_EdmondDefeated_4:
 # 24 "data/maps/Route109/scripts.pory"
 	compare VAR_RESULT, FALSE
-	goto_if_eq Route109_EventScript_EdmondPostBattle_8
-	goto Route109_EventScript_EdmondPostBattle_1
+	goto_if_eq Route109_EventScript_EdmondDefeated_8
+	goto Route109_EventScript_EdmondDefeated_1
 
-Route109_EventScript_EdmondPostBattle_5:
+Route109_EventScript_EdmondDefeated_5:
 # 16 "data/maps/Route109/scripts.pory"
 	compare VAR_MONOTYPE, 0
-	goto_if_ne Route109_EventScript_EdmondPostBattle_10
+	goto_if_ne Route109_EventScript_EdmondDefeated_10
 # 19 "data/maps/Route109/scripts.pory"
 	giveItem ITEM_WATER_GEM, 3
-	goto Route109_EventScript_EdmondPostBattle_4
+	goto Route109_EventScript_EdmondDefeated_4
 
-Route109_EventScript_EdmondPostBattle_8:
+Route109_EventScript_EdmondDefeated_8:
 # 25 "data/maps/Route109/scripts.pory"
-	msgbox Route109_EventScript_EdmondPostBattle_Text_1
-	goto Route109_EventScript_EdmondPostBattle_1
+	msgbox Route109_EventScript_EdmondDefeated_Text_1
+	goto Route109_EventScript_EdmondDefeated_1
 
-Route109_EventScript_EdmondPostBattle_10:
+Route109_EventScript_EdmondDefeated_10:
 # 17 "data/maps/Route109/scripts.pory"
 	giveItem ITEM_WATER_GEM, 6
-	goto Route109_EventScript_EdmondPostBattle_4
+	goto Route109_EventScript_EdmondDefeated_4
 
 
 Route109_EventScript_Cassia::
@@ -165,12 +165,12 @@ Route109_EventScript_Cassia_38:
 	goto Route109_EventScript_Cassia_31
 
 
-Route109_EventScript_EdmondPostBattle_Text_0:
+Route109_EventScript_EdmondDefeated_Text_0:
 # 14 "data/maps/Route109/scripts.pory"
 	.string "You steadied us both! Take these WATER\n"
 	.string "GEMS for winning the harder battle.$"
 
-Route109_EventScript_EdmondPostBattle_Text_1:
+Route109_EventScript_EdmondDefeated_Text_1:
 # 25 "data/maps/Route109/scripts.pory"
 	.string "There was no room in either your BAG or\n"
 	.string "your PC for the WATER GEMS.$"

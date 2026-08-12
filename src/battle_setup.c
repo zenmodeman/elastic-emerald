@@ -101,6 +101,7 @@ EWRAM_DATA u16 gPartnerTrainerId = 0;
 EWRAM_DATA static u8 *sTrainerBattleEndScript = NULL;
 EWRAM_DATA static bool8 sShouldCheckTrainerBScript = FALSE;
 EWRAM_DATA static u8 sNoOfPossibleTrainerRetScripts = 0;
+EWRAM_DATA static bool8 sTrainerBattleHadTwoOpponents = FALSE;
 
 // The first transition is used if the enemy Pokémon are lower level than our Pokémon.
 // Otherwise, the second transition is used.
@@ -1132,6 +1133,7 @@ void InitTrainerBattleParameter(void)
 {
     memset(gTrainerBattleParameter.data, 0, sizeof(TrainerBattleParameter));
     sTrainerBattleEndScript = NULL;
+    sTrainerBattleHadTwoOpponents = FALSE;
 }
 
 void TrainerBattleLoadArgs(const u8 *data)
@@ -1304,6 +1306,9 @@ void ConfigureTwoTrainersBattle(u8 trainerObjEventId, const u8 *trainerScript)
 
 void SetUpTwoTrainersBattle(void)
 {
+    // Both overworld trainers have now been found and configured. Record this
+    // before the approach and battle scripts begin changing trainer state.
+    sTrainerBattleHadTwoOpponents = TRUE;
     ScriptContext_SetupScript(EventScript_StartTrainerApproach);
     LockPlayerFieldControls();
 }
@@ -1580,12 +1585,16 @@ void SetTrainerFlag(u16 trainerId)
 
 void WasTrainerBattleWithTwoOpponents(void)
 {
-    // The battle type flags are transient and may no longer describe the
-    // completed battle by the time a trainer's post-battle script runs.
-    // The configured second opponent remains available for that callback.
-    gSpecialVar_Result = TRAINER_BATTLE_PARAM.opponentB != TRAINER_NONE
-                      && TRAINER_BATTLE_PARAM.opponentB != 0xFFFF;
+    gSpecialVar_Result = sTrainerBattleHadTwoOpponents;
+    sTrainerBattleHadTwoOpponents = FALSE;
 }
+
+#if TESTING
+void Test_SetTrainerBattleHadTwoOpponents(bool8 hadTwoOpponents)
+{
+    sTrainerBattleHadTwoOpponents = hadTwoOpponents;
+}
+#endif
 
 void ClearTrainerFlag(u16 trainerId)
 {
@@ -1594,7 +1603,6 @@ void ClearTrainerFlag(u16 trainerId)
 
 void BattleSetup_StartTrainerBattle(void)
 {
-
     if (gNoOfApproachingTrainers == 2)
     {
         if (FollowerNPCIsBattlePartner())

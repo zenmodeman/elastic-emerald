@@ -83,6 +83,9 @@ bool8 HasTrainerBeenFought(u16 trainerId);
 void SetTrainerFlag(u16 trainerId);
 void ClearTrainerFlag(u16 trainerId);
 void BattleSetup_StartTrainerBattle(void);
+#if TESTING
+void Test_SetTrainerBattleHadTwoOpponents(bool8 hadTwoOpponents);
+#endif
 void BattleSetup_StartRematchBattle(void);
 void BattleSetup_EnforceRestrictedModeItemClause(void);
 void ShowTrainerIntroSpeech(void);
