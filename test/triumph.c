@@ -14,6 +14,7 @@ static void SetUpTriumphBattle(u8 playerLevel, u8 opponentLevel)
     gBattlersCount = 2;
     gAbsentBattlerFlags = 0;
     gBattleTriumphPartyMask = 0;
+    gBattleTriumphEligible = TRUE;
     gBattlerPositions[0] = B_POSITION_PLAYER_LEFT;
     gBattlerPositions[1] = B_POSITION_OPPONENT_LEFT;
     gBattlerPositions[2] = B_POSITION_PLAYER_RIGHT;
@@ -30,6 +31,7 @@ static void SetUpTriumphAward(u32 triumph)
     CreateMon(&gParties[B_TRAINER_PLAYER][0], SPECIES_WOBBUFFET, 20, 0, OTID_STRUCT_PLAYER_ID);
     SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_TRIUMPH, &triumph);
     gBattleTypeFlags = BATTLE_TYPE_TRAINER;
+    gBattleTriumphEligible = TRUE;
     gBattleTriumphPartyMask = 1;
     TRAINER_BATTLE_PARAM.opponentA = TRAINER_CALVIN_1;
     TRAINER_BATTLE_PARAM.opponentB = TRAINER_NONE;
@@ -40,6 +42,21 @@ TEST("Zenmodeman: Triumph marks a sole eligible battler present for a trainer KO
     SetUpTriumphBattle(20, 15);
 
     TryMarkBattleTriumph(1, FALSE);
+
+    EXPECT_EQ(gBattleTriumphPartyMask, 1);
+}
+
+TEST("Zenmodeman: Triumph credits Huey KO to a level 23 singles battler")
+{
+    SetUpTriumphBattle(23, 20);
+    // Preserve the four-slot layout used by the battle engine while retaining
+    // a singles battle. Inactive slots must not make attribution ambiguous.
+    gBattlersCount = MAX_BATTLERS_COUNT;
+    gAbsentBattlerFlags = (1u << 2) | (1u << 3);
+
+    TryMarkBattleTriumph(1, TRUE);
+    gBattleMons[1].level = 21;
+    TryMarkBattleTriumph(1, TRUE);
 
     EXPECT_EQ(gBattleTriumphPartyMask, 1);
 }
@@ -70,6 +87,21 @@ TEST("Zenmodeman: Triumph doubles credit requires and follows the direct attacke
     EXPECT_EQ(gBattleTriumphPartyMask, 1 << 1);
 }
 
+TEST("Zenmodeman: Triumph direct attacker earns credit against a higher-level opponent")
+{
+    SetUpTriumphBattle(20, 22);
+    gBattlersCount = 4;
+    gBattleTypeFlags |= BATTLE_TYPE_DOUBLE;
+    gBattleMons[2].species = SPECIES_WOBBUFFET;
+    gBattleMons[2].level = 20;
+    gBattlerPartyIndexes[2] = 1;
+    gBattlerAttacker = 0;
+
+    TryMarkBattleTriumph(1, TRUE);
+
+    EXPECT_EQ(gBattleTriumphPartyMask, 1);
+}
+
 TEST("Zenmodeman: Triumph awards marked Pokemon after a first trainer victory")
 {
     SetUpTriumphAward(0);
@@ -78,17 +110,44 @@ TEST("Zenmodeman: Triumph awards marked Pokemon after a first trainer victory")
 
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_TRIUMPH), 1);
     EXPECT_EQ(gBattleTriumphPartyMask, 0);
+    EXPECT_EQ(gBattleTriumphEligible, FALSE);
+}
+
+TEST("Zenmodeman: Triumph persists after eligibility marking and victory award")
+{
+    SetUpTriumphBattle(20, 20);
+    CreateMon(&gParties[B_TRAINER_PLAYER][0], SPECIES_WOBBUFFET, 20, 0, OTID_STRUCT_PLAYER_ID);
+    TRAINER_BATTLE_PARAM.opponentA = TRAINER_CALVIN_1;
+    TRAINER_BATTLE_PARAM.opponentB = TRAINER_NONE;
+
+    TryMarkBattleTriumph(1, TRUE);
+    EXPECT_EQ(gBattleTriumphPartyMask, 1);
+    AwardBattleTriumphs();
+
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_TRIUMPH), 1);
+}
+
+TEST("Zenmodeman: Triumph uses first-time eligibility captured before victory flags change")
+{
+    SetUpTriumphAward(0);
+    FlagSet(TRAINER_FLAGS_START + TRAINER_CALVIN_1);
+
+    AwardBattleTriumphs();
+
+    EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_TRIUMPH), 1);
 }
 
 TEST("Zenmodeman: Triumph cannot be farmed from defeated trainers")
 {
     SetUpTriumphAward(4);
     FlagSet(TRAINER_FLAGS_START + TRAINER_CALVIN_1);
+    gBattleTriumphEligible = FALSE;
 
     AwardBattleTriumphs();
 
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_TRIUMPH), 4);
     EXPECT_EQ(gBattleTriumphPartyMask, 0);
+    EXPECT_EQ(gBattleTriumphEligible, FALSE);
 }
 
 TEST("Zenmodeman: Triumph excludes facilities and caps ordinary counts at thirty")

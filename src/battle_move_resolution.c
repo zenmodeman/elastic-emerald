@@ -3045,6 +3045,11 @@ static enum MoveEndResult MoveEndFaintBlock(struct BattleCalcValues *cv)
             break;
         case FAINT_BLOCK_FAINT_TARGET:
             TryUpdateEvolutionTracker(IF_DEFEAT_X_WITH_ITEMS, 1, MOVE_NONE);
+            // Ordinary damaging-move KOs are resolved here on current
+            // Expansion. The legacy tryfaintmon command only sees alternate
+            // scripted faint paths, so mark Triumph participation before the
+            // battler's field state is cleared.
+            TryMarkBattleTriumph(cv->battlerDef, cv->move != MOVE_NONE);
             SetValuesOnFaint(cv->battlerDef);
             BattleScriptCall(BattleScript_FaintBattler);
             result = MOVEEND_RESULT_RUN_SCRIPT;

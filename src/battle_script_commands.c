@@ -3655,7 +3655,12 @@ static void Cmd_tryfaintmon(void)
                 }
             }
 
-            TryMarkBattleTriumph(battler, cmd->battler == BS_TARGET && gCurrentMove != MOVE_NONE);
+            // Use the resolved fainted battler rather than the script operand. Some
+            // move paths reach tryfaintmon through BS_EFFECT_BATTLER or BS_SCRIPTING,
+            // which otherwise loses direct-attacker credit in doubles.
+            TryMarkBattleTriumph(battler,
+                                 gCurrentMove != MOVE_NONE
+                              && (cmd->battler == BS_TARGET || battler == gBattlerTarget));
             SetValuesOnFaint(battler);
             BattleScriptPush(cmd->nextInstr);
             gBattlescriptCurrInstr = BattleScript_FaintBattler;
@@ -3692,6 +3697,19 @@ void TryMarkBattleTriumph(u32 opponentBattler, bool32 directMoveFaint)
 
     if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER) || IsOnPlayerSide(opponentBattler))
         return;
+
+    // Singles have no attribution ambiguity: credit the eligible player mon
+    // present for the opposing faint. Do not infer singles from the number of
+    // populated battler slots; current Expansion can retain additional slots.
+    if (!IsDoubleBattle())
+    {
+        for (i = 0; i < gBattlersCount; i++)
+        {
+            if (IsTriumphPlayerBattlerEligible(i, opponentBattler))
+                gBattleTriumphPartyMask |= 1u << gBattlerPartyIndexes[i];
+        }
+        return;
+    }
 
     for (i = 0; i < gBattlersCount; i++)
     {

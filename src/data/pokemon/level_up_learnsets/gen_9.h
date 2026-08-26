@@ -293,18 +293,9 @@ static const struct LevelUpMove sButterfreeLevelUpLearnset[] = {
     LEVEL_UP_MOVE(46, MOVE_HURRICANE), //Level-up addition
     LEVEL_UP_MOVE(50, MOVE_POLLEN_PUFF), //Level-up addition
 
+    //Setup Post-game
+    LEVEL_UP_MOVE(71, MOVE_QUIVER_DANCE),
     LEVEL_UP_END};
-
-/*
-| Average level | Minimum level | Maximum level | Move | Game appearances |
-|---:|---:|---:|---|---:|
-| 33.09 | 30 | 41 | Tailwind | 11 |
-| 34.13 | 25 | 40 | Safeguard | 15 |
-| 35.75 | 34 | 40 | Rage Powder | 8 |
-| 37.08 | 31 | 42 | Bug Buzz | 12 |
-| 38 | 36 | 40 | Captivate | 9 |
-| 43.11 | 22 | 47 | Quiver Dance | 9 |
-*/
 #endif // P_FAMILY_CATERPIE
 
 #if P_FAMILY_WEEDLE
@@ -350,7 +341,7 @@ static const struct LevelUpMove sBeedrillLevelUpLearnset[] = {
     LEVEL_UP_MOVE(54, MOVE_TOXIC), //Level-up addition
     LEVEL_UP_MOVE(54, MOVE_VENOSHOCK),
     LEVEL_UP_MOVE(58, MOVE_RAGE),
-    
+
     //Post-game setup
     LEVEL_UP_MOVE(71, MOVE_FELL_STINGER),
 

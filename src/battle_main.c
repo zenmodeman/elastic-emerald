@@ -207,6 +207,7 @@ EWRAM_DATA u16 gBattleWeather = 0;
 EWRAM_DATA u16 gIntroSlideFlags = 0;
 EWRAM_DATA u8 gSentPokesToOpponent[2] = {0};
 ALIGNED(4) EWRAM_DATA u8 gBattleTriumphPartyMask = 0;
+EWRAM_DATA bool8 gBattleTriumphEligible = FALSE;
 EWRAM_DATA struct BattleEnigmaBerry gEnigmaBerries[MAX_BATTLERS_COUNT] = {0};
 EWRAM_DATA struct BattleScripting gBattleScripting = {0};
 EWRAM_DATA struct BattleStruct *gBattleStruct = NULL;
@@ -3153,6 +3154,16 @@ static void BattleStartClearSetData(void)
     gMultiHitCounter = 0;
     gBattleOutcome = 0;
     gBattleTriumphPartyMask = 0;
+    // Snapshot first-time eligibility before any battle-end flow can set the
+    // trainer flags. AwardBattleTriumphs must not query mutable flag state.
+    gBattleTriumphEligible = (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+                          && !(gBattleTypeFlags & (BATTLE_TYPE_LINK
+                                                | BATTLE_TYPE_RECORDED_LINK
+                                                | BATTLE_TYPE_FRONTIER
+                                                | BATTLE_TYPE_TRAINER_HILL
+                                                | BATTLE_TYPE_EREADER_TRAINER
+                                                | BATTLE_TYPE_FIRST_BATTLE))
+                          && !HasBattleTriumphTrainerBeenFought();
     gBattleControllerExecFlags = 0;
     gPaydayMoney = 0;
     gBattleResources->battleScriptsStack->size = 0;
@@ -5439,7 +5450,6 @@ static void HandleEndTurn_BattleWon(void)
     {
         BattleStopLowHpSound();
         gBattlescriptCurrInstr = BattleScript_LocalTrainerBattleWon;
-        AwardBattleTriumphs();
 
         switch (GetTrainerClassFromId(TRAINER_BATTLE_PARAM.opponentA))
         {
@@ -5494,9 +5504,10 @@ void AwardBattleTriumphs(void)
                            | BATTLE_TYPE_FRONTIER
                            | BATTLE_TYPE_TRAINER_HILL
                            | BATTLE_TYPE_EREADER_TRAINER))
-     || HasBattleTriumphTrainerBeenFought())
+     || !gBattleTriumphEligible)
     {
         gBattleTriumphPartyMask = 0;
+        gBattleTriumphEligible = FALSE;
         return;
     }
 
@@ -5516,6 +5527,7 @@ void AwardBattleTriumphs(void)
     }
 
     gBattleTriumphPartyMask = 0;
+    gBattleTriumphEligible = FALSE;
 }
 
 static void HandleEndTurn_BattleLost(void)
@@ -5697,6 +5709,11 @@ static void HandleEndTurn_FinishBattle(void)
             if (!changedForm && B_RECALCULATE_STATS >= GEN_5)
                 CalculateMonStats(&gParties[B_TRAINER_PLAYER][i]);
         }
+        // Award only after battle scripts, controllers, Summary Screen visits,
+        // held-item restoration, and form reversion have finished touching the
+        // party. This keeps a cached in-battle copy from replacing the award.
+        if (gBattleOutcome == B_OUTCOME_WON)
+            AwardBattleTriumphs();
         RecordedBattle_SetPlaybackFinished();
         if (gTestRunnerEnabled)
             TestRunner_Battle_AfterLastTurn();
