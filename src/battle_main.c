@@ -4788,6 +4788,8 @@ u32 GetBattlerTotalSpeedStat(enum BattlerId battler, enum Ability ability, enum 
 {
     u32 speed = gBattleMons[battler].speed;
 
+    holdEffect = GetRestrictedModeHoldEffect(battler, ability, holdEffect);
+
     // stat stages
     speed *= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED]][0];
     speed /= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED]][1];

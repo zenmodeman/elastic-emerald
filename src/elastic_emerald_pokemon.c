@@ -195,6 +195,24 @@ static u8 GetSpeciesAbilityTierPoints(u16 species, u32 ability)
             }
 
 
+        //Special Ability Logic: Toxic Debris
+        case SPECIES_GLIMMORA:
+            return ability == ABILITY_TOXIC_DEBRIS ? 6 : 3;
+        case SPECIES_GLIMMET:
+            if (ability == ABILITY_TOXIC_DEBRIS)
+                return 5;
+            if (FlagGet(FLAG_BADGE06_GET))
+                return 1;
+            if (FlagGet(FLAG_BADGE03_GET))
+                return 2;
+            return 3;
+
+        //Special Ability Logic: Gorilla Tactics
+        case SPECIES_DARMANITAN_GALAR:
+            if (ability == ABILITY_GORILLA_TACTICS && !FlagGet(FLAG_RESTRICTED_MODE))
+                return 6;
+            return 5;
+
         //6 Points Kanto
         case SPECIES_SLOWBRO_MEGA: case SPECIES_KANGASKHAN_MEGA:
         case SPECIES_CHARIZARD_MEGA_Y: //Inaccessible in Restricted Mode
@@ -214,12 +232,15 @@ static u8 GetSpeciesAbilityTierPoints(u16 species, u32 ability)
 
         //6 Points Alola
         case SPECIES_MARSHADOW: case SPECIES_MAGEARNA: case SPECIES_MELMETAL:
+        case SPECIES_PHEROMOSA: case SPECIES_KARTANA: case SPECIES_BLACEPHALON:
 
         //6 Points Galar
         case SPECIES_DRAGAPULT: case SPECIES_URSHIFU_SINGLE_STRIKE: case SPECIES_URSHIFU_RAPID_STRIKE:
 
         //6 Points Paldea
-        case SPECIES_PALAFIN: case SPECIES_ARCHALUDON: case SPECIES_ANNIHILAPE: case SPECIES_GLIMMORA: case SPECIES_IRON_HANDS:
+        case SPECIES_PALAFIN: case SPECIES_ARCHALUDON: case SPECIES_ANNIHILAPE:
+        case SPECIES_IRON_HANDS: case SPECIES_FLUTTER_MANE: case SPECIES_IRON_BUNDLE:
+        case SPECIES_CHI_YU: case SPECIES_CHIEN_PAO:
 
         //6 Points Past Paradox
         case SPECIES_GOUGING_FIRE: case SPECIES_RAGING_BOLT: case SPECIES_WALKING_WAKE: case SPECIES_GREAT_TUSK: case SPECIES_ROARING_MOON:
@@ -259,7 +280,7 @@ static u8 GetSpeciesAbilityTierPoints(u16 species, u32 ability)
         case SPECIES_GARCHOMP_MEGA: case SPECIES_LOPUNNY_MEGA: case SPECIES_GALLADE_MEGA:
 
         //5 Points Unova / Regionals
-        case SPECIES_EXCADRILL: case SPECIES_DARMANITAN: case SPECIES_DARMANITAN_GALAR: case SPECIES_DARMANITAN_GALAR_ZEN: case SPECIES_AMOONGUSS: case SPECIES_ALOMOMOLA:
+        case SPECIES_EXCADRILL: case SPECIES_DARMANITAN: case SPECIES_DARMANITAN_GALAR_ZEN: case SPECIES_AMOONGUSS: case SPECIES_ALOMOMOLA:
         case SPECIES_FERROTHORN: case SPECIES_VOLCARONA:
         case SPECIES_TERRAKION: case SPECIES_TORNADUS_THERIAN: case SPECIES_LANDORUS_INCARNATE: case SPECIES_LANDORUS_THERIAN: case SPECIES_GENESECT:
 
@@ -273,7 +294,8 @@ static u8 GetSpeciesAbilityTierPoints(u16 species, u32 ability)
 
         //5 Points Alola
         case SPECIES_PRIMARINA: case SPECIES_TOXAPEX: case SPECIES_GOLISOPOD: case SPECIES_MIMIKYU:
-        case SPECIES_TAPU_KOKO: case SPECIES_TAPU_FINI: case SPECIES_TAPU_LELE: case SPECIES_NIHILEGO: case SPECIES_BUZZWOLE: case SPECIES_CELESTEELA: case SPECIES_ZERAORA:
+        case SPECIES_TAPU_KOKO: case SPECIES_TAPU_FINI: case SPECIES_TAPU_LELE: case SPECIES_NIHILEGO:
+        case SPECIES_BUZZWOLE: case SPECIES_CELESTEELA: case SPECIES_ZERAORA: case SPECIES_NAGANADEL:
 
         //5 Points Galar
         case SPECIES_RILLABOOM: case SPECIES_CINDERACE: case SPECIES_CORVIKNIGHT: case SPECIES_OBSTAGOON: case SPECIES_DRACOVISH:
@@ -286,8 +308,6 @@ static u8 GetSpeciesAbilityTierPoints(u16 species, u32 ability)
         case SPECIES_IRON_MOTH: case SPECIES_BAXCALIBUR: case SPECIES_TING_LU:
         case SPECIES_URSALUNA_BLOODMOON: case SPECIES_IRON_BOULDER: case SPECIES_IRON_CROWN: case SPECIES_PECHARUNT:
         case SPECIES_HYDRAPPLE: case SPECIES_DIPPLIN: case SPECIES_OGERPON: case SPECIES_OGERPON_CORNERSTONE: case SPECIES_OGERPON_HEARTHFLAME: case SPECIES_OGERPON_WELLSPRING:
-        //5 Points Paldea Eviolite
-        case SPECIES_GLIMMET:
             return 5;
 
         //4 Points Kanto/Regionals

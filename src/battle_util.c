@@ -5795,6 +5795,16 @@ enum Obedience GetAttackerObedienceForAction(void)
     }
 }
 
+// Accept the caller's effective or AI-modeled ability; never reveal hidden abilities.
+enum HoldEffect GetRestrictedModeHoldEffect(enum BattlerId battler, enum Ability ability, enum HoldEffect holdEffect)
+{
+    if (FlagGet(FLAG_RESTRICTED_MODE) && IsOnPlayerSide(battler) && !BattlerIsPartner(battler)
+     && ability == ABILITY_GORILLA_TACTICS
+     && (holdEffect == HOLD_EFFECT_CHOICE_BAND || holdEffect == HOLD_EFFECT_CHOICE_SCARF))
+        return HOLD_EFFECT_NONE;
+    return holdEffect;
+}
+
 enum HoldEffect GetBattlerHoldEffect(enum BattlerId battler)
 {
     return GetBattlerHoldEffectInternal(battler, GetBattlerAbility(battler));
@@ -5821,9 +5831,9 @@ enum HoldEffect GetBattlerHoldEffectInternal(enum BattlerId battler, enum Abilit
     gPotentialItemEffectBattler = battler;
 
     if (gBattleMons[battler].item == ITEM_ENIGMA_BERRY_E_READER)
-        return gEnigmaBerries[battler].holdEffect;
+        return GetRestrictedModeHoldEffect(battler, ability, gEnigmaBerries[battler].holdEffect);
     else
-        return GetItemHoldEffect(gBattleMons[battler].item);
+        return GetRestrictedModeHoldEffect(battler, ability, GetItemHoldEffect(gBattleMons[battler].item));
 }
 
 enum HoldEffect GetBattlerHoldEffectIgnoreNegation(enum BattlerId battler)
@@ -7127,7 +7137,7 @@ static inline u32 CalcAttackStat(struct DamageContext *ctx)
         modifier = uq4_12_multiply_half_down(modifier, UQ_4_12(0.75));
 
     // attacker's hold effect
-    switch (ctx->holdEffects[ctx->battlerAtk])
+    switch (GetRestrictedModeHoldEffect(ctx->battlerAtk, ctx->abilities[ctx->battlerAtk], ctx->holdEffects[ctx->battlerAtk]))
     {
     case HOLD_EFFECT_THICK_CLUB:
         if ((atkBaseSpeciesId == SPECIES_CUBONE || atkBaseSpeciesId == SPECIES_MAROWAK) && IsBattleMovePhysical(move))
