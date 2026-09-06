@@ -3310,7 +3310,8 @@ void SwitchInClearSetData(enum BattlerId battler, struct Volatiles *volatilesCop
     gBattleStruct->battlerState[battler].isFirstTurn = 2;
     gBattleStruct->battlerState[battler].notOnField = FALSE;
     gBattleStruct->battlerState[battler].fainted = FALSE;
-    gBattleStruct->battlerState[battler].targetedByPlayerAttack = FALSE;
+    gBattleStruct->battlerState[battler].fastKoCommitted = FALSE;
+    gBattleStruct->battlerState[battler].fastKoCommitPending = FALSE;
     gBattleStruct->battlerState[battler].defensiveContactAbilityAttempts = 0;
     gBattleStruct->battlerState[battler].defensiveContactAbilityHits = 0;
     gBattleMons[battler].volatiles.truantSwitchInHack = volatilesCopy->truantSwitchInHack;
@@ -4020,6 +4021,19 @@ bool32 EndTurnEvents(void) // Called from Battle Script
     gBattleScripting.animTurn = 0;
     gBattleScripting.animTargetsHit = 0;
     gBattleScripting.moveendState = 0;
+
+    if (!IsDoubleBattle())
+    {
+        for (enum BattlerId battler = 0; battler < gBattlersCount; battler++)
+        {
+            if (GetBattlerSide(battler) == B_SIDE_OPPONENT
+             && gBattleStruct->battlerState[battler].fastKoCommitPending
+             && !gAiBattleData->playerSwitchedThisTurn)
+                gBattleStruct->battlerState[battler].fastKoCommitted = TRUE;
+            gBattleStruct->battlerState[battler].fastKoCommitPending = FALSE;
+        }
+        gAiBattleData->playerSwitchedThisTurn = FALSE;
+    }
 
     for (u32 i = 0; i < 5; i++)
         gBattleCommunication[i] = 0;

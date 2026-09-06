@@ -3,7 +3,7 @@
 ## Documentation status
 
 - **Last documented code commit:** `9febfb4eb7` ("Additional tests and merge restorations").
-- **Uncommitted AI changes covered by this document:** Cut gains one critical-hit stage against an active Grass-type target in the shared runtime/AI critical-hit calculation; unset stored Tera types once again resolve through the curated and monotype-aware assignment policy used by runtime and AI battle queries.
+- **Uncommitted AI changes covered by this document:** Cut gains one critical-hit stage against an active Grass-type target in the shared runtime/AI critical-hit calculation; unset stored Tera types once again resolve through the curated and monotype-aware assignment policy used by runtime and AI battle queries; singles fast-KO switching now uses per-active-Pokémon matchup commitment instead of the weather-setter, heavy-switching, and defensive-drop entry paths.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -126,34 +126,21 @@ Key commit: `04e8acf271`.
 
 ## 3. Imperfect-information switching and counterplay
 
-### Weather-setter preservation
+### Matchup commitment for fast-KO switching
 
-General fast-KO switching is disabled. The remaining contextual rule applies in singles to smart-switching trainers whose active Pokemon has Drizzle, Drought, Sand Stream, or Snow Warning. If the setter would act after the opponent and an actual-state damage calculation using the opponent's revealed moves plus Hidden STAB inference finds a KO, the AI may preserve the setter.
+In singles, an active Pokemon using `AI_FLAG_SMART_SWITCHING` may switch from a fast KO while it remains uncommitted to the matchup. The shared safeguards still require the player to be faster, an actual-state calculation using revealed moves plus Hidden STAB inference to find a KO, a suitable switch-in, and at least 75% HP for most Pokemon or 50% HP for Regenerator Pokemon. Slow KOs do not trigger this path, and the final switch remains a 50% roll.
 
-Preservation additionally requires that the player has not targeted the setter with either a damaging or status move during its current field stint, that the setter retains at least 75% of its maximum HP, that at least three other living Pokemon in that trainer's party benefit from the setter's weather, and that an eligible reserve exists. The targeting memory resets when the setter switches out. The HP gate limits preservation to setters with enough longevity to contribute again after returning. A party Pokemon counts once if either of the following applies:
+An opposing Pokemon becomes committed after it successfully resolves a move during a turn in which the player's active Pokemon never switches. Damaging, status, and self-targeting moves all qualify. Failure to act and no-effect results such as misses, immunity, failure, or Protect do not qualify. Commitment is finalized at the end of the turn so a player pivot that occurs after the opposing move still prevents commitment to the old matchup. The state persists for that active Pokemon's field stint and resets when it switches out.
 
-- it has a positively weather-interacting ability such as Swift Swim, Chlorophyll, Sand Rush, or Slush Rush;
-- it is Grass-type in sun or Ice-type in hail/snow.
+This commitment gate applies only to the fast-KO reason. Perish Song, ineffective Encore or choice locks, and the other independent switch reasons retain their own rules. Weather setters no longer receive a separate preservation path, and the heavy-switching and defensive-drop entry checks are suppressed.
 
-When every gate passes, the AI has a 50% chance to switch to the standard most-suitable party Pokemon, falling back to the first eligible reserve when the upstream ranker returns no candidate. The KO check respects current battle conditions and survival effects such as Focus Sash and Sturdy. It does not use the abandoned clean-state model.
+Focused regression coverage verifies the initial uncommitted switch, successful attacks and self-targeting moves, Protect-blocked moves, player pivots, the HP thresholds, faster-threat requirement, and ordinary survival checks.
 
-Regression coverage explicitly checks both sides of the critical survival ordering: a slower unprotected setter with three weather allies may be preserved, while a faster setter, a setter whose Focus Sash prevents the inferred KO, or a setter already targeted by the player stays in.
-
-Key commits: `5440fb44b4`, `a2ef6c4bde`.
-
-### Heavy-switching fast-KO preservation
-
-The logic begins with hard preconditions, followed by an extensible outer-check layer and then shared inner checks. Singles and the absence of prior targeting by a player's damaging or status move are hard gates evaluated before any outer reason, preventing unnecessary hypothetical calculations and ensuring future outer checks cannot bypass the targeting policy. Each independent reason to consider the behavior is stored as a named boolean, and passing any outer check admits the battler to the same inner safeguards. The current outer checks are `AI_FLAG_HEAVY_SWITCHING` and the defensive-drop exception described below; future reasons can be added to their combined eligibility condition without duplicating the common logic. Once any outer check qualifies, there is a 50% chance to preserve an active Pokemon when all of the following inner conditions are true: the opponent is faster, an actual-state calculation using revealed moves plus Hidden STAB inference finds a KO, and the standard switch-in ranking found a suitable replacement. The HP gate is at least 75% for most Pokemon and at least 50% for Regenerator Pokemon. `AI_FLAG_HEAVY_SWITCHING` is deliberately absent from `AI_FLAG_SMART_TRAINER`, so ordinary smart trainers receive only the defensive-drop exception rather than generalized fast-KO switching.
-
-Regular `AI_FLAG_SMART_SWITCHING` can use the same response without the heavy-switching flag only when the current KO depends on negative Defense or Special Defense stages: after restoring both defensive stages to neutral, no move in that same revealed-plus-Hidden-STAB information set may still KO. The pre-existing targeting guard means player-applied drops such as Screech disable the response, while self-inflicted drops and reactive drops from effects such as Obstruct remain eligible. The temporary defensive-stage changes are restored immediately after calculation.
-
-Focused regression coverage verifies the heavy-switching flag and ordinary-smart exclusion, plus each defensive-drop origin: Close Combat-style AI self-drops and Obstruct can enable the switch, while Screech trips the prior-targeting hard gate and cannot. Weather-setter coverage separately verifies the suitable-switch-in, 50% roll, HP, Speed, survival, ally-count, and prior-targeting gates.
-
-Key commit: `fbb42101c6`.
+Key commit: uncommitted.
 
 ### Scrapped generalized fast-KO experiments
 
-Earlier versions attempted broad fast-KO preservation based on revealed versus inferred damage, literal-lead recognition, quad-effective Hidden STAB windows, and a clean-state simulation that removed player-created type, ability, grounding, immunity-bypass, defensive-stage, and Speed-stage changes. That approach was removed because its complexity produced little payoff and could over-penalize ordinary offensive Pokemon and player tech moves. The new heavy-switching rule restores only its narrow fast-KO core and defensive-drop comparison; the concise older history is retained here for context.
+Earlier versions attempted broad fast-KO preservation based on revealed versus inferred damage, literal-lead recognition, quad-effective Hidden STAB windows, and a clean-state simulation that removed player-created type, ability, grounding, immunity-bypass, defensive-stage, and Speed-stage changes. That approach was removed because its complexity produced little payoff and could over-penalize ordinary offensive Pokemon and player tech moves. The current commitment rule restores only the narrow actual-state fast-KO core; the concise older history is retained here for context.
 
 The original bad-odds and fast-KO progression is represented by commits `7829b03a9c`, `ff6f0ac1bb`, `a676dccb29`, `fda788dcf4`, and `efda8256b3`. Clean-state and literal-lead work was introduced in `6f1d67a6f4`, refined in `8d856e4bcf`, and given its final quad-effective Hidden STAB window in `4547aff533` before being scrapped by `5440fb44b4`.
 

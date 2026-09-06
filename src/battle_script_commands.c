@@ -9515,6 +9515,11 @@ static void Cmd_switchoutabilities(void)
 
     enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
 
+    // Record the actual field change so hard switches, pivots, forced switches,
+    // and item-triggered switches all prevent commitment to the old matchup.
+    if (!IsDoubleBattle() && IsOnPlayerSide(battler))
+        gAiBattleData->playerSwitchedThisTurn = TRUE;
+
     if (gBattleMons[battler].volatiles.neutralizingGas)
     {
         gBattleMons[battler].volatiles.neutralizingGas = FALSE;

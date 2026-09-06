@@ -78,11 +78,11 @@ AI_SINGLE_BATTLE_TEST("AI revives the best fainted ally with Revival Blessing") 
 }
 
 // General switching behaviour
-AI_SINGLE_BATTLE_TEST("Zenmodeman: heavy switching preserves a healthy mon from an inferred fast KO")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: an uncommitted mon switches from an inferred fast KO")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_HEAVY_SWITCHING | AI_FLAG_ASSUME_STAB);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_CELEBRATE, MOVE_PSYCHIC); }
         OPPONENT(SPECIES_SNORLAX) { Level(100); HP(70); MaxHP(70); SpDefense(200); Speed(1); Moves(MOVE_TACKLE); }
         OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
@@ -91,22 +91,21 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: heavy switching preserves a healthy mon from 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: regular smart switching does not preserve a healthy mon from an inferred fast KO")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: regular smart switching uses the uncommitted fast-KO escape")
 {
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_CELEBRATE, MOVE_PSYCHIC); }
         OPPONENT(SPECIES_SNORLAX) { Level(100); HP(70); MaxHP(70); SpDefense(200); Speed(1); Moves(MOVE_TACKLE); }
         OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
     } WHEN {
-        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_TACKLE); }
-        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_TACKLE); }
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_SWITCH(opponent, 1); }
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: AI self-drop enables switching")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful move commits the AI despite its defensive drop")
 {
-    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_CELEBRATE, MOVE_PSYCHIC); }
@@ -114,11 +113,11 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: AI self-drop enables 
         OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_CLOSE_COMBAT); }
-        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_SWITCH(opponent, 1); }
+        TURN { MOVE(player, MOVE_CELEBRATE); EXPECT_MOVE(opponent, MOVE_CLOSE_COMBAT); }
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: Obstruct enables switching")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: a move blocked by Protect does not commit the AI")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
@@ -133,7 +132,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: Obstruct enables swit
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: Screech prevents switching")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful reply to Screech commits the AI")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
@@ -146,9 +145,37 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: defensive-drop fast-KO: Screech prevents swit
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter switches from inferred fast KO for three weather allies")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful self-targeting move commits the AI")
 {
-    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_PRESERVE_WEATHER_SETTER);
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
+        PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(80); Speed(100); Moves(MOVE_NASTY_PLOT, MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(140); MaxHP(140); SpDefense(200); Speed(1); Moves(MOVE_COSMIC_POWER); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_NASTY_PLOT); EXPECT_MOVE(opponent, MOVE_COSMIC_POWER); }
+        TURN { MOVE(player, MOVE_PSYCHIC); EXPECT_MOVE(opponent, MOVE_COSMIC_POWER); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: a player pivot prevents commitment to the old matchup")
+{
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
+        PLAYER(SPECIES_BULBASAUR) { Level(100); Speed(1); Moves(MOVE_U_TURN); }
+        PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(70); MaxHP(70); SpDefense(200); Speed(50); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponent, MOVE_TACKLE); MOVE(player, MOVE_U_TURN); SEND_OUT(player, 1); }
+        TURN { MOVE(player, MOVE_PSYCHIC); EXPECT_SWITCH(opponent, 1); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setters use the ordinary uncommitted fast-KO escape")
+{
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_BLASTOISE) { Level(100); Speed(100); Moves(MOVE_CELEBRATE, MOVE_HYDRO_PUMP); }
@@ -161,8 +188,9 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter switches from inferred fast KO
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in without three weather allies")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather ally count does not gate an uncommitted fast-KO escape")
 {
+    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
         PLAYER(SPECIES_BLASTOISE) { Level(100); Speed(100); Moves(MOVE_HYDRO_PUMP); }
@@ -171,11 +199,11 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in without three weather
         OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }
         OPPONENT(SPECIES_BLISSEY) { Level(100); Speed(2); Ability(ABILITY_NATURAL_CURE); Moves(MOVE_TACKLE); }
     } WHEN {
-        TURN { MOVE(player, MOVE_HYDRO_PUMP); EXPECT_MOVE(opponent, MOVE_EMBER); }
+        TURN { MOVE(player, MOVE_HYDRO_PUMP); EXPECT_SWITCH(opponent, 1); }
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in below 75 percent HP")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in below the fast-KO HP threshold")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -189,7 +217,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in below 75 percent HP")
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in when Focus Sash prevents the inferred KO")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in when Focus Sash prevents the inferred KO")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -203,7 +231,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in when Focus Sash preve
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in when it outspeeds the inferred KO threat")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in when it outspeeds the inferred KO threat")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -217,7 +245,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter stays in when it outspeeds the
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: targeted weather setter stays in after becoming slower than inferred KO threat")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter commits after a successful move on a stat-change turn")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -232,7 +260,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: targeted weather setter stays in after becomi
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter targeted by damaging move stays in against inferred KO threat")
+AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter commits after a successful move on a damaging turn")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);

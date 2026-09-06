@@ -1983,10 +1983,6 @@ static enum CancelerResult CancelerTargetFailure(struct BattleCalcValues *cv)
         struct DamageContext ctx = {0};
         SetDamageContextValues(&ctx, cv);
 
-        if (GetBattlerSide(cv->battlerAtk) == B_SIDE_PLAYER
-         && GetBattlerSide(cv->battlerDef) == B_SIDE_OPPONENT)
-            gBattleStruct->battlerState[cv->battlerDef].targetedByPlayerAttack = TRUE;
-
         if (moveTarget == TARGET_OPPONENTS_FIELD)
         {
             if (!IsSemiInvulnerable(cv->battlerDef, CHECK_ALL) && CanBattlerBounceBackMove(cv))
@@ -3085,6 +3081,13 @@ static enum MoveEndResult MoveEndUpdateLastMoves(struct BattleCalcValues *cv)
     }
 
     enum BattleMoveEffects originalEffect = GetMoveEffect(GetOriginallyUsedMove(gChosenMove));
+    // Finalize this at the end of the turn, once any player switch is known.
+    if (!IsDoubleBattle()
+     && GetBattlerSide(cv->battlerAtk) == B_SIDE_OPPONENT
+     && !gBattleStruct->unableToUseMove
+     && !(gBattleStruct->moveResultFlags[cv->battlerDef] & MOVE_RESULT_NO_EFFECT))
+        gBattleStruct->battlerState[cv->battlerAtk].fastKoCommitPending = TRUE;
+
     if (IsBattlerAlive(cv->battlerAtk) // Why do we need to check if user fainted? We just want to set with what move the target got hit
      && originalEffect != EFFECT_BATON_PASS
      && originalEffect != EFFECT_HEALING_WISH

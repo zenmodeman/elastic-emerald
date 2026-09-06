@@ -528,8 +528,9 @@ struct BattlerState
     u16 redCardSwitched:1;
     u16 isFirstTurn:2; // Starts at 2 on switch in and counts down during end turn
     u16 fainted:1;
-    u16 targetedByPlayerAttack:1;
-    u16 padding:9;
+    u16 fastKoCommitted:1;
+    u16 fastKoCommitPending:1;
+    u16 padding:8;
     // End of Word
 };
 
@@ -746,6 +747,7 @@ struct AiBattleData
     s32 finalScore[MAX_BATTLERS_COUNT][MAX_BATTLERS_COUNT][MAX_MON_MOVES]; // AI, target, moves to make debugging easier
     u8 playerStallMons[PARTY_SIZE];
     u8 playerSwitchesDuringAiStint;
+    u8 playerSwitchedThisTurn;
     u8 chosenMoveIndex[MAX_BATTLERS_COUNT];
     u8 chosenTarget[MAX_BATTLERS_COUNT];
     u16 aiUsingGimmick:6;

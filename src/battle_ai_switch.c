@@ -447,103 +447,13 @@ static bool32 DoesMostSuitableSwitchinBenefitFromWish(enum BattlerId battler)
     return possibleHeal > (s32)(maxHp / AI_WISH_HEAL_THRESHOLD);
 }
 
-static u32 GetWeatherSetByAbility(enum Ability ability)
-{
-    switch (ability)
-    {
-    case ABILITY_DRIZZLE:      return B_WEATHER_RAIN_NORMAL;
-    case ABILITY_DROUGHT:      return B_WEATHER_SUN_NORMAL;
-    case ABILITY_SAND_STREAM:  return B_WEATHER_SANDSTORM;
-    case ABILITY_SNOW_WARNING: return GetConfig(B_SNOW_WARNING) >= GEN_9 ? B_WEATHER_SNOW : B_WEATHER_HAIL;
-    default:                   return B_WEATHER_NONE;
-    }
-}
-
-static bool32 DoesAbilityBenefitFromWeather(enum Ability ability, u32 weather)
-{
-    if (weather & B_WEATHER_RAIN)
-        return ability == ABILITY_SWIFT_SWIM || ability == ABILITY_RAIN_DISH
-            || ability == ABILITY_DRY_SKIN || ability == ABILITY_HYDRATION;
-    if (weather & B_WEATHER_SUN)
-        return ability == ABILITY_CHLOROPHYLL || ability == ABILITY_SOLAR_POWER
-            || ability == ABILITY_LEAF_GUARD;
-    if (weather & B_WEATHER_SANDSTORM)
-        return ability == ABILITY_SAND_RUSH || ability == ABILITY_SAND_FORCE
-            || ability == ABILITY_SAND_VEIL;
-    if (weather & (B_WEATHER_HAIL | B_WEATHER_SNOW))
-        return ability == ABILITY_SLUSH_RUSH || ability == ABILITY_ICE_BODY
-            || ability == ABILITY_SNOW_CLOAK;
-    return FALSE;
-}
-
-static bool32 DoesPartyMonBenefitFromWeather(struct Pokemon *mon, u32 weather)
-{
-    enum Species species = GetMonData(mon, MON_DATA_SPECIES);
-
-    if (DoesAbilityBenefitFromWeather(GetMonAbility(mon), weather))
-        return TRUE;
-    if ((weather & B_WEATHER_SUN) && IsSpeciesOfType(species, TYPE_GRASS))
-        return TRUE;
-    if ((weather & (B_WEATHER_HAIL | B_WEATHER_SNOW)) && IsSpeciesOfType(species, TYPE_ICE))
-        return TRUE;
-    return FALSE;
-}
-
-static u32 CountAliveWeatherSynergyMons(enum BattlerId battler, u32 weather)
-{
-    u32 count = 0;
-    s32 lastId;
-    struct Pokemon *party = GetBattlerParty(battler);
-
-    lastId = GetAILastPartyIndex(battler);
-    for (s32 partyIndex = 0; partyIndex < lastId; partyIndex++)
-    {
-        if (partyIndex != gBattlerPartyIndexes[battler]
-         && IsValidForBattle(&party[partyIndex])
-         && DoesPartyMonBenefitFromWeather(&party[partyIndex], weather))
-            count++;
-    }
-    return count;
-}
-
-static bool32 ShouldSwitchToPreserveWeatherSetter(struct SwitchAiContext *switchContext)
-{
-    enum BattlerId battler = switchContext->battler;
-    u32 switchinId = gAiLogicData->mostSuitableMonId[battler];
-    u32 weather;
-
-    if (!(gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING) || IsDoubleBattle())
-        return FALSE;
-    weather = GetWeatherSetByAbility(gAiLogicData->abilities[battler]);
-    if (weather == B_WEATHER_NONE
-     || gBattleStruct->battlerState[battler].targetedByPlayerAttack
-     || !AI_IsSlower(battler, switchContext->opposingBattler, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
-     || !switchContext->battlerGetsOHKOd
-     || gBattleMons[battler].hp * 4 < gBattleMons[battler].maxHP * 3
-     || CountAliveWeatherSynergyMons(battler, weather) < 3)
-        return FALSE;
-    if (switchinId == PARTY_SIZE)
-        switchinId = GetFirstEligibleSwitchin(switchContext);
-    if (switchinId == PARTY_SIZE)
-        return FALSE;
-    if (!gAiLogicData->aiPredictionInProgress
-     && !RandomPercentage(RNG_AI_SWITCH_PRESERVE_WEATHER_SETTER, 50))
-        return FALSE;
-    return SetSwitchinAndSwitch(battler, switchinId);
-}
-
-// Note that as many return statements as possible are INTENTIONALLY put after all of the loops;
-// the function can take a max of about 0.06s to run, and this prevents the player from identifying
-// whether the mon will switch or not by seeing how long the delay is before they select a move
+// A successful move against an unchanged player matchup commits this active
+// Pokemon to staying in against fast KOs until it leaves the field.
 static bool32 ShouldSwitchIfHasBadOdds(struct SwitchAiContext *switchContext)
 {
     enum BattlerId battler = switchContext->battler;
     enum BattlerId opposingBattler = switchContext->opposingBattler;
-    u8 defenseStage = gBattleMons[battler].statStages[STAT_DEF];
-    u8 spDefenseStage = gBattleMons[battler].statStages[STAT_SPDEF];
     u32 switchinId = gAiLogicData->mostSuitableMonId[battler];
-    bool32 meetsDefensiveDropCheck = FALSE;
-    bool32 meetsHeavySwitchingCheck = (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_HEAVY_SWITCHING) != 0;
 
     // Only use this if AI_FLAG_SMART_SWITCHING is set for the trainer
     if (!(gAiThinkingStruct->aiFlags[switchContext->battler] & AI_FLAG_SMART_SWITCHING))
@@ -553,16 +463,7 @@ static bool32 ShouldSwitchIfHasBadOdds(struct SwitchAiContext *switchContext)
     if (IsDoubleBattle())
         return FALSE;
 
-    if (gBattleStruct->battlerState[battler].targetedByPlayerAttack)
-        return FALSE;
-
-    if ((gAiThinkingStruct->aiFlags[battler] & AI_FLAG_SMART_SWITCHING)
-     && (defenseStage < DEFAULT_STAT_STAGE || spDefenseStage < DEFAULT_STAT_STAGE))
-    {
-        meetsDefensiveDropCheck = TRUE;
-    }
-
-    if (!meetsHeavySwitchingCheck && !meetsDefensiveDropCheck)
+    if (gBattleStruct->battlerState[battler].fastKoCommitted)
         return FALSE;
 
     if (switchinId == PARTY_SIZE)
@@ -1606,8 +1507,6 @@ bool32 ShouldSwitch(enum BattlerId battler)
     if (ShouldSwitchIfAbilityBenefit(&switchContext))
         return TRUE;
     if (ShouldSwitchIfWishPassing(&switchContext))
-        return TRUE;
-    if (ShouldSwitchToPreserveWeatherSetter(&switchContext))
         return TRUE;
     if (ShouldSwitchIfHasBadOdds(&switchContext))
         return TRUE;
