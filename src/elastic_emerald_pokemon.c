@@ -91,10 +91,11 @@ u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum)
     return total;
 }
 
+static u8 GetSpeciesAbilityTierPoints(u16 species, u32 ability);
+
 u8 GetMonTierPoints(struct Pokemon *mon){
     u16 species;
     u8 abilityNum;
-    u32 ability;
 
     if (mon == NULL){
         return 3; //Default
@@ -105,8 +106,11 @@ u8 GetMonTierPoints(struct Pokemon *mon){
     }
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     abilityNum = GetMonData(mon, MON_DATA_ABILITY_NUM, NULL);
-    ability =  GetAbilityBySpecies(species, abilityNum);
+    return GetSpeciesAbilityTierPoints(species, GetAbilityBySpecies(species, abilityNum));
+}
 
+static u8 GetSpeciesAbilityTierPoints(u16 species, u32 ability)
+{
     //Start with default point value
     u8 defaultPointValue = 3;
     //species simplification
@@ -833,8 +837,48 @@ u8 GetMonTierPoints(struct Pokemon *mon){
     }
 }
 
-// Only terminal evolutions contribute; evolution requirements do not limit potential.
-static u8 GetTerminalEvolutionMaxTierPoints(struct Pokemon *tempMon, u16 species)
+static u8 GetSpeciesAbilityMaxTierPoints(u16 species)
+{
+    u8 maxPoints = 0;
+    u8 abilityNum;
+
+    for (abilityNum = 0; abilityNum < NUM_ABILITY_SLOTS; abilityNum++)
+    {
+        u32 ability = GetSpeciesAbility(species, abilityNum);
+        u8 points;
+        if (ability == ABILITY_NONE)
+            continue;
+        points = GetSpeciesAbilityTierPoints(species, ability);
+        maxPoints = max(maxPoints, points);
+    }
+    return maxPoints;
+}
+
+static u8 GetTerminalSpeciesMaxTierPoints(u16 species)
+{
+    const struct FormChange *formChanges = GetSpeciesFormChanges(species);
+    u8 maxPoints = GetSpeciesAbilityMaxTierPoints(species);
+    u32 i;
+
+    for (i = 0; formChanges != NULL && formChanges[i].method != FORM_CHANGE_TERMINATOR; i++)
+    {
+        switch (formChanges[i].method)
+        {
+        case FORM_CHANGE_BATTLE_MEGA_EVOLUTION_ITEM:
+        case FORM_CHANGE_BATTLE_MEGA_EVOLUTION_MOVE:
+        {
+            u8 points = GetSpeciesAbilityMaxTierPoints(formChanges[i].targetSpecies);
+            maxPoints = max(maxPoints, points);
+            break;
+        }
+        }
+    }
+    return maxPoints;
+}
+
+// Terminal evolutions and their Mega Evolutions contribute; evolution
+// requirements do not limit potential.
+static u8 GetTerminalEvolutionMaxTierPoints(u16 species)
 {
     const struct Evolution *evolutions = GetSpeciesEvolutions(species);
     bool32 hasEvolution = FALSE;
@@ -850,39 +894,29 @@ static u8 GetTerminalEvolutionMaxTierPoints(struct Pokemon *tempMon, u16 species
             if (target == SPECIES_NONE || (species == SPECIES_NINCADA && target == SPECIES_SHEDINJA))
                 continue;
             hasEvolution = TRUE;
-            points = GetTerminalEvolutionMaxTierPoints(tempMon, target);
+            points = GetTerminalEvolutionMaxTierPoints(target);
             maxPoints = max(maxPoints, points);
         }
     }
     if (!hasEvolution)
-    {
-        u8 abilityNum;
-        SetMonData(tempMon, MON_DATA_SPECIES, &species);
-        for (abilityNum = 0; abilityNum < NUM_ABILITY_SLOTS; abilityNum++)
-        {
-            u8 points;
-            if (GetSpeciesAbility(species, abilityNum) == ABILITY_NONE)
-                continue;
-            SetMonData(tempMon, MON_DATA_ABILITY_NUM, &abilityNum);
-            points = GetMonTierPoints(tempMon);
-            maxPoints = max(maxPoints, points);
-        }
-    }
+        maxPoints = GetTerminalSpeciesMaxTierPoints(species);
     return maxPoints;
 }
 
 u8 GetMonMaxTierPoints(struct Pokemon *mon)
 {
-    struct Pokemon tempMon;
     u16 species;
+    u8 currentPoints;
+    u8 terminalPoints;
 
     if (mon == NULL)
         return 3;
     species = SanitizeSpeciesId(GetMonData(mon, MON_DATA_SPECIES));
     if (species == SPECIES_NONE || GetMonData(mon, MON_DATA_IS_EGG))
         return 0;
-    tempMon = *mon;
-    return GetTerminalEvolutionMaxTierPoints(&tempMon, species);
+    currentPoints = GetMonTierPoints(mon);
+    terminalPoints = GetTerminalEvolutionMaxTierPoints(species);
+    return max(currentPoints, terminalPoints);
 }
 
 bool32 IsMonWithinMaxTierPoints(struct Pokemon *mon, u8 threshold)

@@ -859,6 +859,24 @@ TEST("Zenmodeman: MaxTierPoints checks every evolution branch")
     EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
 }
 
+TEST("Zenmodeman: MaxTierPoints cannot be lower than current Tier Points")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_PIDGEOTTO, 23, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&mon), 3);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 3);
+}
+
+TEST("Zenmodeman: MaxTierPoints includes terminal Mega Evolutions")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_PIDGEOT, 36, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonTierPoints(&mon), 2);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 3);
+}
+
 TEST("Zenmodeman: Restricted teaching unlocks at the first level and agrees for boxed Pokemon")
 {
     struct Pokemon mon;

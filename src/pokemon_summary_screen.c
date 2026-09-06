@@ -415,6 +415,8 @@ struct SlidingWindow
     u8 top;
 };
 
+static void CopyNColumnsToTilemap(const struct SlidingWindow *slidingWindow, u16 *tilemapDest, u8 visibleColumns, bool8 isOpeningToTheLeft);
+
 static const u16 sStatusTilemap[] = INCBIN_U16("graphics/summary_screen/status_tilemap.bin");
 static const struct SlidingWindow sStatusSlidingWindow1 =
 {
@@ -839,9 +841,9 @@ static const u8 sText_TierPoints[] = _("Tier Points");
 static const u8 sText_MaxTierPoints[] = _("Max Tier Points");
 static const u8 sText_TriumphPoints[] = _("Triumph Points");
 static const u8 sText_TeraType[] = _("Tera Type");
-static const u8 sText_TierPointsDescription[] = _("This Pokémon's cost toward the\nparty's Tier Points limit.");
-static const u8 sText_MaxTierPointsDescription[] = _("The highest Tier Points among its\nterminal evolutions and abilities.");
-static const u8 sText_TriumphDescription[] = _("First-time trainer wins earned\nagainst comparable opponents.");
+static const u8 sText_TierPointsDescription[] = _("Cost towards the\n party's Tier Points limit.");
+static const u8 sText_MaxTierPointsDescription[] = _("Highest Tier Points among\n evolutions, megas, abilities.");
+static const u8 sText_TriumphDescription[] = _("Point for winning\nagainst comparable opponents.");
 static const u8 sText_TeraTypeDescription[] = _("The type this Pokémon becomes\nwhen it Terastallizes.");
 static const u8 sText_RewardClaimed[] = _("CLAIMED");
 
@@ -1555,6 +1557,13 @@ static bool8 DecompressGraphics(void)
         u32 i;
 
         DecompressDataWithHeaderWram(gSummaryPage_BattleMoves_Tilemap, sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_DETAILS][1]);
+        // Restore both regions that the battle-moves page changes while move
+        // selection is active. Details always uses the normal portrait column.
+        CopyNColumnsToTilemap(&sPowerAccSlidingWindow,
+                              sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_DETAILS][0],
+                              sPowerAccSlidingWindow.width,
+                              TRUE);
+        TilemapFiveMovesDisplay(sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_DETAILS][0], 3, TRUE);
         // Replace the baked-in MOVES heading; the Details label is a text window.
         for (i = 12; i < 25; i++)
             sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_DETAILS][1][3 * 32 + i] = 0x3021;
@@ -4168,7 +4177,7 @@ static void PrintDetailsPageText(void)
         valueX = GetStringRightAlignXOffset(FONT_NORMAL, values[i], 136);
         PrintTextOnWindow(profileWindowId, values[i], valueX, y, 0, color);
     }
-    PrintTextOnWindow(descriptionWindowId, descriptions[sMonSummaryScreen->detailsSelectedItem], 0, 1, 0, 0);
+    PrintTextOnWindow(descriptionWindowId, descriptions[sMonSummaryScreen->detailsSelectedItem], 6, 1, 0, 0);
 }
 
 static void Task_PrintDetailsPage(u8 taskId)
