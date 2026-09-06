@@ -49,6 +49,15 @@ Use the project skill at `skills/manage-elastic-emerald-item-acquisition/SKILL.m
 - generic automation tags, source mappings, NPC gifts, trainer rewards, marts, berries, ground items, or hidden items;
 - refreshing source-side presentation templates after user edits to spreadsheet wording or layout.
 
+### Elastic Emerald tier points documentation skill
+
+Use the project skill at `skills/manage-elastic-emerald-tier-points/SKILL.md` when reviewing or syncing `docs/gameplay/tier-points.md` against source. Autodetect it for work involving:
+
+- case-by-case tier-point documentation discrepancies, missing entries, ability or mode qualifiers, or badge thresholds;
+- documenting ordinary Tier Points, MaxTierPoints, or their cap, teaching, and Tera implications.
+
+Preserve the document's custom phrasing and organization; use targeted editorial updates rather than generated replacement documentation. An analysis request produces findings, while a sync request authorizes the corresponding documentation edits.
+
 ### Merge upgrade helper
 
 Use the project skill at `skills/merge-upgrade-helper/SKILL.md` automatically when resolving or auditing an upstream merge or version upgrade. Trigger cases include:

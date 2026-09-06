@@ -235,6 +235,7 @@ void HandleAction_RunBattleScript(void);
 u32 SetRandomTarget(enum BattlerId battlerAtk);
 u32 GetBattleMoveTarget(enum Move move, enum MoveTarget moveTarget);
 enum Obedience GetAttackerObedienceForAction(void);
+enum HoldEffect GetRestrictedModeHoldEffect(enum BattlerId battler, enum Ability ability, enum HoldEffect holdEffect);
 enum HoldEffect GetBattlerHoldEffect(enum BattlerId battler);
 enum HoldEffect GetBattlerHoldEffectIgnoreAbility(enum BattlerId battler);
 enum HoldEffect GetBattlerHoldEffectIgnoreNegation(enum BattlerId battler);

@@ -3,7 +3,8 @@
 ## Documentation status
 
 - **Last documented code commit:** `9febfb4eb7` ("Additional tests and merge restorations").
-- **Uncommitted AI changes covered by this document:** Cut gains one critical-hit stage against an active Grass-type target in the shared runtime/AI critical-hit calculation; unset stored Tera types once again resolve through the curated and monotype-aware assignment policy used by runtime and AI battle queries; singles fast-KO switching now uses per-active-Pokémon matchup commitment instead of the weather-setter, heavy-switching, and defensive-drop entry paths.
+- **Previously uncommitted changes now identified in history:** Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`. These references reconcile the previously documented changes without claiming review of all intervening AI changes.
+- **Uncommitted AI changes covered by this document:** Restricted Mode ignores Choice Band and Choice Scarf effects for player-owned Pokémon with active Gorilla Tactics, including AI held-effect modeling and shared damage/Speed calculations.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -136,7 +137,7 @@ This commitment gate applies only to the fast-KO reason. Perish Song, ineffectiv
 
 Focused regression coverage verifies the initial uncommitted switch, successful attacks and self-targeting moves, Protect-blocked moves, player pivots, the HP thresholds, faster-threat requirement, and ordinary survival checks.
 
-Key commit: uncommitted.
+Key commit: `53239d220d`.
 
 ### Scrapped generalized fast-KO experiments
 
@@ -328,3 +329,9 @@ Key commits: `7fdbe2f144`, `bd8658f64c`, `10f438d2f0`, `7829b03a9c`.
 - Singles and doubles concerns are interleaved in large scoring functions.
 - Knowledge policy is not completely uniform: held items are currently fully known while moves, abilities, and party information remain graduated.
 - Many heuristics combine hard rejection, additive scoring, and probability gates, making global behavior difficult to reason about compositionally.
+
+### Restricted Mode Gorilla Tactics and Choice items
+
+Choice Band and Choice Scarf return no effective held-item effect while Gorilla Tactics is active on a player-owned Pokémon in Restricted Mode. Opponents and AI-controlled partners retain their Choice-item effects. The shared damage and Speed helpers also apply this rule using their supplied ability, so AI simulations use their modeled ability rather than discovering a hidden one. The normal AI held-effect cache applies the same filter after its existing negation checks; the suppression-unaware handicap retains its existing early return. Gorilla Tactics keeps its own Attack boost and move lock. Choice Specs and unrestricted battles retain their normal effects. Suppressing or replacing Gorilla Tactics restores normal item behavior, subject to other item-negation rules. The held item itself remains present.
+
+Key commit: uncommitted.

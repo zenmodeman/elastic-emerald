@@ -1,11 +1,11 @@
 # Tier Points
-This page presents  Tier Points values for Pokemon, which is applicable for the "Tiered" option. When this option is selected, the game enforces that the sum of points on the team cannot exclude the points cap of **20**; auto-boxing a newly obtained Pokemon will happen when an evolution or Pokemon acquisition would result in the points cap being violated.
+This page presents  Tier Points values for Pokemon. These points are most relevant for the "Tiered" option avaialbel at the start of the game, where the sum of points on the team cannot exclude the points cap of **20**; there are automatic procedures that take place based on changes to a team violating the cap, such as auto-boxing a newly captured Pokemon or a Pokemon whose evolution exceeds the Tier Points value.
 
 The Tier Points system also has added functionality tied to the Tera system in Restricted Mode where a Pokemon that has a Tier Points value of 4 or higher cannot tera unless it has an ability or form exception. See [Curated Tera Type Distribution](curated-tera-type-distribution.md) for more information on that.
 
-This document also lists the currently implemented changes in points with progression. A Pokemon species' tier points can go down as the game progresses, but it can never go up without evolving. 
+This document lists the currently implemented changes in points based on progression. A Pokemon species' tier points can go down as the game progresses, but it can never go up without some other change in state such as an evolution or an ability change. 
 
-Some of the below lists, especially for Tier Points values of 1 and 2, are organized between fully evolved Pokemon and not fully evolved Pokemon. This is to separate the Pokemon whose points are low because of their terminal power level from the Pokemon that have low points only if the user deliberately chooses to not evolve them. 
+For some of the lists, especially for Tier Points values of 1 and 2, are organized between fully evolved Pokemon and not fully evolved Pokemon. This is to separate the Pokemon whose points are low because of their terminal power level from the Pokemon that have low points only if the user deliberately chooses to not evolve them. 
 
 ## MaxTierPoints and move teaching
 
@@ -18,24 +18,29 @@ In Restricted Mode, Pokémon with MaxTierPoints **5 or greater** cannot learn a 
 ### Unavailable until the Post-Game
 All Legendaries/Mythicals with a BST above 600 aside from Regigigas are unavailable until the post-game.
 
-Additionally, the following other Legendaries/Mythicals/Ultra Beasts/Paradoxes are also unavailable until the post-game:
-- Gen 7 (all of these because of Beast Boost): Pheromosa, Naganadel, Kartana, Blacephalon
-- Gen 9: Chi-Yu, Chien-Pao, Flutter Mane, Iron Bundle
+Beyond that, all Pokemon should be elligble in some way, though some Pokemon have been given some Restricted Mode limitations to maintain a power level within the 6-tier-point value.
 
-This does not include specific mega stones that are available before the post-game but only in non-restricted mode. 
+
 ## Varying Tier Points based on Ability
 
 This covers Pokemon with different Tier Points schemes based on notable differences in potency depending on ability. To avoid excessive conditional sets, these point values are narrowed down to a small pool  of notable abilities. Not all Pokemon with the below ability categories will have ability-oriented conditionals, especially in cases where a Pokemon has multiple comparably potent abilities.
 
 It's also worth noting that many of these Pokemon also have progression restrictions on using ability patches, which are documented in the [Pokemon spreadsheet](https://docs.google.com/spreadsheets/d/1w00UPV-e9T6S0IAVSUsqH232ncC6fKQn9mSTrP3aMPY/edit?pli=1&gid=137589446#gid=137589446). 
 
-### Weather and Terrain 
+### Weather and Terrain
+- **Politoed**
+	- If Drizzle: always 6 Points
+	- If not Drizzle: always 3 Points
+- **Pelipper**
+	- If Drizzle: always 6 Points
+	- If not Drizzle: starts at 3 Points; drops to 2 Points after 5 badges
 - **Vulpix**
 	- If Drought: starts at 6 Points; drops to 5 Points after 8 badges
 	- If not Drought: starts at 3 Points; drops to 2 points after 3 badges; drops to 1 point after 4 badges
 - **Ninetales**
 	- If Drought: always 6 Points
 	- If not Drought: always 3 Points
+
 ### Regenerator
 
 ### Huge Power and Pure Power
@@ -55,16 +60,25 @@ It's also worth noting that many of these Pokemon also have progression restrict
 - Glimmet
 	- If Toxic Debris: always 5 Points
 	- It not Toxic Debris: 3 points until 3 badges, then 2 points until 6 badges, and then 1 point
+
+### Gorilla Tactics
+- Darmanitan-Galar with Gorilla Tactics
+	- 6 points in non-Restricted Mode 
+	- 5 points in Restricted Mode (In Restricted Mode, Choice Band and Choice Scarf have no effect for the player’s Pokémon while Gorilla Tactics is active; AI Pokémon are unaffected)
+- Darmanitan-Galar without Gorilla Tactics and Darmanitan-Galar-Zen:
+	- 5 points
+
 ## Always 6 Points
 
 - **Kanto/Regionals**: Slowbro-Mega, Kangaskhan-Mega, Mega Charizard Y(**Note: only available in non-Restricted Mode before the post-game**)
+- **Kanto Eviolite mons**: Chansey
 - **Johto/Regionals**: Blissey
 - **Hoenn/Regionals**: Shedinja, Salamence-Mega, Metagross-Mega
 - **Sinnoh**: Lucario-Mega, Darkrai
 - **Kalos/Regionals**: Aegislash, Goodra-Hisui
-- **Alola**: Marshadow, Magearna, Melmetal
+- **Alola**: Marshadow, Magearna, Melmetal, Pheromosa, Kartana, Blacephalon
 - **Galar:** Dragapult, Urshifu-Single-Strike, Urshifu-Rapid-Strike
-- **Paldea**: Palafin, Archaludon, Annihilape, Iron-Hands, Gouging-Fire, Raging-Bolt, Walking-Wake, Great-Tusk, Roaring-Moon, Iron-Valiant
+- **Paldea**: Palafin, Archaludon, Annihilape, Iron-Hands, Gouging-Fire, Raging-Bolt, Walking-Wake, Great-Tusk, Roaring-Moon, Iron-Valiant, Flutter-Mane, Iron-Bundle, Chi-Yu, Chien-Pao
 
 ---
 
@@ -78,11 +92,11 @@ It's also worth noting that many of these Pokemon also have progression restrict
 - **Hoenn Megas**: Sceptile-Mega, Swampert-Mega, Blaziken-Mega, Latias-Mega, Latios-Mega, Medicham-Mega, Aggron-Mega, Mawile-Mega, Sharpedo-Mega, Sableye-Mega, Gardevoir-Mega
 - **Sinnoh/Regionals**: Infernape, Garchomp, Tangrowth, Togekiss, Azelf, Heatran, Manaphy, Shaymin-Sky
 - **Sinnoh Megas**: Garchomp-Mega, Lopunny-Mega, Gallade-Mega
-- **Unova/Regionals**: Excadrill, Darmanitan, Darmanitan-Galar, Darmanitan-Galar-Zen, Amoonguss, Alomomola, Ferrothorn, Volcarona, Terrakion, Tornadus-Therian, Landorus-Incarnate, Landorus-Therian, Genesect
-	- Note: Darmanitan-Galar's points value is based on the Restricted Mode constraint that Choice Items have no effect while Gorilla Tactics is in play.
+- **Unova/Regionals**: Excadrill, Darmanitan, Amoonguss, Alomomola, Ferrothorn, Volcarona, Terrakion, Tornadus-Therian, Landorus-Incarnate, Landorus-Therian, Genesect
+	- Note: Darmanitan-Galar's points value is based on the Restricted Mode constraint that Choice Band and Choice Scarf have no effect for the player’s Pokémon while Gorilla Tactics is active; AI Pokémon are unaffected.
 - **Kalos**: Greninja, Hawlucha, Florges, Zygarde
 - **Kalos Megas**: Diancie-Mega
-- **Alola**: Primarina, Toxapex, Golisopod, Mimikyu, Tapu-Koko, Tapu-Fini, Tapu-Lele, Nihilego, Buzzwole, Celesteela, Zeraora
+- **Alola**: Primarina, Toxapex, Golisopod, Mimikyu, Tapu-Koko, Tapu-Fini, Tapu-Lele, Nihilego, Buzzwole, Celesteela, Zeraora, Naganadel
 - **Galar**: Rillaboom, Cinderace, Corviknight, Obstagoon, Dracovish
 - **Hisui**: Ursaluna, Basculegion-M, Basculegion-F, Sneasler, Enamorus
 - **Paldea**: Meowscarada, Skeledirge, Garganacl, Dondozo, Gholdengo, Kingambit, Iron-Moth, Baxcalibur, Ting-Lu, Ursaluna-Bloodmoon, Iron-Boulder, Iron-Crown, Pecharunt, Hydrapple, Dipplin, Ogerpon, Ogerpon-Cornerstone, Ogerpon-Hearthflame, Ogerpon-Wellspring
@@ -92,6 +106,7 @@ It's also worth noting that many of these Pokemon also have progression restrict
 
 - **Kanto/ Regionals**: Venusaur, Charizard, Arcanine, Slowbro-Galar, Clefable, Alakazam, Marowak, Marowak-Alola, Muk-Alola, Cloyster, Gengar, Starmie, Tauros, Tauros-Paldea-Aqua, Tauros-Paldea-Blaze, Tauros-Paldea-Combat, Gyarados, Lapras, Vaporeon, Aerodactyl, Articuno-Galar, Zapdos-Galar, Moltres-Galar, Moltres, Mew
 - **Kanto Eviolite mons**: Scyther, Primeape, Magneton, Rhydon
+- **Kanto Megas**: Blastoise-Mega, Pidgeot-Mega
 - Johto/Regionals: Typhlosion, Azumarill, Jumpluff, Forretress, Espeon, Umbreon, Heracross, Kingdra, Raikou, Entei, Suicune, Celebi
 - Johto Eviolite mons: Ursaring, Porygon2
 - **Johto Megas**: Ampharos-Mega, Heracross-Mega
@@ -112,10 +127,10 @@ It's also worth noting that many of these Pokemon also have progression restrict
 ---
 
 ## Always 3 Points
-- **Kanto / Regionals:**  Blastoise, Raticate, Raichu, Raichu-Alola, Sandslash, Nidoqueen, Ninetales, Ninetales-Alola, Vileplume, Persian-Alola, Dugtrio, Poliwrath, Machamp, Tentacruel, Golem, Golem-Alola, Muk, Electrode-Hisui, Kingler, Dodrio, Exeggutor, Exeggutor-Alola, Hitmonlee, Hitmonchan, Weezing, Weezing-Galar, Kangaskhan, Jynx, Pinsir, Mr-Mime, Jolteon, Articuno
-- **Kanto Eviolite**: Golbat, Dragonair, Graveler, Graveler-Alola, Machoke, Tangela, Magmar, Electabuzz
+- **Kanto / Regionals:**  Blastoise, Raticate, Raichu, Raichu-Alola, Sandslash, Nidoqueen, Ninetales (without Drought), Ninetales-Alola, Wigglytuff, Vileplume, Persian-Alola, Dugtrio, Poliwrath, Machamp, Tentacruel, Golem, Golem-Alola, Muk, Electrode-Hisui, Kingler, Dodrio, Exeggutor, Exeggutor-Alola, Hitmonlee, Hitmonchan, Weezing, Weezing-Galar, Kangaskhan, Jynx, Pinsir, Mr-Mime, Jolteon, Articuno, Rapidash, Rapidash-Galar
+- **Kanto Eviolite**: Golbat, Dragonair, Graveler, Graveler-Alola, Machoke, Tangela, Magmar, Electabuzz, Mr-Mime-Galar
     
-- **Johto / Regionals:**  Meganium, Lanturn, Feraligatr, Ampharos, Bellossom, Sudowoodo, Politoed, Wobbuffet, Shuckle, Mantine, Houndoom, Donphan, Smeargle, Hitmontop, Miltank
+- **Johto / Regionals:**  Meganium, Lanturn, Feraligatr, Ampharos, Bellossom, Sudowoodo, Politoed (without Drizzle), Wobbuffet, Shuckle, Mantine, Houndoom, Donphan, Smeargle, Hitmontop, Miltank
 - **Johto / Regionals Eviolite:** Gligar, Pupitar, Sneasel, Sneasel-Hisui, Qwilfish-Hisui, Togetic, Skiploom, Corsola-Galar, Girafarig
     
 - **Hoenn / Regionals:**  Sceptile, Ludicolo, Breloom, Hariyama, Ninjask, Manectric, Torkoal, Grumpig, Flygon, Crawdaunt, Kecleon, Walrein, Gorebyss, Relicanth, Regice, Regirock, Deoxys-Defense
@@ -124,7 +139,7 @@ It's also worth noting that many of these Pokemon also have progression restrict
 - **Sinnoh / Regionals:**  Luxray, Bastiodon, Wormadam-Trash, Gastrodon, Gastrodon-East, Drifblim, Toxicroak, Lickilicky, Spiritomb, Electivire, Magmortar, Dusknoir, Probopass, Froslass, Rotom-Heat, Rotom-Fan, Rotom-Mow, Rotom, Mesprit, Uxie, Regigigas, 
 - **Sinnoh Eviolite Mons:** Munchlax, Gabite
     
-- **Unova / Regionals:**  Serperior, Emboar, Stoutland, Musharna, Unfezant, Zebstrika, Seismitoad, Throh, Lilligant, Sigilyph, Cofagrigus, Carracosta, Sawsbuck, Jellicent, Gothitelle, Galvantula, Klinklang, Accelgor, Stunfisk, Stunfisk-Galar, Golurk, Braviary, Braviary-Hisui, Virizion
+- **Unova / Regionals:**  Serperior, Emboar, Stoutland, Musharna, Unfezant, Zebstrika, Seismitoad, Throh, Lilligant, Sigilyph, Cofagrigus, Carracosta, Sawsbuck, Jellicent, Gothitelle, Galvantula, Klinklang, Accelgor, Stunfisk, Stunfisk-Galar, Golurk, Braviary, Braviary-Hisui, Virizion, Darmanitan-Zen
 - **Unova Eviolite Mons:** Zweilous, Foongus, Ferroseed, Vullaby, Boldore, Gurdurr, Cottonee
     
 - **Kalos / Regionals:**  Vivillon, Pyroar, Gogoat, Pangoro, Furfrou, Meowstic, Meowstic-F, Aurorus, Tyrantrum, Aromatisse, Slurpuff, Barbaracle, Dragalge, Heliolisk, Carbink, Trevenant, Zygarde-10
@@ -150,10 +165,10 @@ It's also worth noting that many of these Pokemon also have progression restrict
 	- Fully Evolved: Claydol, Eelektross, Cryogonal, Dhelmise
 	- Not-Fully-Evolved: Vibrava
 - **Starts at 3 points and then drops to 2 points after 5 badges**: 
-	- Fully-Evolved: Swalot, Camerupt, Altaria, Rampardos, Wormadam-Sandy, Abomasnow, Leafeon, Rotom-Frost, Scrafty, Garbodor, Vanilluxe, Beheeyem, Beartic, Druddigon, Bouffalant, Stantler, Wyrdeer, Clawitzer, Dedenne, Gourgeist, Lycanroc-Midnight, Lurantis, Oranguru, Grafaiai, Scovillain
+	- Fully-Evolved: Pelipper (without Drizzle), Swalot, Camerupt, Altaria, Rampardos, Wormadam-Sandy, Abomasnow, Leafeon, Rotom-Frost, Scrafty, Garbodor, Vanilluxe, Beheeyem, Beartic, Druddigon, Bouffalant, Stantler, Wyrdeer, Clawitzer, Dedenne, Gourgeist, Lycanroc-Midnight, Lurantis, Oranguru, Grafaiai, Scovillain
 	- Not-Fully-Evolved: Charmeleon, Wartortle, Bayleef, Croconaw, Grovyle, Prinplup, Servine, Pignite, Dewott, Quilladin, Braixen, Dartrix, Torracat, Brionne, Drizzile, Crocalor, Quaxwell, Larvesta, Rufflet, Corvisquire, Carkol, Poliwhirl, Palpitoad, Mudbray, Hippopotas, Dwebble, Koffing, Vanillish, Dolliv, Grimer, Grimer-Alola, Trubbish, Silicobra, Croagunk, Tirtouga, Archen, Lileep, Bergmite, Klink, Fraxure, Scraggy, Eelektrik, Binacle, Tyrunt, Amaura, Ponyta, Ponyta-Galar, Omanyte, Kabuto, Anorith, Skorupi, Snover, Frillish, Varoom, Lampent, Rhyhorn, Sandygast, Golett, Skrelp, Mienfoo, Pawniard, Pikachu, Exeggcute, Voltorb-Hisui, Clefairy, Staryu, Roselia, Misdreavus, Cetoddle, Shelmet, Phantump, Lickitung, Aipom, Yanma, Dunsparce
 - **Starts at 3 points and then drops to 2 points after 4 badges**: 
-	- Persian, Hypno, Weepinbell, Victreebel, Fearow, Arbok, Sandslash-Alola, Venomoth, Dewgong, Electrode, Flareon, Wigglytuff, Noctowl, Xatu, Granbull, Octillery, Pelipper, Masquerain, Sableye, Mawile, Volbeat, Illumise, Cacturne, Solrock, Lunatone, Whiscash, Absol, Tropius, Chimecho, Huntail, Vespiquen, Cherrim, Lopunny, Honchkrow, Purugly, Skuntank, Glaceon, Liepard, Simisage, Simisear, Simipour, Audino, Leavanny, Basculin, Maractus, Swanna, Emolga, Heatmor, Raticate-Alola, Malamar, Toucannon, Gumshoos, Crabominable, Cramorant, Thievul, Flapple, Wugtrio, Rabsca, 
+	- Persian, Hypno, Weepinbell, Victreebel, Fearow, Arbok, Sandslash-Alola, Venomoth, Dewgong, Electrode, Flareon, Noctowl, Xatu, Granbull, Octillery, Masquerain, Sableye, Mawile, Volbeat, Illumise, Cacturne, Solrock, Lunatone, Whiscash, Absol, Tropius, Chimecho, Huntail, Vespiquen, Cherrim, Lopunny, Honchkrow, Purugly, Skuntank, Glaceon, Liepard, Simisage, Simisear, Simipour, Audino, Leavanny, Basculin, Maractus, Swanna, Emolga, Heatmor, Raticate-Alola, Malamar, Toucannon, Gumshoos, Crabominable, Cramorant, Thievul, Flapple, Wugtrio, Rabsca, 
 	- Not-Fully-Evolved: Whirlipede, Charjabug, Swadloon, Krokorok, Seadra, Sealeo, Gloom, Dewpider, Chewtle, Stufful, Meowth-Galar, Krabby, Cubone, Drifloon, Tranquill, Hattrem, Morgrem, Piloswine, Bronzor
 - **Starts at 3 points and then drops to 2 points after 3 badges**: Pidgeotto, Fletchinder, Loudred, Wailmer, Slowpoke, Slowpoke-Galar, Honedge, Growlithe, Growlithe-Hisui, Onix, Nosepass, Shieldon, Houndour, Carvanha, Kirlia, Gothorita, Drilbur, Darumaka, Darumaka-Galar, Nidorino, Nidorina, Herdier, Steenee, Pawmo, Buizel, Arrokuda
 - **Always 2 points**: Golduck, Pidgeot, Ditto, Exploud, Wailord, Cradily, Finizen
@@ -164,7 +179,7 @@ It's also worth noting that many of these Pokemon also have progression restrict
 	- Fully-Evolved: Parasect, Seaking, Ledian, Ariados, Sunflora, Qwilfish, Corsola, Magcargo, Delibird, Mightyena, Linoone, Delcatty, Plusle, Minun, Spinda, Seviper, Castform, Banette, Luvdisc, Wormadam-Plant, Mothim, Pachirisu, Chatot, Carnivine, Lumineon, Phione, Swoobat, Watchog, Unown
 	- Not-Fully-Evolved: Trapinch, Swablu, Litleo, Joltik, Axew, Litwick, Vanillite, Clamperl, Spritzee, Swirlix, Milcery, Porygon, Minccino
 - **Starts at 3 points; drops to 2 points after 3 badges; ends at 1 point after 4 badges**: 
-	- Not Fully-Evolved: Numel, Barboach, Baltoy, Buneary, Murkrow, Ducklett, Cubchoo, Elgyem, Inkay, Clauncher, Pumpkaboo, Crabrawler, Rockruff, Fomantis, Applin, Mime Jr., Wiglett, Capsakid, Rellor, Bramblin, Happiny, Dratini, Larvitar, Bagon, Gible, Deino, Goomy, Jangmo-o, Dreepy, Frigibax, Riolu, Charmander, Squirtle, Chikorita, Cyndaquil, Totodile, Treecko, Piplup, Chimchar, Snivy, Tepig, Oshawott, Fennekin, Chespin, Rowlet, Litten, Popplio, Sobble, Fuecoco, Quaxly, Abra, Gastly, Solosis, Meditite, Shuppet, Duskull, Geodude, Geodude-Alola, Aron, Elekid, Magby, Smoochum, Bonsly, Budew, Nacli, Tinkatink, Roggenrola, Machop, Timburr, Fidough, Chinchou, Blitzle, Meowth, Meowth-Alola, Sizzlipede, Shroodle, Sandile, Tentacool, Toedscool, Magnemite, Voltorb, Teddiursa, Corphish, Cranidos, Shellos-East, Shellos-West, Zorua, Zorua-Hisui, Maschiff, Greavard, Venonat, Doduo, Pineco, Horsea, Skiddo, Pancham, Hatenna, Impidimp, Salandit, Seel, Stunky, Yamask, Yamask-Galar, Deerling, Cufant, Flittle, Slugma, Glameow, Charcadet, Sinistea-Phony, Sinistea-Antique, Poltchageist-Artisan, Poltchageist-Counterfeit, Vulpix, Vulpix-Alola, Eevee, Pansear, Shellder, Panpour, Pansage, Tadbulb, Jigglypuff, Munna, Petilil, Helioptile, Snorunt, Karrablast, Clobbopus
+	- Not Fully-Evolved: Numel, Barboach, Baltoy, Buneary, Murkrow, Ducklett, Cubchoo, Elgyem, Inkay, Clauncher, Pumpkaboo, Crabrawler, Rockruff, Fomantis, Applin, Mime Jr., Wiglett, Capsakid, Rellor, Bramblin, Happiny, Dratini, Larvitar, Bagon, Gible, Deino, Goomy, Jangmo-o, Dreepy, Frigibax, Riolu, Charmander, Squirtle, Chikorita, Cyndaquil, Totodile, Treecko, Piplup, Chimchar, Snivy, Tepig, Oshawott, Fennekin, Chespin, Rowlet, Litten, Popplio, Sobble, Fuecoco, Quaxly, Abra, Gastly, Solosis, Meditite, Shuppet, Duskull, Geodude, Geodude-Alola, Aron, Elekid, Magby, Smoochum, Bonsly, Budew, Nacli, Tinkatink, Roggenrola, Machop, Timburr, Fidough, Chinchou, Blitzle, Meowth, Meowth-Alola, Sizzlipede, Shroodle, Sandile, Tentacool, Toedscool, Magnemite, Voltorb, Teddiursa, Corphish, Cranidos, Shellos-East, Shellos-West, Zorua, Zorua-Hisui, Maschiff, Greavard, Venonat, Doduo, Pineco, Horsea, Skiddo, Pancham, Hatenna, Impidimp, Salandit, Seel, Stunky, Yamask, Yamask-Galar, Deerling, Cufant, Flittle, Slugma, Glameow, Charcadet, Sinistea-Phony, Sinistea-Antique, Poltchageist-Artisan, Poltchageist-Counterfeit, Vulpix (without Drought), Vulpix-Alola, Eevee, Pansear, Shellder, Panpour, Pansage, Tadbulb, Jigglypuff, Munna, Petilil, Helioptile, Snorunt, Karrablast, Clobbopus
 - **Starts at 3 points; drops to 2 points after 2 badges; ends at 1 point after 3 badges**: 
 	- Not Fully Evolved: Pidgey, Hoothoot, Taillow, Starly, Pidove, Fletchling, Pikipek, Rookidee, Wattrel, Lotad, Seedot, Sentret, Bidoof, Lillipup, Patrat, Yungoos, Mareep, Shinx, Wynaut, Nidoran-M, Nidoran-F, Marill, Surskit, Poliwag, Wingull, Poochyena, Nickit, Hoppip, Oddish, Bellsprout, Rolycoly, Pawmi, Ekans, Gulpin, Sandshrew, Sandshrew-Alola, Flabébé, Rattata, Rattata-Alola, Zigzagoon, Zigzagoon-Galar, Skwovet, Wooloo, Whismur, Lechonk, Nymble, Nincada, Spearow, Natu, Wooper, Wooper-Paldea, Remoraid, Makuhita, Snubbull, Shroomish, Paras, Morelull, Cherubi, Phanpy, Espurr, Cutiefly, Yamper, Tandemaus, Smoliv, Diglett, Diglett-Alola, Electrike, Finneon, Spoink, Cacnea, Spheal, Goldeen, Swinub
 - **Starts at 2 points and drops to 1 points after 6 badges**: Glalie
