@@ -912,7 +912,7 @@ static void TryDepleteMoveRelearnerPoint(void)
 
     if (FlagGet(FLAG_RESOURCE_MODE)
      && remainingRelearner > 0
-     && !IsMonFreeMoveRelearnerEligible(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon]))
+     && !IsMonWithinMaxTierPoints(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon], MOVE_RELEARNER_MAX_TIER_POINTS))
     {
         VarSet(VAR_REMAINING_RELEARNER, remainingRelearner - 1);
     }
@@ -931,7 +931,7 @@ static void HideHeartSpritesAndShowTeachMoveText(bool8 onlyHideSprites)
     {
         if (FlagGet(FLAG_RESOURCE_MODE)
          && VarGet(VAR_REMAINING_RELEARNER) == 0
-         && IsMonFreeMoveRelearnerEligible(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon]))
+         && IsMonWithinMaxTierPoints(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon], MOVE_RELEARNER_MAX_TIER_POINTS))
         {
             StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_FreeRelearner);
         }
@@ -1017,7 +1017,7 @@ static void ShowTeachMoveText(bool8 shouldDoNothingInstead)
     {
         if (FlagGet(FLAG_RESOURCE_MODE)
          && VarGet(VAR_REMAINING_RELEARNER) == 0
-         && IsMonFreeMoveRelearnerEligible(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon]))
+         && IsMonWithinMaxTierPoints(&gParties[B_TRAINER_PLAYER][sMoveRelearnerStruct->partyMon], MOVE_RELEARNER_MAX_TIER_POINTS))
         {
             StringExpandPlaceholders(gStringVar4, gText_TeachWhichMoveToPkmn_FreeRelearner);
         }
@@ -1317,7 +1317,8 @@ static u32 GetRelearnerTMMoves(struct BoxPokemon *mon, u16 *moves)
         if (!P_ENABLE_ALL_TM_MOVES && !CheckBagHasItem(item, 1))
             continue;
 
-        if (!CanLearnTeachableMove(species, move))
+        if (!CanLearnTeachableMove(species, move)
+         || !DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(mon, move))
             continue;
 
         if (!BoxMonKnowsMove(mon, move))
@@ -1346,7 +1347,8 @@ static u32 GetRelearnerTutorMoves(struct BoxPokemon *mon, u16 *moves)
     {
         enum Move move = gTutorMoves[i];
 
-        if (!CanLearnTeachableMove(species, move))
+        if (!CanLearnTeachableMove(species, move)
+         || !DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(mon, move))
             continue;
 
         if (!BoxMonKnowsMove(mon, move))
@@ -1470,7 +1472,8 @@ static bool32 HasRelearnerTMMoves(struct BoxPokemon *boxMon)
         if (!P_ENABLE_ALL_TM_MOVES && !CheckBagHasItem(item, 1))
             continue;
 
-        if (!CanLearnTeachableMove(species, move))
+        if (!CanLearnTeachableMove(species, move)
+         || !DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(boxMon, move))
             continue;
 
         if (!BoxMonKnowsMove(boxMon, move))
@@ -1494,7 +1497,8 @@ static bool32 HasRelearnerTutorMoves(struct BoxPokemon *boxMon)
     {
         enum Move move = gTutorMoves[i];
 
-        if (!CanLearnTeachableMove(species, move))
+        if (!CanLearnTeachableMove(species, move)
+         || !DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(boxMon, move))
             continue;
 
         if (!BoxMonKnowsMove(boxMon, move))

@@ -2450,10 +2450,9 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 {
                     retVal = gSpeciesInfo[substruct0->species].forceTeraType;
                 }
-                else if (substruct0->teraType == TYPE_NONE) // Tera Type hasn't been modified so we can just use the personality
+                else if (substruct0->teraType == TYPE_NONE) // Tera Type hasn't been stored, so derive the configured assignment.
                 {
-                    const enum Type *types = gSpeciesInfo[substruct0->species].types;
-                    retVal = (boxMon->personality & 0x1) == 0 ? types[0] : types[1];
+                    retVal = GetCustomTeraType(substruct0->species, boxMon->personality);
                 }
                 else
                 {
@@ -5385,7 +5384,7 @@ u16 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves)
         u32 j;
         for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != applicableTutorMoves[i]; j++)
             ;
-        if (j == MAX_MON_MOVES)
+        if (j == MAX_MON_MOVES && DoesMonMeetRestrictedTeachableMoveLevelCheck(mon, applicableTutorMoves[i]))
             moves[moveCount++] = applicableTutorMoves[i];
     }
     return moveCount;

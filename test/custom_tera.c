@@ -63,6 +63,21 @@ TEST("Zenmodeman: Pokemon creation stores its custom Tera assignment")
     EXPECT_EQ(GetMonData(&mon, MON_DATA_TERA_TYPE), TYPE_FIRE);
 }
 
+TEST("Zenmodeman: Unset stored Tera type uses curated and monotype-aware assignment")
+{
+    struct Pokemon mon;
+    enum Type typeNone = TYPE_NONE;
+
+    CreateMonWithIVsPersonality(&mon, SPECIES_JOLTEON, 5, 0, 1);
+    SetMonData(&mon, MON_DATA_TERA_TYPE, &typeNone);
+
+    FlagSet(FLAG_CURATED_TERA);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_TERA_TYPE), TYPE_FIRE);
+
+    SetMonotype(TYPE_WATER);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_TERA_TYPE), TYPE_WATER);
+}
+
 TEST("Zenmodeman: Restricted Tera permits every Pokemon below four Tier Points")
 {
     EXPECT(!IsRestrictedModeTeraCombinationBanned(SPECIES_MEW, ABILITY_SYNCHRONIZE, 3));

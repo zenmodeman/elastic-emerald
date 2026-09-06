@@ -778,7 +778,7 @@ static void TryDepleteCenterTutorPoint(void)
     if (FlagGet(FLAG_RESOURCE_MODE)
      && remainingTutor > 0
      && VarGet(VAR_TEMP_9) == MOVE_TUTOR_CENTER
-     && !IsMonFreeCenterTutorEligible(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon]))
+     && !IsMonWithinMaxTierPoints(&gParties[B_TRAINER_PLAYER][sMoveTutorStruct->partyMon], CENTER_TUTOR_MAX_TIER_POINTS))
     {
         VarSet(VAR_REMAINING_TUTOR, remainingTutor - 1);
     }

@@ -7,6 +7,14 @@ This document also lists the currently implemented changes in points with progre
 
 Some of the below lists, especially for Tier Points values of 1 and 2, are organized between fully evolved Pokemon and not fully evolved Pokemon. This is to separate the Pokemon whose points are low because of their terminal power level from the Pokemon that have low points only if the user deliberately chooses to not evolve them. 
 
+## MaxTierPoints and move teaching
+
+`GetMonMaxTierPoints` returns the highest current Tier Points value across all terminal evolutions reachable from the Pokémon's current species and every nonempty ability slot of each terminal species. A terminal Pokémon includes itself. Intermediate species do not contribute, evolution requirements do not limit the search, and Nincada's Shedinja branch is excluded (Shedinja itself still counts normally). Badge-dependent points use current progression. The calculation leaves the Pokémon unchanged and does not change ordinary Tier Points or party costs.
+
+In Resource Mode, Pokémon with MaxTierPoints **2 or less** receive free Pokémon Center tutor lessons and move relearner lessons, including when the corresponding resource is exhausted. Successful TM teaching also preserves the TM quantity and displays: “The Underdog Meister's system has reimbursed the TM usage for an underdog Pokémon!” These benefits use the shared `IsMonWithinMaxTierPoints` check with separate threshold constants in `include/pokemon.h`; there are no species-specific free-teaching exceptions. Outside Resource Mode, resource costs are unchanged.
+
+In Restricted Mode, Pokémon with MaxTierPoints **5 or greater** cannot learn a TM or tutor move before its earliest level in their **current species'** level-up learnset. Moves absent from that learnset remain compatible under the usual rules. The restriction applies to party and boxed teaching and TM/tutor categories in the relearner; ordinary level-up relearning is unchanged. Outside Restricted Mode, teaching compatibility is unchanged.
+
 ### Unavailable until the Post-Game
 All Legendaries/Mythicals with a BST above 600 aside from Regigigas are unavailable until the post-game.
 

@@ -94,7 +94,8 @@ static u32 CanMonLearnMove(struct BoxPokemon *boxmon)
         return CANNOT_LEARN_MOVE_IS_EGG;
     if (BoxMonKnowsMove(boxmon, gSpecialVar_0x8005))
         return ALREADY_KNOWS_MOVE;
-    if (CanLearnTeachableMove(GetBoxMonData(boxmon, MON_DATA_SPECIES), gSpecialVar_0x8005))
+    if (CanLearnTeachableMove(GetBoxMonData(boxmon, MON_DATA_SPECIES), gSpecialVar_0x8005)
+     && DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(boxmon, gSpecialVar_0x8005))
         return VALID_MON;
     return CANNOT_LEARN_MOVE;
 }

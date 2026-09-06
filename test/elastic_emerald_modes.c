@@ -733,8 +733,8 @@ TEST("Zenmodeman: Merge guard: Restricted item clause detects duplicates separat
 
 TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects null Pokemon")
 {
-    EXPECT(!IsMonFreeCenterTutorEligible(NULL));
-    EXPECT(!IsMonFreeMoveRelearnerEligible(NULL));
+    EXPECT(!IsMonWithinMaxTierPoints(NULL, CENTER_TUTOR_MAX_TIER_POINTS));
+    EXPECT(!IsMonWithinMaxTierPoints(NULL, MOVE_RELEARNER_MAX_TIER_POINTS));
 }
 
 TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects eggs")
@@ -744,8 +744,8 @@ TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects eggs")
 
     CreateMon(&mon, SPECIES_CATERPIE, 5, 0, OTID_STRUCT_PLAYER_ID);
     SetMonData(&mon, MON_DATA_IS_EGG, &isEgg);
-    EXPECT(!IsMonFreeCenterTutorEligible(&mon));
-    EXPECT(!IsMonFreeMoveRelearnerEligible(&mon));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
 }
 
 TEST("Zenmodeman: Ability tutor offers and applies either distinct niche ability")
@@ -798,13 +798,16 @@ TEST("Zenmodeman: Ability tutor leaves Pokemon with no niche option unchanged")
     EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_OVERGROW);
 }
 
-TEST("Zenmodeman: Resource free tutors reject Beedrill's explicit tier exception")
+TEST("Zenmodeman: Resource free tutors follow Beedrill progression")
 {
     struct Pokemon mon;
 
     CreateMon(&mon, SPECIES_BEEDRILL, 20, 0, OTID_STRUCT_PLAYER_ID);
-    EXPECT(!IsMonFreeCenterTutorEligible(&mon));
-    EXPECT(!IsMonFreeMoveRelearnerEligible(&mon));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
+    FlagSet(FLAG_BADGE03_GET);
+    EXPECT(IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
+    EXPECT(IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
 }
 
 TEST("Zenmodeman: Resource free tutors inspect stronger future evolutions")
@@ -812,6 +815,76 @@ TEST("Zenmodeman: Resource free tutors inspect stronger future evolutions")
     struct Pokemon mon;
 
     CreateMon(&mon, SPECIES_CATERPIE, 5, 0, OTID_STRUCT_PLAYER_ID);
-    EXPECT(!IsMonFreeCenterTutorEligible(&mon));
-    EXPECT(!IsMonFreeMoveRelearnerEligible(&mon));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
+    EXPECT_EQ(GetMonTierPoints(&mon), 1);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
+    FlagSet(FLAG_BADGE04_GET);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 2);
+    EXPECT(IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
+    EXPECT(IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
+    EXPECT(IsMonWithinMaxTierPoints(&mon, TM_REIMBURSEMENT_MAX_TIER_POINTS));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, 1));
+}
+
+TEST("Zenmodeman: MaxTierPoints excludes Shedinja only from Nincada evolution potential")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_NINCADA, 5, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 3);
+    CreateMon(&mon, SPECIES_SHEDINJA, 20, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 6);
+}
+
+TEST("Zenmodeman: MaxTierPoints checks hidden abilities without changing the Pokemon")
+{
+    struct Pokemon mon;
+    struct Pokemon original;
+    u8 abilitySlot = FindAbilitySlot(SPECIES_VULPIX, ABILITY_FLASH_FIRE);
+
+    CreateMon(&mon, SPECIES_VULPIX, 5, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&mon, MON_DATA_ABILITY_NUM, &abilitySlot);
+    original = mon;
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 6);
+    EXPECT_EQ(memcmp(&mon, &original, sizeof(mon)), 0);
+}
+
+TEST("Zenmodeman: MaxTierPoints checks every evolution branch")
+{
+    struct Pokemon mon;
+
+    CreateMon(&mon, SPECIES_EEVEE, 5, 0, OTID_STRUCT_PLAYER_ID);
+    // Vaporeon costs four, while several other branches cost three.
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
+}
+
+TEST("Zenmodeman: Restricted teaching unlocks at the first level and agrees for boxed Pokemon")
+{
+    struct Pokemon mon;
+    const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(SPECIES_VULPIX);
+    u8 firstLevel = MAX_LEVEL;
+
+    for (u32 i = 0; learnset[i].move != LEVEL_UP_MOVE_END; i++)
+        if (learnset[i].move == MOVE_FLAMETHROWER)
+            firstLevel = min(firstLevel, learnset[i].level);
+    EXPECT(firstLevel > 1);
+    CreateMon(&mon, SPECIES_VULPIX, firstLevel - 1, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT(DoesMonMeetRestrictedTeachableMoveLevelCheck(&mon, MOVE_FLAMETHROWER));
+    FlagSet(FLAG_RESTRICTED_MODE);
+    EXPECT(!DoesMonMeetRestrictedTeachableMoveLevelCheck(&mon, MOVE_FLAMETHROWER));
+    EXPECT(!DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(&mon.box, MOVE_FLAMETHROWER));
+    EXPECT(DoesMonMeetRestrictedTeachableMoveLevelCheck(&mon, MOVE_ENERGY_BALL));
+    CreateMon(&mon, SPECIES_VULPIX, firstLevel, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT(DoesMonMeetRestrictedTeachableMoveLevelCheck(&mon, MOVE_FLAMETHROWER));
+    EXPECT(DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(&mon.box, MOVE_FLAMETHROWER));
+}
+
+TEST("Zenmodeman: Restricted teaching leaves low MaxTierPoints Pokemon unrestricted")
+{
+    struct Pokemon mon;
+
+    FlagSet(FLAG_RESTRICTED_MODE);
+    CreateMon(&mon, SPECIES_BUTTERFREE, 1, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT(DoesMonMeetRestrictedTeachableMoveLevelCheck(&mon, MOVE_PSYCHIC));
 }

@@ -3,7 +3,7 @@
 ## Documentation status
 
 - **Last documented code commit:** `9febfb4eb7` ("Additional tests and merge restorations").
-- **Uncommitted AI changes covered by this document:** Cut gains one critical-hit stage against an active Grass-type target in the shared runtime/AI critical-hit calculation.
+- **Uncommitted AI changes covered by this document:** Cut gains one critical-hit stage against an active Grass-type target in the shared runtime/AI critical-hit calculation; unset stored Tera types once again resolve through the curated and monotype-aware assignment policy used by runtime and AI battle queries.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 

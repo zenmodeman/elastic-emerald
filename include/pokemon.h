@@ -22,6 +22,10 @@
 #define GET_BASE_SPECIES_ID(speciesId) (GetFormSpeciesId(speciesId, 0))
 #define FORM_SPECIES_END (0xffff)
 #define TIER_POINTS_CAP 20
+#define CENTER_TUTOR_MAX_TIER_POINTS 2
+#define MOVE_RELEARNER_MAX_TIER_POINTS 2
+#define TM_REIMBURSEMENT_MAX_TIER_POINTS 2
+#define RESTRICTED_TEACHING_MIN_MAX_TIER_POINTS 5
 
 extern u32 gExcessTierPoints;
 
@@ -972,9 +976,11 @@ u32 GetCurrentPartyTierPointExcess(void);
 bool8 DepositPartyMonToPC_Auto(u8 partyId);
 u32 CalcTierPointsAfterEvolution(u8 partyId, u16 newSpecies);
 u32 CalcTierPointsAfterAbilityChange(u8 partyId, u8 newAbilityNum);
-bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon);
+u8 GetMonMaxTierPoints(struct Pokemon *mon);
+bool32 IsMonWithinMaxTierPoints(struct Pokemon *mon, u8 threshold);
+bool32 DoesMonMeetRestrictedTeachableMoveLevelCheck(struct Pokemon *mon, u16 move);
+bool32 DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(struct BoxPokemon *boxMon, u16 move);
 bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon);
-bool32 IsMonFreeMoveRelearnerEligible(struct Pokemon *mon);
 bool32 CanMonUseMoveRelearnerWithCurrentResources(struct Pokemon *mon);
 u16 GetNumberOfCenterTutorableMoves(struct Pokemon *mon);
 u16 GetNPCTutorableMoves(struct Pokemon *mon, u16 *moves);

@@ -833,85 +833,93 @@ u8 GetMonTierPoints(struct Pokemon *mon){
     }
 }
 
-static bool32 IsFreeMoveRelearnerTierException(u16 species)
+// Only terminal evolutions contribute; evolution requirements do not limit potential.
+static u8 GetTerminalEvolutionMaxTierPoints(struct Pokemon *tempMon, u16 species)
 {
-    switch (species)
-    {
-    case SPECIES_BEEDRILL:
-        return TRUE;
-    default:
-        return FALSE;
-    }
-}
-
-static bool32 IsFreeCenterTutorTierException(u16 species)
-{
-    switch (species)
-    {
-    //Currently redundant but keeping this check until
-    //I have identified a mon that has a conditional 2-point ability variation
-    case SPECIES_BEEDRILL:
-        return TRUE;
-    default:
-        //Because MoveRelearner Tier points are more lenient, they naturally apply here
-        return IsFreeMoveRelearnerTierException(species);
-    }
-}
-
-
-
-static bool32 DoesSpeciesOrEvolutionExceedTierPointThreshold(struct Pokemon *mon, u16 species, u8 threshold)
-{
+    const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+    bool32 hasEvolution = FALSE;
+    u8 maxPoints = 0;
     u32 i;
-    u8 abilityNum;
-    struct Pokemon tempMon = *mon;
-    const struct Evolution *evolutions;
 
-    SetMonData(&tempMon, MON_DATA_SPECIES, &species);
-
-    for (abilityNum = 0; abilityNum < NUM_ABILITY_SLOTS; abilityNum++)
+    if (evolutions != NULL)
     {
-        if (GetSpeciesAbility(species, abilityNum) == ABILITY_NONE)
-            continue;
-
-        SetMonData(&tempMon, MON_DATA_ABILITY_NUM, &abilityNum);
-        if (GetMonTierPoints(&tempMon) > threshold)
-            return TRUE;
+        for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+        {
+            u16 target = SanitizeSpeciesId(evolutions[i].targetSpecies);
+            u8 points;
+            if (target == SPECIES_NONE || (species == SPECIES_NINCADA && target == SPECIES_SHEDINJA))
+                continue;
+            hasEvolution = TRUE;
+            points = GetTerminalEvolutionMaxTierPoints(tempMon, target);
+            maxPoints = max(maxPoints, points);
+        }
     }
-
-    evolutions = GetSpeciesEvolutions(species);
-    if (evolutions == NULL)
-        return FALSE;
-
-    for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+    if (!hasEvolution)
     {
-        u16 targetSpecies = SanitizeSpeciesId(evolutions[i].targetSpecies);
-
-        if (targetSpecies == SPECIES_NONE)
-            continue;
-
-        if (DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, targetSpecies, threshold))
-            return TRUE;
+        u8 abilityNum;
+        SetMonData(tempMon, MON_DATA_SPECIES, &species);
+        for (abilityNum = 0; abilityNum < NUM_ABILITY_SLOTS; abilityNum++)
+        {
+            u8 points;
+            if (GetSpeciesAbility(species, abilityNum) == ABILITY_NONE)
+                continue;
+            SetMonData(tempMon, MON_DATA_ABILITY_NUM, &abilityNum);
+            points = GetMonTierPoints(tempMon);
+            maxPoints = max(maxPoints, points);
+        }
     }
-
-    return FALSE;
+    return maxPoints;
 }
 
-bool32 IsMonFreeCenterTutorEligible(struct Pokemon *mon)
+u8 GetMonMaxTierPoints(struct Pokemon *mon)
 {
+    struct Pokemon tempMon;
     u16 species;
 
-    if (mon == NULL || GetMonData(mon, MON_DATA_IS_EGG))
-        return FALSE;
+    if (mon == NULL)
+        return 3;
+    species = SanitizeSpeciesId(GetMonData(mon, MON_DATA_SPECIES));
+    if (species == SPECIES_NONE || GetMonData(mon, MON_DATA_IS_EGG))
+        return 0;
+    tempMon = *mon;
+    return GetTerminalEvolutionMaxTierPoints(&tempMon, species);
+}
 
-    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    if (species == SPECIES_NONE || GetMonTierPoints(mon) > 1)
-        return FALSE;
+bool32 IsMonWithinMaxTierPoints(struct Pokemon *mon, u8 threshold)
+{
+    return mon != NULL
+        && GetMonData(mon, MON_DATA_SPECIES) != SPECIES_NONE
+        && !GetMonData(mon, MON_DATA_IS_EGG)
+        && GetMonMaxTierPoints(mon) <= threshold;
+}
 
-    if (IsFreeCenterTutorTierException(species))
-        return FALSE;
+// This restriction applies to teaching, not ordinary level-up or relearning.
+bool32 DoesMonMeetRestrictedTeachableMoveLevelCheck(struct Pokemon *mon, u16 move)
+{
+    const struct LevelUpMove *learnset;
+    u32 i;
+    u32 firstLevel = MAX_LEVEL + 1;
 
-    return !DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, species, 1);
+    if (!FlagGet(FLAG_RESTRICTED_MODE)
+     || GetMonMaxTierPoints(mon) < RESTRICTED_TEACHING_MIN_MAX_TIER_POINTS)
+        return TRUE;
+
+    learnset = GetSpeciesLevelUpLearnset(GetMonData(mon, MON_DATA_SPECIES));
+    for (i = 0; learnset[i].move != LEVEL_UP_MOVE_END; i++)
+    {
+        if (learnset[i].move == move)
+            firstLevel = min(firstLevel, learnset[i].level);
+    }
+    return firstLevel == MAX_LEVEL + 1 || GetMonData(mon, MON_DATA_LEVEL) >= firstLevel;
+}
+
+bool32 DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(struct BoxPokemon *boxMon, u16 move)
+{
+    struct Pokemon mon = {0};
+    mon.box = *boxMon;
+    // Box data stores experience, not the party-only cached level.
+    mon.level = GetLevelFromBoxMonExp(boxMon);
+    return DoesMonMeetRestrictedTeachableMoveLevelCheck(&mon, move);
 }
 
 bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon)
@@ -922,24 +930,7 @@ bool32 CanMonUseCenterTutorWithCurrentResources(struct Pokemon *mon)
     if (!FlagGet(FLAG_RESOURCE_MODE) || VarGet(VAR_TEMP_9) != MOVE_TUTOR_CENTER || VarGet(VAR_REMAINING_TUTOR) > 0)
         return TRUE;
 
-    return IsMonFreeCenterTutorEligible(mon);
-}
-
-bool32 IsMonFreeMoveRelearnerEligible(struct Pokemon *mon)
-{
-    u16 species;
-
-    if (mon == NULL || GetMonData(mon, MON_DATA_IS_EGG))
-        return FALSE;
-
-    species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    if (species == SPECIES_NONE || GetMonTierPoints(mon) > 2)
-        return FALSE;
-
-    if (IsFreeMoveRelearnerTierException(species))
-        return FALSE;
-
-    return !DoesSpeciesOrEvolutionExceedTierPointThreshold(mon, species, 2);
+    return IsMonWithinMaxTierPoints(mon, CENTER_TUTOR_MAX_TIER_POINTS);
 }
 
 bool32 CanMonUseMoveRelearnerWithCurrentResources(struct Pokemon *mon)
@@ -950,7 +941,7 @@ bool32 CanMonUseMoveRelearnerWithCurrentResources(struct Pokemon *mon)
     if (!FlagGet(FLAG_RESOURCE_MODE) || VarGet(VAR_REMAINING_RELEARNER) > 0)
         return TRUE;
 
-    return IsMonFreeMoveRelearnerEligible(mon);
+    return IsMonWithinMaxTierPoints(mon, MOVE_RELEARNER_MAX_TIER_POINTS);
 }
 
 //Get the points of the party other than the mon to replace.

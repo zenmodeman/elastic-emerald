@@ -194,6 +194,7 @@ static EWRAM_DATA struct PokemonSummaryScreenData
     bool8 evRedistActive;
     u8 evRedistSelectedStat;
     u8 detailsSelectedItem;
+    bool8 detailsSelectionActive;
     u16 evRedistOriginalTotal;
     u8 evRedistOriginalEvs[NUM_STATS];
     u8 windowIds[8];
@@ -647,7 +648,7 @@ static const struct WindowTemplate sSummaryTemplate[] =
         .bg = 0,
         .tilemapLeft = 12,
         .tilemapTop = 2,
-        .width = 9,
+        .width = 11,
         .height = 2,
         .paletteNum = 6,
         .baseBlock = 858,
@@ -775,9 +776,9 @@ static const struct WindowTemplate sPageDetailsTemplate[] =
 {
     [PSS_DATA_WINDOW_DETAILS_PROFILE] = {
         .bg = 0,
-        .tilemapLeft = 12,
+        .tilemapLeft = 10,
         .tilemapTop = 4,
-        .width = 18,
+        .width = 20,
         .height = 8,
         .paletteNum = 6,
         .baseBlock = 467,
@@ -789,7 +790,7 @@ static const struct WindowTemplate sPageDetailsTemplate[] =
         .width = 20,
         .height = 4,
         .paletteNum = 6,
-        .baseBlock = 611,
+        .baseBlock = 627,
     },
 };
 static const u8 sTextColors[][3] =
@@ -835,9 +836,11 @@ static const TaskFunc sTextPrinterTasks[] =
 static const u8 sText_PokemonDetails[] = _("POKéMON DETAILS");
 static const u8 sText_Details[] = _("DETAILS");
 static const u8 sText_TierPoints[] = _("Tier Points");
+static const u8 sText_MaxTierPoints[] = _("Max Tier Points");
 static const u8 sText_TriumphPoints[] = _("Triumph Points");
 static const u8 sText_TeraType[] = _("Tera Type");
 static const u8 sText_TierPointsDescription[] = _("This Pokémon's cost toward the\nparty's Tier Points limit.");
+static const u8 sText_MaxTierPointsDescription[] = _("The highest Tier Points among its\nterminal evolutions and abilities.");
 static const u8 sText_TriumphDescription[] = _("First-time trainer wins earned\nagainst comparable opponents.");
 static const u8 sText_TeraTypeDescription[] = _("The type this Pokémon becomes\nwhen it Terastallizes.");
 static const u8 sText_RewardClaimed[] = _("CLAIMED");
@@ -1552,9 +1555,8 @@ static bool8 DecompressGraphics(void)
         u32 i;
 
         DecompressDataWithHeaderWram(gSummaryPage_BattleMoves_Tilemap, sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_DETAILS][1]);
-        TilemapFiveMovesDisplay(sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_DETAILS][0], 3, FALSE);
         // Replace the baked-in MOVES heading; the Details label is a text window.
-        for (i = 12; i < 23; i++)
+        for (i = 12; i < 25; i++)
             sMonSummaryScreen->bgTilemapBuffers[PSS_PAGE_DETAILS][1][3 * 32 + i] = 0x3021;
         sMonSummaryScreen->switchCounter++;
         break;
@@ -1817,29 +1819,42 @@ static void Task_HandleInput(u8 taskId)
     {
         if (JOY_NEW(DPAD_UP))
         {
-            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_DETAILS)
+            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_DETAILS
+             && sMonSummaryScreen->detailsSelectionActive)
                 ChangeDetailsSelection(-1);
             else
                 ChangeSummaryPokemon(taskId, -1);
         }
         else if (JOY_NEW(DPAD_DOWN))
         {
-            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_DETAILS)
+            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_DETAILS
+             && sMonSummaryScreen->detailsSelectionActive)
                 ChangeDetailsSelection(1);
             else
                 ChangeSummaryPokemon(taskId, 1);
         }
         else if (JOY_NEW(DPAD_LEFT))
         {
-            ChangePage(taskId, -1);
+            if (!sMonSummaryScreen->detailsSelectionActive)
+                ChangePage(taskId, -1);
         }
         else if (JOY_NEW(DPAD_RIGHT))
         {
-            ChangePage(taskId, 1);
+            if (!sMonSummaryScreen->detailsSelectionActive)
+                ChangePage(taskId, 1);
         }
         else if (JOY_NEW(A_BUTTON))
         {
-            if (sMonSummaryScreen->currPageIndex != PSS_PAGE_SKILLS)
+            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_DETAILS)
+            {
+                sMonSummaryScreen->detailsSelectionActive = TRUE;
+                RemoveWindowByIndex(PSS_DATA_WINDOW_DETAILS_PROFILE);
+                RemoveWindowByIndex(PSS_DATA_WINDOW_DETAILS_DESCRIPTION);
+                PrintDetailsPageText();
+                PutPageWindowTilemaps(PSS_PAGE_DETAILS);
+                PlaySE(SE_SELECT);
+            }
+            else if (sMonSummaryScreen->currPageIndex != PSS_PAGE_SKILLS)
             {
                 if (sMonSummaryScreen->currPageIndex == PSS_PAGE_INFO)
                 {
@@ -1889,6 +1904,17 @@ static void Task_HandleInput(u8 taskId)
         }
         else if (JOY_NEW(B_BUTTON))
         {
+            if (sMonSummaryScreen->currPageIndex == PSS_PAGE_DETAILS
+             && sMonSummaryScreen->detailsSelectionActive)
+            {
+                sMonSummaryScreen->detailsSelectionActive = FALSE;
+                RemoveWindowByIndex(PSS_DATA_WINDOW_DETAILS_PROFILE);
+                RemoveWindowByIndex(PSS_DATA_WINDOW_DETAILS_DESCRIPTION);
+                PrintDetailsPageText();
+                PutPageWindowTilemaps(PSS_PAGE_DETAILS);
+                PlaySE(SE_SELECT);
+                return;
+            }
             StopPokemonAnimations();
             PlaySE(SE_SELECT);
             BeginCloseSummaryScreen(taskId);
@@ -2633,6 +2659,7 @@ static void ChangePage(u8 taskId, s8 delta)
     else if (delta == 1 && sMonSummaryScreen->currPageIndex == sMonSummaryScreen->maxPageIndex)
         return;
 
+    sMonSummaryScreen->detailsSelectionActive = FALSE;
     PlaySE(SE_SELECT);
     ClearPageWindowTilemaps(sMonSummaryScreen->currPageIndex);
     currPageIndex = sMonSummaryScreen->currPageIndex += delta;
@@ -3768,7 +3795,7 @@ static void PrintPageNamesAndStats(void)
     PrintTextOnWindow(PSS_LABEL_WINDOW_BATTLE_MOVES_TITLE, gText_BattleMoves, 2, 1, 0, 1);
     PrintTextOnWindow(PSS_LABEL_WINDOW_CONTEST_MOVES_TITLE, gText_ContestMoves, 2, 1, 0, 1);
     PrintTextOnWindow(PSS_LABEL_WINDOW_POKEMON_DETAILS_TITLE, sText_PokemonDetails, 2, 1, 0, 1);
-    PrintTextOnWindow(PSS_LABEL_WINDOW_DETAILS_BOX_TITLE, sText_Details, 0, 0, 0, 1);
+    PrintTextOnWindowToFit(PSS_LABEL_WINDOW_DETAILS_BOX_TITLE, sText_Details, 0, 0, 0, 1);
 
     ShowUtilityPrompt(SUMMARY_MODE_NORMAL);
 
@@ -4110,30 +4137,32 @@ static void PrintDetailsPageText(void)
     static const u8 *const descriptions[] =
     {
         [0] = sText_TierPointsDescription,
-        [1] = sText_TriumphDescription,
-        [2] = sText_TeraTypeDescription,
+        [1] = sText_MaxTierPointsDescription,
+        [2] = sText_TriumphDescription,
+        [3] = sText_TeraTypeDescription,
     };
     u32 triumph = GetMonData(&sMonSummaryScreen->currentMon, MON_DATA_TRIUMPH);
     u32 profileWindowId = AddWindowFromTemplateList(sPageDetailsTemplate, PSS_DATA_WINDOW_DETAILS_PROFILE);
     u32 descriptionWindowId = AddWindowFromTemplateList(sPageDetailsTemplate, PSS_DATA_WINDOW_DETAILS_DESCRIPTION);
     u32 valueX;
     u32 i;
-    const u8 *labels[] = {sText_TierPoints, sText_TriumphPoints, sText_TeraType};
-    const u8 *values[] = {gStringVar1, gStringVar2, gStringVar3};
+    const u8 *labels[] = {sText_TierPoints, sText_MaxTierPoints, sText_TriumphPoints, sText_TeraType};
+    const u8 *values[] = {gStringVar1, gStringVar2, gStringVar3, gStringVar4};
 
     ConvertIntToDecimalStringN(gStringVar1, GetMonTierPoints(&sMonSummaryScreen->currentMon), STR_CONV_MODE_LEFT_ALIGN, 2);
+    ConvertIntToDecimalStringN(gStringVar2, GetMonMaxTierPoints(&sMonSummaryScreen->currentMon), STR_CONV_MODE_LEFT_ALIGN, 2);
     if (triumph == TRIUMPH_REWARD_CLAIMED)
-        StringCopy(gStringVar2, sText_RewardClaimed);
+        StringCopy(gStringVar3, sText_RewardClaimed);
     else
-        ConvertIntToDecimalStringN(gStringVar2, triumph, STR_CONV_MODE_LEFT_ALIGN, 2);
-    StringCopy(gStringVar3, gTypesInfo[sMonSummaryScreen->summary.teraType].name);
+        ConvertIntToDecimalStringN(gStringVar3, triumph, STR_CONV_MODE_LEFT_ALIGN, 2);
+    StringCopy(gStringVar4, gTypesInfo[sMonSummaryScreen->summary.teraType].name);
 
     for (i = 0; i < ARRAY_COUNT(labels); i++)
     {
-        u32 color = i == sMonSummaryScreen->detailsSelectedItem ? 1 : 0;
+        u32 color = sMonSummaryScreen->detailsSelectionActive && i == sMonSummaryScreen->detailsSelectedItem ? 1 : 0;
         u32 y = 1 + i * 16;
 
-        if (i == sMonSummaryScreen->detailsSelectedItem)
+        if (sMonSummaryScreen->detailsSelectionActive && i == sMonSummaryScreen->detailsSelectedItem)
             PrintTextOnWindow(profileWindowId, gText_SelectorArrow, 0, y, 0, color);
         PrintTextOnWindow(profileWindowId, labels[i], 10, y, 0, color);
         valueX = GetStringRightAlignXOffset(FONT_NORMAL, values[i], 136);
@@ -4153,8 +4182,8 @@ static void ChangeDetailsSelection(s8 delta)
     s32 selection = sMonSummaryScreen->detailsSelectedItem + delta;
 
     if (selection < 0)
-        selection = 2;
-    else if (selection > 2)
+        selection = 3;
+    else if (selection > 3)
         selection = 0;
 
     sMonSummaryScreen->detailsSelectedItem = selection;

@@ -2367,7 +2367,8 @@ static enum CanMoveBeLearned CanTeachMove(struct Pokemon *mon, enum Move move)
 {
     if (GetMonData(mon, MON_DATA_IS_EGG))
         return CANNOT_LEARN_MOVE_IS_EGG;
-    else if (!CanLearnTeachableMove(GetMonData(mon, MON_DATA_SPECIES_OR_EGG), move))
+    else if (!CanLearnTeachableMove(GetMonData(mon, MON_DATA_SPECIES_OR_EGG), move)
+          || !DoesMonMeetRestrictedTeachableMoveLevelCheck(mon, move))
         return CANNOT_LEARN_MOVE;
     else if (MonKnowsMove(mon, move) == TRUE)
         return ALREADY_KNOWS_MOVE;
@@ -5631,16 +5632,42 @@ void ItemUseCB_TMHM(u8 taskId, TaskFunc task)
     }
 }
 
+static void Task_ShowTMReimbursement(u8 taskId)
+{
+    static const u8 sText_TMReimbursed[] = _("The Underdog Meister's system has\nreimbursed the TM usage for an\lunderdog Pokémon!");
+
+    if (IsFanfareTaskInactive() && JOY_NEW(A_BUTTON | B_BUTTON))
+    {
+        DisplayPartyMenuMessage(sText_TMReimbursed, TRUE);
+        ScheduleBgCopyTilemapToVram(2);
+        gTasks[taskId].func = Task_ClosePartyMenuAfterText;
+    }
+}
+
+static void Task_ReimbursedTMLearnedFanfare(u8 taskId)
+{
+    if (!IsPartyMenuTextPrinterActive())
+    {
+        PlayFanfare(MUS_LEVEL_UP);
+        gTasks[taskId].func = Task_ShowTMReimbursement;
+    }
+}
+
 static void Task_LearnedMove(u8 taskId)
 {
     struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][gPartyMenu.slotId];
     s16 *move = &gPartyMenu.data1;
     enum Item item = gSpecialVar_ItemId;
+    bool32 reimburseTM = move[1] == 0
+        && GetItemTMHMIndex(item) > 0
+        && GetItemTMHMIndex(item) <= NUM_TECHNICAL_MACHINES
+        && FlagGet(FLAG_RESOURCE_MODE)
+        && IsMonWithinMaxTierPoints(mon, TM_REIMBURSEMENT_MAX_TIER_POINTS);
 
     if (move[1] == 0)
     {
         AdjustFriendship(mon, FRIENDSHIP_EVENT_LEARN_TMHM);
-        if (!GetItemImportance(item))
+        if (!GetItemImportance(item) && !reimburseTM)
             RemoveBagItem(item, 1);
     }
     GetMonNickname(mon, gStringVar1);
@@ -5648,7 +5675,7 @@ static void Task_LearnedMove(u8 taskId)
     StringExpandPlaceholders(gStringVar4, gText_PkmnLearnedMove3);
     DisplayPartyMenuMessage(gStringVar4, TRUE);
     ScheduleBgCopyTilemapToVram(2);
-    gTasks[taskId].func = Task_DoLearnedMoveFanfareAfterText;
+    gTasks[taskId].func = reimburseTM ? Task_ReimbursedTMLearnedFanfare : Task_DoLearnedMoveFanfareAfterText;
 }
 
 static void Task_DoLearnedMoveFanfareAfterText(u8 taskId)
