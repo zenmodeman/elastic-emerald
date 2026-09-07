@@ -9520,7 +9520,12 @@ static void Cmd_switchoutabilities(void)
     // Record the actual field change so hard switches, pivots, forced switches,
     // and item-triggered switches all prevent commitment to the old matchup.
     if (!IsDoubleBattle() && IsOnPlayerSide(battler))
+    {
         gAiBattleData->playerSwitchedThisTurn = TRUE;
+        for (enum BattlerId opposingBattler = 0; opposingBattler < gBattlersCount; opposingBattler++)
+            if (!IsOnPlayerSide(opposingBattler))
+                gBattleStruct->battlerState[opposingBattler].fastKoCommitPending = FALSE;
+    }
 
     if (gBattleMons[battler].volatiles.neutralizingGas)
     {

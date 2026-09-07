@@ -50,16 +50,16 @@ TEST("Zenmodeman: Trainer scaling: newly eligible evolutions preserve configured
     u8 abilityNum = 1;
     u8 nature;
 
-    CreateMon(&mon, SPECIES_CUTIEFLY, 25, 0, OTID_STRUCT_PLAYER_ID);
+    CreateMon(&mon, SPECIES_PIDGEY, 18, 0, OTID_STRUCT_PLAYER_ID);
     SetMonData(&mon, MON_DATA_MOVE1, &move);
     SetMonData(&mon, MON_DATA_HELD_ITEM, &item);
     SetMonData(&mon, MON_DATA_ABILITY_NUM, &abilityNum);
     nature = GetNature(&mon);
 
-    Test_TryEvolveTrainerMonForLevelModifier(&mon, 22, 3);
+    Test_TryEvolveTrainerMonForLevelModifier(&mon, 17, 1);
 
-    EXPECT_EQ(GetMonData(&mon, MON_DATA_SPECIES), SPECIES_RIBOMBEE);
-    EXPECT_EQ(GetMonData(&mon, MON_DATA_LEVEL), 25);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_SPECIES), SPECIES_PIDGEOTTO);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_LEVEL), 18);
     EXPECT_EQ(GetMonData(&mon, MON_DATA_MOVE1), move);
     EXPECT_EQ(GetMonData(&mon, MON_DATA_HELD_ITEM), item);
     EXPECT_EQ(GetMonData(&mon, MON_DATA_ABILITY_NUM), abilityNum);

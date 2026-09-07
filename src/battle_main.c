@@ -1869,6 +1869,7 @@ static void TryEvolveTrainerMonForLevelModifier(struct Pokemon *mon, u8 baseLeve
 {
     struct Pokemon baseLevelMon;
     enum Species oldSpecies, targetSpecies;
+    u32 baseLevelExp;
     u8 scaledLevel = GetMonData(mon, MON_DATA_LEVEL);
 
     if (levelModifier == 0 || scaledLevel <= baseLevel)
@@ -1877,7 +1878,9 @@ static void TryEvolveTrainerMonForLevelModifier(struct Pokemon *mon, u8 baseLeve
     // Preserve an intentionally unevolved trainer Pokémon when its authored
     // level already qualifies it to evolve.
     baseLevelMon = *mon;
-    SetMonData(&baseLevelMon, MON_DATA_LEVEL, &baseLevel);
+    oldSpecies = GetMonData(mon, MON_DATA_SPECIES);
+    baseLevelExp = gExperienceTables[gSpeciesInfo[oldSpecies].growthRate][baseLevel];
+    SetMonData(&baseLevelMon, MON_DATA_EXP, &baseLevelExp);
     CalculateMonStats(&baseLevelMon);
     if (GetEvolutionTargetSpecies(&baseLevelMon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, CHECK_EVO) != SPECIES_NONE)
         return;

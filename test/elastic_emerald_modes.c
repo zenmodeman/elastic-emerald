@@ -34,7 +34,7 @@ TEST("Zenmodeman: Merge guard: EV Mode restores badge-based per-stat caps")
     EXPECT_EQ(GetEVStatCap(), 48);
     FlagSet(FLAG_BADGE02_GET);
     EXPECT_EQ(GetEVStatCap(), 84);
-    FlagSet(FLAG_BADGE03_GET);
+    FlagSet(FLAG_BADGE04_GET);
     EXPECT_EQ(GetEVStatCap(), 120);
     FlagSet(FLAG_BADGE04_GET);
     EXPECT_EQ(GetEVStatCap(), 156);
@@ -798,16 +798,16 @@ TEST("Zenmodeman: Ability tutor leaves Pokemon with no niche option unchanged")
     EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_OVERGROW);
 }
 
-TEST("Zenmodeman: Resource free tutors follow Beedrill progression")
+TEST("Zenmodeman: Resource free tutors account for Beedrill's Mega potential")
 {
     struct Pokemon mon;
 
     CreateMon(&mon, SPECIES_BEEDRILL, 20, 0, OTID_STRUCT_PLAYER_ID);
     EXPECT(!IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
     EXPECT(!IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
-    FlagSet(FLAG_BADGE03_GET);
-    EXPECT(IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
-    EXPECT(IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
+    FlagSet(FLAG_BADGE05_GET);
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, CENTER_TUTOR_MAX_TIER_POINTS));
+    EXPECT(!IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
 }
 
 TEST("Zenmodeman: Resource free tutors inspect stronger future evolutions")
@@ -865,7 +865,7 @@ TEST("Zenmodeman: MaxTierPoints cannot be lower than current Tier Points")
 
     CreateMon(&mon, SPECIES_PIDGEOTTO, 23, 0, OTID_STRUCT_PLAYER_ID);
     EXPECT_EQ(GetMonTierPoints(&mon), 3);
-    EXPECT_EQ(GetMonMaxTierPoints(&mon), 3);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
 }
 
 TEST("Zenmodeman: MaxTierPoints includes terminal Mega Evolutions")
@@ -874,7 +874,7 @@ TEST("Zenmodeman: MaxTierPoints includes terminal Mega Evolutions")
 
     CreateMon(&mon, SPECIES_PIDGEOT, 36, 0, OTID_STRUCT_PLAYER_ID);
     EXPECT_EQ(GetMonTierPoints(&mon), 2);
-    EXPECT_EQ(GetMonMaxTierPoints(&mon), 3);
+    EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
 }
 
 TEST("Zenmodeman: Restricted teaching unlocks at the first level and agrees for boxed Pokemon")

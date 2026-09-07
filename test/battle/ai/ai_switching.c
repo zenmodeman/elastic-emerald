@@ -121,14 +121,13 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: a move blocked by Protect does not commit the
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
-        ASSUME(MoveMakesContact(MOVE_SCRATCH));
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
-        PLAYER(SPECIES_SLAKING) { Level(100); Attack(500); Speed(100); Ability(ABILITY_VITAL_SPIRIT); Moves(MOVE_OBSTRUCT, MOVE_DOUBLE_EDGE); }
-        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(200); MaxHP(200); Defense(200); Speed(1); Moves(MOVE_SCRATCH); }
+        PLAYER(SPECIES_MEWTWO) { Level(100); SpAttack(200); Speed(100); Moves(MOVE_PROTECT, MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_SNORLAX) { Level(100); HP(70); MaxHP(70); SpDefense(200); Speed(1); Moves(MOVE_SCRATCH); }
         OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
     } WHEN {
-        TURN { MOVE(player, MOVE_OBSTRUCT); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
-        TURN { MOVE(player, MOVE_DOUBLE_EDGE); EXPECT_SWITCH(opponent, 1); }
+        TURN { MOVE(player, MOVE_PROTECT); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
+        TURN { MOVE(player, MOVE_PSYCHIC); EXPECT_SWITCH(opponent, 1); }
     }
 }
 
@@ -160,7 +159,6 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful self-targeting move commits the 
 
 AI_SINGLE_BATTLE_TEST("Zenmodeman: a player pivot prevents commitment to the old matchup")
 {
-    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_BULBASAUR) { Level(100); Speed(1); Moves(MOVE_U_TURN); }
@@ -190,9 +188,8 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setters use the ordinary uncommitted 
 
 AI_SINGLE_BATTLE_TEST("Zenmodeman: weather ally count does not gate an uncommitted fast-KO escape")
 {
-    PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
-        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_BLASTOISE) { Level(100); Speed(100); Moves(MOVE_HYDRO_PUMP); }
         OPPONENT(SPECIES_NINETALES) { Level(1); Speed(1); Ability(ABILITY_DROUGHT); Moves(MOVE_EMBER); }
         OPPONENT(SPECIES_ODDISH) { Level(100); Speed(2); Moves(MOVE_TACKLE); }

@@ -30,7 +30,6 @@ tools/compresSmol/
 *.sa*
 Thumbs.db
 build/
-test/battle/ai/generated_ai_matchups.c
 .DS_Store
 *.ddump
 .idea/

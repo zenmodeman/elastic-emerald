@@ -68,7 +68,7 @@ TEST("Zenmodeman: Unset stored Tera type uses curated and monotype-aware assignm
     struct Pokemon mon;
     enum Type typeNone = TYPE_NONE;
 
-    CreateMonWithIVsPersonality(&mon, SPECIES_JOLTEON, 5, 0, 1);
+    CreateMonWithIVsPersonality(&mon, SPECIES_JOLTEON, 5, 0, TYPE_WATER - 1);
     SetMonData(&mon, MON_DATA_TERA_TYPE, &typeNone);
 
     FlagSet(FLAG_CURATED_TERA);

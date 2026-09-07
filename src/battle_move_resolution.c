@@ -3085,6 +3085,7 @@ static enum MoveEndResult MoveEndUpdateLastMoves(struct BattleCalcValues *cv)
     if (!IsDoubleBattle()
      && GetBattlerSide(cv->battlerAtk) == B_SIDE_OPPONENT
      && !gBattleStruct->unableToUseMove
+     && !gProtectStructs[cv->battlerDef].protected
      && !(gBattleStruct->moveResultFlags[cv->battlerDef] & MOVE_RESULT_NO_EFFECT))
         gBattleStruct->battlerState[cv->battlerAtk].fastKoCommitPending = TRUE;
 
