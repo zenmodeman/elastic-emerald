@@ -2731,7 +2731,7 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
             ADJUST_SCORE(-10);
         break;
     case EFFECT_POWDER:
-        if (!HasMoveWithType(battlerDef, TYPE_FIRE)
+        if ((HasAllKnownMoves(battlerDef) && !HasMoveWithType(battlerDef, TYPE_FIRE))
           || PartnerMoveIsSameAsAttacker(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
             ADJUST_SCORE(-10);
         break;

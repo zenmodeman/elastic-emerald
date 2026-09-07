@@ -5965,33 +5965,35 @@ static void Cmd_hitanimation(void)
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
+u32 CalculateTrainerPartyMoney(const struct Trainer *trainer, u32 multiplier, bool32 isDoubleBattle, bool32 hasTwoOpponents)
+{
+    u32 totalLevels = 0;
+    u32 i;
+    u8 trainerMoney;
+
+    if (trainer->party == NULL)
+        return 20;
+
+    for (i = 0; i < trainer->partySize; i++)
+        totalLevels += trainer->party[i].lvl;
+
+    trainerMoney = gTrainerClasses[trainer->trainerClass].money ?: 5;
+    if (isDoubleBattle && !hasTwoOpponents)
+        multiplier *= 2;
+
+    return 4 * totalLevels * multiplier * trainerMoney;
+}
+
 static u32 GetTrainerMoneyToGive(u16 trainerId)
 {
-    u32 lastMonLevel = 0;
-    u32 moneyReward;
-    u8 trainerMoney = 0;
 
     if (trainerId == TRAINER_SECRET_BASE)
-    {
-        moneyReward = 20 * gBattleResources->secretBase->party.levels[0] * gBattleStruct->moneyMultiplier;
-    }
-    else
-    {
-        const struct TrainerMon *party = GetTrainerPartyFromId(trainerId);
-        if (party == NULL)
-            return 20;
-        lastMonLevel = party[GetTrainerPartySizeFromId(trainerId) - 1].lvl;
-        trainerMoney = gTrainerClasses[GetTrainerClassFromId(trainerId)].money ?: 5;
+        return 20 * gBattleResources->secretBase->party.levels[0] * gBattleStruct->moneyMultiplier;
 
-        if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
-            moneyReward = 4 * lastMonLevel * gBattleStruct->moneyMultiplier * trainerMoney;
-        else if (IsDoubleBattle())
-            moneyReward = 4 * lastMonLevel * gBattleStruct->moneyMultiplier * 2 * trainerMoney;
-        else
-            moneyReward = 4 * lastMonLevel * gBattleStruct->moneyMultiplier * trainerMoney;
-    }
-
-    return moneyReward;
+    return CalculateTrainerPartyMoney(GetTrainerStructFromId(trainerId),
+                                      gBattleStruct->moneyMultiplier,
+                                      IsDoubleBattle(),
+                                      gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS);
 }
 
 static void Cmd_getmoneyreward(void)
@@ -9456,7 +9458,7 @@ static void Cmd_trysetvolatile(void)
 
     enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
 
-    if (GetBattlerVolatile(battler, cmd->_volatile) != 0)
+    if (GetBattlerVolatile(battler, cmd->_volatile) != 0 && cmd->_volatile != VOLATILE_LASER_FOCUS)
     {
         gBattlescriptCurrInstr = cmd->failInstr;
     }
@@ -13789,7 +13791,10 @@ void BS_TryHealQuarterHealth(void)
 {
     NATIVE_ARGS(u8 battler, const u8 *failInstr);
     enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
-    SetHealAmount(battler, GetNonDynamaxMaxHP(battler) / 4);
+    enum BattlerId partner = GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(gBattlerAttacker)));
+    u32 divisor = (!IsDoubleBattle() || (gAbsentBattlerFlags & (1u << partner))) ? 3 : 4;
+
+    SetHealAmount(battler, GetNonDynamaxMaxHP(battler) / divisor);
     if (gBattleMons[battler].hp == gBattleMons[battler].maxHP)
         gBattlescriptCurrInstr = cmd->failInstr;    // fail
     else

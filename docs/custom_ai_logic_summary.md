@@ -4,7 +4,7 @@
 
 - **Last documented code commit:** `9febfb4eb7` ("Additional tests and merge restorations").
 - **Previously uncommitted changes now identified in history:** Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`. These references reconcile the previously documented changes without claiming review of all intervening AI changes.
-- **Uncommitted AI changes covered by this document:** Restricted Mode ignores Choice Band and Choice Scarf effects for player-owned Pokémon with active Gorilla Tactics, including AI held-effect modeling and shared damage/Speed calculations.
+- **Uncommitted AI changes covered by this document:** Restricted Mode ignores Choice Band and Choice Scarf effects for player-owned Pokémon with active Gorilla Tactics, including AI held-effect modeling and shared damage/Speed calculations. The historical backward audit also restores Powder's complete-moveset knowledge guard on the current AI API.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -46,6 +46,8 @@ The AI distinguishes among:
 - revealed party species and previously used switch-ins.
 
 The upstream `AI_FLAG_ASSUME_STAB` path records eligible unrevealed STAB options while helpers such as `HasNoMovesKnown`, `HasAllKnownMoves`, `HasNoKnownNonProtectingMoves`, and `GetStatusMoveCount` let individual heuristics state how much evidence they require.
+
+Powder is rejected for lacking a Fire target move only after all four target move slots are known. With an incomplete moveset, the AI preserves Powder as a candidate instead of treating unrevealed slots as proof that no Fire move exists. Omniscient trainers naturally satisfy the complete-knowledge condition; ordinary trainers can satisfy it through revealed or inferred move history.
 
 Unrevealed STAB estimates are filtered to avoid implausible predictions such as unusable recharge or two-turn attacks. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
 

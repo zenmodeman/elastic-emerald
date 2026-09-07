@@ -2,6 +2,7 @@
 #include "constants/event_objects.h"
 #include "constants/event_bg.h"
 #include "constants/weather.h"
+#include "constants/trainer_types.h"
 #include "overworld.h"
 #include "test/test.h"
 
@@ -17,6 +18,17 @@ extern const u8 Common_EventScript_PkmnCenterTutor[];
 extern const u8 DewfordTown_PokemonCenter_1F_EventScript_Maniac[];
 extern const u8 TrainerSchool_Breeder[];
 extern const u8 TrainerSchool_GiveEgg[];
+extern const u8 PetalburgWoods_EventScript_James[];
+extern const u8 PetalburgWoods_EventScript_Lyle[];
+extern const u8 PetalburgWoods_EventScript_Aurelio[];
+extern const u8 OldaleTown_TechHouse_Walker[];
+extern const u8 OldaleTown_TechHouse_Embargo_Maniac[];
+extern const u8 OldaleTown_TechHouse_WonderRoom_Hiker[];
+extern const u8 OldaleTown_TechHouse_Master[];
+extern const u8 OldaleTown_TechHouse_Sport_BugCatcher[];
+extern const u8 OldaleTown_TechHouse_Mist_OldMan[];
+extern const u8 TechHouse_SuctionCupsFisher[];
+extern const u8 TechHouse_Psychic_NicheAbilities[];
 
 static const struct ObjectEventTemplate *FindObjectByLocalId(const struct MapEvents *events, u8 localId)
 {
@@ -169,6 +181,110 @@ TEST("Zenmodeman: Petalburg Grove retains Birch and its ambient Pokemon")
     }
 
     EXPECT_EQ(FindObjectByLocalId(events, 3)->flagId, FLAG_HIDE_PETALBURG_GROVE_BIRCH);
+}
+
+TEST("Zenmodeman: Youngster James retains his Petalburg Woods overworld identity")
+{
+    const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
+        MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
+    const struct ObjectEventTemplate *james = FindObjectByScript(events, PetalburgWoods_EventScript_James);
+
+    EXPECT_NE(james, NULL);
+    EXPECT_EQ(james->graphicsId, OBJ_EVENT_GFX_YOUNGSTER);
+    EXPECT_EQ(james->trainerType, TRAINER_TYPE_NORMAL);
+}
+
+TEST("Zenmodeman: Bug Catcher Lyle retains his Petalburg Woods overworld identity")
+{
+    const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
+        MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
+    const struct ObjectEventTemplate *lyle = FindObjectByScript(events, PetalburgWoods_EventScript_Lyle);
+
+    EXPECT_NE(lyle, NULL);
+    EXPECT_EQ(lyle->graphicsId, OBJ_EVENT_GFX_BUG_CATCHER);
+    EXPECT_EQ(lyle->trainerType, TRAINER_TYPE_NORMAL);
+}
+
+TEST("Zenmodeman: Aurelio retains the founding Petalburg Woods route boss interaction")
+{
+    const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
+        MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
+    const struct ObjectEventTemplate *aurelio = FindObjectByScript(events, PetalburgWoods_EventScript_Aurelio);
+
+    EXPECT_NE(aurelio, NULL);
+    EXPECT_EQ(aurelio->graphicsId, OBJ_EVENT_GFX_MAN_3);
+    EXPECT_EQ(aurelio->trainerType, TRAINER_TYPE_NONE);
+    EXPECT_EQ(aurelio->x, 17);
+    EXPECT_EQ(aurelio->y, 9);
+}
+
+TEST("Zenmodeman: Petalburg Woods retains its custom visible and hidden item set")
+{
+    const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
+        MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
+
+    EXPECT_NE(FindItemBall(events, ITEM_BIG_ROOT), NULL);
+    EXPECT_NE(FindItemBall(events, ITEM_GRASSY_SEED), NULL);
+    EXPECT(HasHiddenItem(events, 39, 35, ITEM_CALM_MINT, FLAG_HIDDEN_ITEM_PETALBURG_WOODS_CALM_MINT));
+    EXPECT(HasHiddenItem(events, 26, 6, ITEM_BIG_MUSHROOM, FLAG_HIDDEN_ITEM_PETALBURG_WOODS_BIG_MUSHROOM));
+    EXPECT(HasHiddenItem(events, 40, 29, ITEM_BALM_MUSHROOM, FLAG_HIDDEN_ITEM_PETALBURG_WOODS_BALM_MUSHROOM));
+    EXPECT(HasHiddenItem(events, 4, 19, ITEM_NET_BALL, FLAG_HIDDEN_ITEM_PETALBURG_WOODS_NET_BALL));
+}
+
+TEST("Zenmodeman: Route 104 retains its custom hidden Ability Patch")
+{
+    const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
+        MAP_GROUP(MAP_ROUTE104), MAP_NUM(MAP_ROUTE104))->events;
+
+    EXPECT(HasHiddenItem(events, 14, 55, ITEM_ABILITY_PATCH, FLAG_HIDDEN_ITEM_ROUTE_104_ABILITY_PATCH));
+}
+
+TEST("Zenmodeman: Oldale Tech House retains every custom tutor and guide")
+{
+    static const struct
+    {
+        const u8 *script;
+        u16 graphicsId;
+    } expected[] = {
+        {OldaleTown_TechHouse_Walker, OBJ_EVENT_GFX_FAT_MAN},
+        {OldaleTown_TechHouse_Embargo_Maniac, OBJ_EVENT_GFX_MANIAC},
+        {OldaleTown_TechHouse_WonderRoom_Hiker, OBJ_EVENT_GFX_HIKER},
+        {OldaleTown_TechHouse_Master, OBJ_EVENT_GFX_EXPERT_M},
+        {OldaleTown_TechHouse_Sport_BugCatcher, OBJ_EVENT_GFX_BUG_CATCHER},
+        {OldaleTown_TechHouse_Mist_OldMan, OBJ_EVENT_GFX_GENTLEMAN},
+        {TechHouse_SuctionCupsFisher, OBJ_EVENT_GFX_FISHERMAN},
+        {TechHouse_Psychic_NicheAbilities, OBJ_EVENT_GFX_PSYCHIC_M},
+    };
+    const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
+        MAP_GROUP(MAP_OLDALE_TOWN_TECH_HOUSE), MAP_NUM(MAP_OLDALE_TOWN_TECH_HOUSE))->events;
+    u32 i;
+
+    EXPECT_EQ(events->objectEventCount, ARRAY_COUNT(expected));
+    for (i = 0; i < ARRAY_COUNT(expected); i++)
+    {
+        const struct ObjectEventTemplate *object = FindObjectByScript(events, expected[i].script);
+
+        EXPECT_NE(object, NULL);
+        EXPECT_EQ(object->graphicsId, expected[i].graphicsId);
+        EXPECT_EQ(object->trainerType, TRAINER_TYPE_NONE);
+    }
+}
+
+TEST("Zenmodeman: Oldale Tech House retains both exits to Oldale")
+{
+    const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
+        MAP_GROUP(MAP_OLDALE_TOWN_TECH_HOUSE), MAP_NUM(MAP_OLDALE_TOWN_TECH_HOUSE))->events;
+    u32 i;
+
+    EXPECT_EQ(events->warpCount, 2);
+    for (i = 0; i < events->warpCount; i++)
+    {
+        EXPECT_EQ(events->warps[i].x, 8 + i);
+        EXPECT_EQ(events->warps[i].y, 8);
+        EXPECT_EQ(events->warps[i].warpId, 5);
+        EXPECT_EQ(events->warps[i].mapGroup, MAP_GROUP(MAP_OLDALE_TOWN));
+        EXPECT_EQ(events->warps[i].mapNum, MAP_NUM(MAP_OLDALE_TOWN));
+    }
 }
 
 TEST("Zenmodeman: Dewford Garden school kid retains the corrected placement and interaction")

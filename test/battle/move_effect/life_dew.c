@@ -53,6 +53,42 @@ SINGLE_BATTLE_TEST("Life Dew works in singles on user")
     }
 }
 
+SINGLE_BATTLE_TEST("Zenmodeman: Life Dew heals one third in singles")
+{
+    s16 healing;
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_LIFE_DEW); }
+    } SCENE {
+        HP_BAR(player, captureDamage: &healing);
+    } THEN {
+        EXPECT_EQ(player->maxHP / 3, -healing);
+    }
+}
+
+DOUBLE_BATTLE_TEST("Zenmodeman: Life Dew keeps quarter healing with a present partner")
+{
+    s16 healing[2];
+
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { HP(1); }
+        PLAYER(SPECIES_WYNAUT) { HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(playerLeft, MOVE_LIFE_DEW); }
+    } SCENE {
+        HP_BAR(playerLeft, captureDamage: &healing[0]);
+        HP_BAR(playerRight, captureDamage: &healing[1]);
+    } THEN {
+        EXPECT_EQ(playerLeft->maxHP / 4, -healing[0]);
+        EXPECT_EQ(playerRight->maxHP / 4, -healing[1]);
+    }
+}
+
 DOUBLE_BATTLE_TEST("Life Dew only works on user if partner is at full hp")
 {
     GIVEN {
@@ -110,4 +146,3 @@ AI_DOUBLE_BATTLE_TEST("AI uses Life Dew if it outheals your damage and outspeeds
         TURN { MOVE(playerLeft, MOVE_TACKLE); MOVE(playerRight, MOVE_TACKLE); EXPECT_MOVE(opponentLeft, MOVE_LIFE_DEW); }
     }
 }
-

@@ -520,6 +520,30 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_ASSUME_STAB records unrevealed STAB m
     }
 }
 
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not reject Powder while the target moveset is incomplete")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_POWDER) == EFFECT_POWDER);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE);
+        PLAYER(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE, MOVE_SPLASH, MOVE_GROWL, MOVE_HARDEN); }
+        OPPONENT(SPECIES_VIVILLON) { Moves(MOVE_POWDER); }
+    } WHEN {
+        TURN { SCORE_EQ_VAL(opponent, MOVE_POWDER, AI_SCORE_DEFAULT); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI rejects Powder after learning a complete non-Fire moveset")
+{
+    GIVEN {
+        ASSUME(GetMoveEffect(MOVE_POWDER) == EFFECT_POWDER);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE, MOVE_SPLASH, MOVE_GROWL, MOVE_HARDEN); }
+        OPPONENT(SPECIES_VIVILLON) { Moves(MOVE_POWDER); }
+    } WHEN {
+        TURN { SCORE_LT_VAL(opponent, MOVE_POWDER, AI_SCORE_DEFAULT); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not restore a below-default damaging move with best damage logic")
 {
     GIVEN {

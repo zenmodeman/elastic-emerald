@@ -203,6 +203,7 @@ bool32 HasMoveWithMoveEffectExcept(enum BattlerId battlerId, enum MoveEffect mov
 bool32 HasMoveThatLowersOwnStats(enum BattlerId battlerId);
 bool32 HasMoveWithLowAccuracy(enum BattlerId battlerAtk, enum BattlerId battlerDef, u32 accCheck, bool32 ignoreStatus);
 bool32 HasAnyKnownMove(enum BattlerId battlerId);
+bool32 HasAllKnownMoves(enum BattlerId battlerId);
 bool32 IsAromaVeilProtectedEffect(enum BattleMoveEffects moveEffect);
 bool32 IsNonVolatileStatusMove(enum Move move);
 bool32 IsMoveRedirectionPrevented(enum BattlerId battlerAtk, enum Move move, enum Ability atkAbility);

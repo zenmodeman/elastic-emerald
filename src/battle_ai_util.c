@@ -2514,6 +2514,19 @@ enum Move *GetMovesArray(enum BattlerId battler)
         return gBattleHistory->usedMoves[battler];
 }
 
+bool32 HasAllKnownMoves(enum BattlerId battlerId)
+{
+    enum Move *moves = GetMovesArray(battlerId);
+
+    for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
+    {
+        if (moves[moveIndex] == MOVE_NONE || moves[moveIndex] == MOVE_UNAVAILABLE)
+            return FALSE;
+    }
+
+    return TRUE;
+}
+
 u32 GetBattlerMoveIndexWithEffect(enum BattlerId battler, enum BattleMoveEffects effect)
 {
     enum Move *moves = GetMovesArray(battler);

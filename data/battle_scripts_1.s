@@ -834,6 +834,7 @@ BattleScript_EffectLaserFocus::
 	waitanimation
 	printstring STRINGID_LASERFOCUS
 	waitmessage B_WAIT_TIME_LONG
+	trymovestatchanges
 	goto BattleScript_MoveEnd
 
 BattleScript_PartingShotEscape::
@@ -2180,10 +2181,6 @@ BattleScript_EffectSpikes::
 BattleScript_EffectForesight::
 	attackcanceler
 	accuracycheck
-	jumpifgenconfiglowerthan CONFIG_B_FORESIGHT_FAIL, GEN_3, BattleScript_ForesightFailCheck
-	jumpifgenconfiglowerthan CONFIG_B_FORESIGHT_FAIL, GEN_5, BattleScript_ForesightSet
-BattleScript_ForesightFailCheck:
-	jumpifvolatile BS_TARGET, VOLATILE_FORESIGHT, BattleScript_ButItFailed
 BattleScript_ForesightSet:
 	setvolatile BS_TARGET, VOLATILE_FORESIGHT
 BattleScript_IdentifiedFoe:
@@ -2191,6 +2188,10 @@ BattleScript_IdentifiedFoe:
 	waitanimation
 	printstring STRINGID_PKMNIDENTIFIED
 	waitmessage B_WAIT_TIME_LONG
+	savetarget
+	copybyte gBattlerTarget, gBattlerAttacker
+	trymovestatchanges
+	restoretarget
 	goto BattleScript_MoveEnd
 
 BattleScript_EffectPerishSong::

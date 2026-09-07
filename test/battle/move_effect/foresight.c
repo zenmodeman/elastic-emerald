@@ -76,7 +76,7 @@ SINGLE_BATTLE_TEST("Foresight causes moves against the target to ignore positive
     }
 }
 
-SINGLE_BATTLE_TEST("Foresight fails if the target is already under its effect (Gen 2 and Gen5+)")
+SINGLE_BATTLE_TEST("Zenmodeman: Foresight repeat override ignores the generational failure setting")
 {
     u32 genConfig = GEN_2;
     PARAMETRIZE { genConfig = GEN_2; }
@@ -90,8 +90,10 @@ SINGLE_BATTLE_TEST("Foresight fails if the target is already under its effect (G
         TURN { MOVE(player, MOVE_FORESIGHT); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_FORESIGHT, player);
-        NOT ANIMATION(ANIM_TYPE_MOVE, MOVE_FORESIGHT, player);
-        MESSAGE("But it failed!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_FORESIGHT, player);
+        NOT MESSAGE("But it failed!");
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_ACC], DEFAULT_STAT_STAGE + 2);
     }
 }
 
@@ -121,3 +123,36 @@ TO_DO_BATTLE_TEST("Foresight doesn't cause moves used against the target to alwa
 TO_DO_BATTLE_TEST("Foresight causes moves used against the target to always hit (Gen 4+)")
 TO_DO_BATTLE_TEST("Baton Pass passes Foresight's effect (Gen 2)");
 TO_DO_BATTLE_TEST("Baton Pass doesn't pass Foresight's effect (Gen 3+)");
+
+SINGLE_BATTLE_TEST("Zenmodeman: Foresight and Odor Sleuth raise the user's Accuracy", enum Move move)
+{
+    enum Move move;
+
+    PARAMETRIZE { move = MOVE_FORESIGHT; }
+    PARAMETRIZE { move = MOVE_ODOR_SLEUTH; }
+    GIVEN {
+        PLAYER(SPECIES_WOBBUFFET) { Moves(move); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, move); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, move, player);
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, player);
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_ACC], DEFAULT_STAT_STAGE + 1);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Foresight can repeat to raise Accuracy again")
+{
+    GIVEN {
+        WITH_CONFIG(B_FORESIGHT_FAIL, GEN_9);
+        PLAYER(SPECIES_WOBBUFFET) { Moves(MOVE_FORESIGHT); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_FORESIGHT); }
+        TURN { MOVE(player, MOVE_FORESIGHT); }
+    } THEN {
+        EXPECT_EQ(player->statStages[STAT_ACC], DEFAULT_STAT_STAGE + 2);
+    }
+}
