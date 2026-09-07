@@ -34,7 +34,7 @@ TEST("Zenmodeman: Merge guard: EV Mode restores badge-based per-stat caps")
     EXPECT_EQ(GetEVStatCap(), 48);
     FlagSet(FLAG_BADGE02_GET);
     EXPECT_EQ(GetEVStatCap(), 84);
-    FlagSet(FLAG_BADGE04_GET);
+    FlagSet(FLAG_BADGE03_GET);
     EXPECT_EQ(GetEVStatCap(), 120);
     FlagSet(FLAG_BADGE04_GET);
     EXPECT_EQ(GetEVStatCap(), 156);

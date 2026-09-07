@@ -2,9 +2,9 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `9febfb4eb7` ("Additional tests and merge restorations").
-- **Previously uncommitted changes now identified in history:** Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`. These references reconcile the previously documented changes without claiming review of all intervening AI changes.
-- **Uncommitted AI changes covered by this document:** Restricted Mode ignores Choice Band and Choice Scarf effects for player-owned Pokémon with active Gorilla Tactics, including AI held-effect modeling and shared damage/Speed calculations. The historical backward audit also restores Powder's complete-moveset knowledge guard on the current AI API.
+- **Last documented code commit:** `9c4b986496` ("Remove the AI v.s. AI simulator and make modifications for test passes").
+- **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through the current HEAD. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
+- **Uncommitted AI changes covered by this document:** a player switch now clears established commitment as well as the already-cleared pending commitment for the opponents. The game's existing AI-versus-AI battle mode remains intact.
 
 The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
 
@@ -133,7 +133,7 @@ Key commit: `04e8acf271`.
 
 In singles, an active Pokemon using `AI_FLAG_SMART_SWITCHING` may switch from a fast KO while it remains uncommitted to the matchup. The shared safeguards still require the player to be faster, an actual-state calculation using revealed moves plus Hidden STAB inference to find a KO, a suitable switch-in, and at least 75% HP for most Pokemon or 50% HP for Regenerator Pokemon. Slow KOs do not trigger this path, and the final switch remains a 50% roll.
 
-An opposing Pokemon becomes committed after it successfully resolves a move during a turn in which the player's active Pokemon never switches. Damaging, status, and self-targeting moves all qualify. Failure to act and no-effect results such as misses, immunity, failure, or Protect do not qualify. Commitment is finalized at the end of the turn so a player pivot that occurs after the opposing move still prevents commitment to the old matchup. The state persists for that active Pokemon's field stint and resets when it switches out.
+An opposing Pokemon becomes committed after it successfully resolves a move during a turn in which the player's active Pokemon never switches. Damaging, status, and self-targeting moves all qualify. Failure to act and no-effect results such as misses, immunity, failure, or Protect do not qualify. Commitment is finalized at the end of the turn so a player pivot that occurs after the opposing move still prevents commitment to the old matchup. Any player switch clears both pending and established commitment for the opposing battlers, while an opposing Pokemon switching out also resets its own state.
 
 This commitment gate applies only to the fast-KO reason. Perish Song, ineffective Encore or choice locks, and the other independent switch reasons retain their own rules. Weather setters no longer receive a separate preservation path, and the heavy-switching and defensive-drop entry checks are suppressed.
 
@@ -336,4 +336,4 @@ Key commits: `7fdbe2f144`, `bd8658f64c`, `10f438d2f0`, `7829b03a9c`.
 
 Choice Band and Choice Scarf return no effective held-item effect while Gorilla Tactics is active on a player-owned Pokémon in Restricted Mode. Opponents and AI-controlled partners retain their Choice-item effects. The shared damage and Speed helpers also apply this rule using their supplied ability, so AI simulations use their modeled ability rather than discovering a hidden one. The normal AI held-effect cache applies the same filter after its existing negation checks; the suppression-unaware handicap retains its existing early return. Gorilla Tactics keeps its own Attack boost and move lock. Choice Specs and unrestricted battles retain their normal effects. Suppressing or replacing Gorilla Tactics restores normal item behavior, subject to other item-negation rules. The held item itself remains present.
 
-Key commit: uncommitted.
+Key commit: `f70470b888`.

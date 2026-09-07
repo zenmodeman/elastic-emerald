@@ -9524,7 +9524,10 @@ static void Cmd_switchoutabilities(void)
         gAiBattleData->playerSwitchedThisTurn = TRUE;
         for (enum BattlerId opposingBattler = 0; opposingBattler < gBattlersCount; opposingBattler++)
             if (!IsOnPlayerSide(opposingBattler))
+            {
                 gBattleStruct->battlerState[opposingBattler].fastKoCommitPending = FALSE;
+                gBattleStruct->battlerState[opposingBattler].fastKoCommitted = FALSE;
+            }
     }
 
     if (gBattleMons[battler].volatiles.neutralizingGas)
