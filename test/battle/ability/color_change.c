@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Color Change changes the type of a Pokemon being hit by a move if the type of the move and the Pokemon are different")
+SINGLE_BATTLE_TEST("Zenmodeman: Color Change changes type before an incoming move resolves")
 {
     GIVEN {
         ASSUME(GetSpeciesType(SPECIES_KECLEON, 0) != TYPE_PSYCHIC && GetSpeciesType(SPECIES_KECLEON, 1) != TYPE_PSYCHIC);
@@ -11,9 +11,9 @@ SINGLE_BATTLE_TEST("Color Change changes the type of a Pokemon being hit by a mo
     } WHEN {
         TURN { MOVE(player, MOVE_PSYWAVE); }
     } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_PSYWAVE, player);
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Psychic!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_PSYWAVE, player);
     }
 }
 
@@ -69,7 +69,7 @@ SINGLE_BATTLE_TEST("Color Change does not change the type of a dual-type Pokemon
     }
 }
 
-SINGLE_BATTLE_TEST("Color Change changes the user to Electric type if hit by a move while the opponent is under the effect of Electrify")
+SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses the Electrify-modified type before move resolution")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -77,13 +77,13 @@ SINGLE_BATTLE_TEST("Color Change changes the user to Electric type if hit by a m
     } WHEN {
         TURN { MOVE(opponent, MOVE_ELECTRIFY); MOVE(player, MOVE_PSYCHO_CUT); }
     } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_PSYCHO_CUT, player);
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Electric!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_PSYCHO_CUT, player);
     }
 }
 
-SINGLE_BATTLE_TEST("Color Change changes the type when a Pokemon is hit by Future Sight")
+SINGLE_BATTLE_TEST("Zenmodeman: Color Change activates before Future Sight resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -93,14 +93,14 @@ SINGLE_BATTLE_TEST("Color Change changes the type when a Pokemon is hit by Futur
         TURN {}
         TURN {}
     } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
         MESSAGE("The opposing Kecleon took the Future Sight attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Psychic!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
     }
 }
 
-SINGLE_BATTLE_TEST("Color Change changes the type when a Pokemon is hit by Doom Desire")
+SINGLE_BATTLE_TEST("Zenmodeman: Color Change activates before Doom Desire resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -110,14 +110,14 @@ SINGLE_BATTLE_TEST("Color Change changes the type when a Pokemon is hit by Doom 
         TURN {}
         TURN {}
     } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_DOOM_DESIRE, player);
         MESSAGE("The opposing Kecleon took the Doom Desire attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Steel!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_DOOM_DESIRE, player);
     }
 }
 
-SINGLE_BATTLE_TEST("Color Change changes the type to Electric when a Pokemon is hit by a forseen attack under the effect of Electrify")
+SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses Electrify's type before a delayed attack resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -127,14 +127,14 @@ SINGLE_BATTLE_TEST("Color Change changes the type to Electric when a Pokemon is 
         TURN {}
         TURN { MOVE(opponent, MOVE_ELECTRIFY); }
     } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
         MESSAGE("The opposing Kecleon took the Future Sight attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Electric!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
     }
 }
 
-SINGLE_BATTLE_TEST("Color Change changes the type to Normal when a Pokemon is hit by a forseen attack under the effect of Normalize")
+SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses Normalize's type before a delayed attack resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_NORMALIZE); }
@@ -144,13 +144,13 @@ SINGLE_BATTLE_TEST("Color Change changes the type to Normal when a Pokemon is hi
         TURN { MOVE(player, MOVE_SOAK); }
         TURN {}
     } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
         MESSAGE("Wobbuffet used Soak!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_SOAK, player);
         MESSAGE("The opposing Kecleon transformed into the Water type!");
         MESSAGE("The opposing Kecleon took the Future Sight attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Normal!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
     }
 }
 
@@ -174,7 +174,7 @@ SINGLE_BATTLE_TEST("Color Change does not change the type to Normal when a Pokem
     }
 }
 
-SINGLE_BATTLE_TEST("Color Change does not activate if move is boosted by Sheer Force")
+SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change activates before a Sheer Force-boosted move resolves")
 {
     GIVEN {
         PLAYER(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); }
@@ -182,7 +182,60 @@ SINGLE_BATTLE_TEST("Color Change does not activate if move is boosted by Sheer F
     } WHEN {
         TURN { MOVE(opponent, MOVE_EMBER); }
     } SCENE {
+        ABILITY_POPUP(player, ABILITY_COLOR_CHANGE);
+        MESSAGE("Kecleon's type changed to Fire!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_EMBER, opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change does not activate through Protect")
+{
+    GIVEN {
+        ASSUME(GetMoveType(MOVE_EMBER) == TYPE_FIRE);
+        PLAYER(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); Speed(100); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(10); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_PROTECT); MOVE(opponent, MOVE_EMBER); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_PROTECT, player);
         NOT ABILITY_POPUP(player, ABILITY_COLOR_CHANGE);
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change grants immunity to Prankster-boosted Dark status moves")
+{
+    GIVEN {
+        WITH_CONFIG(B_PRANKSTER_DARK_TYPES, GEN_7);
+        ASSUME(GetMoveType(MOVE_TAUNT) == TYPE_DARK);
+        ASSUME(IsBattleMoveStatus(MOVE_TAUNT));
+        ASSUME(GetSpeciesType(SPECIES_KECLEON, 0) != TYPE_DARK && GetSpeciesType(SPECIES_KECLEON, 1) != TYPE_DARK);
+        PLAYER(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); }
+        OPPONENT(SPECIES_VOLBEAT) { Ability(ABILITY_PRANKSTER); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_TAUNT); }
+    } SCENE {
+        ABILITY_POPUP(player, ABILITY_COLOR_CHANGE);
+        MESSAGE("Kecleon's type changed to Dark!");
+        NOT ANIMATION(ANIM_TYPE_MOVE, MOVE_TAUNT, opponent);
+        MESSAGE("It doesn't affect Kecleon…");
+    }
+}
+
+SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change grants immunity to powder moves after becoming Grass type")
+{
+    GIVEN {
+        WITH_CONFIG(B_POWDER_GRASS, GEN_6);
+        ASSUME(GetMoveType(MOVE_STUN_SPORE) == TYPE_GRASS);
+        ASSUME(IsPowderMove(MOVE_STUN_SPORE));
+        ASSUME(GetSpeciesType(SPECIES_KECLEON, 0) != TYPE_GRASS && GetSpeciesType(SPECIES_KECLEON, 1) != TYPE_GRASS);
+        PLAYER(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_STUN_SPORE); }
+    } SCENE {
+        ABILITY_POPUP(player, ABILITY_COLOR_CHANGE);
+        MESSAGE("Kecleon's type changed to Grass!");
+        NOT ANIMATION(ANIM_TYPE_MOVE, MOVE_STUN_SPORE, opponent);
+        MESSAGE("It doesn't affect Kecleon…");
     }
 }

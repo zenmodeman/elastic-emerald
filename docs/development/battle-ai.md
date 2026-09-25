@@ -34,4 +34,6 @@ Runtime behavior is the reference for type resolution, ability suppression, item
 
 Immunity helpers are particularly sensitive to upstream changes. Soundproof, Bulletproof, Good as Gold, side-wide priority blockers, and dynamic targets can involve different paths. A check-only query also has a different role from a helper that starts a battle script. The [upgrade notes](upstream-upgrades.md) and [feature reference](feature-reference.md) record related integration problems.
 
+### Proactive Color Change
 
+When attacking against a Color Change mon where the Color Change ability isn't negated, the AI will factor the type the Color Change mon would become when determining its moves.

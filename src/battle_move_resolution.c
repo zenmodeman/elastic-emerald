@@ -242,6 +242,23 @@ static enum CancelerResult CancelerObedience(struct BattleCalcValues *cv)
     return CANCELER_RESULT_SUCCESS;
 }
 
+static bool32 TryActivateProactiveColorChange(struct BattleCalcValues *cv)
+{
+    enum BattlerId target = cv->battlerDef;
+    enum Type moveType = GetBattleMoveType(cv->move);
+
+    if (!CanActivateProactiveColorChange(cv->battlerAtk, target, cv->abilities[target], cv->move, moveType))
+        return FALSE;
+
+    gEffectBattler = target;
+    gBattlerAbility = target;
+    SET_BATTLER_TYPE(target, moveType);
+    PREPARE_TYPE_BUFFER(gBattleTextBuff1, moveType);
+    BattleScriptCall(BattleScript_ColorChangeActivates);
+
+    return TRUE;
+}
+
 static enum CancelerResult CancelerPowerPoints(struct BattleCalcValues *cv)
 {
     if (gBattleMons[cv->battlerAtk].pp[gCurrMovePos] == 0
@@ -2030,6 +2047,15 @@ static enum CancelerResult CancelerTargetFailure(struct BattleCalcValues *cv)
         {
             gBattleStruct->moveResultFlags[cv->battlerDef] |= MOVE_RESULT_FAILED;
         }
+
+        // Change type before target immunities so powder moves and Prankster-boosted Dark
+        // status moves can be blocked by the target's new type.
+        else if (TryActivateProactiveColorChange(cv))
+        {
+            // Revisit this target after the activation script to finish its failure checks.
+            gBattleStruct->eventState.atkCancelerBattler--;
+            return CANCELER_RESULT_RUN_SCRIPT;
+        }
         else if (CanMoveBeBlockedByTarget(&ctx, movePriority))
         {
             gBattleStruct->moveResultFlags[cv->battlerDef] |= MOVE_RESULT_FAILED;
@@ -3816,7 +3842,7 @@ static enum MoveEndResult MoveEndShellTrap(struct BattleCalcValues *cv)
     return MOVEEND_RESULT_CONTINUE;
 }
 
-static enum MoveEndResult MoveEndColorChange(struct BattleCalcValues *cv)
+static enum MoveEndResult MoveEndHpThresholdAbilities(struct BattleCalcValues *cv)
 {
     while (gBattleStruct->eventState.moveEndBattler < gBattlersCount)
     {
@@ -3824,7 +3850,7 @@ static enum MoveEndResult MoveEndColorChange(struct BattleCalcValues *cv)
 
         if (battler == cv->battlerAtk)
             continue;
-        if (AbilityBattleEffects(ABILITYEFFECT_COLOR_CHANGE, battler, cv->abilities[battler], 0, TRUE))
+        if (AbilityBattleEffects(ABILITYEFFECT_HP_THRESHOLD, battler, cv->abilities[battler], 0, TRUE))
             return MOVEEND_RESULT_RUN_SCRIPT;
     }
 
@@ -4519,7 +4545,7 @@ static enum MoveEndResult (*const sMoveEndHandlers[])(struct BattleCalcValues *c
     [MOVEEND_ITEM_EFFECTS_ATTACKER_2] = MoveEndItemEffectsAttacker2,
     [MOVEEND_ABILITY_EFFECT_FOES_FAINTED] = MoveEndAbilityEffectFoesFainted,
     [MOVEEND_SHELL_TRAP] = MoveEndShellTrap,
-    [MOVEEND_COLOR_CHANGE] = MoveEndColorChange,
+    [MOVEEND_HP_THRESHOLD_ABILITIES] = MoveEndHpThresholdAbilities,
     [MOVEEND_KEE_MARANGA_HP_THRESHOLD_ITEM_TARGET] = MoveEndKeeMarangaHpThresholdItemTarget,
     [MOVEEND_CARD_BUTTON] = MoveEndCardButton,
     [MOVEEND_FORM_CHANGE] = MoveEndFormChange,

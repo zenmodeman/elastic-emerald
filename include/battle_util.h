@@ -44,7 +44,7 @@ enum AbilityEffect
 {
     ABILITYEFFECT_ENDTURN,
     ABILITYEFFECT_MOVE_END_ATTACKER,
-    ABILITYEFFECT_COLOR_CHANGE, // Color Change / Berserk / Anger Shell
+    ABILITYEFFECT_HP_THRESHOLD, // Berserk / Anger Shell
     ABILITYEFFECT_MOVE_END,
     ABILITYEFFECT_IMMUNITY,
     ABILITYEFFECT_FORM_CHANGE_ON_HIT,
@@ -349,6 +349,7 @@ void TryToRevertMimicryAndFlags(void);
 u32 CountBattlerStatIncreases(enum BattlerId battler, bool32 countEvasionAcc);
 bool32 BattlerHasCopyableChanges(enum BattlerId battler);
 bool32 ChangeTypeBasedOnTerrain(enum BattlerId battler);
+bool32 CanActivateProactiveColorChange(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Ability abilityDef, enum Move move, enum Type moveType);
 void RemoveConfusionStatus(enum BattlerId battler);
 u32 GetBattlerGender(enum BattlerId battler);
 bool32 AreBattlersOfOppositeGender(enum BattlerId battler1, enum BattlerId battler2);

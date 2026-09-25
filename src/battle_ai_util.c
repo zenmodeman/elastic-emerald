@@ -26,14 +26,19 @@
 
 static u32 GetAIEffectGroup(enum BattleMoveEffects effect);
 static u32 GetAIEffectGroupFromMove(enum BattlerId battler, enum Move move);
+static inline void AI_StoreBattlerTypes(enum BattlerId battler, enum Type *types);
+static inline void AI_RestoreBattlerTypes(enum BattlerId battler, enum Type *types);
+static bool32 AI_TrySetProactiveColorChangeType(struct DamageContext *ctx, enum Type *types);
 
 // Functions
 enum Ability AI_GetMoldBreakerSanitizedAbility(enum BattlerId battlerAtk, enum Ability abilityAtk, enum Ability abilityDef, enum HoldEffect holdEffectDef, enum Move move)
 {
-    if (MoveIgnoresTargetAbility(move))
+    if (MoveIgnoresTargetAbility(move) && gAbilitiesInfo[abilityDef].breakable)
         return ABILITY_NONE;
 
-    if (holdEffectDef != HOLD_EFFECT_ABILITY_SHIELD && IsMoldBreakerTypeAbility(battlerAtk, abilityAtk))
+    if (holdEffectDef != HOLD_EFFECT_ABILITY_SHIELD
+     && IsMoldBreakerTypeAbility(battlerAtk, abilityAtk)
+     && gAbilitiesInfo[abilityDef].breakable)
         return ABILITY_NONE;
 
     return abilityDef;
@@ -540,11 +545,22 @@ bool32 Ai_IsPriorityBlocked(enum BattlerId battlerAtk, enum BattlerId battlerDef
 
 bool32 AI_CanMoveBeBlockedByTarget(struct DamageContext *ctx)
 {
+    enum Type types[3];
+    bool32 changedType;
+    bool32 isBlocked;
     s32 movePriority = GetBattleMovePriority(ctx->battlerAtk, ctx->abilities[ctx->battlerAtk], ctx->move);
-    return CanPsychicTerrainProtectTarget(ctx, movePriority)
-        || CanAbilityAbsorbMove(ctx)
+    if (CanPsychicTerrainProtectTarget(ctx, movePriority))
+        return TRUE;
+
+    changedType = AI_TrySetProactiveColorChangeType(ctx, types);
+    isBlocked = CanAbilityAbsorbMove(ctx)
         || CanTargetBlockPranksterMove(ctx, movePriority)
         || IsPowderMoveBlocked(ctx);
+
+    if (changedType)
+        AI_RestoreBattlerTypes(ctx->battlerDef, types);
+
+    return isBlocked;
 }
 
 // This function checks if all physical/special moves are either unusable or unreasonable to use.
@@ -575,7 +591,7 @@ bool32 MovesWithCategoryUnusable(u32 attacker, u32 target, enum DamageCategory c
             ctx.move = ctx.chosenMove = moves[moveIndex];
             ctx.moveType = GetBattleMoveType(moves[moveIndex]);
 
-            if (CalcTypeEffectivenessMultiplier(&ctx))
+            if (AI_CalcTypeEffectivenessMultiplier(&ctx))
                 usable |= 1u << moveIndex;
         }
     }
@@ -752,6 +768,28 @@ static inline void AI_RestoreBattlerTypes(enum BattlerId battlerAtk, enum Type *
     gBattleMons[battlerAtk].types[0] = types[0];
     gBattleMons[battlerAtk].types[1] = types[1];
     gBattleMons[battlerAtk].types[2] = types[2];
+}
+
+static bool32 AI_TrySetProactiveColorChangeType(struct DamageContext *ctx, enum Type *types)
+{
+    if (!CanActivateProactiveColorChange(ctx->battlerAtk, ctx->battlerDef, ctx->abilities[ctx->battlerDef], ctx->move, ctx->moveType))
+        return FALSE;
+
+    AI_StoreBattlerTypes(ctx->battlerDef, types);
+    SET_BATTLER_TYPE(ctx->battlerDef, ctx->moveType);
+    return TRUE;
+}
+
+uq4_12_t AI_CalcTypeEffectivenessMultiplier(struct DamageContext *ctx)
+{
+    enum Type types[3];
+    bool32 changedType = AI_TrySetProactiveColorChangeType(ctx, types);
+    uq4_12_t effectiveness = CalcTypeEffectivenessMultiplier(ctx);
+
+    if (changedType)
+        AI_RestoreBattlerTypes(ctx->battlerDef, types);
+
+    return effectiveness;
 }
 
 static inline void CalcDynamicMoveDamage(struct DamageContext *ctx, u16 *medianDamage, u16 *minimumDamage, u16 *maximumDamage, u16 *randomDamage)
@@ -963,7 +1001,7 @@ struct SimulatedDamage AI_CalcDamage(enum Move move, enum BattlerId battlerAtk, 
     ctx.abilities[ctx.battlerDef] = AI_GetMoldBreakerSanitizedAbility(battlerAtk, ctx.abilities[ctx.battlerAtk], aiData->abilities[battlerDef], ctx.holdEffects[ctx.battlerDef], move);
     ctx.abilities[battlerDefPartner] = AI_GetMoldBreakerSanitizedAbility(battlerAtk, ctx.abilities[ctx.battlerAtk], aiData->abilities[battlerDefPartner], ctx.holdEffects[battlerDefPartner], move);
     ctx.isCrit = ShouldCalcCritDamage(&ctx);
-    ctx.typeEffectivenessModifier = CalcTypeEffectivenessMultiplier(&ctx);
+    ctx.typeEffectivenessModifier = AI_CalcTypeEffectivenessMultiplier(&ctx);
 
 
     u32 movePower = GetMovePower(move);
@@ -1402,7 +1440,7 @@ uq4_12_t AI_GetMoveEffectiveness(enum Move move, enum BattlerId battlerAtk, enum
     ctx.abilities[ctx.battlerDef] = gAiLogicData->abilities[battlerDef];
     ctx.holdEffects[ctx.battlerAtk] = gAiLogicData->holdEffects[battlerAtk];
     ctx.holdEffects[ctx.battlerDef] = gAiLogicData->holdEffects[battlerDef];
-    typeEffectiveness = CalcTypeEffectivenessMultiplier(&ctx);
+    typeEffectiveness = AI_CalcTypeEffectivenessMultiplier(&ctx);
 
     RestoreBattlerData(battlerAtk);
     RestoreBattlerData(battlerDef);

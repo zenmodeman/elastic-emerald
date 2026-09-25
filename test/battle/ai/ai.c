@@ -166,6 +166,31 @@ AI_SINGLE_BATTLE_TEST("AI prefers moves which deal more damage instead of moves 
     }
 }
 
+AI_SINGLE_BATTLE_TEST("Zenmodeman: AI accounts for proactive Color Change only when the ability is active")
+{
+    enum Ability attackerAbility;
+
+    PARAMETRIZE { attackerAbility = ABILITY_NONE; }
+    PARAMETRIZE { attackerAbility = ABILITY_MOLD_BREAKER; }
+    PARAMETRIZE { attackerAbility = ABILITY_NEUTRALIZING_GAS; }
+    GIVEN {
+        ASSUME(GetMovePower(MOVE_AURA_SPHERE) == GetMovePower(MOVE_SHADOW_BALL));
+        ASSUME(GetMoveCategory(MOVE_AURA_SPHERE) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMoveCategory(MOVE_SHADOW_BALL) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMoveType(MOVE_AURA_SPHERE) == TYPE_FIGHTING);
+        ASSUME(GetMoveType(MOVE_SHADOW_BALL) == TYPE_GHOST);
+        ASSUME(GetSpeciesType(SPECIES_KECLEON, 0) == TYPE_NORMAL || GetSpeciesType(SPECIES_KECLEON, 1) == TYPE_NORMAL);
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); }
+        OPPONENT(SPECIES_WEEZING) { Ability(attackerAbility); Moves(MOVE_AURA_SPHERE, MOVE_SHADOW_BALL); }
+    } WHEN {
+        if (attackerAbility == ABILITY_NEUTRALIZING_GAS)
+            TURN { SCORE_GT(opponent, MOVE_AURA_SPHERE, MOVE_SHADOW_BALL); }
+        else
+            TURN { SCORE_GT(opponent, MOVE_SHADOW_BALL, MOVE_AURA_SPHERE); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("Zenmodeman: AI damage comparison does not assume speculative binding turns")
 {
     GIVEN {

@@ -2203,6 +2203,23 @@ bool32 ChangeTypeBasedOnTerrain(enum BattlerId battler)
     return TRUE;
 }
 
+bool32 CanActivateProactiveColorChange(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Ability abilityDef, enum Move move, enum Type moveType)
+{
+    if (battlerAtk == battlerDef || !IsBattlerAlive(battlerDef))
+        return FALSE;
+
+    if (abilityDef != ABILITY_COLOR_CHANGE || move == MOVE_STRUGGLE)
+        return FALSE;
+
+    if (moveType == TYPE_NONE || moveType == TYPE_MYSTERY || moveType == TYPE_STELLAR)
+        return FALSE;
+
+    if (IS_BATTLER_OF_TYPE(battlerDef, moveType))
+        return FALSE;
+
+    return TRUE;
+}
+
 // Supreme Overlord adds a x0.1 damage boost for each fainted ally.
 static inline uq4_12_t GetSupremeOverlordModifier(enum BattlerId battler)
 {
@@ -3804,23 +3821,9 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
             }
         }
         break;
-    case ABILITYEFFECT_COLOR_CHANGE:
+    case ABILITYEFFECT_HP_THRESHOLD:
         switch (gLastUsedAbility)
         {
-        case ABILITY_COLOR_CHANGE:
-            if (IsBattlerTurnDamaged(battler, EXCLUDING_SUBSTITUTES)
-             && !IS_BATTLER_OF_TYPE(battler, moveType)
-             && move != MOVE_STRUGGLE
-             && moveType != TYPE_STELLAR
-             && moveType != TYPE_MYSTERY)
-            {
-                gEffectBattler = gBattlerAbility = battler;
-                SET_BATTLER_TYPE(battler, moveType);
-                PREPARE_TYPE_BUFFER(gBattleTextBuff1, moveType);
-                BattleScriptCall(BattleScript_ColorChangeActivates);
-                effect++;
-            }
-            break;
         case ABILITY_BERSERK:
             if (IsBattlerTurnDamaged(battler, EXCLUDING_SUBSTITUTES)
              && HadMoreThanHalfHpNowDoesnt(battler)

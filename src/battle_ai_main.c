@@ -842,7 +842,7 @@ static u32 PpStallReduction(enum Move move, enum BattlerId battlerAtk, enum Batt
         ctx.abilities[ctx.battlerDef] = AI_DecideKnownAbilityForTurn(ctx.battlerDef);
         ctx.holdEffects[ctx.battlerDef] = AI_DecideHoldEffectForTurn(ctx.battlerDef);
         if (AI_CanMoveBeBlockedByTarget(&ctx)
-         || CalcTypeEffectivenessMultiplier(&ctx) == UQ_4_12(0.0))
+         || AI_CalcTypeEffectivenessMultiplier(&ctx) == UQ_4_12(0.0))
             totalStallValue += currentStallValue;
     }
 

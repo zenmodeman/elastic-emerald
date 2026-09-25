@@ -4,6 +4,10 @@ I keep this reference for my custom functionality, with implementation anchors a
 
 The inventory was built from local `git log --author=zenmodeman`, current symbol scans, and current implementation anchors. It intentionally focuses on feature additions, AI logic, mechanic changes, and merge-sensitive integration points, not routine moveset, encounter, map, or trainer balance changes unless those changes introduced a new mechanic or gate. I use it as a functional map rather than a complete design specification.
 
+## Proactive Color Change
+
+Color Change has been altered to change the user's type before the move resolves.
+
 ## Documentation status
 
 Gameplay coverage is carried forward from the September 7, 2026 audit through `9c4b986496`, with the commitment-reset change and fixture corrections in `c753e34660` now reconciled against their committed diff. The two later commits through `9c12ae6d16` add analysis helpers, indexed in the [feature history](../feature-history.md), rather than runtime changes. This documentation conversion does not constitute a new full runtime audit or test run.
@@ -658,9 +662,7 @@ rg -n 'GetMonTierPoints|CountPartyTierPoints|CalcTierPointsAfter|GetMonoType|FLA
 rg -n 'Drain Douse|EFFECT_DRAIN_DOUSE|trydamphealing|Honey Gather|Astral Charge|Merry|Covered|Stockpile|Swallow|Echoed Voice|AI_FLAG_SMART_TRAINER|AI_FLAG_PREDICT_SWITCH|AI_FLAG_SMART_TERA|ApplySimulatedStatChanges|BattleSetup_EnforceRestrictedModeItemClause|PopulateMonotypeResistBerriesInPC|TryGetResistBerryConsumedDamages|TryReturnMrBrineyToDewfordAfterRoute109Fly' include src data test
 ```
 
-I use static checks for routine review and handle full builds separately.
-
-The first automated merge-guard batch covers these ten contracts, originally ranked by merge sensitivity and cross-system reach:
+Priority cases often to look at for merge breakage:
 
 1. Monotype save-value decoding across the removed type slot.
 2. Monotype startup seeding of exactly the super-effective resist berries.
@@ -672,5 +674,3 @@ The first automated merge-guard batch covers these ten contracts, originally ran
 8. Evolution Tier Point projection without mutating the party.
 9. Ability-change Tier Point projection without mutating the party.
 10. Restricted Mode item-clause enforcement, including returning the later duplicate to the bag.
-
-The batch command is `make check TESTS='Zenmodeman: Merge guard:*'`. It builds/runs the selected tests, so I keep it separate from static review. An incremental follow-up can reveal unstable generated dependencies.
