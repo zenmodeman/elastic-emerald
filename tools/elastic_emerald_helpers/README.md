@@ -57,3 +57,33 @@ The spreadsheet updater reads current learnsets and tutor lists from `src/data/p
 Install `gspread` in your local Python environment to perform updates. Put the service-account JSON at `tools/elastic_emerald_helpers/SecretKey.json`, or set `ELASTIC_EMERALD_GOOGLE_CREDENTIALS`/pass `--credentials` with another path. Credential JSON files in this directory are ignored; never commit a real key.
 
 Share the target spreadsheet with the service account's `client_email` before running without `--dry-run`. Use `--start` and `--end` for small batches and review a dry run first.
+
+## Defensive typing STAB wall rankings
+
+```sh
+python3 tools/elastic_emerald_helpers/analyze_stab_walls.py
+python3 tools/elastic_emerald_helpers/analyze_stab_walls.py -o /tmp/stab-walls.md
+python3 tools/elastic_emerald_helpers/analyze_stab_walls.py --format csv -o /tmp/stab-walls.csv --species-output /tmp/stab-population.csv
+```
+
+`analyze_stab_walls.py` reads configured species, evolution fields, form tables,
+and the type chart directly from the source. It requires Python 3.10+ and `cpp`
+(the C preprocessor); it does not compile or build the game. It can run from any
+working directory and has no Python package dependencies.
+
+A Pokemon is walled only if **all** its STAB types deal less than neutral damage.
+Its best STAB determines its exclusive category: resisted (½×), quad-resisted
+(¼×), or immune (0×). For example, a ½×/0× pairing counts as resisted, while a
+¼×/1× pairing is not walled. Each category and their sum have a count and a
+percentage of the same full population. Results sort by total percentage,
+descending, with alphabetical ties.
+
+Species with evolution entries are excluded. Form tables identify the base form;
+Megas and other alternate forms qualify only when their typing differs from that
+base. Each National Dex number/typing pair counts once, so cosmetic variants and
+multiple forms with the same typing do not inflate the population. Type order
+does not matter. The optional population CSV makes the denominator auditable.
+
+The report includes all 171 mono/dual combinations of the 18 conventional types.
+Stellar, Mystery, and Typeless are always excluded. Abilities, actual move availability,
+items, and temporary battle effects do not affect this type-only analysis.
