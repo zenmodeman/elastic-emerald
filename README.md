@@ -2,6 +2,12 @@
 # Elastic Emerald
 Elastic Emerald is built on top of RHH's pokeemerald-expansion: https://github.com/rh-hideout/pokeemerald-expansion/.
 
+## Project documentation
+
+- [Custom feature history and implementation commits](docs/feature-history.md)
+- [Developer guides and source references](docs/development/README.md)
+- [Gameplay reference](docs/gameplay/README.md)
+
 ## Credits
 Thunderbyrd25: [Menufly](https://github.com/Thunderbyrd25/pokeemerald/compare/master...menufly)
 

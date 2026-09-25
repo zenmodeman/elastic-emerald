@@ -2,15 +2,15 @@
 
 ## Documentation status
 
-- **Last documented code commit:** `9c4b986496` ("Remove the AI v.s. AI simulator and make modifications for test passes").
-- **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through the current HEAD. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
-- **Uncommitted AI changes covered by this document:** a player switch now clears established commitment as well as the already-cleared pending commitment for the opponents. The game's existing AI-versus-AI battle mode remains intact.
+- **Last documented code commit:** `c753e34660` ("Complete last failing automated tests").
+- **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through `9c4b986496`. The subsequent commitment-reset change in `c753e34660` was reconciled against its committed diff on September 25, 2026; the two later commits through `9c12ae6d16` only add analysis helpers. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
+- **Follow-up committed in `c753e34660`:** a player switch now clears established commitment as well as the already-cleared pending commitment for the opponents. The game's existing AI-versus-AI battle mode remains intact.
 
-The commit above is the newest code revision whose applicable AI behavior has been reviewed for inclusion here. If this document is updated alongside uncommitted AI work, that work should be listed explicitly as uncommitted rather than attributed to the current commit. Once the work is committed, a later documentation pass should replace the uncommitted marker and advance the documented commit.
+I use the commit above as the boundary of reviewed AI behavior. Pending changes stay explicitly labeled as uncommitted; once they have a commit, I reconcile the note against its diff and advance the boundary accordingly.
 
 ## Scope and reading guidance
 
-This document summarizes the main battle-AI work introduced through my commits from January 2024 through July 2026. Merge commits, trainer-team-only edits, mechanical formatting changes, and tests that did not introduce behavior are omitted. Later "restore" commits are treated as continuations of the original feature rather than separate features.
+This document summarizes the main battle-AI work introduced through my commits from January 2024 through September 2026. Merge commits, trainer-team-only edits, mechanical formatting changes, and tests that did not introduce behavior are omitted. Later "restore" commits are treated as continuations of the original feature rather than separate features.
 
 The implementation is a heuristic, rule-based system. It scores moves, predicts damage and state transitions, chooses targets, and evaluates switches. It is not a search tree or learned policy. Much of the custom work tries to make that heuristic system reason under imperfect information without becoming trivially exploitable. It involves a lot of stochastic logic. 
 
@@ -139,7 +139,7 @@ This commitment gate applies only to the fast-KO reason. Perish Song, ineffectiv
 
 Focused regression coverage verifies the initial uncommitted switch, successful attacks and self-targeting moves, Protect-blocked moves, player pivots, the HP thresholds, faster-threat requirement, and ordinary survival checks.
 
-Key commit: `53239d220d`.
+Key commits: `53239d220d`, `9c4b986496`, `c753e34660`.
 
 ### Scrapped generalized fast-KO experiments
 

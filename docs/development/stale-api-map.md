@@ -1,6 +1,6 @@
-# Stale API Map
+# API migration notes
 
-Use this as a starting map, not a blind rewrite list.
+I keep these mappings as a record of API changes encountered during upgrades. They are starting points for comparing a caller with the current declaration, rather than a mechanical replacement list.
 
 ## Battle Volatiles
 
@@ -32,7 +32,7 @@ AI_IsSlower(battlerAtk, battlerDef, move)
 AI_WhoStrikesFirst(battlerAtk, battlerDef, move)
 ```
 
-Current pattern:
+Pattern used by the port:
 
 ```c
 AI_IsFaster(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIORITY)
@@ -40,13 +40,13 @@ AI_IsSlower(battlerAtk, battlerDef, move, predictedMoveSpeedCheck, CONSIDER_PRIO
 AI_IsFaster(battlerAtk, battlerDef, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
 ```
 
-Use `GetIncomingMoveSpeedCheck(..., gAiLogicData)` where move priority matters. Use `MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY` for raw speed relationship checks.
+`GetIncomingMoveSpeedCheck(..., gAiLogicData)` supplies the predicted-move comparison where priority matters. The `MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY` form compares raw Speed relationships.
 
 ## Damage And Type Effectiveness
 
 Old direct type-effectiveness calls with many scalar args are stale when `CalcTypeEffectivenessMultiplier` expects `struct DamageContext *`.
 
-Prefer:
+The calculation paths have different scopes:
 
 - `AI_GetMoveEffectiveness(move, battlerAtk, battlerDef)` for known moves.
 - A small helper that multiplies `GetTypeModifier(type, defenderType)` when only raw type-vs-battler typing is needed.
@@ -54,10 +54,10 @@ Prefer:
 
 ## Move Effects And Additional Effects
 
-Check renamed/removed effects before preserving local cases:
+Renamed and split effects have affected local switch cases:
 
 - `EFFECT_FIXED_DAMAGE_ARG` often maps to `EFFECT_FIXED_PERCENT_DAMAGE` or `EFFECT_FIXED_HP_DAMAGE`.
 - `MOVE_EFFECT_STEAL_ITEM` is usually now a battle move effect such as `EFFECT_STEAL_ITEM`.
 - Hazard effects may be represented by `EFFECT_SPIKES`, `EFFECT_STEALTH_ROCK`, `EFFECT_STICKY_WEB`, `EFFECT_TOXIC_SPIKES`, `EFFECT_STONE_AXE`, or `EFFECT_CEASELESS_EDGE`.
 
-When `enum` switches compile with `-Werror=switch`, add `default: break;` for intentionally partial switches.
+An intentionally partial enum switch can use `default: break;` under `-Werror=switch`. I distinguish that case from a missing custom effect that actually needs handling.
