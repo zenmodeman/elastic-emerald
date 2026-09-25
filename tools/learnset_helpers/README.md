@@ -1,5 +1,15 @@
 # Learnset helpers
 
+## Unconvention first-stage level-1 moves
+
+`first_stage_level_one_moves.py` scans every bundled PoryMoves JSON file for level-1 moves on Pokémon that can evolve and have no pre-evolution. It uses the move’s usual learn level elsewhere as an explainable proxy for move calibre. Level-0 evolution moves are excluded, and the thresholds can be adjusted from the command line.
+
+```sh
+python3 tools/learnset_helpers/first_stage_level_one_moves.py
+python3 tools/learnset_helpers/first_stage_level_one_moves.py -o reports/early_moves.md
+```
+
+
 ## Single-Pokémon move analysis
 
 `mon_move_analysis.py` reads every `porymoves_files/*.json` game dataset and
