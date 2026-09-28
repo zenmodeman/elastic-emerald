@@ -2643,6 +2643,10 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_FEINT;
         }
         break;
+    case MOVE_EFFECT_OVERWRITE_ABILITY:
+        BattleScriptPush(battleScript);
+        gBattlescriptCurrInstr = BattleScript_MoveEffectOverwriteAbility;
+        break;
     case MOVE_EFFECT_CORE_ENFORCER:
         if (HasBattlerActedThisTurn(effectBattler)
          && gBattleStruct->battlerState[effectBattler].isFirstTurn != 2
@@ -10864,7 +10868,7 @@ static void Cmd_tryoverwriteability(void)
     }
     else if (CanAbilityShieldActivateForBattler(gBattlerTarget))
     {
-        gBattlescriptCurrInstr = BattleScript_MoveEnd;
+        gBattlescriptCurrInstr = (GetMoveCategory(gCurrentMove) == DAMAGE_CATEGORY_STATUS) ? BattleScript_MoveEnd : cmd->failInstr;
         BattleScriptCall(BattleScript_AbilityShieldProtects);
     }
     else

@@ -1172,6 +1172,12 @@ BattleScript_EffectOverwriteAbility::
 	tryoverwriteability BattleScript_ButItFailed
 	attackanimation
 	waitanimation
+	call BattleScript_OverwriteAbilitySuccess
+	goto BattleScript_MoveEnd
+
+BattleScript_MoveEffectOverwriteAbility::
+	tryoverwriteability BattleScript_OverwriteAbilityReturn
+BattleScript_OverwriteAbilitySuccess:
 	copybyte gBattlerAbility, gBattlerTarget
 	call BattleScript_AbilityPopUpOverwriteThenNormal
 	recordability BS_TARGET
@@ -1181,7 +1187,8 @@ BattleScript_EffectOverwriteAbility::
 	call BattleScript_TryRevertWeatherform
 	flushtextbox
 	tryendneutralizinggas
-	goto BattleScript_MoveEnd
+BattleScript_OverwriteAbilityReturn:
+	return
 
 BattleScript_EffectPowerSplit::
 	attackcanceler

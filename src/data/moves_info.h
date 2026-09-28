@@ -22026,6 +22026,30 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .battleAnimScript = gBattleAnimMove_MalignantChain,
     },
 
+    [MOVE_OVERWHELM_BEAM] =
+    {
+        .name = COMPOUND_STRING("Overwhelm Beam"),
+        .description = COMPOUND_STRING(
+            "Energy overwhelms the foe,\n"
+            "giving Insomnia."),
+        .effect = EFFECT_HIT,
+        .power = 120,
+        .type = TYPE_NORMAL,
+        .accuracy = 80,
+        .pp = 10,
+        .target = TARGET_SELECTED,
+        .priority = 0,
+        .category = DAMAGE_CATEGORY_SPECIAL,
+        .argument = { .overwriteAbility = ABILITY_INSOMNIA },
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_OVERWRITE_ABILITY,
+            .chance = 100,
+        }),
+        .contestEffect = CONTEST_EFFECT_MAKE_FOLLOWING_MONS_NERVOUS,
+        .contestCategory = CONTEST_CATEGORY_TOUGH,
+        .battleAnimScript = gBattleAnimMove_HyperBeam,
+    },
+
     [MOVE_DRAIN_DOUSE] =
     {
         .name = COMPOUND_STRING("Drain Douse"),

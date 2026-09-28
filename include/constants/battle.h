@@ -616,6 +616,7 @@ enum __attribute__((packed)) MoveEffect
     MOVE_EFFECT_FIRE_SPIN_SIDE,
     MOVE_EFFECT_FIXED_POWER,
     MOVE_EFFECT_METAL_RUSH,
+    MOVE_EFFECT_OVERWRITE_ABILITY,
     // Max move effects end. They can be used for (custom) normal moves.
 
     // For status stat change moves

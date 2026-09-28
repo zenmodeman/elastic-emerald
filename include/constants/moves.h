@@ -910,6 +910,7 @@ enum __attribute__((packed)) Move
     MOVE_METAL_RUSH,
     MOVE_BEFUDDLE,
     MOVE_PERPLEX_DANCE,
+    MOVE_OVERWHELM_BEAM,
 
     MOVES_COUNT,
 

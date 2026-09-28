@@ -6,9 +6,17 @@ The inventory was built from local `git log --author=zenmodeman`, current symbol
 
 ## Proactive Color Change
 
-Color Change has been altered to change the user's type before the move resolves.
+Commit `cb993f21b5` changes the target's type before target immunity checks, including for status moves. `CanActivateProactiveColorChange` in `src/battle_util.c` supplies the shared eligibility rule; `TryActivateProactiveColorChange` in `src/battle_move_resolution.c` applies it, and AI type prediction uses the same rule. Struggle, already-matching types, and None/Mystery/Stellar types do not trigger it.
+
+## Overwhelm Beam (Current)
+
+Custom high power Special Normal move that is inaccurate and gives the target Insomnia.
+
+
 
 ## Documentation status
+
+The feature-history index now includes Proactive Color Change through `cb993f21b5` and the uncommitted Overwhelm Beam addition. The older audit boundary below remains historical.
 
 Gameplay coverage is carried forward from the September 7, 2026 audit through `9c4b986496`, with the commitment-reset change and fixture corrections in `c753e34660` now reconciled against their committed diff. The two later commits through `9c12ae6d16` add analysis helpers, indexed in the [feature history](../feature-history.md), rather than runtime changes. This documentation conversion does not constitute a new full runtime audit or test run.
 

@@ -1,6 +1,6 @@
 # Elastic Emerald feature history
 
-I keep this index of the major custom systems and their implementation commits, through `9c12ae6d16` (September 24, 2026). It draws on the existing project feature/AI references and local Git history. It covers major gameplay, content, and tooling changes; routine individual learnset, encounter, trainer, and balance edits are not exhaustively listed. The inherited Expansion changelog remains separate.
+I keep this index of the major custom systems and their implementation commits, through `cb993f21b5` (September 25, 2026), with pending additions explicitly labeled. It draws on the existing project feature/AI references and local Git history. It covers major gameplay, content, and tooling changes; routine individual learnset, encounter, trainer, and balance edits are not exhaustively listed. The inherited Expansion changelog remains separate.
 
 Commits identify introductions, extensions, or repairs as labeled; old patches are historical evidence, not necessarily the current implementation. I use `git show <commit>` to inspect a patch and `git log -- <path>` to follow later changes. The [custom feature reference](development/feature-reference.md) contains detailed behavior and source anchors, the [AI summary](custom_ai_logic_summary.md) covers individual scoring rules, and the [development guides](development/README.md) record my maintenance approach.
 
@@ -60,6 +60,8 @@ Commits identify introductions, extensions, or repairs as labeled; old patches a
 | Feature | Implementation commits |
 | --- | --- |
 | Mud Sport/Water Sport protection and AI support | `9b7f7206c0`, `9fe2bc8d56`, `8dc19a1451`, `8911bb3be4` |
+| Proactive Color Change, including AI type prediction | `cb993f21b5` |
+| Overwhelm Beam: damaging Normal beam with an Insomnia secondary effect | Current |
 | Drain Douse | `432b00e197`; loop fix `fe64fecd8f`; move-end absorption rework `f3744907b1`; test/API repair `be3390bd51` |
 | Chilling Water bonus for Ice-type users | `67fd498d45` |
 | Hail with Snow's Defense boost; affection mechanics removed | `572b2f744f`, `aff25e61b6` |

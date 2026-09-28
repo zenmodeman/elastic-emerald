@@ -306,6 +306,7 @@ extern const u8 BattleScript_BanefulBunkerEffect[];
 extern const u8 BattleScript_FlowerVeilProtectsRet[];
 extern const u8 BattleScript_SweetVeilProtectsRet[];
 extern const u8 BattleScript_MoveEffectCoreEnforcer[];
+extern const u8 BattleScript_MoveEffectOverwriteAbility[];
 extern const u8 BattleScript_SelectingNotAllowedMoveThroatChop[];
 extern const u8 BattleScript_MoveUsedIsThroatChopPrevented[];
 extern const u8 BattleScript_SelectingNotAllowedMoveThroatChopInPalace[];
