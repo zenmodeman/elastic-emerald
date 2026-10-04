@@ -391,7 +391,7 @@ Under the active Gen 3 berry-yield preset, Lum; Spelon, Pamtre, Watmel, Durin, a
 
 Known QOL/content systems:
 
-- Party-menu move relearner: a single `RELEARN MOVES` option opens the level-up relearner directly for the selected non-egg Pokemon, without a category submenu. Only Pokemon with available level-up moves qualify; Resource Mode eligibility and facility restrictions apply. Closing the relearner returns to the party menu. Regression cases in `test/party_menu.c` cover visibility, restrictions, direct-entry state, and the full action list. See the [newest changes](../feature-history.md#newest-changes) for the pending repair and validation details.
+
 - MenuFly, custom Cut HM users, HM deletion, Party Nickname option, Box Link, Pokedex Plus, no-whiteout battles, AI-vs-AI/player-side backsprite support.
 - Oldale's Corviknight ride caller grants MenuFly through either direct interaction or nine surrounding coordinate triggers while `VAR_OLDALE_TOWN_STATE` is 1; receiving Fly advances the state to 2 so the approach triggers stop firing. The caller's map local ID is deliberately stable because every approach movement script targets it.
 - Route 109 MenuFly softlock prevention: if Fly is used from Route 109 before Slateport is visited and Briney/boat are still present there, `SetFlyDestination` returns Briney and the boat to Dewford.
