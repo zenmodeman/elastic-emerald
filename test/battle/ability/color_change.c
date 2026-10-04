@@ -96,7 +96,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Color Change activates before Future Sight re
         MESSAGE("The opposing Kecleon took the Future Sight attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Psychic!");
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_FUTURE_SIGHT_HIT, player);
     }
 }
 
@@ -113,7 +113,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Color Change activates before Doom Desire res
         MESSAGE("The opposing Kecleon took the Doom Desire attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Steel!");
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_DOOM_DESIRE, player);
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_DOOM_DESIRE_HIT, player);
     }
 }
 
@@ -130,7 +130,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Color Change uses Electrify's type before a d
         MESSAGE("The opposing Kecleon took the Future Sight attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Electric!");
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_FUTURE_SIGHT_HIT, player);
     }
 }
 
@@ -150,7 +150,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Color Change uses Normalize's type before a d
         MESSAGE("The opposing Kecleon took the Future Sight attack!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
         MESSAGE("The opposing Kecleon's type changed to Normal!");
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_FUTURE_SIGHT, player);
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_FUTURE_SIGHT_HIT, player);
     }
 }
 
