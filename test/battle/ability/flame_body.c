@@ -51,7 +51,7 @@ SINGLE_BATTLE_TEST("Flame Body triggers 1/3 times (Gen3) or 30% (Gen 4+) of the 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Flame Body is forced when its defensive contact ability rate would fall below odds")
+SINGLE_BATTLE_TEST("Elastic-tests: Flame Body is forced when its defensive contact ability rate would fall below odds")
 {
     GIVEN {
         WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);
@@ -71,7 +71,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Flame Body is forced when its defensive contact 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Flame Body is not forced on the first eligible contact")
+SINGLE_BATTLE_TEST("Elastic-tests: Flame Body is not forced on the first eligible contact")
 {
     GIVEN {
         WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);
@@ -90,7 +90,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Flame Body is not forced on the first eligible c
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Flame Body defensive contact ability counter resets when the ability user switches in")
+SINGLE_BATTLE_TEST("Elastic-tests: Flame Body defensive contact ability counter resets when the ability user switches in")
 {
     GIVEN {
         WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);

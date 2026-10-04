@@ -77,7 +77,7 @@ SINGLE_BATTLE_TEST("Gorilla Tactics does not lock moves while Dynamaxed")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted Gorilla Tactics ignores Choice Band but keeps its own boost", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted Gorilla Tactics ignores Choice Band but keeps its own boost", s16 damage)
 {
     enum Item item;
     enum Ability ability;
@@ -100,7 +100,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Restricted Gorilla Tactics ignores Choice Band b
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Choice Scarf is ignored only for Restricted Gorilla Tactics")
+SINGLE_BATTLE_TEST("Elastic-tests: Choice Scarf is ignored only for Restricted Gorilla Tactics")
 {
     bool32 restricted;
     enum Ability ability;
@@ -128,7 +128,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Choice Scarf is ignored only for Restricted Gori
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted opponent Gorilla Tactics retains Choice Band", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted opponent Gorilla Tactics retains Choice Band", s16 damage)
 {
     enum Item item;
     PARAMETRIZE { item = ITEM_NONE; }
@@ -148,7 +148,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Restricted opponent Gorilla Tactics retains Choi
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted opponent Gorilla Tactics retains Choice Scarf")
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted opponent Gorilla Tactics retains Choice Scarf")
 {
     GIVEN {
         FlagSet(FLAG_RESTRICTED_MODE);

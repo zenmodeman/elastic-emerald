@@ -8,7 +8,7 @@ TO_DO_BATTLE_TEST("TODO: Write Water Sport (Move Effect) test titles")
 ASSUMPTIONS{
     ASSUME(GetMoveEffect(MOVE_WATER_SPORT) == EFFECT_WATER_SPORT);
 }
-SINGLE_BATTLE_TEST("Zenmodeman: Water Sport prevents burn from Will-o-Wisp")
+SINGLE_BATTLE_TEST("Elastic-tests: Water Sport prevents burn from Will-o-Wisp")
 {
     GIVEN {
         // ASSUME(GetMoveEffect(MOVE_WILL_O_WISP) == EFFECT_WILL_O_WISP); No longer valid after change to the effect
@@ -26,7 +26,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Water Sport prevents burn from Will-o-Wisp")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Water Sport prevents burn from Fire-type secondary effects")
+SINGLE_BATTLE_TEST("Elastic-tests: Water Sport prevents burn from Fire-type secondary effects")
 {
     GIVEN{
         ASSUME(MoveHasAdditionalEffectWithChance(MOVE_INFERNO, MOVE_EFFECT_BURN, 100));
@@ -40,7 +40,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Water Sport prevents burn from Fire-type seconda
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Water Sport does not block burn from non-Fire secondary effects")
+SINGLE_BATTLE_TEST("Elastic-tests: Water Sport does not block burn from non-Fire secondary effects")
 {
     GIVEN {
         ASSUME(GetMoveType(MOVE_SCALD) == TYPE_WATER);

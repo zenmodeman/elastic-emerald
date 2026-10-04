@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Illuminate spotlights its user after an illuminating move")
+DOUBLE_BATTLE_TEST("Elastic-tests: Illuminate spotlights its user after an illuminating move")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -15,7 +15,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Illuminate spotlights its user after an illumina
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Illuminate ignores moves outside the illuminating category")
+DOUBLE_BATTLE_TEST("Elastic-tests: Illuminate ignores moves outside the illuminating category")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -29,7 +29,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Illuminate ignores moves outside the illuminatin
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Illuminate permits its own accuracy to be lowered")
+SINGLE_BATTLE_TEST("Elastic-tests: Illuminate permits its own accuracy to be lowered")
 {
     PASSES_RANDOMLY(75, 100, RNG_ACCURACY);
     GIVEN {
@@ -44,7 +44,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Illuminate permits its own accuracy to be lowere
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Illuminate ignores evasion abilities")
+SINGLE_BATTLE_TEST("Elastic-tests: Illuminate ignores evasion abilities")
 {
     PASSES_RANDOMLY(100, 100, RNG_ACCURACY);
     GIVEN {
@@ -59,7 +59,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Illuminate ignores evasion abilities")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Illuminate ignores evasion items")
+SINGLE_BATTLE_TEST("Elastic-tests: Illuminate ignores evasion items")
 {
     PASSES_RANDOMLY(100, 100, RNG_ACCURACY);
     GIVEN {

@@ -27,7 +27,7 @@ SINGLE_BATTLE_TEST("Light Metal and Heavy Metal affect the power of Low Kick", s
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Heavy Metal has a minimum effective weight of 200kg", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Heavy Metal has a minimum effective weight of 200kg", s16 damage)
 {
     u32 species;
     enum Ability ability;
@@ -51,7 +51,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Heavy Metal has a minimum effective weight of 20
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Light Metal has a maximum effective weight of 40kg", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Light Metal has a maximum effective weight of 40kg", s16 damage)
 {
     u32 species;
     enum Ability ability;
@@ -75,7 +75,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Light Metal has a maximum effective weight of 40
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Light Metal still halves weights below its 40kg cap", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Light Metal still halves weights below its 40kg cap", s16 damage)
 {
     u32 species;
     enum Ability ability;

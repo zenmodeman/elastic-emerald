@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Forewarn halves damage from the move it identifies", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Forewarn halves damage from the move it identifies", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_SYNCHRONIZE; }
@@ -18,7 +18,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Forewarn halves damage from the move it identifi
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Forewarn does not reduce a different unannounced move", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Forewarn does not reduce a different unannounced move", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_SYNCHRONIZE; }

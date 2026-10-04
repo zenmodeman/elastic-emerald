@@ -19,28 +19,28 @@ static void SetMonotype(enum Type type)
         VarSet(VAR_MONOTYPE, type);
 }
 
-TEST("Zenmodeman: Monotype wild Snorunt is female for a Ghost evolution")
+TEST("Elastic-tests: Monotype wild Snorunt is female for a Ghost evolution")
 {
     SetMonotype(TYPE_GHOST);
     CreateWildMon(SPECIES_SNORUNT, 20);
     EXPECT_EQ(GetMonGender(&gParties[B_TRAINER_OPPONENT_A][0]), MON_FEMALE);
 }
 
-TEST("Zenmodeman: Monotype wild Ralts is male for a Fighting evolution")
+TEST("Elastic-tests: Monotype wild Ralts is male for a Fighting evolution")
 {
     SetMonotype(TYPE_FIGHTING);
     CreateWildMon(SPECIES_RALTS, 20);
     EXPECT_EQ(GetMonGender(&gParties[B_TRAINER_OPPONENT_A][0]), MON_MALE);
 }
 
-TEST("Zenmodeman: Monotype wild Burmy is male for its Flying evolution")
+TEST("Elastic-tests: Monotype wild Burmy is male for its Flying evolution")
 {
     SetMonotype(TYPE_FLYING);
     CreateWildMon(SPECIES_BURMY, 20);
     EXPECT_EQ(GetMonGender(&gParties[B_TRAINER_OPPONENT_A][0]), MON_MALE);
 }
 
-TEST("Zenmodeman: Monotype wild Burmy is female for cloak type evolutions")
+TEST("Elastic-tests: Monotype wild Burmy is female for cloak type evolutions")
 {
     enum Type type;
 
@@ -53,7 +53,7 @@ TEST("Zenmodeman: Monotype wild Burmy is female for cloak type evolutions")
     EXPECT_EQ(GetMonGender(&gParties[B_TRAINER_OPPONENT_A][0]), MON_FEMALE);
 }
 
-TEST("Zenmodeman: Sweet Scent double battle chance is consumed by one encounter check")
+TEST("Elastic-tests: Sweet Scent double battle chance is consumed by one encounter check")
 {
     ZeroPlayerPartyMons();
     CreateMon(&gParties[B_TRAINER_PLAYER][0], SPECIES_WOBBUFFET, 20, 0, OTID_STRUCT_PLAYER_ID);
@@ -64,7 +64,7 @@ TEST("Zenmodeman: Sweet Scent double battle chance is consumed by one encounter 
     EXPECT(!TryDoDoubleWildBattle());
 }
 
-TEST("Zenmodeman: Granite Cave retains its expanded early encounter roster and level band")
+TEST("Elastic-tests: Granite Cave retains its expanded early encounter roster and level band")
 {
     static const enum Species b1fSpecies[] =
     {
@@ -93,7 +93,7 @@ TEST("Zenmodeman: Granite Cave retains its expanded early encounter roster and l
     }
 }
 
-TEST("Zenmodeman: Dewford Garden retains its custom land and shaking encounter leads")
+TEST("Elastic-tests: Dewford Garden retains its custom land and shaking encounter leads")
 {
     static const enum Species landSpecies[] =
     {

@@ -7,7 +7,7 @@ ASSUMPTIONS
     ASSUME(gItemsInfo[ITEM_MIRROR_HERB].holdEffect == HOLD_EFFECT_MIRROR_HERB);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted Mirror Herb ignores a foe's self boost")
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted Mirror Herb ignores a foe's self boost")
 {
     GIVEN {
         FlagSet(FLAG_RESTRICTED_MODE);
@@ -21,7 +21,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Restricted Mirror Herb ignores a foe's self boos
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted Mirror Herb copies a boost directly inflicted on its target")
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted Mirror Herb copies a boost directly inflicted on its target")
 {
     GIVEN {
         FlagSet(FLAG_RESTRICTED_MODE);

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather grants Honey at the end of the turn")
+SINGLE_BATTLE_TEST("Elastic-tests: Honey Gather grants Honey at the end of the turn")
 {
     GIVEN {
         ASSUME(gItemsInfo[ITEM_HONEY].holdEffect == HOLD_EFFECT_RESTORE_PCT_HP);
@@ -18,7 +18,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather grants Honey at the end of the turn
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather grants and immediately uses Honey if its HP is low enough")
+SINGLE_BATTLE_TEST("Elastic-tests: Honey Gather grants and immediately uses Honey if its HP is low enough")
 {
     GIVEN {
         ASSUME(gItemsInfo[ITEM_HONEY].holdEffect == HOLD_EFFECT_RESTORE_PCT_HP);
@@ -36,7 +36,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather grants and immediately uses Honey i
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather does not grant Honey if the battler already has an item")
+SINGLE_BATTLE_TEST("Elastic-tests: Honey Gather does not grant Honey if the battler already has an item")
 {
     GIVEN {
         ASSUME(gItemsInfo[ITEM_HONEY].holdEffect == HOLD_EFFECT_RESTORE_PCT_HP);
@@ -52,7 +52,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather does not grant Honey if the battler
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather keeps newly found Honey above the 75 percent activation threshold")
+SINGLE_BATTLE_TEST("Elastic-tests: Honey Gather keeps newly found Honey above the 75 percent activation threshold")
 {
     GIVEN {
         ASSUME(gItemsInfo[ITEM_HONEY].holdEffect == HOLD_EFFECT_RESTORE_PCT_HP);
@@ -66,7 +66,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Honey Gather keeps newly found Honey above the 7
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Suppressed Honey Gather does not create Honey")
+SINGLE_BATTLE_TEST("Elastic-tests: Suppressed Honey Gather does not create Honey")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_GASTRO_ACID) == EFFECT_GASTRO_ACID);
@@ -79,7 +79,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Suppressed Honey Gather does not create Honey")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Magic Room lets Honey Gather create Honey without consuming it")
+SINGLE_BATTLE_TEST("Elastic-tests: Magic Room lets Honey Gather create Honey without consuming it")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Speed(200); }

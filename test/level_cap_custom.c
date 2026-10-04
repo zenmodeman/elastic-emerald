@@ -17,7 +17,7 @@ static void SetTwoBadgePreRivalLevelCap(void)
     FlagSet(FLAG_BADGE02_GET);
 }
 
-TEST("Zenmodeman: Level caps: candies are rejected at the active runtime cap")
+TEST("Elastic-tests: Level caps: candies are rejected at the active runtime cap")
 {
     SetTwoBadgePreRivalLevelCap();
 
@@ -29,7 +29,7 @@ TEST("Zenmodeman: Level caps: candies are rejected at the active runtime cap")
     EXPECT(Test_CanUseLevelUpCandy(23));
 }
 
-TEST("Zenmodeman: Level caps: Exp Candy cannot raise experience beyond the runtime cap")
+TEST("Elastic-tests: Level caps: Exp Candy cannot raise experience beyond the runtime cap")
 {
     struct Pokemon mon;
     enum GrowthRate growthRate = gSpeciesInfo[SPECIES_WOBBUFFET].growthRate;
@@ -42,7 +42,7 @@ TEST("Zenmodeman: Level caps: Exp Candy cannot raise experience beyond the runti
     EXPECT_EQ(GetMonData(&mon, MON_DATA_EXP), gExperienceTables[growthRate][23]);
 }
 
-TEST("Zenmodeman: Trainer scaling: newly eligible evolutions preserve configured properties")
+TEST("Elastic-tests: Trainer scaling: newly eligible evolutions preserve configured properties")
 {
     struct Pokemon mon;
     enum Move move = MOVE_STUN_SPORE;
@@ -66,7 +66,7 @@ TEST("Zenmodeman: Trainer scaling: newly eligible evolutions preserve configured
     EXPECT_EQ(GetNature(&mon), nature);
 }
 
-TEST("Zenmodeman: Trainer scaling: authored unevolved species remain unevolved")
+TEST("Elastic-tests: Trainer scaling: authored unevolved species remain unevolved")
 {
     struct Pokemon mon;
 

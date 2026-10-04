@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: AI records Float Stone when Low Kick exposes its weight effect")
+SINGLE_BATTLE_TEST("Elastic-tests: AI records Float Stone when Low Kick exposes its weight effect")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_LOW_KICK) == EFFECT_LOW_KICK);
@@ -16,7 +16,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: AI records Float Stone when Low Kick exposes its
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: AI records Eviolite when its defensive boost applies")
+SINGLE_BATTLE_TEST("Elastic-tests: AI records Eviolite when its defensive boost applies")
 {
     GIVEN {
         ASSUME(GetMoveCategory(MOVE_TACKLE) == DAMAGE_CATEGORY_PHYSICAL);
@@ -31,7 +31,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: AI records Eviolite when its defensive boost app
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: AI records Assault Vest only when its special defense boost applies")
+SINGLE_BATTLE_TEST("Elastic-tests: AI records Assault Vest only when its special defense boost applies")
 {
     GIVEN {
         ASSUME(GetMoveCategory(MOVE_WATER_GUN) == DAMAGE_CATEGORY_SPECIAL);

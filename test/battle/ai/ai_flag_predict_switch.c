@@ -110,7 +110,7 @@ AI_SINGLE_BATTLE_TEST("AI_FLAG_PREDICT_SWITCH: AI would switch out in Focus Punc
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON only considers immunity switches after repeated player switches")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI_FLAG_PREDICT_INCOMING_MON only considers immunity switches after repeated player switches")
 {
     PASSES_RANDOMLY(PREDICT_SWITCH_CHANCE, 100, RNG_AI_PREDICT_SWITCH);
     PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_SE_DEFENSIVE);
@@ -133,7 +133,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON only considers i
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_PREDICT_INCOMING_MON handles equally frequent immunity candidates")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI_FLAG_PREDICT_INCOMING_MON handles equally frequent immunity candidates")
 {
     PASSES_RANDOMLY(PREDICT_SWITCH_CHANCE, 100, RNG_AI_PREDICT_SWITCH);
     PASSES_RANDOMLY(100, 100, RNG_AI_SWITCH_SE_DEFENSIVE);

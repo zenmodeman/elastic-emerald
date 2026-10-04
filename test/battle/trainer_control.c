@@ -92,7 +92,7 @@ TEST("CreateNPCTrainerPartyForTrainer generates customized Pokémon")
     Free(testParty);
 }
 
-TEST("Zenmodeman: Merge guard: Trainer EV spreads apply only in EV Mode")
+TEST("Elastic-tests: Merge guard: Trainer EV spreads apply only in EV Mode")
 {
     struct Pokemon *testParty = Alloc(PARTY_SIZE * sizeof(*testParty));
     u32 currTrainer = 3;

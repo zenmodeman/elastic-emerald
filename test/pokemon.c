@@ -251,7 +251,7 @@ TEST("givemon [simple]")
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_LEVEL), 100);
 }
 
-TEST("Zenmodeman: ordinary scripted gifts receive at least three perfect IVs")
+TEST("Elastic-tests: ordinary scripted gifts receive at least three perfect IVs")
 {
     u32 i;
     u32 perfectIvCount = 0;
@@ -270,7 +270,7 @@ TEST("Zenmodeman: ordinary scripted gifts receive at least three perfect IVs")
     EXPECT_GE(perfectIvCount, 3);
 }
 
-TEST("Zenmodeman: explicit scripted gift IVs bypass the three perfect IV floor")
+TEST("Elastic-tests: explicit scripted gift IVs bypass the three perfect IV floor")
 {
     ZeroPlayerPartyMons();
     RUN_OVERWORLD_SCRIPT(

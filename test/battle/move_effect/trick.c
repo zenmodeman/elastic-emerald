@@ -42,7 +42,7 @@ SINGLE_BATTLE_TEST("Trick succeeds if only the target has an item")
     }
 }
 
-WILD_BATTLE_TEST("Zenmodeman: Trick fails rather than transferring a wild consumable to the player in Resource Mode")
+WILD_BATTLE_TEST("Elastic-tests: Trick fails rather than transferring a wild consumable to the player in Resource Mode")
 {
     GIVEN {
         FlagSet(FLAG_RESOURCE_MODE);

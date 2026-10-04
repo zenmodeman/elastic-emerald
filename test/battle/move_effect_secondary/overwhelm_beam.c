@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Overwhelm Beam deals damage before replacing the target ability")
+SINGLE_BATTLE_TEST("Elastic-tests: Overwhelm Beam deals damage before replacing the target ability")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -17,7 +17,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Overwhelm Beam deals damage before replacing the
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Overwhelm Beam protections block the rider without blocking damage")
+SINGLE_BATTLE_TEST("Elastic-tests: Overwhelm Beam protections block the rider without blocking damage")
 {
     u32 species;
     enum Ability ability;
@@ -40,7 +40,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Overwhelm Beam protections block the rider witho
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Sheer Force suppresses Overwhelm Beam's ability overwrite")
+SINGLE_BATTLE_TEST("Elastic-tests: Sheer Force suppresses Overwhelm Beam's ability overwrite")
 {
     GIVEN {
         PLAYER(SPECIES_NIDOKING) { Ability(ABILITY_SHEER_FORCE); }
@@ -55,7 +55,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Sheer Force suppresses Overwhelm Beam's ability 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Overwhelm Beam cannot overwrite an ability through Substitute")
+SINGLE_BATTLE_TEST("Elastic-tests: Overwhelm Beam cannot overwrite an ability through Substitute")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -67,7 +67,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Overwhelm Beam cannot overwrite an ability throu
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Overwhelm Beam cannot overwrite an ability on a miss")
+SINGLE_BATTLE_TEST("Elastic-tests: Overwhelm Beam cannot overwrite an ability on a miss")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);

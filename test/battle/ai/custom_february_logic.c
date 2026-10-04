@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Defense Curl AI values Rollout setup only when it can survive two hits", enum Move playerMove)
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Defense Curl AI values Rollout setup only when it can survive two hits", enum Move playerMove)
 {
     enum Move playerMove;
 
@@ -19,7 +19,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: Defense Curl AI values Rollout setup only whe
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: screen AI infers an unknown attacker's likely damage split from raw stats", u16 attack, u16 spAttack, enum Move expectedMove)
+AI_SINGLE_BATTLE_TEST("Elastic-tests: screen AI infers an unknown attacker's likely damage split from raw stats", u16 attack, u16 spAttack, enum Move expectedMove)
 {
     u16 attack;
     u16 spAttack;
@@ -36,7 +36,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: screen AI infers an unknown attacker's likely
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: screen AI respects a revealed attack category over raw stat inference")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: screen AI respects a revealed attack category over raw stat inference")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_OMNISCIENT);

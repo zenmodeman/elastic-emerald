@@ -76,7 +76,7 @@ SINGLE_BATTLE_TEST("Foresight causes moves against the target to ignore positive
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Foresight repeat override ignores the generational failure setting")
+SINGLE_BATTLE_TEST("Elastic-tests: Foresight repeat override ignores the generational failure setting")
 {
     u32 genConfig = GEN_2;
     PARAMETRIZE { genConfig = GEN_2; }
@@ -124,7 +124,7 @@ TO_DO_BATTLE_TEST("Foresight causes moves used against the target to always hit 
 TO_DO_BATTLE_TEST("Baton Pass passes Foresight's effect (Gen 2)");
 TO_DO_BATTLE_TEST("Baton Pass doesn't pass Foresight's effect (Gen 3+)");
 
-SINGLE_BATTLE_TEST("Zenmodeman: Foresight and Odor Sleuth raise the user's Accuracy", enum Move move)
+SINGLE_BATTLE_TEST("Elastic-tests: Foresight and Odor Sleuth raise the user's Accuracy", enum Move move)
 {
     enum Move move;
 
@@ -143,7 +143,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Foresight and Odor Sleuth raise the user's Accur
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Foresight can repeat to raise Accuracy again")
+SINGLE_BATTLE_TEST("Elastic-tests: Foresight can repeat to raise Accuracy again")
 {
     GIVEN {
         WITH_CONFIG(B_FORESIGHT_FAIL, GEN_9);

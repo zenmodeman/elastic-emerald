@@ -3,7 +3,7 @@
 #include "event_data.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Non-Resource Mode restores a consumed held item after battle")
+SINGLE_BATTLE_TEST("Elastic-tests: Non-Resource Mode restores a consumed held item after battle")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { MaxHP(100); HP(51); Item(ITEM_SITRUS_BERRY); }
@@ -17,7 +17,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Non-Resource Mode restores a consumed held item 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode spends a normally consumed held item")
+SINGLE_BATTLE_TEST("Elastic-tests: Resource Mode spends a normally consumed held item")
 {
     GIVEN {
         FLAG_SET(FLAG_RESOURCE_MODE);
@@ -32,7 +32,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode spends a normally consumed held it
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode restores a Flinged held item after battle")
+SINGLE_BATTLE_TEST("Elastic-tests: Resource Mode restores a Flinged held item after battle")
 {
     GIVEN {
         FLAG_SET(FLAG_RESOURCE_MODE);
@@ -47,7 +47,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode restores a Flinged held item after
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Resource Mode restores a Knocked Off held item after battle")
+SINGLE_BATTLE_TEST("Elastic-tests: Resource Mode restores a Knocked Off held item after battle")
 {
     GIVEN {
         FLAG_SET(FLAG_RESOURCE_MODE);

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Anticipation does not reduce neutral damage on its switch-in turn", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Anticipation does not reduce neutral damage on its switch-in turn", s16 damage)
 {
     enum Ability ability;
 
@@ -384,7 +384,7 @@ TO_DO_BATTLE_TEST("Anticipation does not consider Strong Winds on type matchups"
 TO_DO_BATTLE_TEST("Anticipation does not consider ate-abilities");
 
 
-SINGLE_BATTLE_TEST("Zenmodeman: Anticipation has Solid Rock reduction when sent out against a SE move", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Anticipation has Solid Rock reduction when sent out against a SE move", s16 damage)
 {
     u32 ability;
     PARAMETRIZE { ability = ABILITY_ANTICIPATION; }
@@ -403,7 +403,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Anticipation has Solid Rock reduction when sent 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Anticipation has double reduction when sent out against a quad effective move", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Anticipation has double reduction when sent out against a quad effective move", s16 damage)
 {
     u32 ability;
     PARAMETRIZE { ability = ABILITY_ANTICIPATION; }
@@ -423,7 +423,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Anticipation has double reduction when sent out 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Anticipation does not have reduction when the mon is sent out in a subsequent turn", s16 damage){
+SINGLE_BATTLE_TEST("Elastic-tests: Anticipation does not have reduction when the mon is sent out in a subsequent turn", s16 damage){
     u32 ability;
     PARAMETRIZE { ability = ABILITY_ANTICIPATION; }
     PARAMETRIZE { ability = ABILITY_DRY_SKIN; }

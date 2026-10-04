@@ -129,7 +129,7 @@ WILD_BATTLE_TEST("Thief and Covet steal target's held item and it's added to Bag
     }
 }
 
-WILD_BATTLE_TEST("Zenmodeman: Resource Mode blocks stealing wild consumables")
+WILD_BATTLE_TEST("Elastic-tests: Resource Mode blocks stealing wild consumables")
 {
     GIVEN {
         WITH_CONFIG(B_STEAL_WILD_ITEMS, GEN_9);
@@ -144,7 +144,7 @@ WILD_BATTLE_TEST("Zenmodeman: Resource Mode blocks stealing wild consumables")
     }
 }
 
-WILD_BATTLE_TEST("Zenmodeman: Resource Mode permits stealing wild non-consumable items")
+WILD_BATTLE_TEST("Elastic-tests: Resource Mode permits stealing wild non-consumable items")
 {
     GIVEN {
         WITH_CONFIG(B_STEAL_WILD_ITEMS, GEN_9);

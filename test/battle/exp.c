@@ -27,7 +27,7 @@ WILD_BATTLE_TEST("Pokemon gain experience after catching a Pokemon (Gen6+)")
     }
 }
 
-WILD_BATTLE_TEST("Zenmodeman: Hard level caps prevent battle exp at the current cap")
+WILD_BATTLE_TEST("Elastic-tests: Hard level caps prevent battle exp at the current cap")
 {
     GIVEN {
         FLAG_SET(FLAG_LEVEL_CAP);

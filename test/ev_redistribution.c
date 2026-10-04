@@ -8,7 +8,7 @@ static void EnableEvMode(void)
     FlagSet(FLAG_EV_MODE);
 }
 
-TEST("Zenmodeman: EV redistribution accepts a conserved spread within the current stat cap")
+TEST("Elastic-tests: EV redistribution accepts a conserved spread within the current stat cap")
 {
     const u8 evs[NUM_STATS] = {36, 36, 0, 0, 0, 0};
 
@@ -16,7 +16,7 @@ TEST("Zenmodeman: EV redistribution accepts a conserved spread within the curren
     EXPECT(IsValidEvRedistribution(evs, 72));
 }
 
-TEST("Zenmodeman: EV redistribution rejects creation or loss of EVs")
+TEST("Elastic-tests: EV redistribution rejects creation or loss of EVs")
 {
     const u8 evs[NUM_STATS] = {36, 32, 0, 0, 0, 0};
 
@@ -25,7 +25,7 @@ TEST("Zenmodeman: EV redistribution rejects creation or loss of EVs")
     EXPECT(!IsValidEvRedistribution(evs, 64));
 }
 
-TEST("Zenmodeman: EV redistribution enforces the current badge based per stat cap")
+TEST("Elastic-tests: EV redistribution enforces the current badge based per stat cap")
 {
     const u8 evs[NUM_STATS] = {40, 32, 0, 0, 0, 0};
 
@@ -36,7 +36,7 @@ TEST("Zenmodeman: EV redistribution enforces the current badge based per stat ca
     EXPECT(IsValidEvRedistribution(evs, 72));
 }
 
-TEST("Zenmodeman: EV redistribution rejects all positive EVs when EV Mode is disabled")
+TEST("Elastic-tests: EV redistribution rejects all positive EVs when EV Mode is disabled")
 {
     const u8 evs[NUM_STATS] = {4, 0, 0, 0, 0, 0};
 

@@ -12,7 +12,7 @@ ASSUMPTIONS
 }
 
 
-SINGLE_BATTLE_TEST("Zenmodeman: Astral Charge does not activate for non-damaging Psychic moves")
+SINGLE_BATTLE_TEST("Elastic-tests: Astral Charge does not activate for non-damaging Psychic moves")
 {
     GIVEN {
         ASSUME(IsBattleMoveStatus(MOVE_HYPNOSIS));
@@ -28,7 +28,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Astral Charge does not activate for non-damaging
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Astral Charge raises Sp. Attack by 1 when hit by a Fairy or Psychic-type attack")
+SINGLE_BATTLE_TEST("Elastic-tests: Astral Charge raises Sp. Attack by 1 when hit by a Fairy or Psychic-type attack")
 {
     u16 move;
 

@@ -135,7 +135,7 @@ static bool32 ScriptRangeContainsPointer(const u8 *start, const u8 *end, const u
     return FALSE;
 }
 
-TEST("Zenmodeman: Oldale ride caller retains every approach trigger")
+TEST("Elastic-tests: Oldale ride caller retains every approach trigger")
 {
     static const s16 coords[][2] = {
         {10, 10}, {9, 10}, {8, 10}, {8, 7}, {11, 10},
@@ -149,7 +149,7 @@ TEST("Zenmodeman: Oldale ride caller retains every approach trigger")
         EXPECT(HasCoordTrigger(events, coords[i][0], coords[i][1], VAR_OLDALE_TOWN_STATE, 1));
 }
 
-TEST("Zenmodeman: Oldale ride caller keeps its stable local id and interaction")
+TEST("Elastic-tests: Oldale ride caller keeps its stable local id and interaction")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_OLDALE_TOWN), MAP_NUM(MAP_OLDALE_TOWN))->events;
@@ -160,7 +160,7 @@ TEST("Zenmodeman: Oldale ride caller keeps its stable local id and interaction")
     EXPECT_NE(rideCaller->script, NULL);
 }
 
-TEST("Zenmodeman: Petalburg Grove retains Birch and its ambient Pokemon")
+TEST("Elastic-tests: Petalburg Grove retains Birch and its ambient Pokemon")
 {
     static const u16 expectedGraphics[] = {
         OBJ_EVENT_GFX_PROF_BIRCH,
@@ -183,7 +183,7 @@ TEST("Zenmodeman: Petalburg Grove retains Birch and its ambient Pokemon")
     EXPECT_EQ(FindObjectByLocalId(events, 3)->flagId, FLAG_HIDE_PETALBURG_GROVE_BIRCH);
 }
 
-TEST("Zenmodeman: Youngster James retains his Petalburg Woods overworld identity")
+TEST("Elastic-tests: Youngster James retains his Petalburg Woods overworld identity")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
@@ -194,7 +194,7 @@ TEST("Zenmodeman: Youngster James retains his Petalburg Woods overworld identity
     EXPECT_EQ(james->trainerType, TRAINER_TYPE_NORMAL);
 }
 
-TEST("Zenmodeman: Bug Catcher Lyle retains his Petalburg Woods overworld identity")
+TEST("Elastic-tests: Bug Catcher Lyle retains his Petalburg Woods overworld identity")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
@@ -205,7 +205,7 @@ TEST("Zenmodeman: Bug Catcher Lyle retains his Petalburg Woods overworld identit
     EXPECT_EQ(lyle->trainerType, TRAINER_TYPE_NORMAL);
 }
 
-TEST("Zenmodeman: Aurelio retains the founding Petalburg Woods route boss interaction")
+TEST("Elastic-tests: Aurelio retains the founding Petalburg Woods route boss interaction")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
@@ -218,7 +218,7 @@ TEST("Zenmodeman: Aurelio retains the founding Petalburg Woods route boss intera
     EXPECT_EQ(aurelio->y, 9);
 }
 
-TEST("Zenmodeman: Petalburg Woods retains its custom visible and hidden item set")
+TEST("Elastic-tests: Petalburg Woods retains its custom visible and hidden item set")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_PETALBURG_WOODS), MAP_NUM(MAP_PETALBURG_WOODS))->events;
@@ -231,7 +231,7 @@ TEST("Zenmodeman: Petalburg Woods retains its custom visible and hidden item set
     EXPECT(HasHiddenItem(events, 4, 19, ITEM_NET_BALL, FLAG_HIDDEN_ITEM_PETALBURG_WOODS_NET_BALL));
 }
 
-TEST("Zenmodeman: Route 104 retains its custom hidden Ability Patch")
+TEST("Elastic-tests: Route 104 retains its custom hidden Ability Patch")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_ROUTE104), MAP_NUM(MAP_ROUTE104))->events;
@@ -239,7 +239,7 @@ TEST("Zenmodeman: Route 104 retains its custom hidden Ability Patch")
     EXPECT(HasHiddenItem(events, 14, 55, ITEM_ABILITY_PATCH, FLAG_HIDDEN_ITEM_ROUTE_104_ABILITY_PATCH));
 }
 
-TEST("Zenmodeman: Oldale Tech House retains every custom tutor and guide")
+TEST("Elastic-tests: Oldale Tech House retains every custom tutor and guide")
 {
     static const struct
     {
@@ -270,7 +270,7 @@ TEST("Zenmodeman: Oldale Tech House retains every custom tutor and guide")
     }
 }
 
-TEST("Zenmodeman: Oldale Tech House retains both exits to Oldale")
+TEST("Elastic-tests: Oldale Tech House retains both exits to Oldale")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_OLDALE_TOWN_TECH_HOUSE), MAP_NUM(MAP_OLDALE_TOWN_TECH_HOUSE))->events;
@@ -287,7 +287,7 @@ TEST("Zenmodeman: Oldale Tech House retains both exits to Oldale")
     }
 }
 
-TEST("Zenmodeman: Dewford Garden school kid retains the corrected placement and interaction")
+TEST("Elastic-tests: Dewford Garden school kid retains the corrected placement and interaction")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_DEWFORD_GARDEN), MAP_NUM(MAP_DEWFORD_GARDEN))->events;
@@ -300,7 +300,7 @@ TEST("Zenmodeman: Dewford Garden school kid retains the corrected placement and 
     EXPECT_NE(schoolKid->script, NULL);
 }
 
-TEST("Zenmodeman: Dewford Pokemon Center retains its tutor and Float Stone hint NPCs")
+TEST("Elastic-tests: Dewford Pokemon Center retains its tutor and Float Stone hint NPCs")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_DEWFORD_TOWN_POKEMON_CENTER_1F), MAP_NUM(MAP_DEWFORD_TOWN_POKEMON_CENTER_1F))->events;
@@ -320,7 +320,7 @@ TEST("Zenmodeman: Dewford Pokemon Center retains its tutor and Float Stone hint 
     EXPECT_EQ(maniac->script, DewfordTown_PokemonCenter_1F_EventScript_Maniac);
 }
 
-TEST("Zenmodeman: Granite Cave retains Steven's Tera Orb interaction object")
+TEST("Elastic-tests: Granite Cave retains Steven's Tera Orb interaction object")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_GRANITE_CAVE_STEVENS_ROOM), MAP_NUM(MAP_GRANITE_CAVE_STEVENS_ROOM))->events;
@@ -334,7 +334,7 @@ TEST("Zenmodeman: Granite Cave retains Steven's Tera Orb interaction object")
     EXPECT_NE(steven->script, NULL);
 }
 
-TEST("Zenmodeman: Granite Cave retains its custom Float Stone and Rock Gem item balls")
+TEST("Elastic-tests: Granite Cave retains its custom Float Stone and Rock Gem item balls")
 {
     const struct MapEvents *b1fEvents = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_GRANITE_CAVE_B1F), MAP_NUM(MAP_GRANITE_CAVE_B1F))->events;
@@ -353,7 +353,7 @@ TEST("Zenmodeman: Granite Cave retains its custom Float Stone and Rock Gem item 
     EXPECT_EQ(rockGem->flagId, FLAG_ITEM_GRANITE_ROCK_GEMS);
 }
 
-TEST("Zenmodeman: Granite Cave retains the three custom Black Belt encounters")
+TEST("Elastic-tests: Granite Cave retains the three custom Black Belt encounters")
 {
     static const s16 expectedCoords[][2] = {{5, 10}, {3, 10}, {4, 8}};
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
@@ -379,7 +379,7 @@ TEST("Zenmodeman: Granite Cave retains the three custom Black Belt encounters")
     EXPECT_EQ(found, ARRAY_COUNT(expectedCoords));
 }
 
-TEST("Zenmodeman: Flannery's gym retains diagonal fog on both floors")
+TEST("Elastic-tests: Flannery's gym retains diagonal fog on both floors")
 {
     const struct MapHeader *firstFloor = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_LAVARIDGE_TOWN_GYM_1F), MAP_NUM(MAP_LAVARIDGE_TOWN_GYM_1F));
@@ -390,7 +390,7 @@ TEST("Zenmodeman: Flannery's gym retains diagonal fog on both floors")
     EXPECT_EQ(basement->weather, WEATHER_FOG_DIAGONAL);
 }
 
-TEST("Zenmodeman: Route 104 rival branches retain their Bottle Cap reward call")
+TEST("Elastic-tests: Route 104 rival branches retain their Bottle Cap reward call")
 {
     EXPECT(ScriptRangeContainsPointer(
         Route104_EventScript_BattleMayTreecko,
@@ -402,7 +402,7 @@ TEST("Zenmodeman: Route 104 rival branches retain their Bottle Cap reward call")
         RustburoRival_GiveBottleCap));
 }
 
-TEST("Zenmodeman: Cut retains its fallback to the custom Scyther interaction")
+TEST("Elastic-tests: Cut retains its fallback to the custom Scyther interaction")
 {
     EXPECT(ScriptRangeContainsPointer(
         EventScript_CutTree,
@@ -410,7 +410,7 @@ TEST("Zenmodeman: Cut retains its fallback to the custom Scyther interaction")
         EventScript_AskScytherToCut));
 }
 
-TEST("Zenmodeman: Rustboro trade retains its compiled monotype guard")
+TEST("Elastic-tests: Rustboro trade retains its compiled monotype guard")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_RUSTBORO_CITY_HOUSE1), MAP_NUM(MAP_RUSTBORO_CITY_HOUSE1))->events;
@@ -424,7 +424,7 @@ TEST("Zenmodeman: Rustboro trade retains its compiled monotype guard")
         VAR_MONOTYPE));
 }
 
-TEST("Zenmodeman: Dewford fisherman retains the Good Rod reward and completion flag")
+TEST("Elastic-tests: Dewford fisherman retains the Good Rod reward and completion flag")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_DEWFORD_TOWN), MAP_NUM(MAP_DEWFORD_TOWN))->events;
@@ -443,7 +443,7 @@ TEST("Zenmodeman: Dewford fisherman retains the Good Rod reward and completion f
         FLAG_RECEIVED_GOOD_ROD));
 }
 
-TEST("Zenmodeman: Route 106 retains its custom hidden Dive Ball")
+TEST("Elastic-tests: Route 106 retains its custom hidden Dive Ball")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_ROUTE106), MAP_NUM(MAP_ROUTE106))->events;
@@ -451,7 +451,7 @@ TEST("Zenmodeman: Route 106 retains its custom hidden Dive Ball")
     EXPECT(HasHiddenItem(events, 41, 11, ITEM_DIVE_BALL, FLAG_HIDDEN_ITEM_ROUTE_106_DIVE_BALL));
 }
 
-TEST("Zenmodeman: Dewford old man retains the monotype-aware Delibird gift")
+TEST("Elastic-tests: Dewford old man retains the monotype-aware Delibird gift")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_DEWFORD_TOWN_HOUSE2), MAP_NUM(MAP_DEWFORD_TOWN_HOUSE2))->events;
@@ -465,7 +465,7 @@ TEST("Zenmodeman: Dewford old man retains the monotype-aware Delibird gift")
     EXPECT(ScriptRangeContainsHalfword(DewfordTown_OldManGifter, DewfordTown_OldManGifter + 240, FLAG_DEWFORD_GIFT_MAN));
 }
 
-TEST("Zenmodeman: Trainer School breeder retains its monotype egg service")
+TEST("Elastic-tests: Trainer School breeder retains its monotype egg service")
 {
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_RUSTBORO_CITY_POKEMON_SCHOOL), MAP_NUM(MAP_RUSTBORO_CITY_POKEMON_SCHOOL))->events;

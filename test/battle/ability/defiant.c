@@ -2,7 +2,7 @@
 #include "event_data.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted Defiant stops at plus two with a partial final raise")
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted Defiant stops at plus two with a partial final raise")
 {
     GIVEN {
         FlagSet(FLAG_RESTRICTED_MODE);
@@ -19,7 +19,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Restricted Defiant stops at plus two with a part
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted Defiant limits only the player side")
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted Defiant limits only the player side")
 {
     GIVEN {
         FlagSet(FLAG_RESTRICTED_MODE);

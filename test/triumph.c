@@ -37,7 +37,7 @@ static void SetUpTriumphAward(u32 triumph)
     TRAINER_BATTLE_PARAM.opponentB = TRAINER_NONE;
 }
 
-TEST("Zenmodeman: Triumph marks a sole eligible battler present for a trainer KO")
+TEST("Elastic-tests: Triumph marks a sole eligible battler present for a trainer KO")
 {
     SetUpTriumphBattle(20, 15);
 
@@ -46,7 +46,7 @@ TEST("Zenmodeman: Triumph marks a sole eligible battler present for a trainer KO
     EXPECT_EQ(gBattleTriumphPartyMask, 1);
 }
 
-TEST("Zenmodeman: Triumph credits Huey KO to a level 23 singles battler")
+TEST("Elastic-tests: Triumph credits Huey KO to a level 23 singles battler")
 {
     SetUpTriumphBattle(23, 20);
     // Preserve the four-slot layout used by the battle engine while retaining
@@ -61,7 +61,7 @@ TEST("Zenmodeman: Triumph credits Huey KO to a level 23 singles battler")
     EXPECT_EQ(gBattleTriumphPartyMask, 1);
 }
 
-TEST("Zenmodeman: Triumph rejects opponents more than five levels lower")
+TEST("Elastic-tests: Triumph rejects opponents more than five levels lower")
 {
     SetUpTriumphBattle(21, 15);
 
@@ -70,7 +70,7 @@ TEST("Zenmodeman: Triumph rejects opponents more than five levels lower")
     EXPECT_EQ(gBattleTriumphPartyMask, 0);
 }
 
-TEST("Zenmodeman: Triumph doubles credit requires and follows the direct attacker")
+TEST("Elastic-tests: Triumph doubles credit requires and follows the direct attacker")
 {
     SetUpTriumphBattle(20, 20);
     gBattlersCount = 4;
@@ -87,7 +87,7 @@ TEST("Zenmodeman: Triumph doubles credit requires and follows the direct attacke
     EXPECT_EQ(gBattleTriumphPartyMask, 1 << 1);
 }
 
-TEST("Zenmodeman: Triumph direct attacker earns credit against a higher-level opponent")
+TEST("Elastic-tests: Triumph direct attacker earns credit against a higher-level opponent")
 {
     SetUpTriumphBattle(20, 22);
     gBattlersCount = 4;
@@ -102,7 +102,7 @@ TEST("Zenmodeman: Triumph direct attacker earns credit against a higher-level op
     EXPECT_EQ(gBattleTriumphPartyMask, 1);
 }
 
-TEST("Zenmodeman: Triumph awards marked Pokemon after a first trainer victory")
+TEST("Elastic-tests: Triumph awards marked Pokemon after a first trainer victory")
 {
     SetUpTriumphAward(0);
 
@@ -113,7 +113,7 @@ TEST("Zenmodeman: Triumph awards marked Pokemon after a first trainer victory")
     EXPECT_EQ(gBattleTriumphEligible, FALSE);
 }
 
-TEST("Zenmodeman: Triumph persists after eligibility marking and victory award")
+TEST("Elastic-tests: Triumph persists after eligibility marking and victory award")
 {
     SetUpTriumphBattle(20, 20);
     CreateMon(&gParties[B_TRAINER_PLAYER][0], SPECIES_WOBBUFFET, 20, 0, OTID_STRUCT_PLAYER_ID);
@@ -127,7 +127,7 @@ TEST("Zenmodeman: Triumph persists after eligibility marking and victory award")
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_TRIUMPH), 1);
 }
 
-TEST("Zenmodeman: Triumph uses first-time eligibility captured before victory flags change")
+TEST("Elastic-tests: Triumph uses first-time eligibility captured before victory flags change")
 {
     SetUpTriumphAward(0);
     FlagSet(TRAINER_FLAGS_START + TRAINER_CALVIN_1);
@@ -137,7 +137,7 @@ TEST("Zenmodeman: Triumph uses first-time eligibility captured before victory fl
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_TRIUMPH), 1);
 }
 
-TEST("Zenmodeman: Triumph cannot be farmed from defeated trainers")
+TEST("Elastic-tests: Triumph cannot be farmed from defeated trainers")
 {
     SetUpTriumphAward(4);
     FlagSet(TRAINER_FLAGS_START + TRAINER_CALVIN_1);
@@ -150,7 +150,7 @@ TEST("Zenmodeman: Triumph cannot be farmed from defeated trainers")
     EXPECT_EQ(gBattleTriumphEligible, FALSE);
 }
 
-TEST("Zenmodeman: Triumph excludes facilities and caps ordinary counts at thirty")
+TEST("Elastic-tests: Triumph excludes facilities and caps ordinary counts at thirty")
 {
     SetUpTriumphAward(MAX_TRIUMPH_COUNT);
     AwardBattleTriumphs();

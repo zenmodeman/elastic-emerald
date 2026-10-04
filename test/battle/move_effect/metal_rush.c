@@ -8,7 +8,7 @@ ASSUMPTIONS
     ASSUME(GetSpeciesWeight(SPECIES_COPPERAJAH) == 6500);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush raises the user's Speed by 1 if the user weighs 50kg or less")
+SINGLE_BATTLE_TEST("Elastic-tests: Metal Rush raises the user's Speed by 1 if the user weighs 50kg or less")
 {
     GIVEN {
         PLAYER(SPECIES_ARON) { Item(ITEM_FLOAT_STONE); }
@@ -25,7 +25,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush raises the user's Speed by 1 if the u
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush lowers the target's Defense by 1 if the user weighs 200kg or more")
+SINGLE_BATTLE_TEST("Elastic-tests: Metal Rush lowers the target's Defense by 1 if the user weighs 200kg or more")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
@@ -41,7 +41,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush lowers the target's Defense by 1 if t
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush has no stat rider for middle-weight users")
+SINGLE_BATTLE_TEST("Elastic-tests: Metal Rush has no stat rider for middle-weight users")
 {
     GIVEN {
         PLAYER(SPECIES_ARON);
@@ -61,7 +61,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush has no stat rider for middle-weight u
 }
 
 
-SINGLE_BATTLE_TEST("Zenmodeman: Sheer Force suppresses Metal Rush's heavy-user Defense drop")
+SINGLE_BATTLE_TEST("Elastic-tests: Sheer Force suppresses Metal Rush's heavy-user Defense drop")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_SHEER_FORCE); }
@@ -74,7 +74,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Sheer Force suppresses Metal Rush's heavy-user D
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Light Metal's 40kg cap gives Metal Rush its light-user rider")
+SINGLE_BATTLE_TEST("Elastic-tests: Light Metal's 40kg cap gives Metal Rush its light-user rider")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_LIGHT_METAL); }
@@ -87,7 +87,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Light Metal's 40kg cap gives Metal Rush its ligh
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Heavy Metal's 200kg floor gives Metal Rush its heavy-user rider")
+SINGLE_BATTLE_TEST("Elastic-tests: Heavy Metal's 200kg floor gives Metal Rush its heavy-user rider")
 {
     GIVEN {
         PLAYER(SPECIES_ARON) { Ability(ABILITY_HEAVY_METAL); }
@@ -100,7 +100,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Heavy Metal's 200kg floor gives Metal Rush its h
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Float Stone alone leaves a very heavy Metal Rush user in the middle band")
+SINGLE_BATTLE_TEST("Elastic-tests: Float Stone alone leaves a very heavy Metal Rush user in the middle band")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Item(ITEM_FLOAT_STONE); }
@@ -113,7 +113,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Float Stone alone leaves a very heavy Metal Rush
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Float Stone applies after Light Metal's cap for Metal Rush")
+SINGLE_BATTLE_TEST("Elastic-tests: Float Stone applies after Light Metal's cap for Metal Rush")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_LIGHT_METAL); Item(ITEM_FLOAT_STONE); }
@@ -126,7 +126,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Float Stone applies after Light Metal's cap for 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Contrary reverses Metal Rush's light-user Speed boost")
+SINGLE_BATTLE_TEST("Elastic-tests: Contrary reverses Metal Rush's light-user Speed boost")
 {
     GIVEN {
         PLAYER(SPECIES_ARON) { Ability(ABILITY_CONTRARY); Item(ITEM_FLOAT_STONE); }
@@ -138,7 +138,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Contrary reverses Metal Rush's light-user Speed 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Contrary reverses Metal Rush's heavy-user Defense drop")
+SINGLE_BATTLE_TEST("Elastic-tests: Contrary reverses Metal Rush's heavy-user Defense drop")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
@@ -150,7 +150,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Contrary reverses Metal Rush's heavy-user Defens
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush has no weight rider when blocked by Protect")
+SINGLE_BATTLE_TEST("Elastic-tests: Metal Rush has no weight rider when blocked by Protect")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
@@ -163,7 +163,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Metal Rush has no weight rider when blocked by P
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Clear Body blocks Metal Rush's heavy-user Defense drop")
+SINGLE_BATTLE_TEST("Elastic-tests: Clear Body blocks Metal Rush's heavy-user Defense drop")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }
@@ -175,7 +175,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Clear Body blocks Metal Rush's heavy-user Defens
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Mirror Armor reflects Metal Rush's heavy-user Defense drop")
+SINGLE_BATTLE_TEST("Elastic-tests: Mirror Armor reflects Metal Rush's heavy-user Defense drop")
 {
     GIVEN {
         PLAYER(SPECIES_COPPERAJAH) { Ability(ABILITY_HEAVY_METAL); }

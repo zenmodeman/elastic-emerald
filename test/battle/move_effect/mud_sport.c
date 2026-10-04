@@ -9,7 +9,7 @@ ASSUMPTIONS {
     ASSUME(GetMoveEffect(MOVE_MUD_SPORT) == EFFECT_MUD_SPORT);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport prevents paralysis from Thunder Wave")
+SINGLE_BATTLE_TEST("Elastic-tests: Mud Sport prevents paralysis from Thunder Wave")
 {
 GIVEN {
         // ASSUME(GetMoveEffect(MOVE_THUNDER_WAVE) == EFFECT_PARALYZE); No longer holds after change to the effect
@@ -28,7 +28,7 @@ GIVEN {
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport prevents paralysis from Electric-type secondary effects")
+SINGLE_BATTLE_TEST("Elastic-tests: Mud Sport prevents paralysis from Electric-type secondary effects")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_MUD_SPORT) == EFFECT_MUD_SPORT);
@@ -43,7 +43,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport prevents paralysis from Electric-type 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport does not block paralysis from non-Electric secondary effects")
+SINGLE_BATTLE_TEST("Elastic-tests: Mud Sport does not block paralysis from non-Electric secondary effects")
 {
     GIVEN {
         ASSUME(GetMoveType(MOVE_BODY_SLAM) == TYPE_NORMAL);

@@ -6,19 +6,19 @@
 #include "test/overworld_script.h"
 #include "test/test.h"
 
-TEST("Zenmodeman: Roost and Nature Power retain their custom TM assignments")
+TEST("Elastic-tests: Roost and Nature Power retain their custom TM assignments")
 {
     EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_ROOST), MOVE_ROOST);
     EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_NATURE_POWER), MOVE_NATURE_POWER);
 }
 
-TEST("Zenmodeman: Trick and Power Split retain their custom TM assignments")
+TEST("Elastic-tests: Trick and Power Split retain their custom TM assignments")
 {
     EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_TRICK), MOVE_TRICK);
     EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_POWER_SPLIT), MOVE_POWER_SPLIT);
 }
 
-TEST("Zenmodeman: Non-resource mode preserves hidden quantities for reusable TMs")
+TEST("Elastic-tests: Non-resource mode preserves hidden quantities for reusable TMs")
 {
     EXPECT(GetItemImportance(ITEM_TM25));
     EXPECT(AddBagItem(ITEM_TM25, 6));
@@ -31,7 +31,7 @@ TEST("Zenmodeman: Non-resource mode preserves hidden quantities for reusable TMs
     EXPECT_EQ(GetItemDisplayQuantity(ITEM_TM25, 6), 6);
 }
 
-TEST("Zenmodeman: Resource mode stores and consumes multi-copy TM rewards")
+TEST("Elastic-tests: Resource mode stores and consumes multi-copy TM rewards")
 {
     FlagSet(FLAG_RESOURCE_MODE);
 
@@ -42,7 +42,7 @@ TEST("Zenmodeman: Resource mode stores and consumes multi-copy TM rewards")
     EXPECT(CheckBagHasItem(ITEM_TM25, 5));
 }
 
-TEST("Zenmodeman: Migrated field moves are TMs while retained field moves are HMs")
+TEST("Elastic-tests: Migrated field moves are TMs while retained field moves are HMs")
 {
     FlagSet(FLAG_RESOURCE_MODE);
 

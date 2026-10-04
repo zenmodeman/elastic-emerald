@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Befuddle damages and inflicts paralysis, poison, or sleep on both foes")
+DOUBLE_BATTLE_TEST("Elastic-tests: Befuddle damages and inflicts paralysis, poison, or sleep on both foes")
 {
     u32 moveEffect;
     u32 status;
@@ -31,7 +31,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Befuddle damages and inflicts paralysis, poison,
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Protect blocks Befuddle's damage and status")
+DOUBLE_BATTLE_TEST("Elastic-tests: Protect blocks Befuddle's damage and status")
 {
     GIVEN {
         ASSUME(GetMoveTarget(MOVE_BEFUDDLE) == TARGET_BOTH);

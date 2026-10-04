@@ -6,7 +6,7 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_PRESENT) == EFFECT_PRESENT);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Present retains its custom 40 80 and 120 power boundaries", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Present retains its custom 40 80 and 120 power boundaries", s16 damage)
 {
     u32 roll;
 
@@ -27,7 +27,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Present retains its custom 40 80 and 120 power b
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Present begins healing at roll 229")
+SINGLE_BATTLE_TEST("Elastic-tests: Present begins healing at roll 229")
 {
     u32 roll;
     bool32 heals;

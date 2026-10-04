@@ -17,7 +17,7 @@ I keep these notes as a reference for maintaining Elastic Emerald. The [feature 
 
 I normally use static checks during review and handle full ROM and test builds separately because of their cost. Diff checks, caller searches, documentation links, and targeted script generation answer narrower questions; they do not establish runtime correctness.
 
-My project-specific tests use the `Zenmodeman: ` prefix to distinguish them from Expansion tests. The tests and deterministic helper scripts remain part of my development tools.
+My project-specific tests use the `Elastic-tests: ` prefix to distinguish them from Expansion tests. The tests and deterministic helper scripts remain part of my development tools.
 
 The editable inputs are map objects in `map.json`, native scripts in `scripts.pory`, trainer parties in `src/data/trainers.party`, and teachable compatibility in `src/data/pokemon/all_learnables.json`. Their generated outputs follow those inputs. Argument-bearing commands in function-style Poryscript use call syntax, such as `setflag(FLAG_NAME)`.
 

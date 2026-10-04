@@ -69,7 +69,7 @@ SINGLE_BATTLE_TEST("Cute Charm triggers 1/3 times (Gen3) or 30% (Gen 4+) of the 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Cute Charm successful triggers count toward defensive contact ability odds")
+SINGLE_BATTLE_TEST("Elastic-tests: Cute Charm successful triggers count toward defensive contact ability odds")
 {
     GIVEN {
         WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_4);

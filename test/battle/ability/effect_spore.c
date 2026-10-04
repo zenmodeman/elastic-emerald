@@ -123,7 +123,7 @@ SINGLE_BATTLE_TEST("Effect Spore will check if it can inflict status onto attack
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Effect Spore remaps a blocked proc to another valid status")
+SINGLE_BATTLE_TEST("Elastic-tests: Effect Spore remaps a blocked proc to another valid status")
 {
     GIVEN {
         WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_5);
@@ -140,7 +140,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Effect Spore remaps a blocked proc to another va
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Effect Spore does not count contact attempts when no status can be inflicted")
+SINGLE_BATTLE_TEST("Elastic-tests: Effect Spore does not count contact attempts when no status can be inflicted")
 {
     GIVEN {
         WITH_CONFIG(B_ABILITY_TRIGGER_CHANCE, GEN_5);

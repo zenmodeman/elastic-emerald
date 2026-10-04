@@ -25,7 +25,7 @@ AI_SINGLE_BATTLE_TEST("AI will not try to lower opposing stats if target is prot
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI knows Illuminate accuracy can be lowered")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI knows Illuminate accuracy can be lowered")
 {
     GIVEN {
         WITH_CONFIG(B_ILLUMINATE_EFFECT, GEN_9);

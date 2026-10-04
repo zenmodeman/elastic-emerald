@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Color Change changes type before an incoming move resolves")
+SINGLE_BATTLE_TEST("Elastic-tests: Color Change changes type before an incoming move resolves")
 {
     GIVEN {
         ASSUME(GetSpeciesType(SPECIES_KECLEON, 0) != TYPE_PSYCHIC && GetSpeciesType(SPECIES_KECLEON, 1) != TYPE_PSYCHIC);
@@ -69,7 +69,7 @@ SINGLE_BATTLE_TEST("Color Change does not change the type of a dual-type Pokemon
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses the Electrify-modified type before move resolution")
+SINGLE_BATTLE_TEST("Elastic-tests: Color Change uses the Electrify-modified type before move resolution")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -83,7 +83,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses the Electrify-modified type be
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Color Change activates before Future Sight resolves")
+SINGLE_BATTLE_TEST("Elastic-tests: Color Change activates before Future Sight resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -100,7 +100,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Color Change activates before Future Sight resol
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Color Change activates before Doom Desire resolves")
+SINGLE_BATTLE_TEST("Elastic-tests: Color Change activates before Doom Desire resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -117,7 +117,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Color Change activates before Doom Desire resolv
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses Electrify's type before a delayed attack resolves")
+SINGLE_BATTLE_TEST("Elastic-tests: Color Change uses Electrify's type before a delayed attack resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -134,7 +134,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses Electrify's type before a dela
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Color Change uses Normalize's type before a delayed attack resolves")
+SINGLE_BATTLE_TEST("Elastic-tests: Color Change uses Normalize's type before a delayed attack resolves")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_NORMALIZE); }
@@ -174,7 +174,7 @@ SINGLE_BATTLE_TEST("Color Change does not change the type to Normal when a Pokem
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change activates before a Sheer Force-boosted move resolves")
+SINGLE_BATTLE_TEST("Elastic-tests: Proactive Color Change activates before a Sheer Force-boosted move resolves")
 {
     GIVEN {
         PLAYER(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); }
@@ -188,7 +188,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change activates before a Sheer 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change does not activate through Protect")
+SINGLE_BATTLE_TEST("Elastic-tests: Proactive Color Change does not activate through Protect")
 {
     GIVEN {
         ASSUME(GetMoveType(MOVE_EMBER) == TYPE_FIRE);
@@ -202,7 +202,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change does not activate through
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change grants immunity to Prankster-boosted Dark status moves")
+SINGLE_BATTLE_TEST("Elastic-tests: Proactive Color Change grants immunity to Prankster-boosted Dark status moves")
 {
     GIVEN {
         WITH_CONFIG(B_PRANKSTER_DARK_TYPES, GEN_7);
@@ -221,7 +221,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change grants immunity to Pranks
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Proactive Color Change grants immunity to powder moves after becoming Grass type")
+SINGLE_BATTLE_TEST("Elastic-tests: Proactive Color Change grants immunity to powder moves after becoming Grass type")
 {
     GIVEN {
         WITH_CONFIG(B_POWDER_GRASS, GEN_6);

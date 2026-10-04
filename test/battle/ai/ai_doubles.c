@@ -2,7 +2,7 @@
 #include "test/battle.h"
 #include "battle_ai_util.h"
 
-AI_DOUBLE_BATTLE_TEST("Zenmodeman: Doubles Speed control does not reward a redundant second Rock Tomb")
+AI_DOUBLE_BATTLE_TEST("Elastic-tests: Doubles Speed control does not reward a redundant second Rock Tomb")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100));
@@ -619,7 +619,7 @@ AI_DOUBLE_BATTLE_TEST("AI will choose Earthquake if it kills both opposing mons"
 
 
 
-AI_DOUBLE_BATTLE_TEST("Zenmodeman: Coaching receives no major bonus if simulated boosts still leave the ally in KO range")
+AI_DOUBLE_BATTLE_TEST("Elastic-tests: Coaching receives no major bonus if simulated boosts still leave the ally in KO range")
 {
     GIVEN {
         ASSUME_STAT_CHANGE(MOVE_COACHING, attack: +1, defense: +1);

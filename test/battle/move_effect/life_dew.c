@@ -53,7 +53,7 @@ SINGLE_BATTLE_TEST("Life Dew works in singles on user")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Life Dew heals one third in singles")
+SINGLE_BATTLE_TEST("Elastic-tests: Life Dew heals one third in singles")
 {
     s16 healing;
 
@@ -69,7 +69,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Life Dew heals one third in singles")
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Life Dew keeps quarter healing with a present partner")
+DOUBLE_BATTLE_TEST("Elastic-tests: Life Dew keeps quarter healing with a present partner")
 {
     s16 healing[2];
 

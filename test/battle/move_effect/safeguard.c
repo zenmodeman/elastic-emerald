@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Safeguard lasts four more turns when used before an opponent acts")
+SINGLE_BATTLE_TEST("Elastic-tests: Safeguard lasts four more turns when used before an opponent acts")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_SAFEGUARD) == EFFECT_SAFEGUARD);
@@ -14,7 +14,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Safeguard lasts four more turns when used before
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Safeguard gains a turn when used after all opponents have acted")
+SINGLE_BATTLE_TEST("Elastic-tests: Safeguard gains a turn when used after all opponents have acted")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_SAFEGUARD) == EFFECT_SAFEGUARD);

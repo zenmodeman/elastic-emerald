@@ -73,7 +73,7 @@ SINGLE_BATTLE_TEST("Damp prevents damage from Aftermath")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Damp heals one third HP when Water Sport creates moisture")
+SINGLE_BATTLE_TEST("Elastic-tests: Damp heals one third HP when Water Sport creates moisture")
 {
     GIVEN {
         PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Ability(ABILITY_DAMP); }
@@ -85,7 +85,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Damp heals one third HP when Water Sport creates
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Damp moisture healing does not exceed maximum HP")
+SINGLE_BATTLE_TEST("Elastic-tests: Damp moisture healing does not exceed maximum HP")
 {
     GIVEN {
         PLAYER(SPECIES_PSYDUCK) { HP(90); MaxHP(90); Ability(ABILITY_DAMP); }
@@ -99,7 +99,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Damp moisture healing does not exceed maximum HP
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Water Sport heals every damaged Damp battler")
+DOUBLE_BATTLE_TEST("Elastic-tests: Water Sport heals every damaged Damp battler")
 {
     GIVEN {
         PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Ability(ABILITY_DAMP); }
@@ -114,7 +114,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Water Sport heals every damaged Damp battler")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Heal Block suppresses Damp moisture healing")
+SINGLE_BATTLE_TEST("Elastic-tests: Heal Block suppresses Damp moisture healing")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_HEAL_BLOCK) == EFFECT_HEAL_BLOCK);
@@ -128,7 +128,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Heal Block suppresses Damp moisture healing")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Suppressed Damp does not receive moisture healing")
+SINGLE_BATTLE_TEST("Elastic-tests: Suppressed Damp does not receive moisture healing")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_GASTRO_ACID) == EFFECT_GASTRO_ACID);
@@ -142,7 +142,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Suppressed Damp does not receive moisture healin
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: A failed repeated Water Sport does not heal Damp again")
+SINGLE_BATTLE_TEST("Elastic-tests: A failed repeated Water Sport does not heal Damp again")
 {
     GIVEN {
         PLAYER(SPECIES_PSYDUCK) { HP(30); MaxHP(90); Ability(ABILITY_DAMP); }

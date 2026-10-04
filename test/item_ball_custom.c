@@ -22,7 +22,7 @@ static void ReadItemBallTemplate(enum Item item, u8 amount)
     GetItemBallIdAndAmountFromTemplate();
 }
 
-TEST("Zenmodeman: Ground TMs yield one copy outside Resource Mode and retain encoded quantities within it")
+TEST("Elastic-tests: Ground TMs yield one copy outside Resource Mode and retain encoded quantities within it")
 {
     ReadItemBallTemplate(ITEM_TM_ROOST, 3);
     EXPECT_EQ(gSpecialVar_Result, ITEM_TM_ROOST);
@@ -34,7 +34,7 @@ TEST("Zenmodeman: Ground TMs yield one copy outside Resource Mode and retain enc
     EXPECT_EQ(gSpecialVar_0x8009, 3);
 }
 
-TEST("Zenmodeman: Non-TM ground items retain encoded quantities outside Resource Mode")
+TEST("Elastic-tests: Non-TM ground items retain encoded quantities outside Resource Mode")
 {
     ReadItemBallTemplate(ITEM_POTION, 3);
     EXPECT_EQ(gSpecialVar_Result, ITEM_POTION);

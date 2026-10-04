@@ -24,7 +24,7 @@ SINGLE_BATTLE_TEST("Critical hits without modifiers occur at different rates by 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Cut gains one critical-hit stage against Grass-type targets")
+SINGLE_BATTLE_TEST("Elastic-tests: Cut gains one critical-hit stage against Grass-type targets")
 {
     enum Species target;
     u32 passes, trials;

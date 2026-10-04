@@ -15,19 +15,19 @@ static void SetMonotype(enum Type type)
         VarSet(VAR_MONOTYPE, type);
 }
 
-TEST("Zenmodeman: Tera Orb charging remains intentionally cost free")
+TEST("Elastic-tests: Tera Orb charging remains intentionally cost free")
 {
     EXPECT_EQ(B_FLAG_TERA_ORB_CHARGED, FLAG_TERA_CHARGED);
     EXPECT_EQ(B_FLAG_TERA_ORB_NO_COST, FLAG_TERA_CHARGED);
 }
 
-TEST("Zenmodeman: Random Tera assignment spans non-native types")
+TEST("Elastic-tests: Random Tera assignment spans non-native types")
 {
     EXPECT_EQ(GetCustomTeraType(SPECIES_JOLTEON, TYPE_WATER - 1), TYPE_WATER);
     EXPECT_EQ(GetCustomTeraType(SPECIES_JOLTEON, TYPE_MYSTERY - 1), TYPE_STELLAR);
 }
 
-TEST("Zenmodeman: Curated Tera assigns the latest electric-species types")
+TEST("Elastic-tests: Curated Tera assigns the latest electric-species types")
 {
     FlagSet(FLAG_CURATED_TERA);
 
@@ -36,7 +36,7 @@ TEST("Zenmodeman: Curated Tera assigns the latest electric-species types")
     EXPECT_EQ(GetCustomTeraType(SPECIES_RAICHU_ALOLA, 0), TYPE_NORMAL);
 }
 
-TEST("Zenmodeman: Curated Tera retains the surviving early Water-species adjustments")
+TEST("Elastic-tests: Curated Tera retains the surviving early Water-species adjustments")
 {
     FlagSet(FLAG_CURATED_TERA);
 
@@ -45,7 +45,7 @@ TEST("Zenmodeman: Curated Tera retains the surviving early Water-species adjustm
     EXPECT_EQ(GetCustomTeraType(SPECIES_STARYU, 0), TYPE_NORMAL);
 }
 
-TEST("Zenmodeman: Monotype-compatible random Tera bypasses a curated type")
+TEST("Elastic-tests: Monotype-compatible random Tera bypasses a curated type")
 {
     FlagSet(FLAG_CURATED_TERA);
     SetMonotype(TYPE_WATER);
@@ -53,7 +53,7 @@ TEST("Zenmodeman: Monotype-compatible random Tera bypasses a curated type")
     EXPECT_EQ(GetCustomTeraType(SPECIES_JOLTEON, TYPE_WATER - 1), TYPE_WATER);
 }
 
-TEST("Zenmodeman: Pokemon creation stores its custom Tera assignment")
+TEST("Elastic-tests: Pokemon creation stores its custom Tera assignment")
 {
     struct Pokemon mon;
 
@@ -63,7 +63,7 @@ TEST("Zenmodeman: Pokemon creation stores its custom Tera assignment")
     EXPECT_EQ(GetMonData(&mon, MON_DATA_TERA_TYPE), TYPE_FIRE);
 }
 
-TEST("Zenmodeman: Unset stored Tera type uses curated and monotype-aware assignment")
+TEST("Elastic-tests: Unset stored Tera type uses curated and monotype-aware assignment")
 {
     struct Pokemon mon;
     enum Type typeNone = TYPE_NONE;
@@ -78,13 +78,13 @@ TEST("Zenmodeman: Unset stored Tera type uses curated and monotype-aware assignm
     EXPECT_EQ(GetMonData(&mon, MON_DATA_TERA_TYPE), TYPE_WATER);
 }
 
-TEST("Zenmodeman: Restricted Tera permits every Pokemon below four Tier Points")
+TEST("Elastic-tests: Restricted Tera permits every Pokemon below four Tier Points")
 {
     EXPECT(!IsRestrictedModeTeraCombinationBanned(SPECIES_MEW, ABILITY_SYNCHRONIZE, 3));
     EXPECT(IsRestrictedModeTeraCombinationBanned(SPECIES_MEW, ABILITY_SYNCHRONIZE, 4));
 }
 
-TEST("Zenmodeman: Restricted Tera exceptions depend on the lower power ability")
+TEST("Elastic-tests: Restricted Tera exceptions depend on the lower power ability")
 {
     EXPECT(!IsRestrictedModeTeraCombinationBanned(SPECIES_AZUMARILL, ABILITY_THICK_FAT, 4));
     EXPECT(IsRestrictedModeTeraCombinationBanned(SPECIES_AZUMARILL, ABILITY_HUGE_POWER, 4));
@@ -94,7 +94,7 @@ TEST("Zenmodeman: Restricted Tera exceptions depend on the lower power ability")
     EXPECT(IsRestrictedModeTeraCombinationBanned(SPECIES_MEDICHAM, ABILITY_PURE_POWER, 4));
 }
 
-TEST("Zenmodeman: Restricted Tera weather speed and armor exceptions remain ability aware")
+TEST("Elastic-tests: Restricted Tera weather speed and armor exceptions remain ability aware")
 {
     EXPECT(!IsRestrictedModeTeraCombinationBanned(SPECIES_GIGALITH, ABILITY_STURDY, 4));
     EXPECT(IsRestrictedModeTeraCombinationBanned(SPECIES_GIGALITH, ABILITY_SAND_STREAM, 4));

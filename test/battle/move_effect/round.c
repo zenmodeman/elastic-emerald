@@ -6,7 +6,7 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_ROUND) == EFFECT_ROUND);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Round does not carry its power boost into the next turn after an earlier battler cannot move")
+SINGLE_BATTLE_TEST("Elastic-tests: Round does not carry its power boost into the next turn after an earlier battler cannot move")
 {
     s16 damage[2];
     GIVEN {
@@ -25,7 +25,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Round does not carry its power boost into the ne
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Round boosts a later use on either side and resets before the next turn")
+SINGLE_BATTLE_TEST("Elastic-tests: Round boosts a later use on either side and resets before the next turn")
 {
     s16 damage[3];
     GIVEN {
@@ -47,7 +47,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Round boosts a later use on either side and rese
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Round chains restart at base power each turn")
+DOUBLE_BATTLE_TEST("Elastic-tests: Round chains restart at base power each turn")
 {
     s16 damage[4];
     GIVEN {

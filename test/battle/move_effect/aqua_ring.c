@@ -36,7 +36,7 @@ SINGLE_BATTLE_TEST("Aqua Ring recovers 1/16th HP at end of turn")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Water Veil doubles Aqua Ring recovery")
+SINGLE_BATTLE_TEST("Elastic-tests: Water Veil doubles Aqua Ring recovery")
 {
     GIVEN {
         PLAYER(SPECIES_BUIZEL) { Ability(ABILITY_WATER_VEIL); HP(50); MaxHP(128); }

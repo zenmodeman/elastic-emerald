@@ -78,7 +78,7 @@ AI_SINGLE_BATTLE_TEST("AI revives the best fainted ally with Revival Blessing") 
 }
 
 // General switching behaviour
-AI_SINGLE_BATTLE_TEST("Zenmodeman: an uncommitted mon switches from an inferred fast KO")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: an uncommitted mon switches from an inferred fast KO")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
@@ -91,7 +91,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: an uncommitted mon switches from an inferred 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: regular smart switching uses the uncommitted fast-KO escape")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: regular smart switching uses the uncommitted fast-KO escape")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
@@ -104,7 +104,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: regular smart switching uses the uncommitted 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful move commits the AI despite its defensive drop")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: a successful move commits the AI despite its defensive drop")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
@@ -117,7 +117,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful move commits the AI despite its 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: a move blocked by Protect does not commit the AI")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: a move blocked by Protect does not commit the AI")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
@@ -132,7 +132,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: a move blocked by Protect does not commit the
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful reply to Screech commits the AI")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: a successful reply to Screech commits the AI")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
@@ -145,7 +145,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful reply to Screech commits the AI"
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful self-targeting move commits the AI")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: a successful self-targeting move commits the AI")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
@@ -158,7 +158,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: a successful self-targeting move commits the 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: a player pivot prevents commitment to the old matchup")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: a player pivot prevents commitment to the old matchup")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
@@ -173,7 +173,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: a player pivot prevents commitment to the old
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setters use the ordinary uncommitted fast-KO escape")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: weather setters use the ordinary uncommitted fast-KO escape")
 {
     PASSES_RANDOMLY(50, 100, RNG_AI_SWITCH_HASBADODDS);
     GIVEN {
@@ -188,7 +188,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setters use the ordinary uncommitted 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather ally count does not gate an uncommitted fast-KO escape")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: weather ally count does not gate an uncommitted fast-KO escape")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_ASSUME_STAB);
@@ -202,7 +202,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather ally count does not gate an uncommitt
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in below the fast-KO HP threshold")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: uncommitted weather setter stays in below the fast-KO HP threshold")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -216,7 +216,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in below the
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in when Focus Sash prevents the inferred KO")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: uncommitted weather setter stays in when Focus Sash prevents the inferred KO")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -230,7 +230,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in when Focu
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in when it outspeeds the inferred KO threat")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: uncommitted weather setter stays in when it outspeeds the inferred KO threat")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -244,7 +244,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: uncommitted weather setter stays in when it o
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter commits after a successful move on a stat-change turn")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: weather setter commits after a successful move on a stat-change turn")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);
@@ -259,7 +259,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter commits after a successful mov
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: weather setter commits after a successful move on a damaging turn")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: weather setter commits after a successful move on a damaging turn")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES);

@@ -3,7 +3,7 @@
 #include "event_data.h"
 #include "test/battle.h"
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Triumph survives the complete trainer battle teardown")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Triumph survives the complete trainer battle teardown")
 {
     GIVEN {
         PLAYER(SPECIES_WINGULL) { Level(23); Moves(MOVE_WATER_GUN); }

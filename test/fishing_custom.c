@@ -16,7 +16,7 @@ static u8 FindAbilitySlot(enum Species species, enum Ability ability)
     return NUM_ABILITY_SLOTS;
 }
 
-TEST("Zenmodeman: Fishing retains its shortened rounds and extended reel windows")
+TEST("Elastic-tests: Fishing retains its shortened rounds and extended reel windows")
 {
     EXPECT_EQ(GetFishingMinRoundsRange(OLD_ROD), 1);
     EXPECT_EQ(GetFishingMinRoundsRange(GOOD_ROD), 2);
@@ -30,7 +30,7 @@ TEST("Zenmodeman: Fishing retains its shortened rounds and extended reel windows
     EXPECT_EQ(GetFishingMoreDotsChance(SUPER_ROD, 1), 15);
 }
 
-TEST("Zenmodeman: Fishing early-input grace requires a later round near completion and a roll below forty")
+TEST("Elastic-tests: Fishing early-input grace requires a later round near completion and a roll below forty")
 {
     EXPECT(ShouldForgiveFishingEarlyPress(1, 4, 6, 39));
     EXPECT(!ShouldForgiveFishingEarlyPress(0, 4, 6, 39));
@@ -47,7 +47,7 @@ static void SetFishingLead(enum Species species, enum Ability ability)
     SetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_ABILITY_NUM, &abilitySlot);
 }
 
-TEST("Zenmodeman: Suction Cups fishing rewards require Suction Cups on the lead")
+TEST("Elastic-tests: Suction Cups fishing rewards require Suction Cups on the lead")
 {
     SetFishingLead(SPECIES_INKAY, ABILITY_SUCTION_CUPS);
     EXPECT(CanPlayerGetSuctionCupsFishingItem());
@@ -56,7 +56,7 @@ TEST("Zenmodeman: Suction Cups fishing rewards require Suction Cups on the lead"
     EXPECT(!CanPlayerGetSuctionCupsFishingItem());
 }
 
-TEST("Zenmodeman: Suction Cups fishing rewards reject an Egg lead")
+TEST("Elastic-tests: Suction Cups fishing rewards reject an Egg lead")
 {
     u8 isEgg = TRUE;
 
@@ -65,7 +65,7 @@ TEST("Zenmodeman: Suction Cups fishing rewards reject an Egg lead")
     EXPECT(!CanPlayerGetSuctionCupsFishingItem());
 }
 
-TEST("Zenmodeman: Suction Cups fishing third guaranteed reward waits for badge two")
+TEST("Elastic-tests: Suction Cups fishing third guaranteed reward waits for badge two")
 {
     SetFishingLead(SPECIES_INKAY, ABILITY_SUCTION_CUPS);
     VarSet(VAR_SUCTION_CUPS, 2);
@@ -75,7 +75,7 @@ TEST("Zenmodeman: Suction Cups fishing third guaranteed reward waits for badge t
     EXPECT(CanPlayerGetSuctionCupsFishingItem());
 }
 
-TEST("Zenmodeman: Suction Cups fishing repeat rewards are disabled in Resource Mode")
+TEST("Elastic-tests: Suction Cups fishing repeat rewards are disabled in Resource Mode")
 {
     SetFishingLead(SPECIES_INKAY, ABILITY_SUCTION_CUPS);
     VarSet(VAR_SUCTION_CUPS, 3);

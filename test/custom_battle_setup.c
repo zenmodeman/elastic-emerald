@@ -7,7 +7,7 @@
 
 extern u32 CalculateTrainerPartyMoney(const struct Trainer *trainer, u32 multiplier, bool32 isDoubleBattle, bool32 hasTwoOpponents);
 
-TEST("Zenmodeman: continue-after-loss trainer battles retain no-intro setup")
+TEST("Elastic-tests: continue-after-loss trainer battles retain no-intro setup")
 {
     TRAINER_BATTLE_PARAM.mode = TRAINER_BATTLE_CONTINUE_AFTER_LOSE;
 
@@ -15,14 +15,14 @@ TEST("Zenmodeman: continue-after-loss trainer battles retain no-intro setup")
     EXPECT_EQ(GetTrainerBattleMode(), TRAINER_BATTLE_CONTINUE_AFTER_LOSE);
 }
 
-TEST("Zenmodeman: continue-after-loss and early-rival battle modes remain distinct")
+TEST("Elastic-tests: continue-after-loss and early-rival battle modes remain distinct")
 {
     EXPECT_NE(TRAINER_BATTLE_CONTINUE_AFTER_LOSE, TRAINER_BATTLE_EARLY_RIVAL);
     EXPECT_EQ(TRAINER_BATTLE_CONTINUE_AFTER_LOSE, 14);
     EXPECT_EQ(TRAINER_BATTLE_EARLY_RIVAL, 15);
 }
 
-TEST("Zenmodeman: Youngster James rematches always reuse his custom opening team")
+TEST("Elastic-tests: Youngster James rematches always reuse his custom opening team")
 {
     u32 i;
 
@@ -32,7 +32,7 @@ TEST("Zenmodeman: Youngster James rematches always reuse his custom opening team
     EXPECT_EQ(gRematchTable[REMATCH_JAMES].mapNum, MAP_NUM(MAP_PETALBURG_WOODS));
 }
 
-TEST("Zenmodeman: trainer prize money uses the sum of every party level")
+TEST("Elastic-tests: trainer prize money uses the sum of every party level")
 {
     static const struct TrainerMon party[] = {{.lvl = 7}, {.lvl = 11}, {.lvl = 13}};
     static const struct Trainer trainer = {
@@ -47,7 +47,7 @@ TEST("Zenmodeman: trainer prize money uses the sum of every party level")
     EXPECT_NE(CalculateTrainerPartyMoney(&trainer, 1, FALSE, FALSE), 4 * party[ARRAY_COUNT(party) - 1].lvl * trainerMoney);
 }
 
-TEST("Zenmodeman: trainer prize money doubles for one double-battle opponent only")
+TEST("Elastic-tests: trainer prize money doubles for one double-battle opponent only")
 {
     static const struct TrainerMon party[] = {{.lvl = 10}, {.lvl = 12}};
     static const struct Trainer trainer = {

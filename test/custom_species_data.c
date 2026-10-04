@@ -2,13 +2,13 @@
 #include "pokemon.h"
 #include "test/test.h"
 
-TEST("Zenmodeman: Demo 2 Grimer forms retain their special bulk buff")
+TEST("Elastic-tests: Demo 2 Grimer forms retain their special bulk buff")
 {
     EXPECT_EQ(GetSpeciesBaseSpDefense(SPECIES_GRIMER), 70);
     EXPECT_EQ(GetSpeciesBaseSpDefense(SPECIES_GRIMER_ALOLA), 70);
 }
 
-TEST("Zenmodeman: Demo 2 Hoenn species retain their custom bulk profiles")
+TEST("Elastic-tests: Demo 2 Hoenn species retain their custom bulk profiles")
 {
     EXPECT_EQ(GetSpeciesBaseHP(SPECIES_GULPIN), 73);
     EXPECT_EQ(GetSpeciesBaseSpeed(SPECIES_GULPIN), 43);
@@ -20,7 +20,7 @@ TEST("Zenmodeman: Demo 2 Hoenn species retain their custom bulk profiles")
     EXPECT_EQ(GetSpeciesBaseSpDefense(SPECIES_WAILORD), 55);
 }
 
-TEST("Zenmodeman: Demo 2 Swablu retains its stats abilities and early evolution")
+TEST("Elastic-tests: Demo 2 Swablu retains its stats abilities and early evolution")
 {
     struct Pokemon mon;
 
@@ -39,7 +39,7 @@ TEST("Zenmodeman: Demo 2 Swablu retains its stats abilities and early evolution"
     EXPECT_EQ(GetEvolutionTargetSpecies(&mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, CHECK_EVO), SPECIES_ALTARIA);
 }
 
-TEST("Zenmodeman: Demo 2 Foongus and Larvesta retain their custom stat spreads")
+TEST("Elastic-tests: Demo 2 Foongus and Larvesta retain their custom stat spreads")
 {
     EXPECT_EQ(GetSpeciesBaseHP(SPECIES_FOONGUS), 74);
     EXPECT_EQ(GetSpeciesBaseAttack(SPECIES_FOONGUS), 65);
@@ -54,7 +54,7 @@ TEST("Zenmodeman: Demo 2 Foongus and Larvesta retain their custom stat spreads")
     EXPECT_EQ(GetSpeciesBaseSpDefense(SPECIES_LARVESTA), 75);
 }
 
-TEST("Zenmodeman: Sableye and Mawile families retain their early custom stat buffs")
+TEST("Elastic-tests: Sableye and Mawile families retain their early custom stat buffs")
 {
     EXPECT_EQ(GetSpeciesBaseAttack(SPECIES_SABLEYE), 85);
     EXPECT_EQ(GetSpeciesBaseDefense(SPECIES_SABLEYE), 85);
@@ -66,13 +66,13 @@ TEST("Zenmodeman: Sableye and Mawile families retain their early custom stat buf
     EXPECT_EQ(GetSpeciesBaseSpAttack(SPECIES_MAWILE_MEGA), 75);
 }
 
-TEST("Zenmodeman: Badge two Beautifly and Dustox retain their custom second abilities")
+TEST("Elastic-tests: Badge two Beautifly and Dustox retain their custom second abilities")
 {
     EXPECT_EQ(GetSpeciesAbility(SPECIES_BEAUTIFLY, 1), ABILITY_WIND_RIDER);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_DUSTOX, 1), ABILITY_CORROSION);
 }
 
-TEST("Zenmodeman: Mystic and Dominate remain assigned to their intended species")
+TEST("Elastic-tests: Mystic and Dominate remain assigned to their intended species")
 {
     EXPECT_EQ(GetSpeciesAbility(SPECIES_GOLDUCK, 0), ABILITY_MYSTIC);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_NOCTOWL, 1), ABILITY_MYSTIC);
@@ -81,14 +81,14 @@ TEST("Zenmodeman: Mystic and Dominate remain assigned to their intended species"
     EXPECT_EQ(GetSpeciesAbility(SPECIES_EXPLOUD, 1), ABILITY_DOMINATE);
 }
 
-TEST("Zenmodeman: Astral Charge remains assigned to Ledian and the Gothitelle line")
+TEST("Elastic-tests: Astral Charge remains assigned to Ledian and the Gothitelle line")
 {
     EXPECT_EQ(GetSpeciesAbility(SPECIES_LEDIAN, 2), ABILITY_ASTRAL_CHARGE);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_GOTHORITA, 0), ABILITY_ASTRAL_CHARGE);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_GOTHITELLE, 0), ABILITY_ASTRAL_CHARGE);
 }
 
-TEST("Zenmodeman: Early Astral Charge batch species retain their custom stat buffs")
+TEST("Elastic-tests: Early Astral Charge batch species retain their custom stat buffs")
 {
     EXPECT_EQ(GetSpeciesBaseSpAttack(SPECIES_QWILFISH), 65);
     EXPECT_EQ(GetSpeciesBaseSpAttack(SPECIES_QWILFISH_HISUI), 65);
@@ -106,7 +106,7 @@ TEST("Zenmodeman: Early Astral Charge batch species retain their custom stat buf
     EXPECT_EQ(GetSpeciesBaseSpDefense(SPECIES_STEENEE), 58);
 }
 
-TEST("Zenmodeman: Early Astral Charge batch evolution levels remain reduced")
+TEST("Elastic-tests: Early Astral Charge batch evolution levels remain reduced")
 {
     struct Pokemon mon;
 
@@ -126,7 +126,7 @@ TEST("Zenmodeman: Early Astral Charge batch evolution levels remain reduced")
     EXPECT_EQ(GetEvolutionTargetSpecies(&mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, CHECK_EVO), SPECIES_GRAFAIAI);
 }
 
-TEST("Zenmodeman: May 2025 evolution rebalance levels remain intact")
+TEST("Elastic-tests: May 2025 evolution rebalance levels remain intact")
 {
     static const struct
     {
@@ -148,12 +148,12 @@ TEST("Zenmodeman: May 2025 evolution rebalance levels remain intact")
         EXPECT_EQ(GetSpeciesEvolutions(cases[i].species)[0].param, cases[i].level);
 }
 
-TEST("Zenmodeman: Shuppet retains its May 2025 special bulk buff")
+TEST("Elastic-tests: Shuppet retains its May 2025 special bulk buff")
 {
     EXPECT_EQ(GetSpeciesBaseSpDefense(SPECIES_SHUPPET), 43);
 }
 
-TEST("Zenmodeman: Noibat retains its pre-Dewford custom stat buffs")
+TEST("Elastic-tests: Noibat retains its pre-Dewford custom stat buffs")
 {
     EXPECT_EQ(GetSpeciesBaseHP(SPECIES_NOIBAT), 45);
     EXPECT_EQ(GetSpeciesBaseDefense(SPECIES_NOIBAT), 40);
@@ -161,14 +161,14 @@ TEST("Zenmodeman: Noibat retains its pre-Dewford custom stat buffs")
     EXPECT_EQ(GetSpeciesBaseSpAttack(SPECIES_NOIBAT), 55);
 }
 
-TEST("Zenmodeman: Delibird retains Merry as its primary ability")
+TEST("Elastic-tests: Delibird retains Merry as its primary ability")
 {
     EXPECT_EQ(GetSpeciesAbility(SPECIES_DELIBIRD, 0), ABILITY_MERRY);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_DELIBIRD, 1), ABILITY_HUSTLE);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_DELIBIRD, 2), ABILITY_VITAL_SPIRIT);
 }
 
-TEST("Zenmodeman: Beautifly retains its custom Mud-Slap tutor compatibility")
+TEST("Elastic-tests: Beautifly retains its custom Mud-Slap tutor compatibility")
 {
     EXPECT(CanLearnTeachableMove(SPECIES_BEAUTIFLY, MOVE_MUD_SLAP));
 }

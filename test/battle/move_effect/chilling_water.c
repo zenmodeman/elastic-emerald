@@ -8,7 +8,7 @@ ASSUMPTIONS {
     ASSUME(GetSpeciesType(SPECIES_GLALIE, 1) == TYPE_ICE);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Chilling Water is 50 percent stronger when used by an Ice type")
+SINGLE_BATTLE_TEST("Elastic-tests: Chilling Water is 50 percent stronger when used by an Ice type")
 {
     s16 damage[2];
 

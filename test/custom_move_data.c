@@ -2,14 +2,14 @@
 #include "move.h"
 #include "test/test.h"
 
-TEST("Zenmodeman: Present Air Cutter and Snarl retain their custom perfect accuracy")
+TEST("Elastic-tests: Present Air Cutter and Snarl retain their custom perfect accuracy")
 {
     EXPECT_EQ(GetMoveAccuracy(MOVE_PRESENT), 100);
     EXPECT_EQ(GetMoveAccuracy(MOVE_AIR_CUTTER), 100);
     EXPECT_EQ(GetMoveAccuracy(MOVE_SNARL), 100);
 }
 
-TEST("Zenmodeman: Fire Spin Arm Thrust and Trop Kick retain their early custom move data")
+TEST("Elastic-tests: Fire Spin Arm Thrust and Trop Kick retain their early custom move data")
 {
     EXPECT_EQ(GetMovePower(MOVE_FIRE_SPIN), 35);
     EXPECT_EQ(GetMoveAccuracy(MOVE_FIRE_SPIN), 95);
@@ -17,18 +17,18 @@ TEST("Zenmodeman: Fire Spin Arm Thrust and Trop Kick retain their early custom m
     EXPECT_EQ(GetMovePower(MOVE_TROP_KICK), 80);
 }
 
-TEST("Zenmodeman: Mud Sport and Water Sport retain their custom priority")
+TEST("Elastic-tests: Mud Sport and Water Sport retain their custom priority")
 {
     EXPECT_EQ(GetMovePriority(MOVE_MUD_SPORT), 1);
     EXPECT_EQ(GetMovePriority(MOVE_WATER_SPORT), 1);
 }
 
-TEST("Zenmodeman: Rock Throw retains its custom perfect accuracy")
+TEST("Elastic-tests: Rock Throw retains its custom perfect accuracy")
 {
     EXPECT_EQ(GetMoveAccuracy(MOVE_ROCK_THROW), 100);
 }
 
-TEST("Zenmodeman: illuminating moves retain their complete custom flag set")
+TEST("Elastic-tests: illuminating moves retain their complete custom flag set")
 {
     static const enum Move moves[] = {
         MOVE_SOLAR_BEAM, MOVE_CONFUSE_RAY, MOVE_LIGHT_SCREEN, MOVE_FLASH,
@@ -43,7 +43,7 @@ TEST("Zenmodeman: illuminating moves retain their complete custom flag set")
     EXPECT(!IsIlluminatingMove(MOVE_REFLECT));
 }
 
-TEST("Zenmodeman: enticing moves retain their complete custom flag set")
+TEST("Elastic-tests: enticing moves retain their complete custom flag set")
 {
     static const enum Move moves[] = {
         MOVE_CHARM, MOVE_FAKE_TEARS, MOVE_CAPTIVATE, MOVE_PLAY_NICE,
@@ -55,7 +55,7 @@ TEST("Zenmodeman: enticing moves retain their complete custom flag set")
     EXPECT(!IsEnticingMove(MOVE_GROWL));
 }
 
-TEST("Zenmodeman: item-interacting moves retain their complete custom flag set")
+TEST("Elastic-tests: item-interacting moves retain their complete custom flag set")
 {
     static const enum Move moves[] = {
         MOVE_THIEF, MOVE_TRICK, MOVE_KNOCK_OFF, MOVE_COVET, MOVE_EMBARGO,

@@ -29,7 +29,7 @@ static u8 CreateAbilityChangeFixture(void)
     return drizzleSlot;
 }
 
-TEST("Zenmodeman: Tier Point ability changes reject a proposed ability above the party cap")
+TEST("Elastic-tests: Tier Point ability changes reject a proposed ability above the party cap")
 {
     u8 drizzleSlot = CreateAbilityChangeFixture();
 
@@ -39,7 +39,7 @@ TEST("Zenmodeman: Tier Point ability changes reject a proposed ability above the
     EXPECT(!IsTierPointAbilityChangeAllowed(0, drizzleSlot));
 }
 
-TEST("Zenmodeman: Tier Point ability change guard is inactive outside Tiered Mode")
+TEST("Elastic-tests: Tier Point ability change guard is inactive outside Tiered Mode")
 {
     u8 drizzleSlot = CreateAbilityChangeFixture();
 

@@ -2,7 +2,7 @@
 #include "test/battle.h"
 #include "battle_ai_main.h"
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport is valued against a known Electric attack that is not resisted")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Mud Sport is valued against a known Electric attack that is not resisted")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_VIABILITY | AI_FLAG_OMNISCIENT);
@@ -16,7 +16,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport is valued against a known Electric 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport receives no threat bonus when Electric is resisted")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Mud Sport receives no threat bonus when Electric is resisted")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_VIABILITY | AI_FLAG_OMNISCIENT);
@@ -27,7 +27,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: Mud Sport receives no threat bonus when Elect
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Water Sport combines Fire protection with Damp pivot healing value")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Water Sport combines Fire protection with Damp pivot healing value")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_VIABILITY | AI_FLAG_OMNISCIENT);
@@ -39,7 +39,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: Water Sport combines Fire protection with Dam
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Damp adds pivot value after Water Sport is active")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Damp adds pivot value after Water Sport is active")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_VIABILITY | AI_FLAG_OMNISCIENT);

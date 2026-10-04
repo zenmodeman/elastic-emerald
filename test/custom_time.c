@@ -3,7 +3,7 @@
 #include "fake_rtc.h"
 #include "test/test.h"
 
-TEST("Zenmodeman: Pokemon Center rest advances fake time by eight hours")
+TEST("Elastic-tests: Pokemon Center rest advances fake time by eight hours")
 {
     struct SiiRtcInfo *rtc;
 
@@ -17,7 +17,7 @@ TEST("Zenmodeman: Pokemon Center rest advances fake time by eight hours")
     EXPECT_EQ(rtc->second, 40);
 }
 
-TEST("Zenmodeman: Pokemon Center rest carries across midnight")
+TEST("Elastic-tests: Pokemon Center rest carries across midnight")
 {
     struct SiiRtcInfo *rtc;
 

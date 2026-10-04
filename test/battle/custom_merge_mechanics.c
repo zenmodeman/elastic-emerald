@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Solar Core doubles special damage in sun", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Solar Core doubles special damage in sun", s16 damage)
 {
     enum Move setup;
     PARAMETRIZE { setup = MOVE_CELEBRATE; }
@@ -19,7 +19,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Solar Core doubles special damage in sun", s16 d
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Solar Core does not boost physical damage in sun", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Solar Core does not boost physical damage in sun", s16 damage)
 {
     enum Move setup;
     PARAMETRIZE { setup = MOVE_CELEBRATE; }
@@ -37,7 +37,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Solar Core does not boost physical damage in sun
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Utility Umbrella suppresses Solar Core", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Utility Umbrella suppresses Solar Core", s16 damage)
 {
     enum Move setup;
     PARAMETRIZE { setup = MOVE_CELEBRATE; }
@@ -54,7 +54,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Utility Umbrella suppresses Solar Core", s16 dam
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Cloud Nine suppresses Solar Core", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Cloud Nine suppresses Solar Core", s16 damage)
 {
     enum Move setup;
     PARAMETRIZE { setup = MOVE_CELEBRATE; }
@@ -71,7 +71,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Cloud Nine suppresses Solar Core", s16 damage)
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Limber blocks Speed drops from status moves")
+SINGLE_BATTLE_TEST("Elastic-tests: Limber blocks Speed drops from status moves")
 {
     GIVEN {
         ASSUME_STAT_CHANGE(MOVE_STRING_SHOT, speed: -2);
@@ -87,7 +87,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Limber blocks Speed drops from status moves")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Limber blocks Speed drops from damaging moves")
+SINGLE_BATTLE_TEST("Elastic-tests: Limber blocks Speed drops from damaging moves")
 {
     GIVEN {
         ASSUME_MOVE_EFFECT_STAT_CHANGE(MOVE_ROCK_TOMB, speed: -1);
@@ -102,7 +102,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Limber blocks Speed drops from damaging moves")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Limber permits the user's own Speed drops")
+SINGLE_BATTLE_TEST("Elastic-tests: Limber permits the user's own Speed drops")
 {
     GIVEN {
         ASSUME_MOVE_EFFECT_STAT_CHANGE(MOVE_HAMMER_ARM, self: TRUE, speed: -1);
@@ -115,7 +115,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Limber permits the user's own Speed drops")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Inner Focus preserves Focus Punch after physical damage")
+SINGLE_BATTLE_TEST("Elastic-tests: Inner Focus preserves Focus Punch after physical damage")
 {
     GIVEN {
         PLAYER(SPECIES_ZUBAT) { Ability(ABILITY_INNER_FOCUS); Speed(1); }
@@ -130,7 +130,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Inner Focus preserves Focus Punch after physical
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Focus Punch still fails after damage without Inner Focus")
+SINGLE_BATTLE_TEST("Elastic-tests: Focus Punch still fails after damage without Inner Focus")
 {
     GIVEN {
         PLAYER(SPECIES_ZUBAT) { Ability(ABILITY_INFILTRATOR); Speed(1); }
@@ -144,7 +144,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Focus Punch still fails after damage without Inn
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Tailwind lets Razor Wind attack without charging")
+SINGLE_BATTLE_TEST("Elastic-tests: Tailwind lets Razor Wind attack without charging")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -159,7 +159,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Tailwind lets Razor Wind attack without charging
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Truant makes Slack Off heal three quarters")
+SINGLE_BATTLE_TEST("Elastic-tests: Truant makes Slack Off heal three quarters")
 {
     GIVEN {
         PLAYER(SPECIES_SLAKING) { Ability(ABILITY_TRUANT); HP(1); MaxHP(100); }
@@ -171,7 +171,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Truant makes Slack Off heal three quarters")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Slack Off retains half healing without Truant")
+SINGLE_BATTLE_TEST("Elastic-tests: Slack Off retains half healing without Truant")
 {
     GIVEN {
         PLAYER(SPECIES_SLAKING) { Ability(ABILITY_VITAL_SPIRIT); HP(1); MaxHP(100); }
@@ -183,7 +183,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Slack Off retains half healing without Truant")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Refresh can cure its user's sleep")
+SINGLE_BATTLE_TEST("Elastic-tests: Refresh can cure its user's sleep")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Status1(STATUS1_SLEEP_TURN(3)); }
@@ -196,7 +196,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Refresh can cure its user's sleep")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Refresh can cure its user's freeze")
+SINGLE_BATTLE_TEST("Elastic-tests: Refresh can cure its user's freeze")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Status1(STATUS1_FREEZE); }
@@ -209,7 +209,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Refresh can cure its user's freeze")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Refresh bypasses full paralysis")
+SINGLE_BATTLE_TEST("Elastic-tests: Refresh bypasses full paralysis")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Status1(STATUS1_PARALYSIS); }
@@ -223,7 +223,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Refresh bypasses full paralysis")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks preserves positive Defense stages against critical hits", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Big Pecks preserves positive Defense stages against critical hits", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_KEEN_EYE; }
@@ -241,7 +241,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks preserves positive Defense stages agai
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks preserves Reflect against critical physical hits", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Big Pecks preserves Reflect against critical physical hits", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_KEEN_EYE; }
@@ -259,7 +259,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks preserves Reflect against critical phy
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks preserves Aurora Veil against critical physical hits", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Big Pecks preserves Aurora Veil against critical physical hits", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_KEEN_EYE; }
@@ -277,7 +277,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks preserves Aurora Veil against critical
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks does not preserve Aurora Veil against critical special hits", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Big Pecks does not preserve Aurora Veil against critical special hits", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_KEEN_EYE; }
@@ -295,7 +295,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks does not preserve Aurora Veil against 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Big Pecks preserves positive Defense stages against Chip Away", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Big Pecks preserves positive Defense stages against Chip Away", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_KEEN_EYE; }

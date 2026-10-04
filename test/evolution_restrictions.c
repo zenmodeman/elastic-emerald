@@ -27,7 +27,7 @@ static enum Species GetNormalEvolution(struct Pokemon *mon)
     return GetEvolutionTargetSpecies(mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, CHECK_EVO);
 }
 
-TEST("Zenmodeman: Evolution restrictions: normal mode ignores item evolution level guards")
+TEST("Elastic-tests: Evolution restrictions: normal mode ignores item evolution level guards")
 {
     struct Pokemon mon;
 
@@ -35,7 +35,7 @@ TEST("Zenmodeman: Evolution restrictions: normal mode ignores item evolution lev
     EXPECT(!DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_MOON_STONE));
 }
 
-TEST("Zenmodeman: Evolution restrictions: Wurmple monotype branches still require level seven")
+TEST("Elastic-tests: Evolution restrictions: Wurmple monotype branches still require level seven")
 {
     struct Pokemon mon;
 
@@ -48,7 +48,7 @@ TEST("Zenmodeman: Evolution restrictions: Wurmple monotype branches still requir
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Flying and Poison monotypes choose Wurmple branches")
+TEST("Elastic-tests: Evolution restrictions: Flying and Poison monotypes choose Wurmple branches")
 {
     struct Pokemon mon;
 
@@ -61,7 +61,7 @@ TEST("Zenmodeman: Evolution restrictions: Flying and Poison monotypes choose Wur
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_CASCOON);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Ghost monotype evolves Nincada directly into Shedinja")
+TEST("Elastic-tests: Evolution restrictions: Ghost monotype evolves Nincada directly into Shedinja")
 {
     struct Pokemon mon;
 
@@ -72,7 +72,7 @@ TEST("Zenmodeman: Evolution restrictions: Ghost monotype evolves Nincada directl
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_SHEDINJA);
 }
 
-TEST("Zenmodeman: Evolution restrictions: ordinary Nincada evolution remains Ninjask")
+TEST("Elastic-tests: Evolution restrictions: ordinary Nincada evolution remains Ninjask")
 {
     struct Pokemon mon;
 
@@ -80,7 +80,7 @@ TEST("Zenmodeman: Evolution restrictions: ordinary Nincada evolution remains Nin
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NINJASK);
 }
 
-TEST("Zenmodeman: Evolution restrictions: ordinary Wurmple keeps both personality branches")
+TEST("Elastic-tests: Evolution restrictions: ordinary Wurmple keeps both personality branches")
 {
     struct Pokemon mon;
 
@@ -90,7 +90,7 @@ TEST("Zenmodeman: Evolution restrictions: ordinary Wurmple keeps both personalit
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_SILCOON);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Nidorina and Nidorino require level 25 in Restricted Mode")
+TEST("Elastic-tests: Evolution restrictions: Nidorina and Nidorino require level 25 in Restricted Mode")
 {
     enum Species species;
     struct Pokemon mon;
@@ -102,7 +102,7 @@ TEST("Zenmodeman: Evolution restrictions: Nidorina and Nidorino require level 25
     EXPECT(DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_MOON_STONE));
 }
 
-TEST("Zenmodeman: Evolution restrictions: Nidorina and Nidorino unlock at level 25")
+TEST("Elastic-tests: Evolution restrictions: Nidorina and Nidorino unlock at level 25")
 {
     enum Species species;
     struct Pokemon mon;
@@ -114,7 +114,7 @@ TEST("Zenmodeman: Evolution restrictions: Nidorina and Nidorino unlock at level 
     EXPECT(!DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_MOON_STONE));
 }
 
-TEST("Zenmodeman: Evolution restrictions: trade and Slowpoke item evolutions require level 32")
+TEST("Elastic-tests: Evolution restrictions: trade and Slowpoke item evolutions require level 32")
 {
     enum Species species;
     struct Pokemon mon;
@@ -130,7 +130,7 @@ TEST("Zenmodeman: Evolution restrictions: trade and Slowpoke item evolutions req
     EXPECT(DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_LINKING_CORD));
 }
 
-TEST("Zenmodeman: Evolution restrictions: trade and Slowpoke item evolutions unlock at level 32")
+TEST("Elastic-tests: Evolution restrictions: trade and Slowpoke item evolutions unlock at level 32")
 {
     enum Species species;
     struct Pokemon mon;
@@ -146,7 +146,7 @@ TEST("Zenmodeman: Evolution restrictions: trade and Slowpoke item evolutions unl
     EXPECT(!DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_LINKING_CORD));
 }
 
-TEST("Zenmodeman: Evolution restrictions: unrelated item evolutions remain unrestricted")
+TEST("Elastic-tests: Evolution restrictions: unrelated item evolutions remain unrestricted")
 {
     struct Pokemon mon;
 
@@ -155,7 +155,7 @@ TEST("Zenmodeman: Evolution restrictions: unrelated item evolutions remain unres
     EXPECT(!DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_THUNDER_STONE));
 }
 
-TEST("Zenmodeman: Evolution restrictions: blocked item evolution remains visible to item checks")
+TEST("Elastic-tests: Evolution restrictions: blocked item evolution remains visible to item checks")
 {
     struct Pokemon mon;
 
@@ -165,7 +165,7 @@ TEST("Zenmodeman: Evolution restrictions: blocked item evolution remains visible
     EXPECT(DoesNotMeetRestrictedEvoItemConditions(&mon, ITEM_MOON_STONE));
 }
 
-TEST("Zenmodeman: Evolution restrictions: Woobat can evolve below level 18 outside Restricted Mode")
+TEST("Elastic-tests: Evolution restrictions: Woobat can evolve below level 18 outside Restricted Mode")
 {
     struct Pokemon mon;
 
@@ -173,7 +173,7 @@ TEST("Zenmodeman: Evolution restrictions: Woobat can evolve below level 18 outsi
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_SWOOBAT);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Restricted Mode blocks Woobat below level 18")
+TEST("Elastic-tests: Evolution restrictions: Restricted Mode blocks Woobat below level 18")
 {
     struct Pokemon mon;
 
@@ -182,7 +182,7 @@ TEST("Zenmodeman: Evolution restrictions: Restricted Mode blocks Woobat below le
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Restricted Mode allows Woobat at level 18")
+TEST("Elastic-tests: Evolution restrictions: Restricted Mode allows Woobat at level 18")
 {
     struct Pokemon mon;
 
@@ -191,7 +191,7 @@ TEST("Zenmodeman: Evolution restrictions: Restricted Mode allows Woobat at level
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_SWOOBAT);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Restricted Mode blocks Golbat below level 30")
+TEST("Elastic-tests: Evolution restrictions: Restricted Mode blocks Golbat below level 30")
 {
     struct Pokemon mon;
 
@@ -200,7 +200,7 @@ TEST("Zenmodeman: Evolution restrictions: Restricted Mode blocks Golbat below le
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Restricted Mode allows Golbat at level 30")
+TEST("Elastic-tests: Evolution restrictions: Restricted Mode allows Golbat at level 30")
 {
     struct Pokemon mon;
 
@@ -209,7 +209,7 @@ TEST("Zenmodeman: Evolution restrictions: Restricted Mode allows Golbat at level
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_CROBAT);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Fletchling evolves when monotype mode is disabled")
+TEST("Elastic-tests: Evolution restrictions: Fletchling evolves when monotype mode is disabled")
 {
     struct Pokemon mon;
 
@@ -217,7 +217,7 @@ TEST("Zenmodeman: Evolution restrictions: Fletchling evolves when monotype mode 
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_FLETCHINDER);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Fire monotype permits Fletchling evolution")
+TEST("Elastic-tests: Evolution restrictions: Fire monotype permits Fletchling evolution")
 {
     struct Pokemon mon;
 
@@ -226,7 +226,7 @@ TEST("Zenmodeman: Evolution restrictions: Fire monotype permits Fletchling evolu
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_FLETCHINDER);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Flying monotype permits Fletchling evolution")
+TEST("Elastic-tests: Evolution restrictions: Flying monotype permits Fletchling evolution")
 {
     struct Pokemon mon;
 
@@ -235,7 +235,7 @@ TEST("Zenmodeman: Evolution restrictions: Flying monotype permits Fletchling evo
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_FLETCHINDER);
 }
 
-TEST("Zenmodeman: Evolution restrictions: incompatible monotype blocks Fletchling evolution")
+TEST("Elastic-tests: Evolution restrictions: incompatible monotype blocks Fletchling evolution")
 {
     struct Pokemon mon;
 
@@ -244,7 +244,7 @@ TEST("Zenmodeman: Evolution restrictions: incompatible monotype blocks Fletchlin
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Water monotype permits Magikarp evolution")
+TEST("Elastic-tests: Evolution restrictions: Water monotype permits Magikarp evolution")
 {
     struct Pokemon mon;
 
@@ -253,7 +253,7 @@ TEST("Zenmodeman: Evolution restrictions: Water monotype permits Magikarp evolut
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_GYARADOS);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Flying monotype permits Magikarp evolution")
+TEST("Elastic-tests: Evolution restrictions: Flying monotype permits Magikarp evolution")
 {
     struct Pokemon mon;
 
@@ -262,7 +262,7 @@ TEST("Zenmodeman: Evolution restrictions: Flying monotype permits Magikarp evolu
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_GYARADOS);
 }
 
-TEST("Zenmodeman: Evolution restrictions: incompatible monotype blocks Magikarp evolution")
+TEST("Elastic-tests: Evolution restrictions: incompatible monotype blocks Magikarp evolution")
 {
     struct Pokemon mon;
 
@@ -271,7 +271,7 @@ TEST("Zenmodeman: Evolution restrictions: incompatible monotype blocks Magikarp 
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_NONE);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Restricted and monotype gates compose independently")
+TEST("Elastic-tests: Evolution restrictions: Restricted and monotype gates compose independently")
 {
     struct Pokemon mon;
 
@@ -281,7 +281,7 @@ TEST("Zenmodeman: Evolution restrictions: Restricted and monotype gates compose 
     EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_FLETCHINDER);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Restricted Snom friendship evolution requires level eighteen")
+TEST("Elastic-tests: Evolution restrictions: Restricted Snom friendship evolution requires level eighteen")
 {
     gLocalTime.hours = 22;
     FlagSet(FLAG_RESTRICTED_MODE);
@@ -293,7 +293,7 @@ TEST("Zenmodeman: Evolution restrictions: Restricted Snom friendship evolution r
     EXPECT_EQ(GetNormalEvolution(&gParties[B_TRAINER_PLAYER][0]), SPECIES_FROSMOTH);
 }
 
-TEST("Zenmodeman: Evolution restrictions: Restricted walking evolutions retain their level floors")
+TEST("Elastic-tests: Evolution restrictions: Restricted walking evolutions retain their level floors")
 {
     static const struct
     {

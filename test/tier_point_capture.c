@@ -13,7 +13,7 @@ static void CreateTierPointCaptureFixture(struct Pokemon *caughtMon)
     CreateMon(caughtMon, SPECIES_VULPIX, 20, 0, OTID_STRUCT_PLAYER_ID);
 }
 
-TEST("Zenmodeman: Tier Point capture projects the caught Pokemon against the current party")
+TEST("Elastic-tests: Tier Point capture projects the caught Pokemon against the current party")
 {
     struct Pokemon caughtMon;
 
@@ -24,7 +24,7 @@ TEST("Zenmodeman: Tier Point capture projects the caught Pokemon against the cur
     EXPECT_EQ(GetPartyTierPointExcessWithMon(&caughtMon), 1);
 }
 
-TEST("Zenmodeman: Tier Point capture has no excess at or below the cap")
+TEST("Elastic-tests: Tier Point capture has no excess at or below the cap")
 {
     struct Pokemon caughtMon;
 
@@ -34,7 +34,7 @@ TEST("Zenmodeman: Tier Point capture has no excess at or below the cap")
     EXPECT_EQ(GetPartyTierPointExcessWithMon(&caughtMon), 0);
 }
 
-TEST("Zenmodeman: Tier Point capture projection is disabled outside Tiered Mode")
+TEST("Elastic-tests: Tier Point capture projection is disabled outside Tiered Mode")
 {
     struct Pokemon caughtMon;
 
@@ -42,7 +42,7 @@ TEST("Zenmodeman: Tier Point capture projection is disabled outside Tiered Mode"
     EXPECT_EQ(GetPartyTierPointExcessWithMon(&caughtMon), 0);
 }
 
-TEST("Zenmodeman: Tier Point capture projection does not mutate either Pokemon collection")
+TEST("Elastic-tests: Tier Point capture projection does not mutate either Pokemon collection")
 {
     struct Pokemon caughtMon;
     u16 caughtSpecies;

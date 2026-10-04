@@ -11,7 +11,7 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_SPIT_UP) == EFFECT_SPIT_UP);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Swallow consumes only the Stockpiles needed to heal")
+SINGLE_BATTLE_TEST("Elastic-tests: Swallow consumes only the Stockpiles needed to heal")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_NONE); HP(450), MaxHP(600); }
@@ -31,7 +31,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Swallow consumes only the Stockpiles needed to h
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Swallow at full HP preserves Stockpiles")
+SINGLE_BATTLE_TEST("Elastic-tests: Swallow at full HP preserves Stockpiles")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Ability(ABILITY_NONE); }
@@ -48,7 +48,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Swallow at full HP preserves Stockpiles")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Gluttony doubles healing from each Stockpile", s16 healing)
+SINGLE_BATTLE_TEST("Elastic-tests: Gluttony doubles healing from each Stockpile", s16 healing)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_NONE; }
@@ -67,7 +67,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Gluttony doubles healing from each Stockpile", s
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Gluttony doubles Spit Up power", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Gluttony doubles Spit Up power", s16 damage)
 {
     enum Ability ability;
     PARAMETRIZE { ability = ABILITY_NONE; }

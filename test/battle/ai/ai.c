@@ -166,7 +166,7 @@ AI_SINGLE_BATTLE_TEST("AI prefers moves which deal more damage instead of moves 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI accounts for proactive Color Change only when the ability is active")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI accounts for proactive Color Change only when the ability is active")
 {
     enum Ability attackerAbility;
 
@@ -191,7 +191,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI accounts for proactive Color Change only w
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI damage comparison does not assume speculative binding turns")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI damage comparison does not assume speculative binding turns")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -206,7 +206,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI damage comparison does not assume speculat
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not consider binding residual if it loses in tempo")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI does not consider binding residual if it loses in tempo")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -221,7 +221,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not consider binding residual if it l
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not consider binding residual against Magic Guard")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI does not consider binding residual against Magic Guard")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -236,7 +236,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not consider binding residual against
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not prefer binding residual if it expects too few actions")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI does not prefer binding residual if it expects too few actions")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffect(MOVE_FIRE_SPIN, MOVE_EFFECT_WRAP));
@@ -498,7 +498,7 @@ AI_SINGLE_BATTLE_TEST("AI will choose either Rock Tomb or Bulldoze if Stat drop 
 
 
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI values Rock Tomb when the simulated Speed drop lets it move first")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI values Rock Tomb when the simulated Speed drop lets it move first")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100) == TRUE);
@@ -512,7 +512,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI values Rock Tomb when the simulated Speed 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not prioritize Rock Tomb when the simulated Speed drop not let it move first")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI does not prioritize Rock Tomb when the simulated Speed drop not let it move first")
 {
     GIVEN {
         ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100) == TRUE);
@@ -527,7 +527,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not prioritize Rock Tomb when the sim
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_ASSUME_STAB records unrevealed STAB moves but not unrevealed non-STAB moves")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI_FLAG_ASSUME_STAB records unrevealed STAB moves but not unrevealed non-STAB moves")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_ASSUME_STAB);
@@ -545,7 +545,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI_FLAG_ASSUME_STAB records unrevealed STAB m
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not reject Powder while the target moveset is incomplete")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI does not reject Powder while the target moveset is incomplete")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_POWDER) == EFFECT_POWDER);
@@ -557,7 +557,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not reject Powder while the target mo
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI rejects Powder after learning a complete non-Fire moveset")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI rejects Powder after learning a complete non-Fire moveset")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_POWDER) == EFFECT_POWDER);
@@ -569,7 +569,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI rejects Powder after learning a complete n
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI does not restore a below-default damaging move with best damage logic")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI does not restore a below-default damaging move with best damage logic")
 {
     GIVEN {
         ASSUME(GetMoveType(MOVE_THUNDERBOLT) == TYPE_ELECTRIC);
@@ -1171,7 +1171,7 @@ AI_SINGLE_BATTLE_TEST("AI will see 2HKOs through resist berries")
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI knows player resist berries without omniscient knowledge")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI knows player resist berries without omniscient knowledge")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);

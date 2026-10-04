@@ -44,7 +44,7 @@ SINGLE_BATTLE_TEST("Burn reduces Attack by 50%", s16 damage)
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Hyper Cutter and Flare Boost ignore burn's physical damage penalty", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Hyper Cutter and Flare Boost ignore burn's physical damage penalty", s16 damage)
 {
     u16 ability;
     bool32 burned;

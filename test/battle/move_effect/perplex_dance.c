@@ -9,7 +9,7 @@ ASSUMPTIONS
     ASSUME(GetMoveTarget(MOVE_PERPLEX_DANCE) == TARGET_SELECTED);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance lowers both offenses and confuses its user")
+SINGLE_BATTLE_TEST("Elastic-tests: Perplex Dance lowers both offenses and confuses its user")
 {
     GIVEN {
         PLAYER(SPECIES_SPINDA) { Ability(ABILITY_TANGLED_FEET); }
@@ -26,7 +26,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance lowers both offenses and confuses 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Own Tempo prevents Perplex Dance self-confusion after its debuffs")
+SINGLE_BATTLE_TEST("Elastic-tests: Own Tempo prevents Perplex Dance self-confusion after its debuffs")
 {
     GIVEN {
         PLAYER(SPECIES_SPINDA) { Ability(ABILITY_OWN_TEMPO); }
@@ -44,7 +44,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Own Tempo prevents Perplex Dance self-confusion 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance acts at plus one priority")
+SINGLE_BATTLE_TEST("Elastic-tests: Perplex Dance acts at plus one priority")
 {
     GIVEN {
         PLAYER(SPECIES_SPINDA) { Ability(ABILITY_OWN_TEMPO); Speed(1); }
@@ -57,7 +57,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance acts at plus one priority")
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI prefers its dual debuff when confusion is prevented")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Perplex Dance AI prefers its dual debuff when confusion is prevented")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY);
@@ -68,7 +68,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI prefers its dual debuff when
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI rejects targets with both offenses minimized")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Perplex Dance AI rejects targets with both offenses minimized")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY);
@@ -79,7 +79,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI rejects targets with both of
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("Zenmodeman: Perplex Dance AI partners do not duplicate the effect into one target")
+AI_DOUBLE_BATTLE_TEST("Elastic-tests: Perplex Dance AI partners do not duplicate the effect into one target")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY);

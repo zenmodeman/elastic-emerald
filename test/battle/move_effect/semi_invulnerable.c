@@ -17,7 +17,7 @@ ASSUMPTIONS
     ASSUME(GetMoveTwoTurnAttackStatus(MOVE_SHADOW_FORCE) == STATE_PHANTOM_FORCE);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Spoink and Grumpig deal double damage with Bounce", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Spoink and Grumpig deal double damage with Bounce", s16 damage)
 {
     enum Species species;
     PARAMETRIZE { species = SPECIES_WOBBUFFET; }

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Mystic boosts Psychic damage by fifty percent without boosting other types", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Mystic boosts Psychic damage by fifty percent without boosting other types", s16 damage)
 {
     enum Move move;
     enum Ability ability;
@@ -25,7 +25,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Mystic boosts Psychic damage by fifty percent wi
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Dominate raises Attack when the opponent has lower Defense", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Dominate raises Attack when the opponent has lower Defense", s16 damage)
 {
     enum Ability ability;
 
@@ -50,7 +50,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Dominate raises Attack when the opponent has low
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Dominate raises Special Attack when the opponent has lower Special Defense", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Dominate raises Special Attack when the opponent has lower Special Defense", s16 damage)
 {
     enum Ability ability;
 

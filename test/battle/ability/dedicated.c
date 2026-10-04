@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Dedicated extends screens by three turns", enum Move move)
+SINGLE_BATTLE_TEST("Elastic-tests: Dedicated extends screens by three turns", enum Move move)
 {
     enum Move move;
 
@@ -20,7 +20,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Dedicated extends screens by three turns", enum 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Dedicated extends weather and terrain by three turns", enum Move move)
+SINGLE_BATTLE_TEST("Elastic-tests: Dedicated extends weather and terrain by three turns", enum Move move)
 {
     enum Move move;
 
@@ -39,7 +39,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Dedicated extends weather and terrain by three t
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Dedicated extends rooms and Tailwind by three turns", enum Move move)
+SINGLE_BATTLE_TEST("Elastic-tests: Dedicated extends rooms and Tailwind by three turns", enum Move move)
 {
     enum Move move;
 
@@ -58,7 +58,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Dedicated extends rooms and Tailwind by three tu
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Dedicated extends Mist Safeguard and sports by three turns", enum Move move)
+SINGLE_BATTLE_TEST("Elastic-tests: Dedicated extends Mist Safeguard and sports by three turns", enum Move move)
 {
     enum Move move;
 

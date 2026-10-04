@@ -8,7 +8,7 @@ ASSUMPTIONS
     ASSUME(MoveMakesContact(MOVE_SCRATCH));
 }
 
-WILD_BATTLE_TEST("Zenmodeman: Pickpocket cannot take a wild Pokemon's consumable in Resource Mode")
+WILD_BATTLE_TEST("Elastic-tests: Pickpocket cannot take a wild Pokemon's consumable in Resource Mode")
 {
     GIVEN {
         FlagSet(FLAG_RESOURCE_MODE);

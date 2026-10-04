@@ -3,7 +3,7 @@
 #include "battle_ai_main.h"
 #include "battle_ai_util.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: AI move history retains the prior three-turn observation order")
+SINGLE_BATTLE_TEST("Elastic-tests: AI move history retains the prior three-turn observation order")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -19,7 +19,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: AI move history retains the prior three-turn obs
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: AI values giving Ring Target to a foe")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI values giving Ring Target to a foe")
 {
     GIVEN {
         ASSUME(gItemsInfo[ITEM_RING_TARGET].holdEffect == HOLD_EFFECT_RING_TARGET);
@@ -31,7 +31,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: AI values giving Ring Target to a foe")
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Soak AI skips setup when it already has a two-hit KO", u16 spAttack, s32 expectedScore)
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Soak AI skips setup when it already has a two-hit KO", u16 spAttack, s32 expectedScore)
 {
     u16 spAttack;
     s32 expectedScore;
@@ -48,7 +48,7 @@ AI_SINGLE_BATTLE_TEST("Zenmodeman: Soak AI skips setup when it already has a two
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Zenmodeman: Soak AI skips setup when the target can KO first", u16 playerSpAttack, s32 expectedScore)
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Soak AI skips setup when the target can KO first", u16 playerSpAttack, s32 expectedScore)
 {
     u16 playerSpAttack;
     s32 expectedScore;

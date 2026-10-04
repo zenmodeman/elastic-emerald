@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Merry activates after Delibird uses a gifting move")
+SINGLE_BATTLE_TEST("Elastic-tests: Merry activates after Delibird uses a gifting move")
 {
     GIVEN {
         ASSUME(IsGiftingMove(MOVE_PRESENT));
@@ -16,7 +16,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Merry activates after Delibird uses a gifting mo
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Merry activates from every custom gifting move", enum Move move)
+SINGLE_BATTLE_TEST("Elastic-tests: Merry activates from every custom gifting move", enum Move move)
 {
     enum Move move;
 
@@ -33,7 +33,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Merry activates from every custom gifting move",
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: activated Merry boosts damage by fifty percent", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: activated Merry boosts damage by fifty percent", s16 damage)
 {
     u32 j;
     enum Ability ability;
@@ -59,7 +59,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: activated Merry boosts damage by fifty percent",
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: activated Merry boosts accuracy and Speed")
+SINGLE_BATTLE_TEST("Elastic-tests: activated Merry boosts accuracy and Speed")
 {
     enum BattlerId playerId;
     enum BattlerId opponentId;

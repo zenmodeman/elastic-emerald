@@ -2,7 +2,7 @@
 #include "event_data.h"
 #include "test/battle.h"
 
-WILD_BATTLE_TEST("Zenmodeman: Magician cannot take a wild Pokemon's consumable in Resource Mode")
+WILD_BATTLE_TEST("Elastic-tests: Magician cannot take a wild Pokemon's consumable in Resource Mode")
 {
     GIVEN {
         FlagSet(FLAG_RESOURCE_MODE);

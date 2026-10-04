@@ -9,7 +9,7 @@ static void ExpectBerryYield(enum BerryId id, u8 minYield, u8 maxYield)
     EXPECT_EQ((u32)GetBerryInfo(id)->maxYield, maxYield);
 }
 
-TEST("Zenmodeman: standard berries use the eight to twelve yield range")
+TEST("Elastic-tests: standard berries use the eight to twelve yield range")
 {
     ExpectBerryYield(BERRY_ID_CHERI, 8, 12);
     ExpectBerryYield(BERRY_ID_PECHA, 8, 12);
@@ -19,7 +19,7 @@ TEST("Zenmodeman: standard berries use the eight to twelve yield range")
     ExpectBerryYield(BERRY_ID_ENIGMA, 8, 12);
 }
 
-TEST("Zenmodeman: pinch healing berries use the six to eight yield range")
+TEST("Elastic-tests: pinch healing berries use the six to eight yield range")
 {
     static const enum BerryId berries[] = {
         BERRY_ID_FIGY,
@@ -34,7 +34,7 @@ TEST("Zenmodeman: pinch healing berries use the six to eight yield range")
         ExpectBerryYield(berries[i], 6, 8);
 }
 
-TEST("Zenmodeman: resistance berries use the three to four yield range")
+TEST("Elastic-tests: resistance berries use the three to four yield range")
 {
     static const enum BerryId berries[] = {
         BERRY_ID_OCCA,
@@ -62,7 +62,7 @@ TEST("Zenmodeman: resistance berries use the three to four yield range")
         ExpectBerryYield(berries[i], 3, 4);
 }
 
-TEST("Zenmodeman: special reactive berries use the four to six yield range")
+TEST("Elastic-tests: special reactive berries use the four to six yield range")
 {
     ExpectBerryYield(BERRY_ID_JABOCA, 4, 6);
     ExpectBerryYield(BERRY_ID_ROWAP, 4, 6);

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Cute Charm strengthens enticing debuffs only against the opposite gender", enum Gender targetGender, u8 expectedStage)
+SINGLE_BATTLE_TEST("Elastic-tests: Cute Charm strengthens enticing debuffs only against the opposite gender", enum Gender targetGender, u8 expectedStage)
 {
     enum Gender targetGender;
     u8 expectedStage;
@@ -18,7 +18,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Cute Charm strengthens enticing debuffs only aga
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Frisk makes item-interacting attacks bypass accuracy checks")
+SINGLE_BATTLE_TEST("Elastic-tests: Frisk makes item-interacting attacks bypass accuracy checks")
 {
     GIVEN {
         ASSUME(GetMoveAccuracy(MOVE_POLTERGEIST) < 100);
@@ -32,7 +32,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Frisk makes item-interacting attacks bypass accu
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Frisk does not guarantee ordinary inaccurate attacks")
+SINGLE_BATTLE_TEST("Elastic-tests: Frisk does not guarantee ordinary inaccurate attacks")
 {
     GIVEN {
         ASSUME(!IsItemInteractingMove(MOVE_ROCK_SLIDE));

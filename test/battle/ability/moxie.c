@@ -2,7 +2,7 @@
 #include "event_data.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted Moxie cannot stack after a prior Attack boost")
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted Moxie cannot stack after a prior Attack boost")
 {
     GIVEN {
         FlagSet(FLAG_RESTRICTED_MODE);
@@ -18,7 +18,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Restricted Moxie cannot stack after a prior Atta
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Restricted Moxie still grants its first Attack boost")
+SINGLE_BATTLE_TEST("Elastic-tests: Restricted Moxie still grants its first Attack boost")
 {
     GIVEN {
         FlagSet(FLAG_RESTRICTED_MODE);

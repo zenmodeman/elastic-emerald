@@ -22,7 +22,7 @@ SINGLE_BATTLE_TEST("Laser Focus causes the user's move used on the next turn to 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Laser Focus can repeat and raises Accuracy each time")
+SINGLE_BATTLE_TEST("Elastic-tests: Laser Focus can repeat and raises Accuracy each time")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { Moves(MOVE_LASER_FOCUS); }

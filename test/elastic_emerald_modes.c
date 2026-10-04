@@ -24,7 +24,7 @@ static u8 FindAbilitySlot(u16 species, u16 ability)
     return NUM_ABILITY_SLOTS;
 }
 
-TEST("Zenmodeman: Merge guard: EV Mode restores badge-based per-stat caps")
+TEST("Elastic-tests: Merge guard: EV Mode restores badge-based per-stat caps")
 {
     EXPECT_EQ(GetEVStatCap(), 0);
 
@@ -46,7 +46,7 @@ TEST("Zenmodeman: Merge guard: EV Mode restores badge-based per-stat caps")
     EXPECT_EQ(GetEVStatCap(), MAX_PER_STAT_EVS);
 }
 
-TEST("Zenmodeman: Merge guard: Pokemon gain EVs only in EV Mode")
+TEST("Elastic-tests: Merge guard: Pokemon gain EVs only in EV Mode")
 {
     struct Pokemon mon;
 
@@ -59,7 +59,7 @@ TEST("Zenmodeman: Merge guard: Pokemon gain EVs only in EV Mode")
     EXPECT_EQ(GetMonData(&mon, MON_DATA_HP_EV), gSpeciesInfo[SPECIES_CATERPIE].evYield_HP);
 }
 
-TEST("Zenmodeman: Merge guard: EV items work only in EV Mode")
+TEST("Elastic-tests: Merge guard: EV items work only in EV Mode")
 {
     struct Pokemon mon;
 
@@ -73,7 +73,7 @@ TEST("Zenmodeman: Merge guard: EV items work only in EV Mode")
     EXPECT_LE(GetMonData(&mon, MON_DATA_HP_EV), GetEVStatCap());
 }
 
-TEST("Zenmodeman: Merge guard: EV Mode enforces per-stat and derived total caps")
+TEST("Elastic-tests: Merge guard: EV Mode enforces per-stat and derived total caps")
 {
     struct Pokemon mon;
     u32 ev;
@@ -94,7 +94,7 @@ TEST("Zenmodeman: Merge guard: EV Mode enforces per-stat and derived total caps"
     EXPECT_EQ(GetMonEVCount(&mon), GetEVStatCap() * 2 + 6);
 }
 
-TEST("Zenmodeman: Merge guard: Monotype save values decode across the Fairy type gap")
+TEST("Elastic-tests: Merge guard: Monotype save values decode across the Fairy type gap")
 {
     VarSet(VAR_MONOTYPE, TYPE_FIRE - 1);
     EXPECT_EQ(GetMonoType(), TYPE_FIRE);
@@ -106,7 +106,7 @@ TEST("Zenmodeman: Merge guard: Monotype save values decode across the Fairy type
     EXPECT_EQ(GetMonoType(), TYPE_NONE);
 }
 
-TEST("Zenmodeman: Merge guard: Monotype startup seeds only super-effective resist berries")
+TEST("Elastic-tests: Merge guard: Monotype startup seeds only super-effective resist berries")
 {
     VarSet(VAR_MONOTYPE, TYPE_FIRE - 1);
     PopulateMonotypeResistBerriesInPC();
@@ -117,7 +117,7 @@ TEST("Zenmodeman: Merge guard: Monotype startup seeds only super-effective resis
     EXPECT(!CheckPCHasItem(ITEM_OCCA_BERRY, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Tier Points treat eggs as zero points")
+TEST("Elastic-tests: Merge guard: Tier Points treat eggs as zero points")
 {
     struct Pokemon mon;
     u8 isEgg = TRUE;
@@ -128,7 +128,7 @@ TEST("Zenmodeman: Merge guard: Tier Points treat eggs as zero points")
     EXPECT_EQ(GetMonTierPoints(&mon), 0);
 }
 
-TEST("Zenmodeman: Merge guard: Tier Points account for a weather-setting ability")
+TEST("Elastic-tests: Merge guard: Tier Points account for a weather-setting ability")
 {
     struct Pokemon mon;
     u8 abilitySlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DRIZZLE);
@@ -139,7 +139,7 @@ TEST("Zenmodeman: Merge guard: Tier Points account for a weather-setting ability
     EXPECT_EQ(GetMonTierPoints(&mon), 6);
 }
 
-TEST("Zenmodeman: Merge guard: Tier Points account for badge progression")
+TEST("Elastic-tests: Merge guard: Tier Points account for badge progression")
 {
     struct Pokemon mon;
     u8 abilitySlot = FindAbilitySlot(SPECIES_VULPIX, ABILITY_FLASH_FIRE);
@@ -153,12 +153,12 @@ TEST("Zenmodeman: Merge guard: Tier Points account for badge progression")
     EXPECT_EQ(GetMonTierPoints(&mon), 1);
 }
 
-TEST("Zenmodeman: Merge guard: Tier Points preserve the default value for a null candidate")
+TEST("Elastic-tests: Merge guard: Tier Points preserve the default value for a null candidate")
 {
     EXPECT_EQ(GetMonTierPoints(NULL), 3);
 }
 
-TEST("Zenmodeman: Original expanded Tier Points preserve representative four five and six point species")
+TEST("Elastic-tests: Original expanded Tier Points preserve representative four five and six point species")
 {
     struct Pokemon mon;
 
@@ -170,7 +170,7 @@ TEST("Zenmodeman: Original expanded Tier Points preserve representative four fiv
     EXPECT_EQ(GetMonTierPoints(&mon), 6);
 }
 
-TEST("Zenmodeman: Merge guard: Party Tier Points exclude eggs and empty slots")
+TEST("Elastic-tests: Merge guard: Party Tier Points exclude eggs and empty slots")
 {
     u8 isEgg = TRUE;
 
@@ -181,7 +181,7 @@ TEST("Zenmodeman: Merge guard: Party Tier Points exclude eggs and empty slots")
     EXPECT_EQ(CountPartyTierPoints(), 6);
 }
 
-TEST("Zenmodeman: Tiered PC placement computes the party budget around the destination slot")
+TEST("Elastic-tests: Tiered PC placement computes the party budget around the destination slot")
 {
     ZeroPlayerPartyMons();
     CreateMon(&gPlayerParty[0], SPECIES_SNORLAX, 50, 0, OTID_STRUCT_PLAYER_ID);
@@ -193,7 +193,7 @@ TEST("Zenmodeman: Tiered PC placement computes the party budget around the desti
     EXPECT_EQ(CountPartyPointsExcept(5), 15);
 }
 
-TEST("Zenmodeman: Tiered egg hatch detects current-party excess only after the egg becomes a Pokemon")
+TEST("Elastic-tests: Tiered egg hatch detects current-party excess only after the egg becomes a Pokemon")
 {
     u8 isEgg = TRUE;
 
@@ -214,7 +214,7 @@ TEST("Zenmodeman: Tiered egg hatch detects current-party excess only after the e
     EXPECT_EQ(GetCurrentPartyTierPointExcess(), 0);
 }
 
-TEST("Zenmodeman: Merge guard: Evolution Tier Point projection does not mutate the party")
+TEST("Elastic-tests: Merge guard: Evolution Tier Point projection does not mutate the party")
 {
     u16 originalSpecies;
 
@@ -227,7 +227,7 @@ TEST("Zenmodeman: Merge guard: Evolution Tier Point projection does not mutate t
     EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_SPECIES), originalSpecies);
 }
 
-TEST("Zenmodeman: Merge guard: Ability Tier Point projection does not mutate the party")
+TEST("Elastic-tests: Merge guard: Ability Tier Point projection does not mutate the party")
 {
     u8 originalAbility;
     u8 drizzleSlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DRIZZLE);
@@ -242,7 +242,7 @@ TEST("Zenmodeman: Merge guard: Ability Tier Point projection does not mutate the
     EXPECT_EQ(GetMonData(&gPlayerParty[0], MON_DATA_ABILITY_NUM), originalAbility);
 }
 
-TEST("Zenmodeman: Merge guard: Restricted Mode item clause bags duplicate party items")
+TEST("Elastic-tests: Merge guard: Restricted Mode item clause bags duplicate party items")
 {
     u16 leftovers = ITEM_LEFTOVERS;
 
@@ -260,7 +260,7 @@ TEST("Zenmodeman: Merge guard: Restricted Mode item clause bags duplicate party 
     EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Invalid monotype save values decode as no monotype")
+TEST("Elastic-tests: Merge guard: Invalid monotype save values decode as no monotype")
 {
     VarSet(VAR_MONOTYPE, NUMBER_OF_MON_TYPES);
     EXPECT_EQ(GetMonoType(), TYPE_NONE);
@@ -268,7 +268,7 @@ TEST("Zenmodeman: Merge guard: Invalid monotype save values decode as no monotyp
     EXPECT_EQ(GetMonoType(), TYPE_NONE);
 }
 
-TEST("Zenmodeman: Merge guard: Item clause is inactive outside Restricted Mode")
+TEST("Elastic-tests: Merge guard: Item clause is inactive outside Restricted Mode")
 {
     u16 item = ITEM_LEFTOVERS;
 
@@ -284,7 +284,7 @@ TEST("Zenmodeman: Merge guard: Item clause is inactive outside Restricted Mode")
     EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
 }
 
-TEST("Zenmodeman: Merge guard: Restricted Mode item clause preserves unique held items")
+TEST("Elastic-tests: Merge guard: Restricted Mode item clause preserves unique held items")
 {
     u16 leftovers = ITEM_LEFTOVERS;
     u16 blackSludge = ITEM_BLACK_SLUDGE;
@@ -302,7 +302,7 @@ TEST("Zenmodeman: Merge guard: Restricted Mode item clause preserves unique held
     EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_BLACK_SLUDGE);
 }
 
-TEST("Zenmodeman: Merge guard: Item clause keeps the first of three duplicate items")
+TEST("Elastic-tests: Merge guard: Item clause keeps the first of three duplicate items")
 {
     u16 item = ITEM_LEFTOVERS;
 
@@ -322,7 +322,7 @@ TEST("Zenmodeman: Merge guard: Item clause keeps the first of three duplicate it
     EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 2));
 }
 
-TEST("Zenmodeman: Merge guard: Item clause ignores held items on eggs")
+TEST("Elastic-tests: Merge guard: Item clause ignores held items on eggs")
 {
     u16 item = ITEM_LEFTOVERS;
     u8 isEgg = TRUE;
@@ -340,7 +340,7 @@ TEST("Zenmodeman: Merge guard: Item clause ignores held items on eggs")
     EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
 }
 
-TEST("Zenmodeman: Merge guard: Reapplying item clause does not bag items twice")
+TEST("Elastic-tests: Merge guard: Reapplying item clause does not bag items twice")
 {
     u16 item = ITEM_LEFTOVERS;
 
@@ -358,7 +358,7 @@ TEST("Zenmodeman: Merge guard: Reapplying item clause does not bag items twice")
     EXPECT(!CheckBagHasItem(ITEM_LEFTOVERS, 2));
 }
 
-TEST("Zenmodeman: Merge guard: Party Tier Points equal the sum of member values")
+TEST("Elastic-tests: Merge guard: Party Tier Points equal the sum of member values")
 {
     ZeroPlayerPartyMons();
     CreateMon(&gPlayerParty[0], SPECIES_CHANSEY, 50, 0, OTID_STRUCT_PLAYER_ID);
@@ -367,7 +367,7 @@ TEST("Zenmodeman: Merge guard: Party Tier Points equal the sum of member values"
     EXPECT_EQ(CountPartyTierPoints(), GetMonTierPoints(&gPlayerParty[0]) + GetMonTierPoints(&gPlayerParty[1]));
 }
 
-TEST("Zenmodeman: Merge guard: Evolution Tier Point projection includes the rest of the party")
+TEST("Elastic-tests: Merge guard: Evolution Tier Point projection includes the rest of the party")
 {
     ZeroPlayerPartyMons();
     CreateMon(&gPlayerParty[0], SPECIES_HAPPINY, 30, 0, OTID_STRUCT_PLAYER_ID);
@@ -378,7 +378,7 @@ TEST("Zenmodeman: Merge guard: Evolution Tier Point projection includes the rest
               6 + GetMonTierPoints(&gPlayerParty[1]));
 }
 
-TEST("Zenmodeman: Merge guard: Ability Tier Point projection includes the rest of the party")
+TEST("Elastic-tests: Merge guard: Ability Tier Point projection includes the rest of the party")
 {
     u8 drizzleSlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DRIZZLE);
 
@@ -392,7 +392,7 @@ TEST("Zenmodeman: Merge guard: Ability Tier Point projection includes the rest o
               6 + GetMonTierPoints(&gPlayerParty[1]));
 }
 
-TEST("Zenmodeman: Merge guard: Empty parties have zero projected Tier Points")
+TEST("Elastic-tests: Merge guard: Empty parties have zero projected Tier Points")
 {
     ZeroPlayerPartyMons();
     gPlayerPartyCount = 0;
@@ -402,7 +402,7 @@ TEST("Zenmodeman: Merge guard: Empty parties have zero projected Tier Points")
     EXPECT_EQ(CalcTierPointsAfterAbilityChange(0, 0), 0);
 }
 
-TEST("Zenmodeman: Merge guard: Sawsbuck seasonal forms share Tier Points")
+TEST("Elastic-tests: Merge guard: Sawsbuck seasonal forms share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -412,7 +412,7 @@ TEST("Zenmodeman: Merge guard: Sawsbuck seasonal forms share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Vivillon patterns share Tier Points")
+TEST("Elastic-tests: Merge guard: Vivillon patterns share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -422,7 +422,7 @@ TEST("Zenmodeman: Merge guard: Vivillon patterns share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Silvally type forms share Tier Points")
+TEST("Elastic-tests: Merge guard: Silvally type forms share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -432,7 +432,7 @@ TEST("Zenmodeman: Merge guard: Silvally type forms share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Minior core forms share Tier Points")
+TEST("Elastic-tests: Merge guard: Minior core forms share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -442,7 +442,7 @@ TEST("Zenmodeman: Merge guard: Minior core forms share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Alcremie decorations share Tier Points")
+TEST("Elastic-tests: Merge guard: Alcremie decorations share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -452,7 +452,7 @@ TEST("Zenmodeman: Merge guard: Alcremie decorations share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: No monotype does not seed resist berries")
+TEST("Elastic-tests: Merge guard: No monotype does not seed resist berries")
 {
     VarSet(VAR_MONOTYPE, 0);
     PopulateMonotypeResistBerriesInPC();
@@ -462,7 +462,7 @@ TEST("Zenmodeman: Merge guard: No monotype does not seed resist berries")
     EXPECT(!CheckPCHasItem(ITEM_CHOPLE_BERRY, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Evolution projection ignores egg teammates")
+TEST("Elastic-tests: Merge guard: Evolution projection ignores egg teammates")
 {
     u8 isEgg = TRUE;
 
@@ -475,7 +475,7 @@ TEST("Zenmodeman: Merge guard: Evolution projection ignores egg teammates")
     EXPECT_EQ(CalcTierPointsAfterEvolution(0, SPECIES_CHANSEY), 6);
 }
 
-TEST("Zenmodeman: Merge guard: Ability projection ignores egg teammates")
+TEST("Elastic-tests: Merge guard: Ability projection ignores egg teammates")
 {
     u8 isEgg = TRUE;
     u8 drizzleSlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DRIZZLE);
@@ -490,7 +490,7 @@ TEST("Zenmodeman: Merge guard: Ability projection ignores egg teammates")
     EXPECT_EQ(CalcTierPointsAfterAbilityChange(0, drizzleSlot), 6);
 }
 
-TEST("Zenmodeman: Merge guard: Item clause ignores empty party slots")
+TEST("Elastic-tests: Merge guard: Item clause ignores empty party slots")
 {
     u16 item = ITEM_LEFTOVERS;
 
@@ -506,7 +506,7 @@ TEST("Zenmodeman: Merge guard: Item clause ignores empty party slots")
     EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
 }
 
-TEST("Zenmodeman: Merge guard: Egg items do not reserve an item-clause slot")
+TEST("Elastic-tests: Merge guard: Egg items do not reserve an item-clause slot")
 {
     u16 item = ITEM_LEFTOVERS;
     u8 isEgg = TRUE;
@@ -524,7 +524,7 @@ TEST("Zenmodeman: Merge guard: Egg items do not reserve an item-clause slot")
     EXPECT_EQ(GetMonData(&gPlayerParty[1], MON_DATA_HELD_ITEM), ITEM_LEFTOVERS);
 }
 
-TEST("Zenmodeman: Merge guard: Scatterbug patterns share Tier Points")
+TEST("Elastic-tests: Merge guard: Scatterbug patterns share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -534,7 +534,7 @@ TEST("Zenmodeman: Merge guard: Scatterbug patterns share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Spewpa patterns share Tier Points")
+TEST("Elastic-tests: Merge guard: Spewpa patterns share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -544,7 +544,7 @@ TEST("Zenmodeman: Merge guard: Spewpa patterns share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Squawkabilly colors share Tier Points")
+TEST("Elastic-tests: Merge guard: Squawkabilly colors share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -554,7 +554,7 @@ TEST("Zenmodeman: Merge guard: Squawkabilly colors share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Pumpkaboo sizes share Tier Points")
+TEST("Elastic-tests: Merge guard: Pumpkaboo sizes share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -564,7 +564,7 @@ TEST("Zenmodeman: Merge guard: Pumpkaboo sizes share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Gourgeist sizes share Tier Points")
+TEST("Elastic-tests: Merge guard: Gourgeist sizes share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -574,7 +574,7 @@ TEST("Zenmodeman: Merge guard: Gourgeist sizes share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Flabebe colors share Tier Points")
+TEST("Elastic-tests: Merge guard: Flabebe colors share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -584,7 +584,7 @@ TEST("Zenmodeman: Merge guard: Flabebe colors share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Floette colors share Tier Points")
+TEST("Elastic-tests: Merge guard: Floette colors share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -594,7 +594,7 @@ TEST("Zenmodeman: Merge guard: Floette colors share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Florges colors share Tier Points")
+TEST("Elastic-tests: Merge guard: Florges colors share Tier Points")
 {
     struct Pokemon base;
     struct Pokemon form;
@@ -604,7 +604,7 @@ TEST("Zenmodeman: Merge guard: Florges colors share Tier Points")
     EXPECT_EQ(GetMonTierPoints(&base), GetMonTierPoints(&form));
 }
 
-TEST("Zenmodeman: Merge guard: Politoed without Drizzle keeps its base Tier Points")
+TEST("Elastic-tests: Merge guard: Politoed without Drizzle keeps its base Tier Points")
 {
     struct Pokemon mon;
     u8 abilitySlot = FindAbilitySlot(SPECIES_POLITOED, ABILITY_DAMP);
@@ -615,7 +615,7 @@ TEST("Zenmodeman: Merge guard: Politoed without Drizzle keeps its base Tier Poin
     EXPECT_EQ(GetMonTierPoints(&mon), 3);
 }
 
-TEST("Zenmodeman: Merge guard: Pelipper with Drizzle costs six Tier Points")
+TEST("Elastic-tests: Merge guard: Pelipper with Drizzle costs six Tier Points")
 {
     struct Pokemon mon;
     u8 abilitySlot = FindAbilitySlot(SPECIES_PELIPPER, ABILITY_DRIZZLE);
@@ -626,7 +626,7 @@ TEST("Zenmodeman: Merge guard: Pelipper with Drizzle costs six Tier Points")
     EXPECT_EQ(GetMonTierPoints(&mon), 6);
 }
 
-TEST("Zenmodeman: Merge guard: Vulpix with Drought drops after badge eight")
+TEST("Elastic-tests: Merge guard: Vulpix with Drought drops after badge eight")
 {
     struct Pokemon mon;
     u8 abilitySlot = FindAbilitySlot(SPECIES_VULPIX, ABILITY_DROUGHT);
@@ -639,14 +639,14 @@ TEST("Zenmodeman: Merge guard: Vulpix with Drought drops after badge eight")
     EXPECT_EQ(GetMonTierPoints(&mon), 5);
 }
 
-TEST("Zenmodeman: Merge guard: EV cap uses the highest earned badge without requiring earlier flags")
+TEST("Elastic-tests: Merge guard: EV cap uses the highest earned badge without requiring earlier flags")
 {
     FlagSet(FLAG_EV_MODE);
     FlagSet(FLAG_BADGE06_GET);
     EXPECT_EQ(GetEVStatCap(), 228);
 }
 
-TEST("Zenmodeman: Merge guard: Electric monotype seeds only its Ground resist berry")
+TEST("Elastic-tests: Merge guard: Electric monotype seeds only its Ground resist berry")
 {
     VarSet(VAR_MONOTYPE, TYPE_ELECTRIC - 1);
     PopulateMonotypeResistBerriesInPC();
@@ -656,7 +656,7 @@ TEST("Zenmodeman: Merge guard: Electric monotype seeds only its Ground resist be
     EXPECT(!CheckPCHasItem(ITEM_YACHE_BERRY, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Normal monotype seeds only its Fighting resist berry")
+TEST("Elastic-tests: Merge guard: Normal monotype seeds only its Fighting resist berry")
 {
     VarSet(VAR_MONOTYPE, TYPE_NORMAL);
     PopulateMonotypeResistBerriesInPC();
@@ -665,7 +665,7 @@ TEST("Zenmodeman: Merge guard: Normal monotype seeds only its Fighting resist be
     EXPECT(!CheckPCHasItem(ITEM_COLBUR_BERRY, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Dragon monotype seeds Ice Dragon and Fairy resist berries")
+TEST("Elastic-tests: Merge guard: Dragon monotype seeds Ice Dragon and Fairy resist berries")
 {
     VarSet(VAR_MONOTYPE, TYPE_DRAGON - 1);
     PopulateMonotypeResistBerriesInPC();
@@ -676,7 +676,7 @@ TEST("Zenmodeman: Merge guard: Dragon monotype seeds Ice Dragon and Fairy resist
     EXPECT(!CheckPCHasItem(ITEM_CHOPLE_BERRY, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Ghost monotype seeds Ghost and Dark resist berries")
+TEST("Elastic-tests: Merge guard: Ghost monotype seeds Ghost and Dark resist berries")
 {
     VarSet(VAR_MONOTYPE, TYPE_GHOST);
     PopulateMonotypeResistBerriesInPC();
@@ -686,7 +686,7 @@ TEST("Zenmodeman: Merge guard: Ghost monotype seeds Ghost and Dark resist berrie
     EXPECT(!CheckPCHasItem(ITEM_CHOPLE_BERRY, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Restricted item clause handles two duplicate groups independently")
+TEST("Elastic-tests: Merge guard: Restricted item clause handles two duplicate groups independently")
 {
     u16 leftovers = ITEM_LEFTOVERS;
     u16 blackSludge = ITEM_BLACK_SLUDGE;
@@ -710,7 +710,7 @@ TEST("Zenmodeman: Merge guard: Restricted item clause handles two duplicate grou
     EXPECT(CheckBagHasItem(ITEM_BLACK_SLUDGE, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Restricted item clause detects duplicates separated by an egg")
+TEST("Elastic-tests: Merge guard: Restricted item clause detects duplicates separated by an egg")
 {
     u16 item = ITEM_LEFTOVERS;
     u8 isEgg = TRUE;
@@ -731,13 +731,13 @@ TEST("Zenmodeman: Merge guard: Restricted item clause detects duplicates separat
     EXPECT(CheckBagHasItem(ITEM_LEFTOVERS, 1));
 }
 
-TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects null Pokemon")
+TEST("Elastic-tests: Merge guard: Free tutor eligibility rejects null Pokemon")
 {
     EXPECT(!IsMonWithinMaxTierPoints(NULL, CENTER_TUTOR_MAX_TIER_POINTS));
     EXPECT(!IsMonWithinMaxTierPoints(NULL, MOVE_RELEARNER_MAX_TIER_POINTS));
 }
 
-TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects eggs")
+TEST("Elastic-tests: Merge guard: Free tutor eligibility rejects eggs")
 {
     struct Pokemon mon;
     u8 isEgg = TRUE;
@@ -748,7 +748,7 @@ TEST("Zenmodeman: Merge guard: Free tutor eligibility rejects eggs")
     EXPECT(!IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
 }
 
-TEST("Zenmodeman: Ability tutor offers and applies either distinct niche ability")
+TEST("Elastic-tests: Ability tutor offers and applies either distinct niche ability")
 {
     u8 abilitySlot = FindAbilitySlot(SPECIES_LITLEO, ABILITY_RIVALRY);
 
@@ -766,7 +766,7 @@ TEST("Zenmodeman: Ability tutor offers and applies either distinct niche ability
     EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_MOXIE);
 }
 
-TEST("Zenmodeman: Ability tutor applies its only option regardless of stale menu result")
+TEST("Elastic-tests: Ability tutor applies its only option regardless of stale menu result")
 {
     u8 abilitySlot = FindAbilitySlot(SPECIES_FLETCHLING, ABILITY_GALE_WINGS);
 
@@ -783,7 +783,7 @@ TEST("Zenmodeman: Ability tutor applies its only option regardless of stale menu
     EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_BIG_PECKS);
 }
 
-TEST("Zenmodeman: Ability tutor leaves Pokemon with no niche option unchanged")
+TEST("Elastic-tests: Ability tutor leaves Pokemon with no niche option unchanged")
 {
     u8 abilitySlot = FindAbilitySlot(SPECIES_BULBASAUR, ABILITY_OVERGROW);
 
@@ -798,7 +798,7 @@ TEST("Zenmodeman: Ability tutor leaves Pokemon with no niche option unchanged")
     EXPECT_EQ(GetMonAbility(&gPlayerParty[0]), ABILITY_OVERGROW);
 }
 
-TEST("Zenmodeman: Resource free tutors account for Beedrill's Mega potential")
+TEST("Elastic-tests: Resource free tutors account for Beedrill's Mega potential")
 {
     struct Pokemon mon;
 
@@ -810,7 +810,7 @@ TEST("Zenmodeman: Resource free tutors account for Beedrill's Mega potential")
     EXPECT(!IsMonWithinMaxTierPoints(&mon, MOVE_RELEARNER_MAX_TIER_POINTS));
 }
 
-TEST("Zenmodeman: Resource free tutors inspect stronger future evolutions")
+TEST("Elastic-tests: Resource free tutors inspect stronger future evolutions")
 {
     struct Pokemon mon;
 
@@ -827,7 +827,7 @@ TEST("Zenmodeman: Resource free tutors inspect stronger future evolutions")
     EXPECT(!IsMonWithinMaxTierPoints(&mon, 1));
 }
 
-TEST("Zenmodeman: MaxTierPoints excludes Shedinja only from Nincada evolution potential")
+TEST("Elastic-tests: MaxTierPoints excludes Shedinja only from Nincada evolution potential")
 {
     struct Pokemon mon;
 
@@ -837,7 +837,7 @@ TEST("Zenmodeman: MaxTierPoints excludes Shedinja only from Nincada evolution po
     EXPECT_EQ(GetMonMaxTierPoints(&mon), 6);
 }
 
-TEST("Zenmodeman: MaxTierPoints checks hidden abilities without changing the Pokemon")
+TEST("Elastic-tests: MaxTierPoints checks hidden abilities without changing the Pokemon")
 {
     struct Pokemon mon;
     struct Pokemon original;
@@ -850,7 +850,7 @@ TEST("Zenmodeman: MaxTierPoints checks hidden abilities without changing the Pok
     EXPECT_EQ(memcmp(&mon, &original, sizeof(mon)), 0);
 }
 
-TEST("Zenmodeman: MaxTierPoints checks every evolution branch")
+TEST("Elastic-tests: MaxTierPoints checks every evolution branch")
 {
     struct Pokemon mon;
 
@@ -859,7 +859,7 @@ TEST("Zenmodeman: MaxTierPoints checks every evolution branch")
     EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
 }
 
-TEST("Zenmodeman: MaxTierPoints cannot be lower than current Tier Points")
+TEST("Elastic-tests: MaxTierPoints cannot be lower than current Tier Points")
 {
     struct Pokemon mon;
 
@@ -868,7 +868,7 @@ TEST("Zenmodeman: MaxTierPoints cannot be lower than current Tier Points")
     EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
 }
 
-TEST("Zenmodeman: MaxTierPoints includes terminal Mega Evolutions")
+TEST("Elastic-tests: MaxTierPoints includes terminal Mega Evolutions")
 {
     struct Pokemon mon;
 
@@ -877,7 +877,7 @@ TEST("Zenmodeman: MaxTierPoints includes terminal Mega Evolutions")
     EXPECT_EQ(GetMonMaxTierPoints(&mon), 4);
 }
 
-TEST("Zenmodeman: Restricted teaching unlocks at the first level and agrees for boxed Pokemon")
+TEST("Elastic-tests: Restricted teaching unlocks at the first level and agrees for boxed Pokemon")
 {
     struct Pokemon mon;
     const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(SPECIES_VULPIX);
@@ -898,7 +898,7 @@ TEST("Zenmodeman: Restricted teaching unlocks at the first level and agrees for 
     EXPECT(DoesBoxMonMeetRestrictedTeachableMoveLevelCheck(&mon.box, MOVE_FLAMETHROWER));
 }
 
-TEST("Zenmodeman: Restricted teaching leaves low MaxTierPoints Pokemon unrestricted")
+TEST("Elastic-tests: Restricted teaching leaves low MaxTierPoints Pokemon unrestricted")
 {
     struct Pokemon mon;
 

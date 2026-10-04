@@ -6,7 +6,7 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_DRAIN_DOUSE) == EFFECT_DRAIN_DOUSE);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse inflicts a status that causes attacks to heal percentage of damage dealt")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse inflicts a status that causes attacks to heal percentage of damage dealt")
 {
     s16 damage;
     s16 healed;
@@ -30,7 +30,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse inflicts a status that causes attack
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse healing is inverted when attacking a Liquid Ooze Pokémon")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse healing is inverted when attacking a Liquid Ooze Pokémon")
 {
     s16 targetDamage;
     s16 attackerDamage;
@@ -54,7 +54,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse healing is inverted when attacking a
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse heals for two thirds when damaging a Poison-type target")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse heals for two thirds when damaging a Poison-type target")
 {
     s16 damage;
     s16 healed;
@@ -73,7 +73,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse heals for two thirds when damaging a
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal when the affected attacker deals no damage")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse does not heal when the affected attacker deals no damage")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -87,7 +87,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal when the affected atta
 }
 
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse healing stacks with a move's native drain")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse healing stacks with a move's native drain")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_ABSORB) == EFFECT_ABSORB);
@@ -102,7 +102,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse healing stacks with a move's native 
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse heals separately for each target hit by a spread move")
+DOUBLE_BATTLE_TEST("Elastic-tests: Drain Douse heals separately for each target hit by a spread move")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
@@ -119,7 +119,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse heals separately for each target hit
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse handles normal and Liquid Ooze spread targets independently")
+DOUBLE_BATTLE_TEST("Elastic-tests: Drain Douse handles normal and Liquid Ooze spread targets independently")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
@@ -136,7 +136,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse handles normal and Liquid Ooze sprea
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse healing only uses damage from the affected attacker's move")
+DOUBLE_BATTLE_TEST("Elastic-tests: Drain Douse healing only uses damage from the affected attacker's move")
 {
     s16 damage;
     s16 healed;
@@ -161,7 +161,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse healing only uses damage from the af
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse spread healing ignores a protected target")
+DOUBLE_BATTLE_TEST("Elastic-tests: Drain Douse spread healing ignores a protected target")
 {
     s16 damage;
     s16 healed;
@@ -185,7 +185,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse spread healing ignores a protected t
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse at full HP reports the drain without increasing HP")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse at full HP reports the drain without increasing HP")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -200,7 +200,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse at full HP reports the drain without
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse Liquid Ooze still damages an attacker at full HP")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse Liquid Ooze still damages an attacker at full HP")
 {
     GIVEN {
         PLAYER(SPECIES_TENTACOOL) { Ability(ABILITY_LIQUID_OOZE); }
@@ -216,7 +216,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse Liquid Ooze still damages an attacke
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse heals for half the damage dealt to a Water-type target")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse heals for half the damage dealt to a Water-type target")
 {
     GIVEN {
         PLAYER(SPECIES_SQUIRTLE) { HP(200); MaxHP(200); }
@@ -230,7 +230,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse heals for half the damage dealt to a
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse uses the Poison rate for a Poison Water target")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse uses the Poison rate for a Poison Water target")
 {
     GIVEN {
         PLAYER(SPECIES_TENTACOOL) { HP(200); MaxHP(200); Ability(ABILITY_CLEAR_BODY); }
@@ -244,7 +244,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse uses the Poison rate for a Poison Wa
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse receives the custom 40 percent Big Root boost")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse receives the custom 40 percent Big Root boost")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
@@ -259,7 +259,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse receives the custom 40 percent Big R
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Heal Block suppresses Drain Douse recovery")
+SINGLE_BATTLE_TEST("Elastic-tests: Heal Block suppresses Drain Douse recovery")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_HEAL_BLOCK) == EFFECT_HEAL_BLOCK);
@@ -273,7 +273,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Heal Block suppresses Drain Douse recovery")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Magic Guard blocks Drain Douse Liquid Ooze damage")
+SINGLE_BATTLE_TEST("Elastic-tests: Magic Guard blocks Drain Douse Liquid Ooze damage")
 {
     GIVEN {
         PLAYER(SPECIES_TENTACOOL) { Ability(ABILITY_LIQUID_OOZE); }
@@ -286,7 +286,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Magic Guard blocks Drain Douse Liquid Ooze damag
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse only heals from the HP removed by a lethal hit")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse only heals from the HP removed by a lethal hit")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { HP(10); MaxHP(200); }
@@ -300,7 +300,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse only heals from the HP removed by a 
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse and native drain both invert against Liquid Ooze")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse and native drain both invert against Liquid Ooze")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_ABSORB) == EFFECT_ABSORB);
@@ -315,7 +315,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse and native drain both invert against
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse fails when the target is already doused")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse fails when the target is already doused")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -329,7 +329,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse fails when the target is already dou
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse is cleared when the affected battler switches out")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse is cleared when the affected battler switches out")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
@@ -345,7 +345,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse is cleared when the affected battler
     }
 }
 
-DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse does not drain damage dealt to the attacker's ally")
+DOUBLE_BATTLE_TEST("Elastic-tests: Drain Douse does not drain damage dealt to the attacker's ally")
 {
     GIVEN {
         PLAYER(SPECIES_GASTLY);
@@ -361,7 +361,7 @@ DOUBLE_BATTLE_TEST("Zenmodeman: Drain Douse does not drain damage dealt to the a
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal from damage dealt to a Substitute")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse does not heal from damage dealt to a Substitute")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); Speed(200); }
@@ -374,7 +374,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal from damage dealt to a
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal from a Wonder Guard immunity")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse does not heal from a Wonder Guard immunity")
 {
     GIVEN {
         PLAYER(SPECIES_SHEDINJA) { Ability(ABILITY_WONDER_GUARD); }
@@ -387,7 +387,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse does not heal from a Wonder Guard im
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Drain Douse heals after a multi-hit attack")
+SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse heals after a multi-hit attack")
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }

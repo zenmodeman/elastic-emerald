@@ -39,14 +39,14 @@ static void CreateDamagedStatusedPlayerMon(void)
     TRAINER_BATTLE_PARAM.opponentB = TRAINER_NONE;
 }
 
-TEST("Zenmodeman: Route 109: Cassia is a route boss without classifying ordinary beach trainers")
+TEST("Elastic-tests: Route 109: Cassia is a route boss without classifying ordinary beach trainers")
 {
     EXPECT(IsRouteBossTrainer(TRAINER_CASSIA));
     EXPECT(!IsRouteBossTrainer(TRAINER_EDMOND));
     EXPECT(!IsRouteBossTrainer(TRAINER_RICKY_1));
 }
 
-TEST("Zenmodeman: Route 109: rival progression raises every beach trainer by three levels")
+TEST("Elastic-tests: Route 109: rival progression raises every beach trainer by three levels")
 {
     static const u16 trainers[] = {
         TRAINER_LOLA_1, TRAINER_RICKY_1, TRAINER_CASSIA, TRAINER_SIMON,
@@ -63,13 +63,13 @@ TEST("Zenmodeman: Route 109: rival progression raises every beach trainer by thr
         EXPECT_EQ(GetTrainerLevelModifier(trainers[i]), 3);
 }
 
-TEST("Zenmodeman: Route 109: unrelated trainers do not inherit beach level scaling")
+TEST("Elastic-tests: Route 109: unrelated trainers do not inherit beach level scaling")
 {
     FlagSet(FLAG_RIVAL_110_DEFEATED);
     EXPECT_EQ(GetTrainerLevelModifier(TRAINER_ROXANNE_1), 0);
 }
 
-TEST("Zenmodeman: Route 109: Cindy badge scaling is cumulative")
+TEST("Elastic-tests: Route 109: Cindy badge scaling is cumulative")
 {
     EXPECT_EQ(GetTrainerLevelModifier(TRAINER_CINDY_1), 0);
     FlagSet(FLAG_BADGE01_GET);
@@ -78,7 +78,7 @@ TEST("Zenmodeman: Route 109: Cindy badge scaling is cumulative")
     EXPECT_EQ(GetTrainerLevelModifier(TRAINER_CINDY_1), 7);
 }
 
-TEST("Zenmodeman: Route 109: Darren progression scales the connected trainer group")
+TEST("Elastic-tests: Route 109: Darren progression scales the connected trainer group")
 {
     FlagSet(TRAINER_FLAGS_START + TRAINER_DARREN);
     EXPECT_EQ(GetTrainerLevelModifier(TRAINER_LYLE), 2);
@@ -86,7 +86,7 @@ TEST("Zenmodeman: Route 109: Darren progression scales the connected trainer gro
     EXPECT_EQ(GetTrainerLevelModifier(TRAINER_AURELIO), 2);
 }
 
-TEST("Zenmodeman: Route 109: rival and Champion milestones use the revised level caps")
+TEST("Elastic-tests: Route 109: rival and Champion milestones use the revised level caps")
 {
     FlagSet(FLAG_LEVEL_CAP);
     FlagSet(TRAINER_FLAGS_START + TRAINER_TIANA);
@@ -106,7 +106,7 @@ TEST("Zenmodeman: Route 109: rival and Champion milestones use the revised level
     EXPECT_EQ(GetCurrentLevelCap(TRUE), 70);
 }
 
-TEST("Zenmodeman: Route 109: Edmond reward detection distinguishes two-opponent battles")
+TEST("Elastic-tests: Route 109: Edmond reward detection distinguishes two-opponent battles")
 {
     Test_SetTrainerBattleHadTwoOpponents(FALSE);
     gBattleTypeFlags = 0;
@@ -128,7 +128,7 @@ TEST("Zenmodeman: Route 109: Edmond reward detection distinguishes two-opponent 
     EXPECT_EQ(gSpecialVar_Result, FALSE);
 }
 
-TEST("Zenmodeman: Route 109 Fly failsafe returns stranded Briney to Dewford")
+TEST("Elastic-tests: Route 109 Fly failsafe returns stranded Briney to Dewford")
 {
     struct RegionMap regionMap = { .mapSecId = MAPSEC_LITTLEROOT_TOWN };
 
@@ -147,7 +147,7 @@ TEST("Zenmodeman: Route 109 Fly failsafe returns stranded Briney to Dewford")
     EXPECT_EQ(VarGet(VAR_BRINEY_LOCATION), TEST_BRINEY_LOCATION_DEWFORD);
 }
 
-TEST("Zenmodeman: Route 109 Fly failsafe does not move Briney after Slateport")
+TEST("Elastic-tests: Route 109 Fly failsafe does not move Briney after Slateport")
 {
     struct RegionMap regionMap = { .mapSecId = MAPSEC_LITTLEROOT_TOWN };
 
@@ -161,7 +161,7 @@ TEST("Zenmodeman: Route 109 Fly failsafe does not move Briney after Slateport")
     EXPECT(FlagGet(FLAG_HIDE_MR_BRINEY_DEWFORD_TOWN));
 }
 
-TEST("Zenmodeman: Route 109 Fly failsafe ignores flights from other maps")
+TEST("Elastic-tests: Route 109 Fly failsafe ignores flights from other maps")
 {
     struct RegionMap regionMap = { .mapSecId = MAPSEC_LITTLEROOT_TOWN };
 
@@ -174,7 +174,7 @@ TEST("Zenmodeman: Route 109 Fly failsafe ignores flights from other maps")
     EXPECT(FlagGet(FLAG_HIDE_MR_BRINEY_DEWFORD_TOWN));
 }
 
-TEST("Zenmodeman: Trainer healing: route bosses fully heal regardless of trainer class")
+TEST("Elastic-tests: Trainer healing: route bosses fully heal regardless of trainer class")
 {
     CreateDamagedStatusedPlayerMon();
     TRAINER_BATTLE_PARAM.opponentA = TRAINER_CASSIA;
@@ -184,7 +184,7 @@ TEST("Zenmodeman: Trainer healing: route bosses fully heal regardless of trainer
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_STATUS), STATUS1_NONE);
 }
 
-TEST("Zenmodeman: Trainer healing: professional trainer classes fully heal")
+TEST("Elastic-tests: Trainer healing: professional trainer classes fully heal")
 {
     CreateDamagedStatusedPlayerMon();
     TRAINER_BATTLE_PARAM.opponentA = TRAINER_ROXANNE_1;
@@ -196,7 +196,7 @@ TEST("Zenmodeman: Trainer healing: professional trainer classes fully heal")
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_HP), GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_MAX_HP));
 }
 
-TEST("Zenmodeman: Trainer healing: status-healing classes preserve HP")
+TEST("Elastic-tests: Trainer healing: status-healing classes preserve HP")
 {
     CreateDamagedStatusedPlayerMon();
     TRAINER_BATTLE_PARAM.opponentA = TRAINER_PATRICIA;
@@ -206,7 +206,7 @@ TEST("Zenmodeman: Trainer healing: status-healing classes preserve HP")
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_STATUS), STATUS1_NONE);
 }
 
-TEST("Zenmodeman: Trainer healing: ordinary trainer classes do not heal")
+TEST("Elastic-tests: Trainer healing: ordinary trainer classes do not heal")
 {
     CreateDamagedStatusedPlayerMon();
     TRAINER_BATTLE_PARAM.opponentA = TRAINER_CALVIN_1;
@@ -216,7 +216,7 @@ TEST("Zenmodeman: Trainer healing: ordinary trainer classes do not heal")
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_STATUS), STATUS1_BURN);
 }
 
-TEST("Zenmodeman: Trainer healing: a full-healing second opponent takes precedence")
+TEST("Elastic-tests: Trainer healing: a full-healing second opponent takes precedence")
 {
     CreateDamagedStatusedPlayerMon();
     TRAINER_BATTLE_PARAM.opponentA = TRAINER_CALVIN_1;
@@ -226,7 +226,7 @@ TEST("Zenmodeman: Trainer healing: a full-healing second opponent takes preceden
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_STATUS), STATUS1_NONE);
 }
 
-TEST("Zenmodeman: Trainer healing: post-battle sleep rerolls without changing other statuses")
+TEST("Elastic-tests: Trainer healing: post-battle sleep rerolls without changing other statuses")
 {
     u32 sleep = STATUS1_SLEEP_TURN(1);
     u32 poison = STATUS1_POISON;

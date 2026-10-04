@@ -24,7 +24,7 @@ SINGLE_BATTLE_TEST("Pickup grants an item used by another Pokémon")
     }
 }
 
-WILD_BATTLE_TEST("Zenmodeman: Pickup cannot transfer a wild Pokemon's consumed item to the player in Resource Mode")
+WILD_BATTLE_TEST("Elastic-tests: Pickup cannot transfer a wild Pokemon's consumed item to the player in Resource Mode")
 {
     GIVEN {
         FlagSet(FLAG_RESOURCE_MODE);

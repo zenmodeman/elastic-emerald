@@ -15,7 +15,7 @@ SINGLE_BATTLE_TEST("Lucky Chant prevents critical hits on the user's side")
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Lucky Chant gains a turn when used after all opponents have acted")
+SINGLE_BATTLE_TEST("Elastic-tests: Lucky Chant gains a turn when used after all opponents have acted")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_LUCKY_CHANT) == EFFECT_LUCKY_CHANT);
@@ -28,7 +28,7 @@ SINGLE_BATTLE_TEST("Zenmodeman: Lucky Chant gains a turn when used after all opp
     }
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Lucky Chant is extended by three turns by Dedicated")
+SINGLE_BATTLE_TEST("Elastic-tests: Lucky Chant is extended by three turns by Dedicated")
 {
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_LUCKY_CHANT) == EFFECT_LUCKY_CHANT);

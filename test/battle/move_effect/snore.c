@@ -6,7 +6,7 @@ ASSUMPTIONS
     ASSUME(GetMoveEffect(MOVE_SNORE) == EFFECT_SNORE);
 }
 
-SINGLE_BATTLE_TEST("Zenmodeman: Snorlax deals one and a half times damage with Snore")
+SINGLE_BATTLE_TEST("Elastic-tests: Snorlax deals one and a half times damage with Snore")
 {
     GIVEN {
         PLAYER(SPECIES_SNORLAX) { Status1(STATUS1_SLEEP); Attack(100); }

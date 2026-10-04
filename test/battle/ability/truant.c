@@ -1,7 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 
-SINGLE_BATTLE_TEST("Zenmodeman: Truant loafing powers the next Stomping Tantrum")
+SINGLE_BATTLE_TEST("Elastic-tests: Truant loafing powers the next Stomping Tantrum")
 {
     s16 damage[2];
 
