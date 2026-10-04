@@ -154,6 +154,19 @@ bool32 SetUpFieldMove_Dive(void);
 bool32 SetUpFieldMove_RockClimb(void);
 
 #if TESTING
+struct TestPartyMenuActions
+{
+    u8 count;
+    u8 fieldMoveCount;
+    bool8 opensRelearnerDirectly;
+    bool8 hasRelearner;
+    bool8 hasSummary;
+    bool8 hasSwitch;
+    bool8 hasItem;
+    bool8 cancelIsLast;
+};
+struct TestPartyMenuActions Test_GetPartyMenuActions(u8 slotId);
+bool32 Test_PreparePartyMoveRelearner(u8 slotId);
 s8 Test_UpdatePartySelectionSingleLayout(s8 slotId, s8 movementDir, bool8 chooseHalf, u8 lastSelectedSlot);
 bool32 Test_CanUseLevelUpCandy(u32 level);
 #endif

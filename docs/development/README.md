@@ -1,6 +1,12 @@
 # Elastic Emerald development notes
 
-I keep these notes as a reference for maintaining Elastic Emerald. The [feature history](../feature-history.md) connects the major changes to their commits, while the [custom feature reference](feature-reference.md) records source symbols and integration details. The [gameplay reference](../gameplay/README.md) describes the player-facing rules.
+I keep these notes as a reference for maintaining Elastic Emerald.
+
+- [Feature reference](feature-reference.md): high-level current functionality and new bugfixes, with useful source anchors. Update the affected feature when behavior changes; keep commit specifications, release chronology, and historical test/build reports in the history.
+- [Feature history](../feature-history.md): implementation commits and their specifications, including commits that repair breaking behavior. Record the cause and resulting repair when known. Use **Newest — uncommitted** for pending working-tree changes, then replace it with the actual commit ID after committing. Committed recent changes always retain their commit IDs.
+- [Gameplay reference](../gameplay/README.md): player-facing rules.
+
+When adding functionality or fixing a bug, update the feature reference's current behavior and the feature history's commit or pending entry as appropriate. Do not treat historical verification results as validation of the current working tree. Detailed source/API maintenance procedures belong in the topic guides below.
 
 ## Topics
 

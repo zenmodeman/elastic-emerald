@@ -118,14 +118,14 @@ def combine_moves(species: str, games: dict[str, dict]) -> list[dict[str, object
         combined.append(
             {
                 "move": move,
-                "average_level": average,
                 "minimum_level": min(levels),
+                "average_level": average,
                 "maximum_level": max(levels),
                 "appearances": len(entries),
                 "games": [{"game": game, "level": level} for game, level in entries],
             }
         )
-    return sorted(combined, key=lambda item: (item["average_level"], item["move"]))
+    return sorted(combined, key=lambda item: (item["minimum_level"], item["average_level"], item["move"]))
 
 
 def build_comparisons(

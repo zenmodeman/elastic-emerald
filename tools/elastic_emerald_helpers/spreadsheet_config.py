@@ -2243,8 +2243,8 @@ split_info = [
     {"num_badges": 5, "min_level": 37, "max_level": 42, "column": "I"},
     {"num_badges": 6, "min_level": 43, "max_level": 50, "column": "J"},
     {"num_badges": 7, "min_level": 51, "max_level": 58, "column": "K"},
-    {"num_badges": 8, "min_level": 59, "max_level": 67, "column": "L"},
-    {"num_badges": 9, "min_level": 68, "max_level": 100, "column": "M"},
+    {"num_badges": 8, "min_level": 59, "max_level": 70, "column": "L"},
+    {"num_badges": 9, "min_level": 71, "max_level": 100, "column": "M"},
 ]
 
 

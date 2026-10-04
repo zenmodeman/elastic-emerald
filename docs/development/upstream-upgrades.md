@@ -32,3 +32,34 @@ Some apparent anomalies are deliberate. Tera Orb charged/no-cost flags share an 
 ## Documentation coverage
 
 I distinguish original feature commits, redesigns, and regression repairs. The documented boundary advances with reviewed changes, not merely because a newer documentation commit exists. Pending work and unresolved questions remain explicit, as do the checks actually performed.
+
+## Source paths to review during upgrades
+
+I trace an affected system through data, prototypes, save flags/vars, scripts, UI, AI calculations, and tests. The complete runtime path matters because a surviving declaration can conceal a lost implementation hook. My usual resolution retains Elastic Emerald behavior on current upstream APIs, with static review first and builds handled separately.
+
+High-risk files that repeatedly contain local behavior:
+
+- `src/pokemon.c`
+- `include/pokemon.h`
+- `src/battle_terastal.c`
+- `src/battle_ai_main.c`
+- `src/battle_ai_util.c`
+- `include/battle_ai_util.h`
+- `src/battle_ai_switch.c` and `src/battle_ai_items.c`
+- `src/battle_util.c`
+- `src/battle_script_commands.c`
+- `data/battle_scripts_1.s`
+- `src/wild_encounter.c`
+- `src/pokemon_storage_system.c`
+- `src/evolution_scene.c`
+- `src/script_pokemon_util.c`
+- `src/party_menu.c`
+- `src/pokemon_summary_screen.c`
+- `src/data/moves_info.h`
+- `src/data/pokemon/center_tutor_moves.h`
+- `src/data/pokemon/teachable_learnsets.h`
+- `src/data/pokemon/level_up_learnsets/gen_9.h`
+- `src/data/trainers.party`
+- `src/data/trainers.h`
+- `src/data/wild_encounters.json`
+- `data/maps/*/scripts.pory`

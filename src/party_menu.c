@@ -4,6 +4,8 @@
 #include "battle_anim.h"
 #include "battle_controllers.h"
 #include "battle_gfx_sfx_util.h"
+#include "battle_factory.h"
+#include "battle_tent.h"
 #include "battle_interface.h"
 #include "battle_pike.h"
 #include "battle_pyramid.h"
@@ -101,6 +103,7 @@ enum {
     MENU_REGISTER,
     MENU_TRADE1,
     MENU_TRADE2,
+    MENU_RELEARN_MOVES,
     MENU_TOSS,
     MENU_CATALOG_BULB,
     MENU_CATALOG_OVEN,
@@ -185,7 +188,8 @@ struct PartyMenuInternal
     u32 spriteIdCancelPokeball:7;
     u32 messageId:14;
     u8 windowId[3];
-    u8 actions[8];
+    // Summary, relearner, four field moves, switch, item/mail, cancel.
+    u8 actions[MAX_MON_MOVES + 5];
     u8 numActions;
     // In vanilla Emerald, only the first 0xB0 hwords (0x160 bytes) are actually used.
     // However, a full 0x100 hwords (0x200 bytes) are allocated.
@@ -457,6 +461,7 @@ static void ShiftMoveSlot(struct BoxPokemon *, u8, u8);
 static void BlitBitmapToPartyWindow_LeftColumn(u8, u8, u8, u8, u8, bool8);
 static void BlitBitmapToPartyWindow_RightColumn(u8, u8, u8, u8, u8, bool8);
 static void CursorCb_Summary(u8);
+static void CursorCb_RelearnMoves(u8);
 static void CursorCb_Switch(u8);
 static void CursorCb_Cancel1(u8);
 static void CursorCb_Item(u8);
@@ -2871,7 +2876,7 @@ static u8 DisplaySelectionWindow(u8 windowType)
     switch (windowType)
     {
     case SELECTWINDOW_ACTIONS:
-        SetWindowTemplateFields(&window, 2, 19, 19 - (sPartyMenuInternal->numActions * 2), 10, sPartyMenuInternal->numActions * 2, 14, 0x2E9);
+        SetWindowTemplateFields(&window, 2, 17, 19 - (sPartyMenuInternal->numActions * 2), 12, sPartyMenuInternal->numActions * 2, 14, 0x2E9);
         break;
     case SELECTWINDOW_ITEM:
         window = sItemGiveTakeWindowTemplate;
@@ -2966,6 +2971,16 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
 
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
+
+    if (gPartyMenu.menuType == PARTY_MENU_TYPE_FIELD
+     && !InBattlePike()
+     && !InBattleFactory()
+     && !InSlateportBattleTent()
+     && GetMonData(&mons[slotId], MON_DATA_SPECIES) != SPECIES_NONE
+     && !GetMonData(&mons[slotId], MON_DATA_IS_EGG)
+     && HasMoveToRelearn(&mons[slotId].box, MOVE_RELEARNER_LEVEL_UP_MOVES)
+     && CanMonUseMoveRelearnerWithCurrentResources(&mons[slotId]))
+        AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_RELEARN_MOVES);
 
     // Add field moves to action list
     for (i = 0; i < MAX_MON_MOVES; i++)
@@ -8392,6 +8407,22 @@ void IsLastMonThatKnowsSurf(void)
     }
 }
 
+static void PreparePartyMoveRelearner(void)
+{
+    gMoveRelearnerState = MOVE_RELEARNER_LEVEL_UP_MOVES;
+    gRelearnMode = RELEARN_MODE_PARTY_MENU;
+    gLastViewedMonIndex = gPartyMenu.slotId;
+    gSpecialVar_0x8004 = gLastViewedMonIndex;
+    sPartyMenuInternal->exitCallback = CB2_InitLearnMove;
+}
+
+static void CursorCb_RelearnMoves(u8 taskId)
+{
+    PlaySE(SE_SELECT);
+    PreparePartyMoveRelearner();
+    Task_ClosePartyMenu(taskId);
+}
+
 void CursorCb_MoveItemCallback(u8 taskId)
 {
     enum Item item1, item2;
@@ -8719,6 +8750,53 @@ static u8 IndividualToCombinedPartyId(u8 index, enum BattlerId battler)
 }
 
 #if TESTING
+// Exercise the production action builders without allocating menu windows or sprites.
+struct TestPartyMenuActions Test_GetPartyMenuActions(u8 slotId)
+{
+    struct PartyMenuInternal internal = {0};
+    struct PartyMenuInternal *savedInternal = sPartyMenuInternal;
+    struct TestPartyMenuActions result = {0};
+
+    sPartyMenuInternal = &internal;
+    SetPartyMonSelectionActions(gParties[B_TRAINER_PLAYER], slotId, ACTIONS_NONE);
+    result.count = internal.numActions;
+    for (u32 i = 0; i < internal.numActions && i < ARRAY_COUNT(internal.actions); i++)
+    {
+        u8 action = internal.actions[i];
+        if (action >= MENU_FIELD_MOVES)
+            result.fieldMoveCount++;
+        else if (action == MENU_RELEARN_MOVES)
+        {
+            result.hasRelearner = TRUE;
+            result.opensRelearnerDirectly = sCursorOptions[action].func == CursorCb_RelearnMoves;
+        }
+        else if (action == MENU_SUMMARY)
+            result.hasSummary = TRUE;
+        else if (action == MENU_SWITCH)
+            result.hasSwitch = TRUE;
+        else if (action == MENU_ITEM)
+            result.hasItem = TRUE;
+        if (i == internal.numActions - 1)
+            result.cancelIsLast = action == MENU_CANCEL1;
+    }
+    sPartyMenuInternal = savedInternal;
+    return result;
+}
+
+bool32 Test_PreparePartyMoveRelearner(u8 slotId)
+{
+    struct PartyMenuInternal internal = {0};
+    struct PartyMenuInternal *savedInternal = sPartyMenuInternal;
+    u8 savedSlot = gPartyMenu.slotId;
+    sPartyMenuInternal = &internal;
+    gPartyMenu.slotId = slotId;
+    PreparePartyMoveRelearner();
+    bool32 opensRelearner = internal.exitCallback == CB2_InitLearnMove;
+    gPartyMenu.slotId = savedSlot;
+    sPartyMenuInternal = savedInternal;
+    return opensRelearner;
+}
+
 s8 Test_UpdatePartySelectionSingleLayout(s8 slotId, s8 movementDir, bool8 chooseHalf, u8 lastSelectedSlot)
 {
     struct PartyMenuInternal internal = {0};
