@@ -4403,6 +4403,10 @@ static enum MoveEndResult MoveEndClearBits(struct BattleCalcValues *cv)
 {
     ValidateBattlers();
 
+    // Record Round after all strikes, even if its user fainted or its target was immune.
+    if (cv->moveEffect == EFFECT_ROUND && !gBattleStruct->unableToUseMove)
+        gBattleStruct->roundUsedThisTurn = TRUE;
+
     enum Move originallyUsedMove = GetOriginallyUsedMove(gChosenMove);
     enum Type moveType = GetBattleMoveType(cv->move);
 

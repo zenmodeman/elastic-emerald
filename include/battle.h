@@ -597,6 +597,7 @@ struct BattleStruct
     u8 moneyMultiplierItem:1;
     u8 moneyMultiplierMove:1;
     u8 savedTurnActionNumber;
+    bool8 roundUsedThisTurn;
     u8 scriptPartyIdx; // for printing the nickname
     u8 battlerPartyIndexes[MAX_BATTLERS_COUNT];
     u8 monToSwitchIntoId[MAX_BATTLERS_COUNT];

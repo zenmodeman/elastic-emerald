@@ -396,8 +396,9 @@ static void HandleInputChooseAction(enum BattlerId battler)
     {
         SwapHpBarsWithHpText();
     }
-    else if (IsDebugModeEnabled() && JOY_NEW(SELECT_BUTTON))
+    else if (JOY_NEW(SELECT_BUTTON))
     {
+        // The menu selects read-only battle info when Debug Mode is disabled.
         BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_DEBUG, 0);
         BtlController_Complete(battler);
     }

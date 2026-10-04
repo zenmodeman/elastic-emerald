@@ -3101,6 +3101,7 @@ static void BattleStartClearSetData(void)
     s32 i;
 
     TurnValuesCleanUp(FALSE);
+    gBattleStruct->roundUsedThisTurn = FALSE;
     memset(&gSpecialStatuses, 0, sizeof(gSpecialStatuses));
 
     memset(&gFieldTimers, 0, sizeof(gFieldTimers));
@@ -4020,6 +4021,7 @@ bool32 EndTurnEvents(void) // Called from Battle Script
     gBattleStruct->eventState.faintedAction = 0;
 
     TurnValuesCleanUp(FALSE);
+    gBattleStruct->roundUsedThisTurn = FALSE;
     gHitMarker &= ~HITMARKER_PLAYER_FAINTED;
     gBattleScripting.animTurn = 0;
     gBattleScripting.animTargetsHit = 0;

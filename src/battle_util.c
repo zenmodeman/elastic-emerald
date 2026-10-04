@@ -6453,12 +6453,14 @@ static inline u32 CalcMoveBasePower(struct DamageContext *ctx)
     case EFFECT_FUSION_COMBO:
         if (move == gLastUsedMove)
             break;
-        // fallthrough
-    case EFFECT_ROUND:
-        // don't double power due to previous turn's Round/Fusion move
+        // Don't double power due to the previous turn's Fusion move.
         if (gCurrentTurnActionNumber != 0
          && gActionsByTurnOrder[gCurrentTurnActionNumber - 1] == B_ACTION_USE_MOVE
          && GetMoveEffect(gLastUsedMove) == moveEffect)
+            basePower *= 2;
+        break;
+    case EFFECT_ROUND:
+        if (gBattleStruct->roundUsedThisTurn)
             basePower *= 2;
         break;
     case EFFECT_LASH_OUT:
