@@ -2,11 +2,11 @@
 
 I keep these notes as a reference for maintaining Elastic Emerald.
 
-- [Feature reference](feature-reference.md): high-level current functionality and new bugfixes, with useful source anchors. Update the affected feature when behavior changes; keep commit specifications, release chronology, and historical test/build reports in the history.
-- [Feature history](../feature-history.md): implementation commits and their specifications, including commits that repair breaking behavior. Record the cause and resulting repair when known. Use **Newest — uncommitted** for pending working-tree changes, then replace it with the actual commit ID after committing. Committed recent changes always retain their commit IDs.
+- [Feature reference](feature-reference.md): concise descriptions of current functional features and player-visible rules. Do not add standalone bugfixes, repair explanations, commit history, or implementation details. Update an existing description only when its functional behavior changes.
+- [Feature history](../feature-history.md): brief descriptions of additions, changes, and repairs, with commit IDs or the pending **Newest** label. Describe the outcome; retain technical details in topic guides only when they help future maintenance.
 - [Gameplay reference](../gameplay/README.md): player-facing rules.
 
-When adding functionality or fixing a bug, update the feature reference's current behavior and the feature history's commit or pending entry as appropriate. Do not treat historical verification results as validation of the current working tree. Detailed source/API maintenance procedures belong in the topic guides below.
+For a bugfix, update the history and the relevant developer topic guide. Update the feature reference only if the fix changes a described functional rule; restoring expected behavior does not warrant a new feature entry. Keep both overview documents descriptive and concise. Do not create archives for verbose feature accounts or test inventories. Preserve actionable merge-breakage guidance in the existing upgrade notes.
 
 ## Topics
 

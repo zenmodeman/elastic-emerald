@@ -1,6 +1,6 @@
 # Upstream upgrade notes
 
-I use the [custom feature reference](feature-reference.md) to locate local behavior and the [feature history](../feature-history.md) to distinguish introductions, redesigns, and repairs. The historical test results describe earlier runs; they are not a current validation result.
+I use the [custom feature reference](feature-reference.md) to locate local behavior and the [feature history](../feature-history.md) to distinguish introductions, redesigns, and repairs.
 
 ## How I approach a merge
 
@@ -8,7 +8,7 @@ The working diff, merge parents, and unmerged paths establish what is changing. 
 
 My aim is to retain the current Elastic Emerald behavior on the newer upstream APIs and data layouts. Later local commits matter: restoring an older implementation can accidentally undo an intentional redesign. Adjacent code also matters, because stale callers and generated inputs can sit outside the conflict hunk.
 
-I trace a feature through its constants/data, runtime dispatch, scripts, UI, save state, and AI simulation. A declaration or surviving test does not establish that its runtime caller survived. Non-obvious resolutions go into the feature reference with their reasoning and API contract.
+I trace a feature through its constants/data, runtime dispatch, scripts, UI, save state, and AI simulation. A declaration or surviving test does not establish that its runtime caller survived. Record non-obvious resolutions here or in the relevant developer topic guide when they help prevent recurring breakage. Keep repair details out of the feature reference.
 
 Routine review uses [static checks](check-recipes.md). Full builds and test runs are separate decisions. When I do build, compilation, linking, and ROM generation are distinct milestones; an incremental follow-up can expose unstable generated dependencies.
 
@@ -29,9 +29,22 @@ The [battle AI notes](battle-ai.md) cover simulation and scoring. I compare the 
 
 Some apparent anomalies are deliberate. Tera Orb charged/no-cost flags share an alias because charging has no cost. The old clean-state and weather-preservation switching paths are also historical; matchup commitment superseded them.
 
-## Documentation coverage
+## Priority merge-breakage checks
 
-I distinguish original feature commits, redesigns, and regression repairs. The documented boundary advances with reviewed changes, not merely because a newer documentation commit exists. Pending work and unresolved questions remain explicit, as do the checks actually performed.
+These are recurring failure points, not a historical feature inventory. Check the affected paths even when the merge has no textual conflicts.
+
+| Area | Preserve during upgrades |
+| --- | --- |
+| Monotype | Saved type decoding across the removed type slot, compatible split evolutions, and starting resist berries for exactly the selected type's weaknesses. |
+| Tier Points | Exclude eggs and empty slots; retain ability- and badge-dependent costs, safe defaults for missing candidates, and evolution/ability projections that do not mutate the party. |
+| Restricted item clause | Keep enforcement before trainer battles and return later duplicate held items to storage. |
+| EV and Resource modes | Retain local EV caps and mode gates. Keep consumable-item persistence ahead of upstream trainer-battle item-return rules. |
+| Custom battle effects | Follow runtime dispatch and move-end hooks as well as data; check the matching AI model. Surviving descriptions alone do not establish working behavior. |
+| Party menus and services | Preserve relearner access, tutor costs, selected-Pokemon state, and return callbacks. |
+| Numeric namespaces | Check battle flags, trainer modes, save flags, and palettes for collisions introduced by FRLG integration. |
+| Battle display | Keep trainer backsprite palette indexing and low-HP bar conversion. Separate intro party trays for each trainer; the shared layout retained in merge `5725273a2a` hid paired trainers' Pokeballs. |
+
+Keep only actionable lessons here. Feature history records brief outcomes and commit IDs; old test counts, exhaustive feature accounts, and release-by-release audit narratives do not need a separate archive.
 
 ## Source paths to review during upgrades
 

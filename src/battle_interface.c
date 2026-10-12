@@ -1242,6 +1242,15 @@ u8 CreatePartyStatusSummarySprites(enum BattlerId battler, struct HpAndStatus *p
         bar_data0 = 5;
     }
 
+    // Each trainer has a separate party summary; keep their intro trays apart.
+    if (isBattleStart && BattleSideHasTwoTrainers(GetBattlerSide(battler)))
+    {
+        if (isOpponent)
+            bar_Y = GetBattlerPosition(battler) == B_POSITION_OPPONENT_LEFT ? 16 : 40;
+        else
+            bar_Y = GetBattlerPosition(battler) == B_POSITION_PLAYER_LEFT ? 90 : 106;
+    }
+
     LoadCompressedSpriteSheetUsingHeap(&sStatusSummaryBarSpriteSheet);
     LoadSpriteSheet(&sStatusSummaryBallsSpriteSheet);
     LoadSpritePalette(&sStatusSummaryBarSpritePal);
