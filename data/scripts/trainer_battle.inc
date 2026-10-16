@@ -117,11 +117,6 @@ Std_MsgboxAutoclose::
 	release
 	return
 
-	waitmessage
-	waitbuttonpress
-	release
-	return
-
 EventScript_ShowTrainerIntroMsg::
 	special ShowTrainerIntroSpeech
 	waitmessage
@@ -232,13 +227,6 @@ TrainerBattle_Text_AromaLadyUsedLumBerries:
 
 TrainerBattle_Text_InterviewerUsedJubilifeMuffins:
 	.string "(The Interviewer gave all your\nPokémon Jubilife Muffins!)$"
-
-Std_MsgboxAutoclose::
-	message NULL
-	waitmessage
-	waitbuttonpress
-	release
-	return
 
 @ Event Snippets for dynamic trainer battle scripting
 EventSnippet_Lock::

@@ -891,6 +891,9 @@ static u8 GetTerminalSpeciesMaxTierPoints(u16 species)
             maxPoints = max(maxPoints, points);
             break;
         }
+        default:
+            // Only Mega forms contribute to this terminal-species projection.
+            break;
         }
     }
     return maxPoints;

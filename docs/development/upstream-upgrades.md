@@ -92,3 +92,11 @@ The local relearner deliberately retains its own state machine, Resource Mode ch
 The recent migration scripts were reviewed against their target constructs. Regional dex and coin-box changes are already present, and no legacy coin-box arguments or load-sprite commands remain to migrate. Do not rerun the 1.17 coin-box script indiscriminately: it subtracts one from show-box coordinates each time. The older graphics migration warns against running over a tree containing build artifacts; preserve current INCGFX declarations and custom assets directly here.
 
 Validation for this resolution uses conflict scans, diff checks, generated encounter constants, Python syntax checks, and C front-end syntax checks. Graphics include expressions are replaced with placeholders only in temporary syntax-check input to avoid generating assets. These checks do not verify graphics sizes, linking, ROM layout, or battle outcomes. ROM builds and Expansion/Elastic test execution remain separate, explicitly requested steps.
+
+### Build follow-up
+
+The full assembler pass also needs the custom battle scripts migrated: accuracy checks now belong to `attackcanceler`, `end2` is replaced by `end`, and `healthbarupdate` takes only the battler. `datahpupdate` takes the current Assurance flag. Keep one definition of `Std_MsgboxAutoclose`; combining the old trainer scripts with dynamic snippets can duplicate it and leave an orphaned command tail.
+
+The Tier Point projection over terminal-species forms intentionally considers only Mega forms, so its `FormChanges` enum switch needs an explicit default for other methods under `-Werror=switch`. The retired `ABILITYEFFECT_COLOR_CHANGE` enum entry has no remaining callers: proactive Color Change runs in target failure checks, while Berserk and Anger Shell use `ABILITYEFFECT_HP_THRESHOLD`.
+
+After these follow-up fixes, `make -j4` completed compilation, assembly, linking, and ROM generation. A subsequent incremental `make -j4` also completed successfully. The resulting ROM uses 27,040,820 bytes of the 32 MiB ROM region. Runtime Expansion and Elastic tests were not run in this build-repair pass.

@@ -2145,7 +2145,6 @@ BattleScript_EffectSpikes::
 
 BattleScript_EffectForesight::
 	attackcanceler
-	accuracycheck
 BattleScript_ForesightSet:
 	setvolatile BS_TARGET, VOLATILE_FORESIGHT
 BattleScript_IdentifiedFoe:
@@ -6479,11 +6478,10 @@ BattleScript_SilphScopeUnveiled::
 	pause B_WAIT_TIME_SHORT
 	printstring STRINGID_GHOSTWASMAROWAK
 	waitmessage B_WAIT_TIME_LONG
-	end2
+	end
 
 BattleScript_EffectDrainDouse::
 	attackcanceler
-	accuracycheck
 	printattackstring
 	setdraindouse BattleScript_ButItFailed
 	attackanimation
@@ -6519,8 +6517,8 @@ BattleScript_DampHealingEffect::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_DAMP_HEALING
 	waitmessage B_WAIT_TIME_LONG
-	healthbarupdate BS_EFFECT_BATTLER, PASSIVE_HP_UPDATE
-	datahpupdate BS_EFFECT_BATTLER, PASSIVE_HP_UPDATE
+	healthbarupdate BS_EFFECT_BATTLER
+	datahpupdate BS_EFFECT_BATTLER, ASSURANCE_DOUBLE
 	return
 
 BattleScript_WildBattleVictory::

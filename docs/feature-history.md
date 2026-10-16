@@ -10,6 +10,7 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| Post-merge build repairs | **Newest** | Restores ROM compilation and linking by migrating remaining battle-script commands, removing a duplicate trainer-script label, and updating enum handling. |
 | Expansion 1.17.1 integration | **Newest** | Resolves the upstream merge while retaining custom modes, trainer services and scaling, move effects, AI prediction, and move-service access on the updated APIs. |
 | Two-trainer intro party trays | **Newest** | Fixes overlapping Pokeball trays in paired battles, including Lola and Chandler on Route 109. Each trainer now has a separate visible row. |
 | Proactive Color Change | `cb993f21b5` (2026-09-25) | Changes the target's type before immunity checks, including status moves; runtime eligibility and AI prediction share the rule. |
