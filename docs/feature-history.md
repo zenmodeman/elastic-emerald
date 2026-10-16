@@ -10,6 +10,7 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| Expansion 1.17.1 integration | **Newest** | Resolves the upstream merge while retaining custom modes, trainer services and scaling, move effects, AI prediction, and move-service access on the updated APIs. |
 | Two-trainer intro party trays | **Newest** | Fixes overlapping Pokeball trays in paired battles, including Lola and Chandler on Route 109. Each trainer now has a separate visible row. |
 | Proactive Color Change | `cb993f21b5` (2026-09-25) | Changes the target's type before immunity checks, including status moves; runtime eligibility and AI prediction share the rule. |
 | Overwhelm Beam | `3c2264d738` (2026-09-27) | Adds a 120-power, 80%-accuracy Special Normal attack with an Insomnia ability-replacement secondary effect. |
@@ -152,7 +153,7 @@ The [AI summary](custom_ai_logic_summary.md) expands these entries into per-move
 
 ## Reworked approaches
 
-- Clean-state/literal-lead fast-KO switching (`6f1d67a6f4`, `8d856e4bcf`, `4547aff533`) was removed in `5440fb44b4` in favor of weather-setter preservation. Matchup commitment (`53239d220d`) later replaced that separate preservation path. 
+- Clean-state/literal-lead fast-KO switching (`6f1d67a6f4`, `8d856e4bcf`, `4547aff533`) was removed in `5440fb44b4` in favor of weather-setter preservation. Matchup commitment (`53239d220d`) later replaced that separate preservation path.
 - Fishing briefly prevented fish from escaping (`bd0ec22dae`). The later design (`e7bdc4146e`) restored failure while making timing more lenient.
 - The standalone host-driven AI-versus-AI simulator began in `9ebc494153` and was removed in `9c4b986496`. The in-game AI-versus-AI battle mode remains separate and supported.
 - PC access through the Pokénav (`4a17ce7633`) was replaced by Box Link (`c1e8fd5840`).

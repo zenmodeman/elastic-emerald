@@ -5,6 +5,7 @@ struct DamageContext;
 
 void ActivateTera(enum BattlerId battler);
 void ApplyBattlerVisualsForTeraAnim(enum BattlerId battler);
+bool32 IsTeraOrbCharged(void);
 bool32 CanTerastallize(enum BattlerId battler);
 bool32 IsRestrictedModeTeraCombinationBanned(enum Species species, enum Ability ability, u32 tierPoints);
 enum Type GetBattlerTeraType(enum BattlerId battler);

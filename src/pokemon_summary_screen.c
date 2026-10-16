@@ -362,6 +362,7 @@ static u8 IncrementSkillsStatsMode(u8 mode);
 static void ClearStatLabel(u32 length, u32 statsCoordX, u32 statsCoordY);
 u32 GetAdjustedIvData(struct Pokemon *mon, u32 stat);
 static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta);
+static void UpdateMoveRelearnerState(void);
 static void ShowRelearnPrompt(void);
 static struct BoxPokemon *GetCurrentBoxmon(void);
 
@@ -847,11 +848,12 @@ static const u8 sText_TriumphDescription[] = _("Point for winning\nagainst compa
 static const u8 sText_TeraTypeDescription[] = _("The type this Pokémon becomes\nwhen it Terastallizes.");
 static const u8 sText_RewardClaimed[] = _("CLAIMED");
 
-static const u8 sText_Relearn[] = _("{START_BUTTON} RELEARN"); // future note: don't decap this, because it mimics the summary screen BG graphics which will not get decapped
 static const u8 sText_Relearn_LevelUp[] = _("{START_BUTTON} RELEARN LEVEL");
 static const u8 sText_Relearn_Egg[] = _("{START_BUTTON} RELEARN EGG");
 static const u8 sText_Relearn_TM[] = _("{START_BUTTON} RELEARN TM");
 static const u8 sText_Relearn_Tutor[] = _("{START_BUTTON} RELEARN TUTOR");
+
+static const u8 sText_Relearn[] = _("{START_BUTTON} RELEARN"); // future note: don't decap this, because it mimics the summary screen BG graphics which will not get decapped
 
 static const u8 sMemoNatureTextColor[] = _("{COLOR LIGHT_RED}{SHADOW GREEN}");
 static const u8 sMemoMiscTextColor[] = _("{COLOR WHITE}{SHADOW DARK_GRAY}"); // This is also affected by palettes, apparently
@@ -915,6 +917,7 @@ static const union AnimCmd sSpriteAnim_CategoryIcon2[] =
 
 static const union AnimCmd *const sSpriteAnimTable_CategoryIcons[] =
 {
+    NULL,
     sSpriteAnim_CategoryIcon0,
     sSpriteAnim_CategoryIcon1,
     sSpriteAnim_CategoryIcon2,
@@ -1306,6 +1309,7 @@ void ShowPokemonSummaryScreen(u8 mode, void *mons, u8 monIndex, u8 maxMonIndex, 
     else
         sMonSummaryScreen->isBoxMon = FALSE;
 
+    u32 maxPageIndex = PSS_PAGE_DETAILS;
     switch (mode)
     {
     case SUMMARY_MODE_NORMAL:
@@ -1314,16 +1318,16 @@ void ShowPokemonSummaryScreen(u8 mode, void *mons, u8 monIndex, u8 maxMonIndex, 
     case SUMMARY_MODE_RELEARNER_BATTLE:
     case SUMMARY_MODE_RELEARNER_CONTEST:
         sMonSummaryScreen->minPageIndex = 0;
-        sMonSummaryScreen->maxPageIndex = PSS_PAGE_COUNT - 1;
+        sMonSummaryScreen->maxPageIndex = maxPageIndex;
         break;
     case SUMMARY_MODE_LOCK_MOVES:
         sMonSummaryScreen->minPageIndex = 0;
-        sMonSummaryScreen->maxPageIndex = PSS_PAGE_COUNT - 1;
+        sMonSummaryScreen->maxPageIndex = maxPageIndex;
         sMonSummaryScreen->lockMovesFlag = TRUE;
         break;
     case SUMMARY_MODE_SELECT_MOVE:
         sMonSummaryScreen->minPageIndex = PSS_PAGE_BATTLE_MOVES;
-        sMonSummaryScreen->maxPageIndex = PSS_PAGE_CONTEST_MOVES;
+        sMonSummaryScreen->maxPageIndex = C_HIDE_CONTEST_DATA ? PSS_PAGE_BATTLE_MOVES : PSS_PAGE_CONTEST_MOVES;
         sMonSummaryScreen->lockMonFlag = TRUE;
         break;
     }
@@ -1444,6 +1448,7 @@ static bool8 LoadGraphics(void)
         gMain.state++;
         break;
     case 15:
+        UpdateMoveRelearnerState();
         PutPageWindowTilemaps(sMonSummaryScreen->currPageIndex);
         gMain.state++;
         break;
@@ -1821,6 +1826,7 @@ static void ClearStatLabel(u32 length, u32 statsCoordX, u32 statsCoordY)
     for (i = 0; i <= length; i++)
         FillBgTilemapBufferRect(1, blankStatsBlock, statsCoordX + blankOffset + i, statsCoordY, 1, 1, 2);
 }
+
 
 static void Task_HandleInput(u8 taskId)
 {
@@ -2447,6 +2453,11 @@ static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
     } while (zeroCounter <= MOVE_RELEARNER_COUNT && !hasRelearnableMoves);
 }
 
+static void UpdateMoveRelearnerState(void)
+{
+    TryUpdateRelearnType(TRY_SET_UPDATE);
+}
+
 static void ChangeSummaryPokemon(u8 taskId, s8 delta)
 {
     s8 monId;
@@ -2535,15 +2546,7 @@ static void Task_ChangeSummaryMon(u8 taskId)
              || sMonSummaryScreen->currPageIndex == PSS_PAGE_CONTEST_MOVES))
         {
             gMoveRelearnerState = MOVE_RELEARNER_LEVEL_UP_MOVES;
-            TryUpdateRelearnType(TRY_SET_UPDATE);
-            if (ShouldShowMoveRelearner())
-                ShowRelearnPrompt();
-            else
-                ClearWindowTilemap(PSS_LABEL_WINDOW_PROMPT_RELEARN);
-        }
-        else
-        {
-            ClearWindowTilemap(PSS_LABEL_WINDOW_PROMPT_RELEARN);
+            UpdateMoveRelearnerState();
         }
         break;
     case 5:
@@ -2672,6 +2675,8 @@ static void ChangePage(u8 taskId, s8 delta)
     PlaySE(SE_SELECT);
     ClearPageWindowTilemaps(sMonSummaryScreen->currPageIndex);
     currPageIndex = sMonSummaryScreen->currPageIndex += delta;
+    if (C_HIDE_CONTEST_DATA && currPageIndex == PSS_PAGE_CONTEST_MOVES)
+        currPageIndex = sMonSummaryScreen->currPageIndex += delta;
     data[0] = 0;
     if (delta == 1)
         SetTaskFuncWithFollowupFunc(taskId, PssScrollRight, gTasks[taskId].func);
@@ -4081,7 +4086,7 @@ static void PrintMonAbilityName(void)
 static void PrintMonAbilityDescription(void)
 {
     enum Ability ability = GetAbilityBySpecies(sMonSummaryScreen->summary.species, sMonSummaryScreen->summary.abilityNum);
-    PrintTextOnWindow(AddWindowFromTemplateList(sPageInfoTemplate, PSS_DATA_WINDOW_INFO_ABILITY), gAbilitiesInfo[ability].description, 0, 17, 0, 0);
+    PrintTextOnWindowToFit(AddWindowFromTemplateList(sPageInfoTemplate, PSS_DATA_WINDOW_INFO_ABILITY), gAbilitiesInfo[ability].description, 0, 17, 0, 0);
 }
 
 static void BufferMonTrainerMemo(void)
@@ -4716,7 +4721,7 @@ static void PrintMoveNameAndPP(u8 moveIndex)
         DynamicPlaceholderTextUtil_SetPlaceholderPtr(1, gStringVar2);
         DynamicPlaceholderTextUtil_ExpandPlaceholders(gStringVar4, sMovesPPLayout);
         text = gStringVar4;
-        ppState = GetCurrentPpToMaxPpState(summary->pp[moveIndex], pp) + 9;
+        ppState = GetCurrentPPToMaxPPState(summary->pp[moveIndex], pp) + 9;
         x = GetStringRightAlignXOffset(FONT_NORMAL, text, 44);
     }
     else
@@ -4827,7 +4832,7 @@ static void PrintContestMoveDescription(u8 moveSlot)
     if (move != MOVE_NONE)
     {
         u8 windowId = AddWindowFromTemplateList(sPageMovesTemplate, PSS_DATA_WINDOW_MOVE_DESCRIPTION);
-        PrintTextOnWindow(windowId, gContestEffects[GetMoveContestEffect(move)].description, 6, 1, 0, 0);
+        PrintTextOnWindowToFit(windowId, gContestEffects[GetMoveContestEffect(move)].description, 6, 1, 0, 0);
     }
 }
 
@@ -4842,11 +4847,11 @@ static void PrintMoveDetails(enum Move move)
             if (B_SHOW_CATEGORY_ICON == TRUE)
                 ShowCategoryIcon(GetBattleMoveCategory(move));
             PrintMovePowerAndAccuracy(move);
-            PrintTextOnWindow(windowId, GetMoveDescription(move), 6, 1, 0, 0);
+            PrintTextOnWindowToFit(windowId, GetMoveDescription(move), 6, 1, 0, 0);
         }
         else
         {
-            PrintTextOnWindow(windowId, gContestEffects[GetMoveContestEffect(move)].description, 6, 1, 0, 0);
+            PrintTextOnWindowToFit(windowId, gContestEffects[GetMoveContestEffect(move)].description, 6, 1, 0, 0);
         }
         PutWindowTilemap(windowId);
     }

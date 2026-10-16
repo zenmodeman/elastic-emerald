@@ -5,7 +5,8 @@
 #include "link.h"
 #include "random.h"
 
-#define BATTLER_RECORD_SIZE 388
+// Leave room for the current party/header layout before the sector counter.
+#define BATTLER_RECORD_SIZE 386
 
 struct RecordedBattleSave
 {
@@ -50,6 +51,8 @@ enum
     RECORDED_ITEM_TARGET,
     RECORDED_ITEM_MOVE,
 };
+
+#define RECORDED_TARGET_DEFAULT 0xF
 
 extern rng_value_t gRecordedBattleRngSeed;
 extern rng_value_t gBattlePalaceMoveSelectionRngValue;

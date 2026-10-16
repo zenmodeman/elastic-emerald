@@ -1,25 +1,27 @@
 #include "global.h"
 #include "battle_setup.h"
-#include "constants/battle_setup.h"
+#include "battle.h"
 #include "data.h"
 #include "event_scripts.h"
 #include "test/test.h"
 
 extern u32 CalculateTrainerPartyMoney(const struct Trainer *trainer, u32 multiplier, bool32 isDoubleBattle, bool32 hasTwoOpponents);
 
-TEST("Elastic-tests: continue-after-loss trainer battles retain no-intro setup")
-{
-    TRAINER_BATTLE_PARAM.mode = TRAINER_BATTLE_CONTINUE_AFTER_LOSE;
+extern bool32 Test_ShouldContinueAfterTrainerLoss(void);
 
-    EXPECT_EQ(BattleSetup_ConfigureTrainerBattle(NULL), EventScript_DoNoIntroTrainerBattle);
-    EXPECT_EQ(GetTrainerBattleMode(), TRAINER_BATTLE_CONTINUE_AFTER_LOSE);
+TEST("Elastic-tests: AI demonstration continues after a trainer loss")
+{
+    gBattleTypeFlags = BATTLE_TYPE_TRAINER | BATTLE_TYPE_AI_VS_AI;
+    EXPECT(Test_ShouldContinueAfterTrainerLoss());
+    EXPECT(!TRAINER_BATTLE_PARAM.earlyRival);
 }
 
-TEST("Elastic-tests: continue-after-loss and early-rival battle modes remain distinct")
+TEST("Elastic-tests: ordinary and early rival battles retain their own loss handling")
 {
-    EXPECT_NE(TRAINER_BATTLE_CONTINUE_AFTER_LOSE, TRAINER_BATTLE_EARLY_RIVAL);
-    EXPECT_EQ(TRAINER_BATTLE_CONTINUE_AFTER_LOSE, 14);
-    EXPECT_EQ(TRAINER_BATTLE_EARLY_RIVAL, 15);
+    gBattleTypeFlags = BATTLE_TYPE_TRAINER;
+    EXPECT(!Test_ShouldContinueAfterTrainerLoss());
+    TRAINER_BATTLE_PARAM.earlyRival = TRUE;
+    EXPECT(!Test_ShouldContinueAfterTrainerLoss());
 }
 
 TEST("Elastic-tests: Youngster James rematches always reuse his custom opening team")

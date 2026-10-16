@@ -7,6 +7,7 @@
 #include "field_weather.h"
 #include "lottery_corner.h"
 #include "main.h"
+#include "mass_outbreak.h"
 #include "overworld.h"
 #include "pokerus.h"
 #include "random.h"
@@ -46,6 +47,28 @@ void UpdateDailySeed(void)
     gSaveBlock1Ptr->dailySeed = Random32();
 }
 
+void DoDailyEvents(u32 daysSince)
+{
+    ClearDailyFlags();
+    UpdateDailySeed();
+    UpdateMassOutbreakDaysLeft(daysSince);
+    UpdateDewfordTrendPerDay(daysSince);
+    UpdateTVShowsPerDay(daysSince);
+    UpdateWeatherPerDay(daysSince);
+    UpdatePartyPokerusTime(daysSince);
+    UpdateBirchState(daysSince);
+    UpdateFrontierManiac(daysSince);
+    UpdateFrontierGambler(daysSince);
+    SetShoalItemFlag(daysSince);
+    if (!OW_USE_DAILY_SEED_FOR_VANILLA_VARIABLES)
+    {
+        UpdateMirageRnd(daysSince);
+        SetRandomLotteryNumber(daysSince);
+    }
+    UpdateDaysPassedSinceFormChange(daysSince);
+    DailyResetApricornTrees();
+}
+
 static void UpdatePerDay(struct Time *localTime)
 {
 
@@ -58,21 +81,7 @@ static void UpdatePerDay(struct Time *localTime)
     if (*days != localTime->days && *days <= localTime->days)
     {
         daysSince = localTime->days - *days;
-        // DebugPrintf("Inside of the change day block with daysSince: %d", daysSince);
-        ClearDailyFlags();
-        UpdateDailySeed();
-        UpdateDewfordTrendPerDay(daysSince);
-        UpdateTVShowsPerDay(daysSince);
-        UpdateWeatherPerDay(daysSince);
-        UpdatePartyPokerusTime(daysSince);
-        UpdateMirageRnd(daysSince);
-        UpdateBirchState(daysSince);
-        UpdateFrontierManiac(daysSince);
-        UpdateFrontierGambler(daysSince);
-        SetShoalItemFlag(daysSince);
-        SetRandomLotteryNumber(daysSince);
-        UpdateDaysPassedSinceFormChange(daysSince);
-        DailyResetApricornTrees();
+        DoDailyEvents(daysSince);
         *days = localTime->days;
         DebugPrintf("Updating days to %d", *days);
     }
@@ -90,7 +99,7 @@ static void UpdatePerMinute(struct Time *localTime)
     int minutes;
     CalcTimeDifference(&difference, &gSaveBlock2Ptr->lastBerryTreeUpdate, localTime);
     minutes = 24 * 60 * difference.days + 60 * difference.hours + difference.minutes;
-    
+
     //Hacky fix for weird negatives between rtc and real time.
     if (minutes < 0){
         gSaveBlock2Ptr->lastBerryTreeUpdate = *localTime;

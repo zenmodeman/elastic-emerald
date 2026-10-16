@@ -240,3 +240,10 @@ u16 GetTeraTypeRGB(enum Type type)
 {
     return gTypesInfo[type].teraTypeRGBValue;
 }
+
+bool32 IsTeraOrbCharged(void)
+{
+    if (FlagGet(B_FLAG_TERA_ORB_NO_COST) || B_TERA_ORB_ALWAYS_CHARGED)
+        return TRUE;
+    return FlagGet(B_FLAG_TERA_ORB_CHARGED);
+}

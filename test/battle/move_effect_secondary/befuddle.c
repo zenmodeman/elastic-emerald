@@ -15,13 +15,13 @@ DOUBLE_BATTLE_TEST("Elastic-tests: Befuddle damages and inflicts paralysis, pois
         ASSUME(GetMoveType(MOVE_BEFUDDLE) == TYPE_BUG);
         ASSUME(GetMoveCategory(MOVE_BEFUDDLE) == DAMAGE_CATEGORY_SPECIAL);
         ASSUME(GetMoveTarget(MOVE_BEFUDDLE) == TARGET_BOTH);
-        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_BEFUDDLE, MOVE_EFFECT_DIRE_CLAW, 100));
+        ASSUME(MoveHasAdditionalEffectWithChance(MOVE_BEFUDDLE, MOVE_EFFECT_RANDOM_FROM_LIST, 100));
         PLAYER(SPECIES_BUTTERFREE);
         PLAYER(SPECIES_CATERPIE);
         OPPONENT(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        TURN { MOVE(playerLeft, MOVE_BEFUDDLE, WITH_RNG(RNG_DIRE_CLAW, moveEffect)); }
+        TURN { MOVE(playerLeft, MOVE_BEFUDDLE, WITH_RNG(RNG_RANDOM_FROM_LIST, (moveEffect == MOVE_EFFECT_POISON ? 0 : moveEffect == MOVE_EFFECT_PARALYSIS ? 1 : 2))); }
     } SCENE {
         HP_BAR(opponentLeft);
         HP_BAR(opponentRight);
@@ -42,7 +42,7 @@ DOUBLE_BATTLE_TEST("Elastic-tests: Protect blocks Befuddle's damage and status")
     } WHEN {
         TURN {
             MOVE(opponentLeft, MOVE_PROTECT);
-            MOVE(playerLeft, MOVE_BEFUDDLE, WITH_RNG(RNG_DIRE_CLAW, MOVE_EFFECT_PARALYSIS));
+            MOVE(playerLeft, MOVE_BEFUDDLE, WITH_RNG(RNG_RANDOM_FROM_LIST, 1));
         }
     } SCENE {
         NOT HP_BAR(opponentLeft);

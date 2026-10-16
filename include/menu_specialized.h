@@ -1,6 +1,8 @@
 #ifndef GUARD_MENU_SPECIALIZED_H
 #define GUARD_MENU_SPECIALIZED_H
 
+bool16 MoveRelearnerRunTextPrinters(void);
+
 #include "sprite.h"
 #include "player_pc.h"
 #include "list_menu.h"
@@ -127,7 +129,6 @@ void FreeConditionSparkles(struct Sprite **sprites);
 
 // Move relearner
 void MoveRelearnerPrintMessage(u8 *str);
-bool16 MoveRelearnerRunTextPrinters(void);
 void MoveRelearnerCreateYesNoMenu(void);
 u8 LoadMoveRelearnerMovesList(const struct ListMenuItem *items, u16 numChoices);
 void InitMoveRelearnerWindows(bool32 useContestWindow);

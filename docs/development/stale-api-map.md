@@ -61,3 +61,12 @@ Renamed and split effects have affected local switch cases:
 - Hazard effects may be represented by `EFFECT_SPIKES`, `EFFECT_STEALTH_ROCK`, `EFFECT_STICKY_WEB`, `EFFECT_TOXIC_SPIKES`, `EFFECT_STONE_AXE`, or `EFFECT_CEASELESS_EDGE`.
 
 An intentionally partial enum switch can use `default: break;` under `-Werror=switch`. I distinguish that case from a missing custom effect that actually needs handling.
+
+## 1.17 battle and trainer APIs
+
+- Terrain is `gFieldTimers.terrain` with `B_TERRAIN_*` values rather than terrain bits in `gFieldStatuses`.
+- Timed volatiles use names such as `confusionTimer`, `healBlockTimer`, and `VOLATILE_LASER_FOCUS_TIMER`.
+- `GetTotalAccuracy` takes `BattleCalcValues *` and weather. `SetTypeBeforeUsingMove` also takes the modeled ability and hold effect.
+- `AI_CalcDamage` takes `AiCalcValues *` and two battlers; use `dynamicMoveCategory` rather than the removed category-swap flag. `GetPartnerBattler` replaces `BATTLE_PARTNER`.
+- Native draining is `MOVE_EFFECT_ABSORB` with `argument.absorbPercentage`. Random statuses use `MOVE_EFFECT_RANDOM_FROM_LIST` and `argument.randomMoveEffects`.
+- Trainer battle parameters use flags such as `earlyRival`, not legacy numeric modes. Trainer-party creation takes the party and trainer; local scaling must follow the current generator.

@@ -76,8 +76,11 @@ SINGLE_BATTLE_TEST("Elastic-tests: activated Merry boosts accuracy and Speed")
     } THEN {
         playerId = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
         opponentId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
-        EXPECT_EQ(GetTotalAccuracy(playerId, opponentId,
-                                   MOVE_PRESENT, ABILITY_MERRY, ABILITY_NONE,
-                                   HOLD_EFFECT_NONE, HOLD_EFFECT_NONE), 150);
+        struct BattleCalcValues cv = {0};
+        cv.battlerAtk = playerId;
+        cv.battlerDef = opponentId;
+        cv.move = MOVE_PRESENT;
+        cv.abilities[playerId] = ABILITY_MERRY;
+        EXPECT_EQ(GetTotalAccuracy(&cv, B_WEATHER_NONE), 150);
     }
 }

@@ -11,7 +11,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse inflicts a status that causes att
     s16 damage;
     s16 healed;
     GIVEN {
-        PLAYER(SPECIES_WOBBUFFET) 
+        PLAYER(SPECIES_WOBBUFFET)
         OPPONENT(SPECIES_WOBBUFFET) {HP(1);}
     } WHEN {
         TURN { MOVE(player, MOVE_DRAIN_DOUSE); }
@@ -43,7 +43,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse healing is inverted when attackin
     } SCENE {
         // First turn - Drain Douse is used
         ANIMATION(ANIM_TYPE_MOVE, MOVE_DRAIN_DOUSE, player);
-        
+
         // Second turn - Opponent attacks and loses HP due to Liquid Ooze
         ANIMATION(ANIM_TYPE_MOVE, MOVE_MEGA_KICK, opponent);
         HP_BAR(player, captureDamage: &targetDamage);
@@ -90,7 +90,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse does not heal when the affected a
 SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse healing stacks with a move's native drain")
 {
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_ABSORB) == EFFECT_ABSORB);
+        ASSUME(MoveHasAdditionalEffect(MOVE_ABSORB, MOVE_EFFECT_ABSORB));
         PLAYER(SPECIES_WOBBUFFET) { HP(200); MaxHP(200); }
         OPPONENT(SPECIES_WOBBUFFET) { HP(1); MaxHP(200); }
     } WHEN {
@@ -303,7 +303,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse only heals from the HP removed by
 SINGLE_BATTLE_TEST("Elastic-tests: Drain Douse and native drain both invert against Liquid Ooze")
 {
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_ABSORB) == EFFECT_ABSORB);
+        ASSUME(MoveHasAdditionalEffect(MOVE_ABSORB, MOVE_EFFECT_ABSORB));
         PLAYER(SPECIES_TENTACOOL) { HP(200); MaxHP(200); Ability(ABILITY_LIQUID_OOZE); }
         OPPONENT(SPECIES_WOBBUFFET) { HP(100); MaxHP(200); }
     } WHEN {

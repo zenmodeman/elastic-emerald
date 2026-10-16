@@ -19,6 +19,8 @@
 #include "constants/party_menu.h"
 #include "constants/songs.h"
 
+#include "sound.h"
+
 #define VALID_MON 0
 #define INVALID_MON 1
 
@@ -28,7 +30,7 @@ struct PcMonSelection
     u32       (*isMonInvalid)(struct BoxPokemon *);
     const u8* postSelectionScript;
     u32 isStrict:1;
-    u32 padding:31; 
+    u32 padding:31;
 };
 
 static EWRAM_DATA u8 sSelectionType = 0;
@@ -145,7 +147,9 @@ enum LearnMoveState
 {
     LEARN_MOVE_END,
 
-    MON_CAN_LEARN, //Start
+    VALIDATE_BEFORE_LEARNING, // Start
+    PROMPT_BEFORE_LEARNING_1,
+    PROMPT_BEFORE_LEARNING_2,
 
     LEARN_MOVE,
 
@@ -191,7 +195,21 @@ s32 LearnMove(const struct MoveLearnUI *ui, u8 taskId)
     struct BoxPokemon *boxmon = LearnMove_GetBoxMonFromTaskData(partyIndex);
     switch (state)
     {
-    case MON_CAN_LEARN:
+    case PROMPT_BEFORE_LEARNING_1:
+        ui->askConfirmation();
+        return PROMPT_BEFORE_LEARNING_2;
+    case PROMPT_BEFORE_LEARNING_2:
+        switch (ui->waitConfirmation())
+        {
+        case 0: // Yes
+            return LEARN_MOVE;
+        case 1: // No
+        case MENU_B_PRESSED:
+            gSpecialVar_Result = FALSE;
+            return LEARN_MOVE_END;
+        }
+        return state;
+    case VALIDATE_BEFORE_LEARNING:
         GetBoxMonNickname(boxmon, gStringVar1);
         StringCopy(gStringVar2, GetMoveName(move));
         gSpecialVar_Result = FALSE;
@@ -296,14 +314,15 @@ s32 LearnMove(const struct MoveLearnUI *ui, u8 taskId)
     default:
         errorf("Unknown LearnMove state %d\nEnding move learning ...", state);
     case LEARN_MOVE_END:
-        ui->endTask(taskId);
+        if (IsFanfareTaskInactive())
+            ui->endTask(taskId);
         return LEARN_MOVE_END;
     }
 }
 
 s32 GetLearnMoveStartState(void)
 {
-    return MON_CAN_LEARN;
+    return VALIDATE_BEFORE_LEARNING;
 }
 
 //At the time of writing code for this, there was no prescribed way to make a task persist between scenes

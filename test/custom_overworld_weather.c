@@ -8,8 +8,8 @@
 TEST("Elastic-tests: diagonal fog does not create Misty Terrain at battle start")
 {
     gWeatherPtr->currWeather = WEATHER_FOG_DIAGONAL;
-    gFieldStatuses = 0;
+    gFieldTimers.terrain = B_TERRAIN_NONE;
 
     EXPECT(!TryFieldEffects(FIELD_EFFECT_OVERWORLD_TERRAIN));
-    EXPECT(!(gFieldStatuses & STATUS_FIELD_MISTY_TERRAIN));
+    EXPECT_EQ(gFieldTimers.terrain, B_TERRAIN_NONE);
 }

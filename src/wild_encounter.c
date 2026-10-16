@@ -9,6 +9,7 @@
 #include "random.h"
 #include "field_player_avatar.h"
 #include "link.h"
+#include "mass_outbreak.h"
 #include "metatile_behavior.h"
 #include "overworld.h"
 #include "ow_abilities.h"
@@ -74,7 +75,7 @@ EWRAM_DATA u8 gChainFishingDexNavStreak = 0;
 
 static const struct WildPokemon sWildFeebas = {20, 25, SPECIES_FEEBAS};
 
-static const u8 sLandEncounterCumulativeChances[LAND_WILD_COUNT] =
+static const u8 sLandEncounterCumulativeChances[NUM_LAND_MONS_ENCOUNTER_SLOTS] =
 {
     ENCOUNTER_CHANCE_LAND_MONS_SLOT_0,
     ENCOUNTER_CHANCE_LAND_MONS_SLOT_1,
@@ -125,11 +126,6 @@ static const u16 sRoute119WaterTileData[] =
     46,  91,  NUM_FISHING_SPOTS_1,
     92, 139,  NUM_FISHING_SPOTS_1 + NUM_FISHING_SPOTS_2,
 };
-
-void DisableWildEncounters(bool8 disabled)
-{
-    sWildEncountersDisabled = disabled;
-}
 
 // Each fishing spot on Route 119 is given a number between 1 and NUM_FISHING_SPOTS inclusive.
 // The number is determined by counting the valid fishing spots left to right top to bottom.
@@ -230,26 +226,58 @@ static void FeebasSeedRng(u16 seed)
     sFeebasRngValue = seed;
 }
 
-// LAND_WILD_COUNT
+// NUM_LAND_MONS_ENCOUNTER_SLOTS
 u32 ChooseWildMonIndex_Land(void)
 {
     u8 wildMonIndex = 0;
     bool8 swap = FALSE;
     u8 rand = Random() % ENCOUNTER_CHANCE_LAND_MONS_TOTAL;
 
-    while (wildMonIndex < LAND_WILD_COUNT - 1 && rand >= sLandEncounterCumulativeChances[wildMonIndex])
+    while (wildMonIndex < NUM_LAND_MONS_ENCOUNTER_SLOTS - 1 && rand >= sLandEncounterCumulativeChances[wildMonIndex])
         wildMonIndex++;
 
     if (LURE_STEP_COUNT != 0 && (Random() % 10 < 2))
         swap = TRUE;
 
     if (swap)
-        wildMonIndex = LAND_WILD_COUNT - 1 - wildMonIndex;
+        wildMonIndex = NUM_LAND_MONS_ENCOUNTER_SLOTS - 1 - wildMonIndex;
 
     return wildMonIndex;
 }
 
-// WATER_WILD_COUNT
+// Mostly equivalent to ChooseWildMonIndex_Land
+// NUM_LAND_MONS_ENCOUNTER_SLOTS
+u8 GetLandEncounterSlotForMatchCall(void)
+{
+    int rand = Random() % ENCOUNTER_CHANCE_LAND_MONS_TOTAL;
+
+    if (rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_0)
+        return 0;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_0 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_1)
+        return 1;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_1 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_2)
+        return 2;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_2 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_3)
+        return 3;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_3 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_4)
+        return 4;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_4 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_5)
+        return 5;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_5 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_6)
+        return 6;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_6 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_7)
+        return 7;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_7 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_8)
+        return 8;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_8 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_9)
+        return 9;
+    else if (rand >= ENCOUNTER_CHANCE_LAND_MONS_SLOT_9 && rand < ENCOUNTER_CHANCE_LAND_MONS_SLOT_10)
+        return 10;
+    else
+        return 11;
+}
+
+// NUM_WATER_MONS_ENCOUNTER_SLOTS
 u32 ChooseWildMonIndex_Water(void)
 {
     u32 wildMonIndex = 0;
@@ -276,7 +304,7 @@ u32 ChooseWildMonIndex_Water(void)
     return wildMonIndex;
 }
 
-// SHAKE_WILD_COUNT
+// NUM_SHAKE_MONS_ENCOUNTER_SLOTS
 static u32 ChooseWildMonIndex_Shake(void)
 {
     u32 wildMonIndex = 0;
@@ -303,7 +331,7 @@ static u32 ChooseWildMonIndex_Shake(void)
     return wildMonIndex;
 }
 
-// ROCK_WILD_COUNT
+// NUM_ROCK_SMASH_MONS_ENCOUNTER_SLOTS
 u32 ChooseWildMonIndex_Rocks(void)
 {
     u32 wildMonIndex = 0;
@@ -330,7 +358,7 @@ u32 ChooseWildMonIndex_Rocks(void)
     return wildMonIndex;
 }
 
-// FISH_WILD_COUNT
+// NUM_FISHING_MONS_ENCOUNTER_SLOTS
 static u32 ChooseWildMonIndex_Fishing(u8 rod)
 {
     u8 wildMonIndex = 0;
@@ -572,7 +600,7 @@ bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum WildPok
     case WILD_AREA_LAND:
         if (monotype != TYPE_NONE)
         {
-            if (TryGetMonotypeWildMonIndex(wildMonInfo->wildPokemon, monotype, LAND_WILD_COUNT, &wildMonIndex))
+            if (TryGetMonotypeWildMonIndex(wildMonInfo->wildPokemon, monotype, NUM_LAND_MONS_ENCOUNTER_SLOTS, &wildMonIndex))
                 break;
             else
                 return FALSE;
@@ -593,17 +621,17 @@ bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum WildPok
         wildMonIndex = ChooseWildMonIndex_Land();
         break;
     case WILD_AREA_WATER:
-        if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_STEEL, ABILITY_MAGNET_PULL, &wildMonIndex, WATER_WILD_COUNT))
+        if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_STEEL, ABILITY_MAGNET_PULL, &wildMonIndex, NUM_WATER_MONS_ENCOUNTER_SLOTS))
             break;
-        if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_STATIC, &wildMonIndex, WATER_WILD_COUNT))
+        if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_STATIC, &wildMonIndex, NUM_WATER_MONS_ENCOUNTER_SLOTS))
             break;
-        if (OW_LIGHTNING_ROD >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_LIGHTNING_ROD, &wildMonIndex, WATER_WILD_COUNT))
+        if (OW_LIGHTNING_ROD >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_LIGHTNING_ROD, &wildMonIndex, NUM_WATER_MONS_ENCOUNTER_SLOTS))
             break;
-        if (OW_FLASH_FIRE >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_FIRE, ABILITY_FLASH_FIRE, &wildMonIndex, WATER_WILD_COUNT))
+        if (OW_FLASH_FIRE >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_FIRE, ABILITY_FLASH_FIRE, &wildMonIndex, NUM_WATER_MONS_ENCOUNTER_SLOTS))
             break;
-        if (OW_HARVEST >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_GRASS, ABILITY_HARVEST, &wildMonIndex, WATER_WILD_COUNT))
+        if (OW_HARVEST >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_GRASS, ABILITY_HARVEST, &wildMonIndex, NUM_WATER_MONS_ENCOUNTER_SLOTS))
             break;
-        if (OW_STORM_DRAIN >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_WATER, ABILITY_STORM_DRAIN, &wildMonIndex, WATER_WILD_COUNT))
+        if (OW_STORM_DRAIN >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_WATER, ABILITY_STORM_DRAIN, &wildMonIndex, NUM_WATER_MONS_ENCOUNTER_SLOTS))
             break;
 
         wildMonIndex = ChooseWildMonIndex_Water();
@@ -614,7 +642,7 @@ bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum WildPok
     case WILD_AREA_SHAKE:
         if (monotype != TYPE_NONE)
         {
-            if (TryGetMonotypeWildMonIndex(wildMonInfo->wildPokemon, monotype, SHAKE_WILD_COUNT, &wildMonIndex))
+            if (TryGetMonotypeWildMonIndex(wildMonInfo->wildPokemon, monotype, NUM_SHAKE_MONS_ENCOUNTER_SLOTS, &wildMonIndex))
                 break;
             else
                 return FALSE;
@@ -661,32 +689,6 @@ static u16 GenerateFishingWildMon(const struct WildPokemonInfo *wildMonInfo, u8 
     UpdateChainFishingStreak();
     CreateWildMon(wildMonSpecies, level);
     return wildMonSpecies;
-}
-
-bool8 SetUpMassOutbreakEncounter(u8 flags)
-{
-    u16 i;
-
-    if (flags & WILD_CHECK_REPEL && !IsWildLevelAllowedByRepel(gSaveBlock1Ptr->outbreakPokemonLevel))
-        return FALSE;
-
-    CreateWildMon(gSaveBlock1Ptr->outbreakPokemonSpecies, gSaveBlock1Ptr->outbreakPokemonLevel);
-    for (i = 0; i < MAX_MON_MOVES; i++)
-        SetMonMoveSlot(&gParties[B_TRAINER_OPPONENT_A][0], gSaveBlock1Ptr->outbreakPokemonMoves[i], i);
-
-    return TRUE;
-}
-
-bool8 DoMassOutbreakEncounterTest(void)
-{
-    if (gSaveBlock1Ptr->outbreakPokemonSpecies != SPECIES_NONE
-     && gSaveBlock1Ptr->location.mapNum == gSaveBlock1Ptr->outbreakLocationMapNum
-     && gSaveBlock1Ptr->location.mapGroup == gSaveBlock1Ptr->outbreakLocationMapGroup)
-    {
-        if (Random() % 100 < gSaveBlock1Ptr->outbreakPokemonProbability)
-            return TRUE;
-    }
-    return FALSE;
 }
 
 static bool8 EncounterOddsCheck(u16 encounterRate)
@@ -1297,9 +1299,9 @@ static u8 GetFishingWildCount(u8 rod)
     case GOOD_ROD:
         return 5;
     case SUPER_ROD:
-        return FISH_WILD_COUNT;
+        return NUM_FISHING_MONS_ENCOUNTER_SLOTS;
     default:
-        return FISH_WILD_COUNT;
+        return NUM_FISHING_MONS_ENCOUNTER_SLOTS;
     }
 }
 
@@ -1312,16 +1314,16 @@ static u8 GetMaxLevelOfSpeciesInWildTable(const struct WildPokemon *wildMon, u16
     switch (area)
     {
     case WILD_AREA_LAND:
-        numMon = LAND_WILD_COUNT;
+        numMon = NUM_LAND_MONS_ENCOUNTER_SLOTS;
         break;
     case WILD_AREA_WATER:
-        numMon = WATER_WILD_COUNT;
+        numMon = NUM_WATER_MONS_ENCOUNTER_SLOTS;
         break;
     case WILD_AREA_ROCKS:
-        numMon = ROCK_WILD_COUNT;
+        numMon = NUM_ROCK_SMASH_MONS_ENCOUNTER_SLOTS;
         break;
     case WILD_AREA_SHAKE:
-        numMon = SHAKE_WILD_COUNT;
+        numMon = NUM_SHAKE_MONS_ENCOUNTER_SLOTS;
         break;
     default:
     case WILD_AREA_FISHING:
@@ -1354,7 +1356,7 @@ static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildM
 #ifdef BUGFIX
     return TryGetRandomWildMonIndexByType(wildMon, type, size, monIndex);
 #else
-    return TryGetRandomWildMonIndexByType(wildMon, type, LAND_WILD_COUNT, monIndex);
+    return TryGetRandomWildMonIndexByType(wildMon, type, NUM_LAND_MONS_ENCOUNTER_SLOTS, monIndex);
 #endif
 }
 
@@ -1402,18 +1404,6 @@ bool8 TryDoDoubleWildBattle(void)
     return FALSE;
 }
 
-bool8 StandardWildEncounter_Debug(void)
-{
-    u32 headerId = GetCurrentMapWildMonHeaderId();
-    enum TimeOfDay timeOfDay = GetTimeOfDayForEncounters(headerId, WILD_AREA_LAND);
-
-    if (TryGenerateWildMon(gWildMonHeaders[headerId].encounterTypes[timeOfDay].landMonsInfo, WILD_AREA_LAND, 0) != TRUE)
-        return FALSE;
-
-    DoStandardWildBattle_Debug();
-    return TRUE;
-}
-
 u32 ChooseHiddenMonIndex(void)
 {
     #ifdef ENCOUNTER_CHANCE_HIDDEN_MONS_TOTAL
@@ -1433,4 +1423,20 @@ u32 ChooseHiddenMonIndex(void)
 bool32 MapHasNoEncounterData(void)
 {
     return (GetCurrentMapWildMonHeaderId() == HEADER_NONE);
+}
+
+u8 GetWaterEncounterSlotForMatchCall(void)
+{
+    int rand = Random() % ENCOUNTER_CHANCE_WATER_MONS_TOTAL;
+
+    if (rand < ENCOUNTER_CHANCE_WATER_MONS_SLOT_0)
+        return 0;
+    else if (rand >= ENCOUNTER_CHANCE_WATER_MONS_SLOT_0 && rand < ENCOUNTER_CHANCE_WATER_MONS_SLOT_1)
+        return 1;
+    else if (rand >= ENCOUNTER_CHANCE_WATER_MONS_SLOT_1 && rand < ENCOUNTER_CHANCE_WATER_MONS_SLOT_2)
+        return 2;
+    else if (rand >= ENCOUNTER_CHANCE_WATER_MONS_SLOT_2 && rand < ENCOUNTER_CHANCE_WATER_MONS_SLOT_3)
+        return 3;
+    else
+        return 4;
 }

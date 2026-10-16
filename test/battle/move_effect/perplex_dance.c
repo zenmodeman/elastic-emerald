@@ -22,7 +22,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Perplex Dance lowers both offenses and confus
     } THEN {
         EXPECT_EQ(opponent->statStages[STAT_ATK], DEFAULT_STAT_STAGE - 2);
         EXPECT_EQ(opponent->statStages[STAT_SPATK], DEFAULT_STAT_STAGE - 2);
-        EXPECT_GT((u32)player->volatiles.confusionTurns, 0);
+        EXPECT_GT((u32)player->volatiles.confusionTimer, 0);
     }
 }
 
@@ -40,7 +40,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Own Tempo prevents Perplex Dance self-confusi
     } THEN {
         EXPECT_EQ(opponent->statStages[STAT_ATK], DEFAULT_STAT_STAGE - 2);
         EXPECT_EQ(opponent->statStages[STAT_SPATK], DEFAULT_STAT_STAGE - 2);
-        EXPECT_EQ((u32)player->volatiles.confusionTurns, 0);
+        EXPECT_EQ((u32)player->volatiles.confusionTimer, 0);
     }
 }
 

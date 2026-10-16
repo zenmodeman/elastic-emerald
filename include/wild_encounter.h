@@ -56,7 +56,6 @@ extern bool8 gIsSurfingEncounter;
 extern u8 gChainFishingDexNavStreak;
 
 u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIndex, enum WildPokemonArea area);
-void DisableWildEncounters(bool8 disabled);
 bool8 StandardWildEncounter(u16 curMetatileBehavior, u16 prevMetatileBehavior);
 bool8 SweetScentWildEncounter(void);
 void ShakeWildEncounter(void);
@@ -73,8 +72,6 @@ bool8 StandardWildEncounter_Debug(void);
 u32 CalculateChainFishingShinyRolls(void);
 void CreateWildMon(enum Species species, u8 level);
 bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum WildPokemonArea area, u8 flags);
-bool8 SetUpMassOutbreakEncounter(u8 flags);
-bool8 DoMassOutbreakEncounterTest(void);
 bool8 AreLegendariesInSootopolisPreventingEncounters(void);
 u16 GetCurrentMapWildMonHeaderId(void);
 bool8 CheckFeebasAtCoords(s16 x, s16 y);
@@ -84,5 +81,8 @@ u32 ChooseWildMonIndex_Rocks(void);
 u32 ChooseHiddenMonIndex(void);
 bool32 MapHasNoEncounterData(void);
 enum TimeOfDay GetTimeOfDayForEncounters(u32 headerId, enum WildPokemonArea area);
+
+u8 GetLandEncounterSlotForMatchCall(void);
+u8 GetWaterEncounterSlotForMatchCall(void);
 
 #endif // GUARD_WILD_ENCOUNTER_H

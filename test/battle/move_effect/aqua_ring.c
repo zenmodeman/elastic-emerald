@@ -50,7 +50,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Water Veil doubles Aqua Ring recovery")
 
 SINGLE_BATTLE_TEST("Aqua Ring restores 30% more HP when holding Big Root")
 {
-    u32 item;
+    enum Item item;
     u16 expectedHp;
     PARAMETRIZE { item = ITEM_NONE; expectedHp = 58; }
     PARAMETRIZE { item = ITEM_BIG_ROOT; expectedHp = 60; }
