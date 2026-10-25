@@ -10,6 +10,8 @@ Comparisons across alternate states concern the same move or switch candidate. C
 
 Effective Speed includes stages, abilities, items, status, weather, and field effects. Whether priority and Trick Room belong in a comparison depends on whether I am modeling raw Speed or actual turn order. For lead identity, party slot and switch-in history carry more information than a first-turn flag.
 
+For doubles Speed-drop redundancy, retain the target alongside the simulated partner move. Use the AI processing order to distinguish simulated actions from already chosen actions; numeric battler order is insufficient when processing is reversed. Runtime Low Kick records Float Stone when calculating its weight-based power; calculation-only AI queries must not record it.
+
 I favor evidence-based exceptions. Depleted PP, for example, supports an inference that a self-debuffing move was attempted; merely knowing the move does not. Hypothetical calculations retain real state such as active Tera and item changes unless that particular calculation is intended to remove it.
 
 ## Temporary battle state

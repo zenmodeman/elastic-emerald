@@ -9,6 +9,8 @@ In Restricted Mode,  Route Bosses often cannot be battled after a certain progre
 
 ## Party design
 
+`trainerproc` leaves an unspecified Pokemon gender at zero. The shared trainer generator retains the previous defaults: personality low byte `0x88` for a male trainer in singles, `0x78` for a female trainer in singles, and `0x80` for other battle types. Explicit Pokemon genders override these values; partners retain random unspecified genders. Keep this contract when updating the generator API.
+
 When trying to figure out the right Pokemon to use for a trainer, their existing intro, defeat, and post-battle dialogue is helpful. The NPC's location and trainer class also is a big factor.
 
 

@@ -10,6 +10,7 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| Elastic test regression repairs | **Newest** | Restores Drain Douse recovery targets, Float Stone handling and inference, repeatable Laser Focus, doubles Speed-drop coordination, and unspecified trainer Pokemon genders after the upstream upgrade. |
 | Post-merge build repairs | **Newest** | Restores ROM compilation and linking by migrating remaining battle-script commands, removing a duplicate trainer-script label, and updating enum handling. |
 | Expansion 1.17.1 integration | **Newest** | Resolves the upstream merge while retaining custom modes, trainer services and scaling, move effects, AI prediction, and move-service access on the updated APIs. |
 | Two-trainer intro party trays | **Newest** | Fixes overlapping Pokeball trays in paired battles, including Lola and Chandler on Route 109. Each trainer now has a separate visible row. |

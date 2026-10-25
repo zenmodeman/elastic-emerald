@@ -854,7 +854,6 @@ BattleScript_CoreEnforcerRet:
 
 BattleScript_EffectLaserFocus::
 	attackcanceler
-	jumpifvolatile BS_ATTACKER, VOLATILE_LASER_FOCUS_TIMER, BattleScript_ButItFailed
 	setvolatile BS_ATTACKER, VOLATILE_LASER_FOCUS_TIMER, B_LASER_FOCUS_TIMER
 	attackanimation
 	waitanimation

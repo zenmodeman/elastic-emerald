@@ -4,7 +4,11 @@
 
 AI_DOUBLE_BATTLE_TEST("Elastic-tests: Doubles Speed control does not reward a redundant second Rock Tomb")
 {
+    u32 reverseOrderChance;
+    PARAMETRIZE { reverseOrderChance = 0; }
+    PARAMETRIZE { reverseOrderChance = 100; }
     GIVEN {
+        WITH_CONFIG(AI_REVERSE_BATTLER_LOGIC_ORDER_CHANCE, reverseOrderChance);
         ASSUME(MoveHasAdditionalEffectWithChance(MOVE_ROCK_TOMB, MOVE_EFFECT_STAT_MINUS, 100));
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT);
         PLAYER(SPECIES_WOBBUFFET) { Speed(100); Moves(MOVE_CELEBRATE); }

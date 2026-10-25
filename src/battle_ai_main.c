@@ -465,6 +465,7 @@ static void SetAllyMove(u32 battler)
 {
     enum BattlerId partnerBattler = GetPartnerBattler(battler);
     gAiLogicData->partnerMove = MOVE_NONE; // Make sure no garbage is stored for simulation
+    gAiLogicData->partnerTarget = partnerBattler;
 
     if (!IsBattlerAlive(partnerBattler) || !IsAiBattlerAware(partnerBattler))
     {
@@ -477,12 +478,14 @@ static void SetAllyMove(u32 battler)
         struct ChosenAction chosen = ChooseMoveOrAction_Doubles(partnerBattler);
         gAiLogicData->partnerMoveSimulation = FALSE;
         gAiLogicData->partnerMove = gBattleMons[partnerBattler].moves[chosen.moveIndex];
+        gAiLogicData->partnerTarget = chosen.target;
     }
     else
     {
         // Move for battler has already been calculated so set as partner move
         u32 moveIndex = gAiBattleData->chosenMoveIndex[partnerBattler];
         gAiLogicData->partnerMove = gBattleMons[partnerBattler].moves[moveIndex];
+        gAiLogicData->partnerTarget = gAiBattleData->chosenTarget[partnerBattler];
     }
 }
 
@@ -5785,7 +5788,10 @@ static bool32 PartnerSpeedDropAlreadyHandlesTarget(enum BattlerId battlerAtk, en
     s32 speedDrop = 0;
     bool32 attackerIsFaster;
 
-    if (BattlerHasAi(partner) && partner < battlerAtk)
+    if (aiData->partnerMoveSimulation)
+        return FALSE;
+
+    if (BattlerHasAi(partner) && !IsThinkingBeforePartner(battlerAtk, partner))
     {
         partnerMove = GetAIChosenMove(partner);
         partnerTarget = gAiBattleData->chosenTarget[partner];
@@ -5793,7 +5799,7 @@ static bool32 PartnerSpeedDropAlreadyHandlesTarget(enum BattlerId battlerAtk, en
     else
     {
         partnerMove = gAiLogicData->partnerMove;
-        partnerTarget = gBattleStruct->moveTarget[partner];
+        partnerTarget = gAiLogicData->partnerTarget;
     }
 
     if (!IsDoubleBattle()

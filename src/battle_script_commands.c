@@ -1815,6 +1815,8 @@ static void Cmd_setadditionaleffects(void)
         cv.move = gCurrentMove;
         cv.abilities[cv.battlerAtk] = GetBattlerAbility(cv.battlerAtk);
         cv.abilities[cv.battlerDef] = GetBattlerAbility(cv.battlerDef);
+        cv.holdEffects[cv.battlerAtk] = GetBattlerHoldEffect(cv.battlerAtk);
+        cv.holdEffects[cv.battlerDef] = GetBattlerHoldEffect(cv.battlerDef);
 
         struct SetEffect se = {0};
 

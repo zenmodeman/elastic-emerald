@@ -100,3 +100,13 @@ The full assembler pass also needs the custom battle scripts migrated: accuracy 
 The Tier Point projection over terminal-species forms intentionally considers only Mega forms, so its `FormChanges` enum switch needs an explicit default for other methods under `-Werror=switch`. The retired `ABILITYEFFECT_COLOR_CHANGE` enum entry has no remaining callers: proactive Color Change runs in target failure checks, while Berserk and Anger Shell use `ABILITYEFFECT_HP_THRESHOLD`.
 
 After these follow-up fixes, `make -j4` completed compilation, assembly, linking, and ROM generation. A subsequent incremental `make -j4` also completed successfully. The resulting ROM uses 27,040,820 bytes of the 32 MiB ROM region. Runtime Expansion and Elastic tests were not run in this build-repair pass.
+
+### Elastic test follow-up
+
+Additional-effect dispatch in `Cmd_setadditionaleffects` must populate held-item effects as well as abilities before calling `SetMoveEffect`; Metal Rush's weight bands depend on Float Stone. Drain Douse's move-end scripts use `BS_EFFECT_BATTLER`, so explicitly select the attacker for recovery or Liquid Ooze damage and select the target for the Ooze ability popup. Do not rely on an effect battler left by an earlier script, especially in doubles.
+
+Laser Focus intentionally refreshes its timer on repeated use and applies its Accuracy increase each time. Remove upstream's already-focused failure branch when migrating that script. Low Kick's real damage calculation records Float Stone through `RecordItemEffectBattle`, guarded by `updateFlags` so AI simulations do not reveal hidden items.
+
+Doubles Speed-drop scoring needs both the partner's move and its selected target, including a simulated partner action. Respect `IsThinkingBeforePartner` rather than numeric battler order because upstream can reverse AI processing order. Trainer generation must also accept trainerproc's zero-valued unspecified gender; retain the trainer/battle-type default while keeping explicit and random genders separate.
+
+Validation: `make check -j4 TESTS="Elastic-tests"` passes all 480 tests after these repairs. Coverage includes both AI processing orders, EV Mode enabled/disabled, and trainer gender defaults. `git diff --check` is clean. The full Expansion suite was not run.

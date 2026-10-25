@@ -3380,6 +3380,7 @@ static enum MoveEndResult MoveEndAbsorb(struct BattleCalcValues *cv)
         if (cv->abilities[cv->battlerDef] == ABILITY_LIQUID_OOZE)
             drainAmount = -drainAmount;
 
+        gEffectBattler = cv->battlerAtk;
         if (drainAmount > 0)
         {
             SetHealAmount(cv->battlerAtk, drainAmount);
@@ -3388,6 +3389,7 @@ static enum MoveEndResult MoveEndAbsorb(struct BattleCalcValues *cv)
         }
         else if (drainAmount < 0)
         {
+            gBattlerAbility = gBattleScripting.battler = cv->battlerDef;
             SetPassiveDamageAmount(cv->battlerAtk, -drainAmount);
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_ABSORB_OOZE;
             BattleScriptCall(BattleScript_EffectAbsorbLiquidOoze);

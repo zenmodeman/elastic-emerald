@@ -6444,6 +6444,8 @@ static inline u32 CalcMoveBasePower(struct DamageContext *ctx)
         break;
     case EFFECT_LOW_KICK:
         weight = GetBattlerWeight(battlerDef, ctx->abilities[battlerDef], ctx->holdEffects[battlerDef]);
+        if (ctx->updateFlags && ctx->holdEffects[battlerDef] == HOLD_EFFECT_FLOAT_STONE)
+            RecordItemEffectBattle(battlerDef, HOLD_EFFECT_FLOAT_STONE);
         for (i = 0; sWeightToDamageTable[i] != 0xFFFF; i += 2)
         {
             if (sWeightToDamageTable[i] > weight)

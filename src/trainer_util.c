@@ -98,6 +98,8 @@ static bool32 SetCorrectAbilityNum(struct Pokemon *mon, enum Species species, en
 void MakeTrainerGenerator(struct TrainerGenerator *trainerGen, const struct Trainer *trainer)
 {
     trainerGen->gender = trainer->gender;
+    trainerGen->defaultGenderValue = trainer->battleType != TRAINER_BATTLE_TYPE_SINGLES ? 0x80
+                                  : trainer->gender == TRAINER_GENDER_FEMALE ? 0x78 : 0x88;
     if (trainer->aiFlags & AI_FLAG_SMART_TERA)
         trainerGen->smartTera = TRUE;
     trainerGen->isFrontier = FALSE;
@@ -111,6 +113,7 @@ void MakePartnerGenerator(struct TrainerGenerator *trainerGen, const struct Trai
 {
     u32 otID;
     trainerGen->gender = partner->gender;
+    trainerGen->defaultGenderValue = 0; // Partners retain random unspecified genders.
     if (partner->aiFlags & AI_FLAG_SMART_TERA)
         trainerGen->smartTera = TRUE;
     trainerGen->isFrontier = FALSE;
@@ -126,7 +129,10 @@ void GenerateMonFromTrainerMon(struct Pokemon *mon, const struct TrainerMon *tra
     u32 data;
     u32 personality = (LocalRandom32(&trainer->localRngState) & 0xFFFFDF00) + 0x1000;
     u32 genderValue = 0;
-    if (trainerMon->gender == TRAINER_MON_RANDOM_GENDER)
+    // A zero field retains trainerproc's unspecified-gender default.
+    if (trainerMon->gender == 0)
+        genderValue = trainer->defaultGenderValue ?: (LocalRandom32(&trainer->localRngState) & 0xFF);
+    else if (trainerMon->gender == TRAINER_MON_RANDOM_GENDER)
         genderValue = LocalRandom32(&trainer->localRngState) & 0x000000FF;
     else if (trainerMon->gender == TRAINER_MON_MALE)
         genderValue = GeneratePersonalityForGender(MON_MALE, trainerMon->species);

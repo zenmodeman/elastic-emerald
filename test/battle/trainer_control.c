@@ -108,13 +108,41 @@ TEST("CreateNPCTrainerPartyForTrainer doesn't set mystery tera type when Smart T
 
 TEST("Elastic-tests: Merge guard: Trainer EV spreads apply only in EV Mode")
 {
+    bool32 evMode;
+    PARAMETRIZE { evMode = FALSE; }
+    PARAMETRIZE { evMode = TRUE; }
     struct Pokemon *testParty = Alloc(PARTY_SIZE * sizeof(*testParty));
     u32 currTrainer = 3;
 
+    gBattleTypeFlags = 0;
+    if (evMode)
+        FlagSet(FLAG_EV_MODE);
+    else
+        FlagClear(FLAG_EV_MODE);
     CreateNPCTrainerPartyFromTrainer(testParty, GetTrainerStructFromId(currTrainer));
 
-    EXPECT_EQ(GetMonEVCount(&testParty[0]), 0);
+    EXPECT_EQ(GetMonEVCount(&testParty[0]), evMode ? 508 : 0);
+    EXPECT_EQ(GetMonEVCount(&testParty[1]), 0);
 
+    Free(testParty);
+    FlagClear(FLAG_EV_MODE);
+}
+
+TEST("Elastic-tests: Trainer generation preserves unspecified gender defaults and explicit genders")
+{
+    u32 gender, battleType, expectedGenderValue;
+    PARAMETRIZE { gender = TRAINER_GENDER_MALE; battleType = TRAINER_BATTLE_TYPE_SINGLES; expectedGenderValue = 0x88; }
+    PARAMETRIZE { gender = TRAINER_GENDER_FEMALE; battleType = TRAINER_BATTLE_TYPE_SINGLES; expectedGenderValue = 0x78; }
+    PARAMETRIZE { gender = TRAINER_GENDER_MALE; battleType = TRAINER_BATTLE_TYPE_DOUBLES; expectedGenderValue = 0x80; }
+
+    struct Trainer trainer = gTrainers[DIFFICULTY_NORMAL][3];
+    struct Pokemon *testParty = Alloc(PARTY_SIZE * sizeof(*testParty));
+    trainer.gender = gender;
+    trainer.battleType = battleType;
+    gBattleTypeFlags = 0;
+    CreateNPCTrainerPartyFromTrainer(testParty, &trainer);
+    EXPECT_EQ(GetMonGender(&testParty[0]), MON_FEMALE);
+    EXPECT_EQ(GetMonData(&testParty[1], MON_DATA_PERSONALITY) & 0xFF, expectedGenderValue);
     Free(testParty);
 }
 
