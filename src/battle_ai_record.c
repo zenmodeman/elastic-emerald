@@ -40,12 +40,14 @@ void RecordAllMoves(enum BattlerId battler)
 
 void RecordAbilityBattle(enum BattlerId battlerId, enum Ability abilityId)
 {
+    gAiPartyData->mons[GetBattlerTrainer(battlerId)][gBattlerPartyIndexes[battlerId]].revealedAbility = abilityId;
     gBattleHistory->abilities[battlerId] = abilityId;
     gAiPartyData->mons[GetBattlerSide(battlerId)][gBattlerPartyIndexes[battlerId]].ability = abilityId;
 }
 
 void RecordItemEffectBattle(enum BattlerId battlerId, enum HoldEffect itemEffect)
 {
+    gAiPartyData->mons[GetBattlerTrainer(battlerId)][gBattlerPartyIndexes[battlerId]].revealedHoldEffect = itemEffect;
     gBattleHistory->itemEffects[battlerId] = itemEffect;
     gAiPartyData->mons[GetBattlerSide(battlerId)][gBattlerPartyIndexes[battlerId]].heldEffect = itemEffect;
 }

@@ -31,7 +31,7 @@
 #define B_BINDING_DAMAGE            GEN_LATEST // In Gen6+, binding damage is 1/8 of max HP instead of 1/16. If the user is holding a Binding Band, it is 1/6 instead of 1/8.
 #define B_PSYWAVE_DMG               GEN_LATEST // Psywave's damage formula. See DoFixedDamageMoveCalc for details.
 #define B_PAYBACK_SWITCH_BOOST      GEN_LATEST // In Gen5+, Payback's base power no longer doubles if the opponent switches out.
-#define B_HIDDEN_POWER_DMG          GEN_LATEST // In Gen6+, Hidden Power's base power is 60. Previously, it was determined by the Pokémon's IVs.
+#define B_HIDDEN_POWER_DMG          GEN_LATEST // Legacy compatibility setting; Elastic Hidden Power always has 60 base power.
 #define B_ROUGH_SKIN_DMG            GEN_LATEST // In Gen4+, Rough Skin's contact damage is 1/8 of max HP instead of 1/16. This also applies to Iron Barbs.
 #define B_KNOCK_OFF_DMG             GEN_LATEST // In Gen6+, Knock Off deals 50% more damage if the target is holding an item that can be knocked off.
 #define B_SPORT_DMG_REDUCTION       GEN_LATEST // In Gen5+, Water/Mud Sport reduce Fire-/Electric-type damage by 67% instead of 50%.

@@ -52,18 +52,15 @@ SINGLE_BATTLE_TEST("Gale Wings only grants priority to Flying-type moves")
     }
 }
 
-SINGLE_BATTLE_TEST("Gale Wings doesn't increase priority of Flying-type Natural Gift, Judgment, Hidden Power, or Tera Blast")
+SINGLE_BATTLE_TEST("Elastic-tests: Gale Wings does not increase priority of item-based Flying moves")
 {
     enum Move move;
     enum Item heldItem;
     PARAMETRIZE { move = MOVE_NATURAL_GIFT; heldItem = ITEM_LUM_BERRY; }
     PARAMETRIZE { move = MOVE_JUDGMENT; heldItem = ITEM_SKY_PLATE; }
-    PARAMETRIZE { move = MOVE_HIDDEN_POWER; heldItem = ITEM_NONE; }
     GIVEN {
         ASSUME(GetMoveEffect(MOVE_NATURAL_GIFT) == EFFECT_NATURAL_GIFT);
         ASSUME(GetMoveEffect(MOVE_JUDGMENT) == EFFECT_CHANGE_TYPE_ON_ITEM);
-        // IV combinations sourced from https://www.smogon.com/forums/threads/hidden-power-iv-combinations.78083/
-        ASSUME(GetMoveEffect(MOVE_HIDDEN_POWER) == EFFECT_HIDDEN_POWER);
         ASSUME(GetMoveEffect(MOVE_TERA_BLAST) == EFFECT_TERA_BLAST);
         ASSUME(gItemsInfo[ITEM_SKY_PLATE].holdEffect == HOLD_EFFECT_PLATE);
         ASSUME(gItemsInfo[ITEM_SKY_PLATE].secondaryId == TYPE_FLYING);
@@ -79,9 +76,6 @@ SINGLE_BATTLE_TEST("Gale Wings doesn't increase priority of Flying-type Natural 
         }
         else if (move == MOVE_JUDGMENT) {
             MESSAGE("The opposing Talonflame used Judgment!");
-        }
-        else if (move == MOVE_HIDDEN_POWER) {
-            MESSAGE("The opposing Talonflame used Hidden Power!");
         }
         else {
             MESSAGE("The opposing Talonflame used Tera Blast!");

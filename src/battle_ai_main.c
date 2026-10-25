@@ -3034,6 +3034,10 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
         if (DoesPartnerHaveSameMoveEffect(GetPartnerBattler(battlerAtk), battlerDef, move, aiData->partnerMove))
             ADJUST_SCORE(-10);
         break;
+    case EFFECT_HIDDEN_POWER:
+        if (GET_BASE_SPECIES_ID(gBattleMons[battlerAtk].species) != SPECIES_UNOWN)
+            ADJUST_SCORE(-10);
+        break;
     case EFFECT_DARK_VOID:
         if (GetConfig(B_DARK_VOID_FAIL) >= GEN_7 && gBattleMons[battlerAtk].species != SPECIES_DARKRAI)
             ADJUST_SCORE(-10);

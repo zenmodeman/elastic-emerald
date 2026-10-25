@@ -782,6 +782,7 @@ void CreateRandomMon(struct Pokemon *mon, enum Species species, u8 level);
 void CreateRandomMonWithIVs(struct Pokemon *mon, enum Species species, u8 level, u8 fixedIv);
 void CreateBoxMon(struct BoxPokemon *boxMon, enum Species species, u8 level, u32 personality, struct OriginalTrainerId);
 void CreateMonWithIVs(struct Pokemon *mon, enum Species species, u8 level, u32 personality, struct OriginalTrainerId trainerId, u8 fixedIV);
+u32 GetUnownPerfectIVMask(enum Species species);
 void SetBoxMonIVs(struct BoxPokemon *mon, u8 fixedIV);
 void SetBoxMonPerfectIVs(struct BoxPokemon *mon, u32 numPerfect);
 void CreateMaleMon(struct Pokemon *mon, enum Species species, u8 level);

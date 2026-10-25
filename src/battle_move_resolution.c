@@ -1211,6 +1211,10 @@ static enum CancelerResult CancelerMoveFailure(struct BattleCalcValues *cv)
 
     switch (cv->moveEffect)
     {
+    case EFFECT_HIDDEN_POWER:
+        if (GET_BASE_SPECIES_ID(gBattleMons[cv->battlerAtk].species) != SPECIES_UNOWN)
+            battleScript = BattleScript_PokemonCantUseTheMove;
+        break;
     case EFFECT_FLING:
         if (!CanFling(cv->battlerAtk, cv->abilities[cv->battlerAtk]))
             battleScript = BattleScript_ButItFailed;
@@ -1960,6 +1964,19 @@ static enum CancelerResult CancelerExplosion(struct BattleCalcValues *cv)
     }
 
     return CANCELER_RESULT_SUCCESS;
+}
+
+static enum CancelerResult CancelerHiddenPowerType(struct BattleCalcValues *cv)
+{
+    if (cv->moveEffect != EFFECT_HIDDEN_POWER
+     || GET_BASE_SPECIES_ID(gBattleMons[cv->battlerAtk].species) != SPECIES_UNOWN
+     || !IsBattlerAlive(cv->battlerDef))
+        return CANCELER_RESULT_SUCCESS;
+
+    SetHiddenPowerType(cv->battlerAtk, cv->battlerDef);
+    PREPARE_TYPE_BUFFER(gBattleTextBuff1, GetBattleMoveType(cv->move));
+    BattleScriptCall(BattleScript_HiddenPowerType);
+    return CANCELER_RESULT_RUN_SCRIPT_AND_INCREMENT;
 }
 
 static enum CancelerResult CancelerMoveSpecificMessage(struct BattleCalcValues *cv)
@@ -3142,6 +3159,7 @@ static enum CancelerResult (*const sMoveSuccessOrderCancelers[])(struct BattleCa
     [CANCELER_SET_TARGETS] = CancelerSetTargets,
     [CANCELER_PPDEDUCTION] = CancelerPPDeduction,
     [CANCELER_SKY_BATTLE] = CancelerSkyBattle,
+    [CANCELER_HIDDEN_POWER_TYPE] = CancelerHiddenPowerType,
     [CANCELER_WEATHER_PRIMAL] = CancelerWeatherPrimal,
     [CANCELER_FOCUS_PRE_GEN5] = CancelerFocusPreGen5,
     [CANCELER_BIDE] = CancelerBide,

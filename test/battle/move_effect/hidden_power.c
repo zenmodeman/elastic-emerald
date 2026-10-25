@@ -1,210 +1,286 @@
 #include "global.h"
 #include "test/battle.h"
 
-ASSUMPTIONS
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power fails for species other than Unown")
 {
-    ASSUME(gTypesInfo[TYPE_NONE].isHiddenPowerType == FALSE);
-    ASSUME(gTypesInfo[TYPE_NORMAL].isHiddenPowerType == FALSE);
-    ASSUME(gTypesInfo[TYPE_FIGHTING].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_FLYING].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_POISON].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_GROUND].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_ROCK].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_BUG].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_GHOST].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_STEEL].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_MYSTERY].isHiddenPowerType == FALSE);
-    ASSUME(gTypesInfo[TYPE_FIRE].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_WATER].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_GRASS].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_ELECTRIC].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_PSYCHIC].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_ICE].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_DRAGON].isHiddenPowerType == TRUE);
-    ASSUME(gTypesInfo[TYPE_DARK].isHiddenPowerType == TRUE);
-    // Any type after Dark shouldn't be part of Hidden Power officially.
-    for (enum Type j = TYPE_DARK + 1; j < NUMBER_OF_MON_TYPES; j++) {
-        ASSUME(gTypesInfo[j].isHiddenPowerType == FALSE);
-    }
-}
-
-// IV combinations sourced from https://www.smogon.com/forums/threads/hidden-power-iv-combinations.78083/
-SINGLE_BATTLE_TEST("Hidden Power's type is determined by IVs")
-{
-    enum Type type, foeType, j;
-    enum Species foeSpecies;
-    enum Item foeItem;
-    u32 hp, atk, def, spAtk, spDef, speed;
-    bool32 hidden;
-
-    PARAMETRIZE { type = TYPE_NONE;     hidden = FALSE; }
-    PARAMETRIZE { type = TYPE_NORMAL;   hidden = FALSE; }
-    PARAMETRIZE { type = TYPE_FIGHTING; hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_CHOPLE_BERRY; hp = 30; atk =  2; def = 31; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_FIGHTING; hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_CHOPLE_BERRY; hp = 31; atk = 15; def = 30; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_FIGHTING; hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_CHOPLE_BERRY; hp = 30; atk = 22; def = 31; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_FIGHTING; hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_CHOPLE_BERRY; hp = 31; atk = 31; def = 30; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_FLYING;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_COBA_BERRY;   hp = 31; atk =  2; def = 31; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_FLYING;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_COBA_BERRY;   hp = 31; atk = 15; def = 31; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_FLYING;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_COBA_BERRY;   hp = 31; atk = 22; def = 31; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_FLYING;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_COBA_BERRY;   hp = 31; atk = 31; def = 31; spAtk = 30; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_POISON;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_KEBIA_BERRY;  hp = 30; atk =  2; def = 31; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_POISON;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_KEBIA_BERRY;  hp = 31; atk = 15; def = 30; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_POISON;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_KEBIA_BERRY;  hp = 30; atk = 22; def = 31; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_POISON;   hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_KEBIA_BERRY;  hp = 31; atk = 31; def = 30; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_GROUND;   hidden = TRUE;  foeType = TYPE_STEEL;   foeSpecies = SPECIES_KLINK;     foeItem = ITEM_SHUCA_BERRY;  hp = 31; atk =  2; def = 31; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_GROUND;   hidden = TRUE;  foeType = TYPE_STEEL;   foeSpecies = SPECIES_KLINK;     foeItem = ITEM_SHUCA_BERRY;  hp = 31; atk = 15; def = 31; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_GROUND;   hidden = TRUE;  foeType = TYPE_STEEL;   foeSpecies = SPECIES_KLINK;     foeItem = ITEM_SHUCA_BERRY;  hp = 31; atk = 22; def = 31; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_GROUND;   hidden = TRUE;  foeType = TYPE_STEEL;   foeSpecies = SPECIES_KLINK;     foeItem = ITEM_SHUCA_BERRY;  hp = 31; atk = 31; def = 31; spAtk = 30; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_ROCK;     hidden = TRUE;  foeType = TYPE_FIRE;    foeSpecies = SPECIES_VULPIX;    foeItem = ITEM_CHARTI_BERRY; hp = 31; atk =  2; def = 30; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_ROCK;     hidden = TRUE;  foeType = TYPE_FIRE;    foeSpecies = SPECIES_VULPIX;    foeItem = ITEM_CHARTI_BERRY; hp = 31; atk = 15; def = 30; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_ROCK;     hidden = TRUE;  foeType = TYPE_FIRE;    foeSpecies = SPECIES_VULPIX;    foeItem = ITEM_CHARTI_BERRY; hp = 31; atk = 22; def = 30; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_ROCK;     hidden = TRUE;  foeType = TYPE_FIRE;    foeSpecies = SPECIES_VULPIX;    foeItem = ITEM_CHARTI_BERRY; hp = 31; atk = 31; def = 30; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_BUG;      hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_TANGA_BERRY;  hp = 31; atk =  2; def = 31; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_BUG;      hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_TANGA_BERRY;  hp = 31; atk = 15; def = 31; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_BUG;      hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_TANGA_BERRY;  hp = 31; atk = 22; def = 31; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_BUG;      hidden = TRUE;  foeType = TYPE_DARK;    foeSpecies = SPECIES_UMBREON;   foeItem = ITEM_TANGA_BERRY;  hp = 31; atk = 31; def = 31; spAtk = 31; spDef = 30; speed = 30; }
-    PARAMETRIZE { type = TYPE_GHOST;    hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_KASIB_BERRY;  hp = 31; atk =  2; def = 31; spAtk = 31; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_GHOST;    hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_KASIB_BERRY;  hp = 31; atk = 15; def = 30; spAtk = 31; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_GHOST;    hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_KASIB_BERRY;  hp = 31; atk = 22; def = 31; spAtk = 31; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_GHOST;    hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_KASIB_BERRY;  hp = 31; atk = 31; def = 30; spAtk = 31; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_STEEL;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_BABIRI_BERRY; hp = 31; atk =  2; def = 30; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_STEEL;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_BABIRI_BERRY; hp = 31; atk = 15; def = 31; spAtk = 31; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_STEEL;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_BABIRI_BERRY; hp = 31; atk = 22; def = 30; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_STEEL;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_BABIRI_BERRY; hp = 31; atk = 31; def = 31; spAtk = 31; spDef = 30; speed = 31; }
-    PARAMETRIZE { type = TYPE_FIRE;     hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_OCCA_BERRY;   hp = 31; atk =  2; def = 31; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_FIRE;     hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_OCCA_BERRY;   hp = 31; atk = 15; def = 30; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_FIRE;     hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_OCCA_BERRY;   hp = 31; atk = 22; def = 31; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_FIRE;     hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_OCCA_BERRY;   hp = 31; atk = 31; def = 30; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_WATER;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_PASSHO_BERRY; hp = 31; atk =  2; def = 30; spAtk = 30; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_WATER;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_PASSHO_BERRY; hp = 31; atk = 15; def = 31; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_WATER;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_PASSHO_BERRY; hp = 31; atk = 22; def = 30; spAtk = 30; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_WATER;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_PASSHO_BERRY; hp = 31; atk = 31; def = 31; spAtk = 30; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_GRASS;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_RINDO_BERRY;  hp = 30; atk =  2; def = 31; spAtk = 30; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_GRASS;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_RINDO_BERRY;  hp = 30; atk = 15; def = 31; spAtk = 30; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_GRASS;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_RINDO_BERRY;  hp = 30; atk = 22; def = 31; spAtk = 30; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_GRASS;    hidden = TRUE;  foeType = TYPE_ROCK;    foeSpecies = SPECIES_NOSEPASS;  foeItem = ITEM_RINDO_BERRY;  hp = 30; atk = 31; def = 31; spAtk = 30; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_ELECTRIC; hidden = TRUE;  foeType = TYPE_WATER;   foeSpecies = SPECIES_SQUIRTLE;  foeItem = ITEM_WACAN_BERRY;  hp = 31; atk =  2; def = 30; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_ELECTRIC; hidden = TRUE;  foeType = TYPE_WATER;   foeSpecies = SPECIES_SQUIRTLE;  foeItem = ITEM_WACAN_BERRY;  hp = 30; atk = 15; def = 30; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_ELECTRIC; hidden = TRUE;  foeType = TYPE_WATER;   foeSpecies = SPECIES_SQUIRTLE;  foeItem = ITEM_WACAN_BERRY;  hp = 31; atk = 22; def = 30; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_ELECTRIC; hidden = TRUE;  foeType = TYPE_WATER;   foeSpecies = SPECIES_SQUIRTLE;  foeItem = ITEM_WACAN_BERRY;  hp = 30; atk = 31; def = 30; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_PSYCHIC;  hidden = TRUE;  foeType = TYPE_POISON;  foeSpecies = SPECIES_KOFFING;   foeItem = ITEM_PAYAPA_BERRY; hp = 31; atk =  2; def = 31; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_PSYCHIC;  hidden = TRUE;  foeType = TYPE_POISON;  foeSpecies = SPECIES_KOFFING;   foeItem = ITEM_PAYAPA_BERRY; hp = 30; atk = 15; def = 31; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_PSYCHIC;  hidden = TRUE;  foeType = TYPE_POISON;  foeSpecies = SPECIES_KOFFING;   foeItem = ITEM_PAYAPA_BERRY; hp = 31; atk = 22; def = 31; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_PSYCHIC;  hidden = TRUE;  foeType = TYPE_POISON;  foeSpecies = SPECIES_KOFFING;   foeItem = ITEM_PAYAPA_BERRY; hp = 30; atk = 31; def = 31; spAtk = 31; spDef = 31; speed = 30; }
-    PARAMETRIZE { type = TYPE_ICE;      hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_YACHE_BERRY;  hp = 30; atk =  2; def = 30; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_ICE;      hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_YACHE_BERRY;  hp = 30; atk = 15; def = 30; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_ICE;      hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_YACHE_BERRY;  hp = 30; atk = 22; def = 30; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_ICE;      hidden = TRUE;  foeType = TYPE_GRASS;   foeSpecies = SPECIES_TANGELA;   foeItem = ITEM_YACHE_BERRY;  hp = 30; atk = 31; def = 30; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_MYSTERY;  hidden = FALSE; }
-    PARAMETRIZE { type = TYPE_DRAGON;   hidden = TRUE;  foeType = TYPE_DRAGON;  foeSpecies = SPECIES_DRATINI;   foeItem = ITEM_HABAN_BERRY;  hp = 30; atk =  2; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_DRAGON;   hidden = TRUE;  foeType = TYPE_DRAGON;  foeSpecies = SPECIES_DRATINI;   foeItem = ITEM_HABAN_BERRY;  hp = 30; atk = 15; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_DRAGON;   hidden = TRUE;  foeType = TYPE_DRAGON;  foeSpecies = SPECIES_DRATINI;   foeItem = ITEM_HABAN_BERRY;  hp = 30; atk = 22; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_DRAGON;   hidden = TRUE;  foeType = TYPE_DRAGON;  foeSpecies = SPECIES_DRATINI;   foeItem = ITEM_HABAN_BERRY;  hp = 30; atk = 31; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_DARK;     hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_COLBUR_BERRY; hp = 31; atk =  3; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_DARK;     hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_COLBUR_BERRY; hp = 31; atk = 15; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_DARK;     hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_COLBUR_BERRY; hp = 31; atk = 23; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-    PARAMETRIZE { type = TYPE_DARK;     hidden = TRUE;  foeType = TYPE_PSYCHIC; foeSpecies = SPECIES_WOBBUFFET; foeItem = ITEM_COLBUR_BERRY; hp = 31; atk = 31; def = 31; spAtk = 31; spDef = 31; speed = 31; }
-
-    // Any type after Dark shouldn't be part of Hidden Power officially.
-    for (j = TYPE_DARK + 1; j < NUMBER_OF_MON_TYPES; j++) {
-        PARAMETRIZE { type = j; hidden = FALSE; }
-    }
-
     GIVEN {
-        if (hidden) {
-            ASSUME(gTypeEffectivenessTable[type][foeType] == UQ_4_12(2.0));                 // Foe's Type resists
-            ASSUME(GetSpeciesType(foeSpecies, 0) == GetSpeciesType(foeSpecies, 1)); // Foe's pure type
-            ASSUME(GetSpeciesType(foeSpecies, 0) == foeType);                           // Foe is the super-effective type
-            ASSUME(GetItemHoldEffect(foeItem) == HOLD_EFFECT_RESIST_BERRY);              // Item is resist berry
-            ASSUME(GetItemHoldEffectParam(foeItem) == type);                             // Resist berry of type
-            PLAYER(SPECIES_DUNSPARCE) { HPIV(hp); AttackIV(atk); DefenseIV(def); SpAttackIV(spAtk); SpDefenseIV(spDef); SpeedIV(speed); }
-        } else {
-            PLAYER(SPECIES_DUNSPARCE);
-        }
-        OPPONENT(foeSpecies) { Item(foeItem); }
+        PLAYER(SPECIES_WOBBUFFET);
+        OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
         TURN { MOVE(player, MOVE_HIDDEN_POWER); }
     } SCENE {
-        // Only test valid Hidden Power types
-        if (hidden) {
-            ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_BERRY, opponent); // Check that the resist berry is triggered
+        MESSAGE("Wobbuffet used Hidden Power!");
+        MESSAGE("But Wobbuffet can't use the move!");
+        NONE_OF {
             ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
             HP_BAR(opponent);
-            MESSAGE("It's super effective!");
         }
     }
 }
 
-SINGLE_BATTLE_TEST("Hidden Power's power is determined by IVs before Gen6", s16 damage)
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power supports Unown forms and Fairy typing")
 {
-    u32 powerBits;
-
-    PARAMETRIZE { powerBits = 0; }
-    PARAMETRIZE { powerBits = 32; }
-    PARAMETRIZE { powerBits = 63; }
-
+    u32 species;
+    PARAMETRIZE { species = SPECIES_UNOWN; }
+    PARAMETRIZE { species = SPECIES_UNOWN_B; }
+    PARAMETRIZE { species = SPECIES_UNOWN_EXCLAMATION; }
     GIVEN {
-        WITH_CONFIG(B_HIDDEN_POWER_DMG, GEN_5);
-        PLAYER(SPECIES_WOBBUFFET) {
-            Attack(100); Defense(100); SpAttack(100); SpDefense(100);
-            HPIV(powerBits & 1 ? 2 : 0);
-            AttackIV(powerBits & 2 ? 2 : 0);
-            DefenseIV(powerBits & 4 ? 2 : 0);
-            SpeedIV(powerBits & 8 ? 2 : 0);
-            SpAttackIV(powerBits & 16 ? 2 : 0);
-            SpDefenseIV(powerBits & 32 ? 2 : 0);
-        }
-        OPPONENT(SPECIES_WOBBUFFET) { Defense(100); SpDefense(100); }
+        PLAYER(species);
+        OPPONENT(SPECIES_SABLEYE);
     } WHEN {
         TURN { MOVE(player, MOVE_HIDDEN_POWER); }
     } SCENE {
+        MESSAGE("Hidden Power became Fairy type!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
-        HP_BAR(opponent, captureDamage: &results[i].damage);
-    } FINALLY {
-        EXPECT_LT(results[0].damage, results[1].damage);
-        EXPECT_LT(results[1].damage, results[2].damage);
+        HP_BAR(opponent);
     }
 }
 
-SINGLE_BATTLE_TEST("Hidden Power always triggers Counter instead of Mirror Coat (Gen 1-3)")
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power has 60 base power regardless of IVs or generation", s16 damage)
 {
-    u8 hp, atk, def, spa, spd, spe;
-
-    PARAMETRIZE { hp = 31; atk = 30; def = 30; spa = 30; spd = 30; spe = 30; } // TYPE_FIGHTING
-    PARAMETRIZE { hp = 31; atk = 30; def = 31; spa = 30; spd = 30; spe = 30; } // TYPE_FLYING
-    PARAMETRIZE { hp = 31; atk = 30; def = 30; spa = 30; spd = 30; spe = 31; } // TYPE_POISON
-    PARAMETRIZE { hp = 31; atk = 30; def = 31; spa = 30; spd = 30; spe = 31; } // TYPE_GROUND
-    PARAMETRIZE { hp = 31; atk = 30; def = 30; spa = 31; spd = 30; spe = 30; } // TYPE_ROCK
-    PARAMETRIZE { hp = 31; atk = 30; def = 31; spa = 31; spd = 30; spe = 30; } // TYPE_BUG
-    PARAMETRIZE { hp = 31; atk = 31; def = 30; spa = 31; spd = 30; spe = 31; } // TYPE_GHOST
-    PARAMETRIZE { hp = 31; atk = 31; def = 31; spa = 31; spd = 30; spe = 31; } // TYPE_STEEL
-    PARAMETRIZE { hp = 31; atk = 31; def = 30; spa = 30; spd = 31; spe = 30; } // TYPE_FIRE
-    PARAMETRIZE { hp = 31; atk = 31; def = 31; spa = 30; spd = 31; spe = 30; } // TYPE_WATER
-    PARAMETRIZE { hp = 31; atk = 31; def = 30; spa = 30; spd = 31; spe = 31; } // TYPE_GRASS
-    PARAMETRIZE { hp = 31; atk = 31; def = 31; spa = 30; spd = 31; spe = 31; } // TYPE_ELECTRIC
-    PARAMETRIZE { hp = 31; atk = 31; def = 30; spa = 31; spd = 31; spe = 30; } // TYPE_PSYCHIC
-    PARAMETRIZE { hp = 31; atk = 31; def = 31; spa = 31; spd = 31; spe = 30; } // TYPE_ICE
-    PARAMETRIZE { hp = 31; atk = 31; def = 30; spa = 31; spd = 31; spe = 31; } // TYPE_DRAGON
-    PARAMETRIZE { hp = 31; atk = 31; def = 31; spa = 31; spd = 31; spe = 31; } // TYPE_DARK
-
+    u32 iv, config;
+    PARAMETRIZE { iv = 0; config = GEN_5; }
+    PARAMETRIZE { iv = 31; config = GEN_5; }
+    PARAMETRIZE { iv = 0; config = GEN_6; }
+    PARAMETRIZE { iv = 31; config = GEN_6; }
     GIVEN {
-        WITH_CONFIG(B_HIDDEN_POWER_COUNTER, GEN_3);
-        ASSUME(GetMoveEffect(MOVE_COUNTER) == EFFECT_REFLECT_DAMAGE );
-        ASSUME(GetMoveEffect(MOVE_MIRROR_COAT) == EFFECT_REFLECT_DAMAGE);
-        ASSUME(GetMoveReflectDamage_DamageCategories(MOVE_COUNTER) == 1u << DAMAGE_CATEGORY_PHYSICAL );
-        ASSUME(GetMoveReflectDamage_DamageCategories(MOVE_MIRROR_COAT) == 1u << DAMAGE_CATEGORY_SPECIAL );
-        PLAYER(SPECIES_WOBBUFFET) { HPIV(hp); AttackIV(atk); DefenseIV(def); SpAttackIV(spa); SpDefenseIV(spd); SpeedIV(spe); }
-        OPPONENT(SPECIES_WOBBUFFET);
+        WITH_CONFIG(CONFIG_B_HIDDEN_POWER_DMG, config);
+        ASSUME(GetMovePower(MOVE_HIDDEN_POWER) == 60);
+        PLAYER(SPECIES_UNOWN) {
+            HPIV(iv); AttackIV(iv); DefenseIV(iv);
+            SpAttackIV(iv); SpDefenseIV(iv); SpeedIV(iv);
+            Attack(100); SpAttack(100);
+        }
+        OPPONENT(SPECIES_WOBBUFFET) { SpDefense(100); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Bug type!");
+        HP_BAR(opponent, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_EQ(results[0].damage, results[1].damage);
+        EXPECT_EQ(results[0].damage, results[2].damage);
+        EXPECT_EQ(results[0].damage, results[3].damage);
     }
-    WHEN {
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power selects its type against the switched-in opponent")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_SABLEYE);
+        OPPONENT(SPECIES_GYARADOS) { Ability(ABILITY_MOXIE); }
+    } WHEN {
+        TURN { SWITCH(opponent, 1); MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Electric type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power factors weather into its type selection")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_TANGELA);
+    } WHEN {
+        TURN { MOVE(player, MOVE_SUNNY_DAY); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_SUNNY_DAY, player);
+        MESSAGE("Hidden Power became Fire type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power factors the user's type boosters and Gems")
+{
+    u32 item;
+    PARAMETRIZE { item = ITEM_CHARCOAL; }
+    PARAMETRIZE { item = ITEM_FLAME_PLATE; }
+    PARAMETRIZE { item = ITEM_FIRE_GEM; }
+    GIVEN {
+        PLAYER(SPECIES_UNOWN) { Item(item); }
+        OPPONENT(SPECIES_TANGELA);
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Fire type!");
+        if (item == ITEM_FIRE_GEM)
+            ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_EFFECT, player);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    } THEN {
+        if (item == ITEM_FIRE_GEM)
+            EXPECT_EQ(player->item, ITEM_NONE);
+        else
+            EXPECT_EQ(player->item, item);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power ignores unrevealed opposing items")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN) { Item(ITEM_CHARCOAL); }
+        OPPONENT(SPECIES_TANGELA) { Item(ITEM_OCCA_BERRY); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Fire type!");
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_BERRY, opponent);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power only accounts for Levitate after it is revealed")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_BRONZONG) { Ability(ABILITY_LEVITATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Ground type!");
+        ABILITY_POPUP(opponent, ABILITY_LEVITATE);
+        MESSAGE("Hidden Power became Ghost type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power announces its type before Proactive Color Change")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Fighting type!");
+        ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
+        MESSAGE("The opposing Kecleon's type changed to Fighting!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power preserves the legacy Counter exception")
+{
+    u32 config = GEN_3;
+    PARAMETRIZE { config = GEN_2; }
+    PARAMETRIZE { config = GEN_3; }
+    GIVEN {
+        WITH_CONFIG(CONFIG_B_HIDDEN_POWER_COUNTER, config);
+        PLAYER(SPECIES_UNOWN) { HP(1000); MaxHP(1000); Attack(100); SpAttack(100); Speed(100); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1000); MaxHP(1000); SpDefense(100); Speed(1); }
+    } WHEN {
         TURN { MOVE(player, MOVE_HIDDEN_POWER); MOVE(opponent, MOVE_MIRROR_COAT); }
         TURN { MOVE(player, MOVE_HIDDEN_POWER); MOVE(opponent, MOVE_COUNTER); }
-    }
-    SCENE {
+    } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
         MESSAGE("The opposing Wobbuffet used Mirror Coat!");
         MESSAGE("But it failed!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
         ANIMATION(ANIM_TYPE_MOVE, MOVE_COUNTER, opponent);
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power ignores AI ability omniscience when choosing its type")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_BRONZONG) { Ability(ABILITY_LEVITATE); Moves(MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_UNOWN) { Moves(MOVE_HIDDEN_POWER); }
+    } WHEN {
+        TURN { EXPECT_MOVE(opponent, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Ground type!");
+        ABILITY_POPUP(player, ABILITY_LEVITATE);
+        NOT HP_BAR(player);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power remembers revealed abilities across switches")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_BRONZONG) { Ability(ABILITY_LEVITATE); }
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { SWITCH(opponent, 1); MOVE(player, MOVE_CELEBRATE); }
+        TURN { SWITCH(opponent, 0); MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Ground type!");
+        ABILITY_POPUP(opponent, ABILITY_LEVITATE);
+        MESSAGE("Hidden Power became Ghost type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power avoids absorption abilities only after revelation")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_SCIZOR) { Ability(ABILITY_FLASH_FIRE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Fire type!");
+        ABILITY_POPUP(opponent, ABILITY_FLASH_FIRE);
+        MESSAGE("Hidden Power became Fighting type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power does not consume a Gem for its nominal Normal type")
+{
+    GIVEN {
+        PLAYER(SPECIES_UNOWN) { Item(ITEM_NORMAL_GEM); }
+        OPPONENT(SPECIES_TANGELA);
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Flying type!");
+        NOT ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_EFFECT, player);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    } THEN {
+        EXPECT_EQ(player->item, ITEM_NORMAL_GEM);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power boosts Unown damage using Attack relative to Special Attack", s16 damage)
+{
+    enum Move move;
+    u32 attack, spAttack;
+    PARAMETRIZE { move = MOVE_SILVER_WIND; attack = 100; spAttack = 100; }
+    PARAMETRIZE { move = MOVE_HIDDEN_POWER; attack = 100; spAttack = 100; }
+    PARAMETRIZE { move = MOVE_SILVER_WIND; attack = 200; spAttack = 100; }
+    PARAMETRIZE { move = MOVE_HIDDEN_POWER; attack = 200; spAttack = 100; }
+    PARAMETRIZE { move = MOVE_SILVER_WIND; attack = 100; spAttack = 200; }
+    PARAMETRIZE { move = MOVE_HIDDEN_POWER; attack = 100; spAttack = 200; }
+    GIVEN {
+        ASSUME(GetMovePower(MOVE_SILVER_WIND) == 60);
+        ASSUME(GetMoveCategory(MOVE_SILVER_WIND) == DAMAGE_CATEGORY_SPECIAL);
+        ASSUME(GetMoveType(MOVE_SILVER_WIND) == TYPE_BUG);
+        PLAYER(SPECIES_UNOWN) { Attack(attack); SpAttack(spAttack); }
+        OPPONENT(SPECIES_WOBBUFFET) { HP(1000); MaxHP(1000); SpDefense(100); }
+    } WHEN {
+        TURN { MOVE(player, move); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, move, player);
+        HP_BAR(opponent, captureDamage: &results[i].damage);
+    } FINALLY {
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.25), results[1].damage);
+        EXPECT_MUL_EQ(results[2].damage, Q_4_12(1.5), results[3].damage);
+        EXPECT_MUL_EQ(results[4].damage, Q_4_12(1.125), results[5].damage);
     }
 }

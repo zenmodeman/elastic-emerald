@@ -198,6 +198,9 @@ struct AI_SavedBattleMon
 
 struct AiPartyMon
 {
+    // Actual battle reveals, kept separate from omniscient AI knowledge.
+    enum Ability revealedAbility;
+    enum HoldEffect revealedHoldEffect;
     enum Species species;
     enum Item item;
     enum HoldEffect heldEffect;

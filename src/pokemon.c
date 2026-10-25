@@ -904,6 +904,80 @@ bool32 ComputePlayerShinyOdds(u32 personality, u32 value)
     return GET_SHINY_VALUE(value, personality) < SHINY_ODDS;
 }
 
+#define UNOWN_IVS(a, b, c) ((1u << (a)) | (1u << (b)) | (1u << (c)))
+static const u8 sUnownFixedPerfectIVs[] =
+{
+    UNOWN_IVS(STAT_HP, STAT_ATK, STAT_DEF), // G
+    UNOWN_IVS(STAT_HP, STAT_ATK, STAT_SPATK), // H
+    UNOWN_IVS(STAT_HP, STAT_ATK, STAT_SPDEF), // I
+    UNOWN_IVS(STAT_HP, STAT_ATK, STAT_SPEED), // J
+    UNOWN_IVS(STAT_HP, STAT_DEF, STAT_SPATK), // K
+    UNOWN_IVS(STAT_HP, STAT_DEF, STAT_SPDEF), // L
+    UNOWN_IVS(STAT_HP, STAT_DEF, STAT_SPEED), // M
+    UNOWN_IVS(STAT_HP, STAT_SPATK, STAT_SPDEF), // N
+    UNOWN_IVS(STAT_HP, STAT_SPATK, STAT_SPEED), // O
+    UNOWN_IVS(STAT_HP, STAT_SPDEF, STAT_SPEED), // P
+    UNOWN_IVS(STAT_ATK, STAT_DEF, STAT_SPATK), // Q
+    UNOWN_IVS(STAT_ATK, STAT_DEF, STAT_SPDEF), // R
+    UNOWN_IVS(STAT_ATK, STAT_DEF, STAT_SPEED), // S
+    UNOWN_IVS(STAT_ATK, STAT_SPATK, STAT_SPDEF), // T
+    UNOWN_IVS(STAT_ATK, STAT_SPATK, STAT_SPEED), // U
+    UNOWN_IVS(STAT_ATK, STAT_SPDEF, STAT_SPEED), // V
+    UNOWN_IVS(STAT_DEF, STAT_SPATK, STAT_SPDEF), // W
+    UNOWN_IVS(STAT_DEF, STAT_SPATK, STAT_SPEED), // X
+    UNOWN_IVS(STAT_DEF, STAT_SPDEF, STAT_SPEED), // Y
+    UNOWN_IVS(STAT_SPATK, STAT_SPDEF, STAT_SPEED), // Z
+};
+#undef UNOWN_IVS
+
+// Stat storage puts Speed before the special stats; letter order follows the UI.
+static const u8 sUnownIVDisplayOrder[NUM_STATS] =
+{
+    STAT_HP, STAT_ATK, STAT_DEF, STAT_SPATK, STAT_SPDEF, STAT_SPEED,
+};
+
+u32 GetUnownPerfectIVMask(enum Species species)
+{
+    u32 mask = 0;
+    u32 count = 0;
+    u8 available[NUM_STATS];
+    u32 availableCount = 0;
+
+    if (GET_BASE_SPECIES_ID(species) != SPECIES_UNOWN)
+        return 0;
+
+    if (species >= SPECIES_UNOWN_G && species <= SPECIES_UNOWN_Z)
+        return sUnownFixedPerfectIVs[species - SPECIES_UNOWN_G];
+
+    if (species == SPECIES_UNOWN_EXCLAMATION)
+    {
+        mask |= 1u << ((Random() & 1) ? STAT_ATK : STAT_SPATK);
+        mask |= 1u << ((Random() & 1) ? STAT_DEF : STAT_SPDEF);
+        mask |= 1u << ((Random() & 1) ? STAT_HP : STAT_SPEED);
+        return mask;
+    }
+
+    if (species != SPECIES_UNOWN_QUESTION)
+    {
+        u32 letter = species == SPECIES_UNOWN ? 0 : species - SPECIES_UNOWN_B + 1;
+        mask = 1u << sUnownIVDisplayOrder[letter];
+        count = 1;
+    }
+    for (u32 i = 0; i < NUM_STATS; i++)
+    {
+        if (!(mask & (1u << i)))
+            available[availableCount++] = i;
+    }
+    while (count < 3)
+    {
+        u32 index = Random() % availableCount;
+        mask |= 1u << available[index];
+        available[index] = available[--availableCount];
+        count++;
+    }
+    return mask;
+}
+
 void SetBoxMonIVs(struct BoxPokemon *mon, u8 fixedIV)
 {
     u32 i, value;
@@ -936,7 +1010,21 @@ void SetBoxMonIVs(struct BoxPokemon *mon, u8 fixedIV)
     iv = (value & (MAX_IV_MASK << 10)) >> 10;
     SetBoxMonData(mon, MON_DATA_SPDEF_IV, &iv);
 
-    SetBoxMonPerfectIVs(mon, gSpeciesInfo[species].perfectIVCount);
+    // Base-species Unown encode the displayed letter in their personality.
+    if (species == SPECIES_UNOWN)
+        species = GetUnownSpeciesId(GetBoxMonData(mon, MON_DATA_PERSONALITY));
+    u32 unownIVs = GetUnownPerfectIVMask(species);
+    if (unownIVs)
+    {
+        iv = MAX_PER_STAT_IVS;
+        for (i = 0; i < NUM_STATS; i++)
+        {
+            if (unownIVs & (1u << i))
+                SetBoxMonData(mon, MON_DATA_HP_IV + i, &iv);
+        }
+    }
+    else
+        SetBoxMonPerfectIVs(mon, gSpeciesInfo[species].perfectIVCount);
 }
 
 void SetBoxMonPerfectIVs(struct BoxPokemon *mon, u32 numPerfect)
@@ -8578,7 +8666,7 @@ static enum PokeBall ResolveBall(u32 ballTemplate)
     return BALL_STRANGE;
 }
 
-static void ResolveIVs(enum Species species, const u16 *ivsTemplate, u8 *ivs, enum GeneratedMonOrigin origin)
+static void ResolveIVs(enum Species species, u32 personality, const u16 *ivsTemplate, u8 *ivs, enum GeneratedMonOrigin origin)
 {
     u32 i;
     u32 nonFixedIvCount = 0;
@@ -8601,6 +8689,23 @@ static void ResolveIVs(enum Species species, const u16 *ivsTemplate, u8 *ivs, en
             errorf("invalid iv value of %d above maximum of %d", ivs[i], MAX_PER_STAT_IVS);
             ivs[i] = MAX_PER_STAT_IVS;
         }
+    }
+
+    if (nonFixedIvCount == 0)
+        return;
+
+    if (species == SPECIES_UNOWN)
+        species = GetUnownSpeciesId(personality);
+    u32 unownIVs = GetUnownPerfectIVMask(species);
+    if (unownIVs)
+    {
+        for (i = 0; i < NUM_STATS; i++)
+        {
+            // Authored IV values remain authoritative, just as for other species.
+            if ((unownIVs & (1u << i)) && ivsTemplate[i] == USE_RANDOM_IVS)
+                ivs[i] = MAX_PER_STAT_IVS;
+        }
+        return;
     }
 
     u32 perfectIVCount = gSpeciesInfo[species].perfectIVCount;
@@ -8780,7 +8885,7 @@ void CreateMonFromTemplate(struct Pokemon *mon, const struct PokemonTemplate *mo
 
     u8 ivs[NUM_STATS];
     u8 evs[NUM_STATS];
-    ResolveIVs(species, monTemplate->ivs, ivs, monTemplate->origin);
+    ResolveIVs(species, personality, monTemplate->ivs, ivs, monTemplate->origin);
     ResolveEVs(monTemplate->evs, evs, monTemplate->ignoreTotalEvCheck);
     for (u32 i = 0; i < NUM_STATS; i++)
     {

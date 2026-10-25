@@ -39,3 +39,15 @@ Immunity helpers are particularly sensitive to upstream changes. Soundproof, Bul
 ### Proactive Color Change
 
 When attacking against a Color Change mon where the Color Change ability isn't negated, the AI will factor the type the Color Change mon would become when determining its moves.
+
+## Adaptive Hidden Power
+
+Hidden Power has fixed 60 base power and fails for any battle species whose base form is not Unown. `GetHiddenPowerType` scores all 18 ordinary types against the resolved target using the shared type-effectiveness and damage-modifier helpers. None, Mystery, and Stellar are excluded. Equal scores keep the first type in the type enum; no random roll or IV calculation is involved. The score includes STAB, weather, terrain, attacker type boosters and prospective Gems, and applicable revealed defensive abilities/items. It does not anticipate Proactive Color Change. Anticipation evaluates the same adaptive type when checking incoming Unown moves and ignores Hidden Power on species that cannot use it.
+
+Unown’s Hidden Power receives a final damage multiplier of `(Sp. Atk + Attack / 4) / Sp. Atk`, using stored battle stats before stages and item/ability multipliers. Equal Attack and Special Attack give 1.25× damage (approximately 75 effective power); higher Attack relative to Special Attack increases the bonus. `ApplyModifiersAfterDmgRoll` applies the same calculation to actual damage and AI estimates, after the existing modifiers. Integer arithmetic preserves fractional `Attack / 4` until the final result and rounds half down. A minimum Special Attack of 1 protects the denominator. This type-independent bonus does not alter the adaptive type ranking.
+
+`CANCELER_HIDDEN_POWER_TYPE` follows target selection and PP deduction, before primal-weather failure checks, Protean, and target failure/Color Change. It stores the final move type, reapplies Electrify if necessary, refreshes Gem eligibility, and runs the type-announcement script. Damage uses that stored type even after Color Change. Move menus retain the nominal Normal type because no execution target has been resolved.
+
+`AiPartyMon.revealedAbility` and `revealedHoldEffect` are written only by the battle reveal-recording functions. They remain separate from AI knowledge, which can be populated by omniscience, and retain revealed information when a party member switches out and back. Scoring compares those records with the current effective ability/item so suppression and replaced effects are respected. The ability-reveal restriction applies to the user as well as other battlers; the user’s own held item is always available. AI damage/type calculations use their explicit target, reject non-Unown users, and avoid fixed-type absorber switches for Hidden Power because it reselects after switching.
+
+The focused regressions live in `test/battle/move_effect/hidden_power.c` with the `Elastic-tests: ` prefix. Build and runtime test execution are separate from static review.

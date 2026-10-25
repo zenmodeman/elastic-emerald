@@ -47,3 +47,38 @@ python -m py_compile tools/elastic_emerald_helpers/audit_encounters.py tools/ela
 ```
 
 My review focuses on map grouping, duplicate headers, first-match behavior, and the affected rows. Live spreadsheet updates are a separate step after reviewing the dry run.
+
+## Unown form IV guarantees
+
+Randomly generated Unown receive three distinct guaranteed 31 IVs based on their displayed letter. Base-species Unown derive the letter from personality; explicit form species use that form. A–F guarantee HP, Attack, Defense, Sp. Atk, Sp. Def, and Speed respectively, then choose two distinct other stats at random. Question mark chooses any three distinct stats. Exclamation mark chooses one stat from each pair: Attack/Sp. Atk, Defense/Sp. Def, and HP/Speed.
+
+G–Z enumerate triples lexicographically in display order (HP, Attack, Defense, Sp. Atk, Sp. Def, Speed):
+
+| Form | Guaranteed IVs |
+| --- | --- |
+| G | HP, Attack, Defense |
+| H | HP, Attack, Sp. Atk |
+| I | HP, Attack, Sp. Def |
+| J | HP, Attack, Speed |
+| K | HP, Defense, Sp. Atk |
+| L | HP, Defense, Sp. Def |
+| M | HP, Defense, Speed |
+| N | HP, Sp. Atk, Sp. Def |
+| O | HP, Sp. Atk, Speed |
+| P | HP, Sp. Def, Speed |
+| Q | Attack, Defense, Sp. Atk |
+| R | Attack, Defense, Sp. Def |
+| S | Attack, Defense, Speed |
+| T | Attack, Sp. Atk, Sp. Def |
+| U | Attack, Sp. Atk, Speed |
+| V | Attack, Sp. Def, Speed |
+| W | Defense, Sp. Atk, Sp. Def |
+| X | Defense, Sp. Atk, Speed |
+| Y | Defense, Sp. Def, Speed |
+| Z | Sp. Atk, Sp. Def, Speed |
+
+`GetUnownPerfectIVMask` maps display order to the engine’s storage order, where Speed precedes the special stats. Both `SetBoxMonIVs` and template `ResolveIVs` apply the form mask instead of generic species/gift perfect-IV selection, so gift generation does not add a second random triple. Unselected IVs retain their ordinary rolls and may also naturally reach 31. Explicit fixed IVs and authored template values are preserved. Existing Pokémon are not modified retroactively.
+
+The `Elastic-tests: Unown` tests in `test/pokemon.c` cover all twenty fixed combinations, all random-choice possibilities with deterministic seeds, all 28 forms through legacy/wild-template/gift-template creation, and explicit IV overrides.
+
+Run `make check -j4 TESTS="Elastic-tests: Unown"` for the form guarantees and `make check -j4 TESTS="test/pokemon.c"` for the surrounding creation regressions. The Pokémon tests use Elastic’s random/curated Tera defaults rather than upstream primary/secondary-type assumptions. Hidden Power regressions can be selected with `make check -j4 TESTS="*Hidden Power"`; generation overrides in battle tests require `CONFIG_B_*` identifiers in `WITH_CONFIG`.

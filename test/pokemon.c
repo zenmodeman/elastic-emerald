@@ -4,6 +4,7 @@
 #include "event_data.h"
 #include "new_game.h"
 #include "pokemon.h"
+#include "random.h"
 #include "test/overworld_script.h"
 #include "test/test.h"
 #include "constants/characters.h"
@@ -29,16 +30,24 @@ TEST("Nature independent from Hidden Nature")
     EXPECT_EQ(GetMonData(&mon, MON_DATA_HIDDEN_NATURE), hiddenNature);
 }
 
-TEST("Terastallization type defaults to primary or secondary type")
+TEST("Elastic-tests: default Tera types follow random or curated assignments")
 {
-    u32 i;
-    enum Type teraType;
+    u32 personality = 0;
+    enum Type randomType = TYPE_NORMAL;
+    bool32 curated = FALSE;
+    PARAMETRIZE { personality = 0; randomType = TYPE_NORMAL; curated = FALSE; }
+    PARAMETRIZE { personality = 9; randomType = TYPE_STELLAR; curated = FALSE; }
+    PARAMETRIZE { personality = 10; randomType = TYPE_FIRE; curated = FALSE; }
+    PARAMETRIZE { personality = 0; randomType = TYPE_NORMAL; curated = TRUE; }
+    PARAMETRIZE { personality = 9; randomType = TYPE_STELLAR; curated = TRUE; }
+    PARAMETRIZE { personality = 10; randomType = TYPE_FIRE; curated = TRUE; }
     struct Pokemon mon;
-    for (i = 0; i < 128; i++) PARAMETRIZE {}
-    CreateRandomMonWithIVs(&mon, SPECIES_PIDGEY, 100, 0);
-    teraType = GetMonData(&mon, MON_DATA_TERA_TYPE);
-    EXPECT(teraType == GetSpeciesType(SPECIES_PIDGEY, 0)
-        || teraType == GetSpeciesType(SPECIES_PIDGEY, 1));
+    if (curated)
+        FlagSet(FLAG_CURATED_TERA);
+    else
+        FlagClear(FLAG_CURATED_TERA);
+    CreateMonWithIVs(&mon, SPECIES_PIDGEY, 100, personality, OTID_STRUCT_PLAYER_ID, 0);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_TERA_TYPE), curated ? TYPE_NORMAL : randomType);
 }
 
 TEST("Terastallization type can be set to any type except TYPE_NONE")
@@ -55,24 +64,20 @@ TEST("Terastallization type can be set to any type except TYPE_NONE")
     EXPECT_EQ(teraType, GetMonData(&mon, MON_DATA_TERA_TYPE));
 }
 
-TEST("Terastallization type is reset to the default types when setting Tera Type back to TYPE_NONE")
+TEST("Elastic-tests: resetting Tera type to None restores the configured default")
 {
-    u32 i;
-    enum Type teraType, typeNone;
+    enum Type teraType = TYPE_NORMAL;
+    enum Type typeNone = TYPE_NONE;
+    for (u32 i = 1; i < NUMBER_OF_MON_TYPES; i++)
+        PARAMETRIZE { teraType = i; }
     struct Pokemon mon;
-    for (i = 1; i < NUMBER_OF_MON_TYPES; i++)
-    {
-        PARAMETRIZE { teraType = i; typeNone = TYPE_NONE; }
-    }
-    CreateRandomMonWithIVs(&mon, SPECIES_PIDGEY, 100, 0);
+    FlagClear(FLAG_CURATED_TERA);
+    // Personality 10 gives random-mode Fire, outside Pidgey's own types.
+    CreateMonWithIVs(&mon, SPECIES_PIDGEY, 100, 10, OTID_STRUCT_PLAYER_ID, 0);
     SetMonData(&mon, MON_DATA_TERA_TYPE, &teraType);
     EXPECT_EQ(teraType, GetMonData(&mon, MON_DATA_TERA_TYPE));
-    if (typeNone == TYPE_NONE)
-        typeNone = GetTeraTypeFromPersonality(&mon);
     SetMonData(&mon, MON_DATA_TERA_TYPE, &typeNone);
-    typeNone = GetMonData(&mon, MON_DATA_TERA_TYPE);
-    EXPECT(typeNone == GetSpeciesType(SPECIES_PIDGEY, 0)
-        || typeNone == GetSpeciesType(SPECIES_PIDGEY, 1));
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_TERA_TYPE), TYPE_FIRE);
 }
 
 TEST("Shininess independent from PID and OTID")
@@ -590,14 +595,15 @@ TEST("givemon [vars]")
     EXPECT_EQ(GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_DYNAMAX_LEVEL), 7);
 }
 
-TEST("checkteratype/setteratype work")
+TEST("Elastic-tests: checkteratype and setteratype respect curated defaults and explicit changes")
 {
+    FlagSet(FLAG_CURATED_TERA);
     CreateRandomMonWithIVs(&gParties[B_TRAINER_PLAYER][0], SPECIES_WOBBUFFET, 100, 0);
 
     RUN_OVERWORLD_SCRIPT(
         checkteratype 0;
     );
-    EXPECT(VarGet(VAR_RESULT) == TYPE_PSYCHIC);
+    EXPECT_EQ(VarGet(VAR_RESULT), TYPE_NORMAL);
 
     RUN_OVERWORLD_SCRIPT(
         setteratype TYPE_FIRE, 0;
@@ -783,4 +789,204 @@ TEST("BoxPokemon encryption works")
     EXPECT_EQ(GetMonData(&mon, MON_DATA_HYPER_TRAINED_SPDEF), 1);
     EXPECT_EQ(GetMonData(&mon, MON_DATA_DYNAMAX_LEVEL), 3);
     EXPECT_EQ(GetMonData(&mon, MON_DATA_OT_GENDER), 0);
+}
+
+static const u8 sUnownTestStatOrder[NUM_STATS] =
+{
+    STAT_HP, STAT_ATK, STAT_DEF, STAT_SPATK, STAT_SPDEF, STAT_SPEED,
+};
+
+static u32 CountUnownTestBits(u32 mask)
+{
+    u32 count = 0;
+    for (u32 i = 0; i < NUM_STATS; i++)
+        count += (mask >> i) & 1;
+    return count;
+}
+
+TEST("Elastic-tests: Unown G to Z enumerate all twenty IV triples in display order")
+{
+    u32 letter = 0;
+    u64 seen = 0;
+    for (u32 a = 0; a < NUM_STATS; a++)
+    {
+        for (u32 b = a + 1; b < NUM_STATS; b++)
+        {
+            for (u32 c = b + 1; c < NUM_STATS; c++)
+            {
+                u32 expected = (1u << sUnownTestStatOrder[a])
+                             | (1u << sUnownTestStatOrder[b])
+                             | (1u << sUnownTestStatOrder[c]);
+                u32 actual = GetUnownPerfectIVMask(SPECIES_UNOWN_G + letter++);
+                EXPECT_EQ(actual, expected);
+                EXPECT(!(seen & (1ULL << actual)));
+                seen |= 1ULL << actual;
+            }
+        }
+    }
+    EXPECT_EQ(letter, 20);
+}
+
+TEST("Elastic-tests: Unown A to F guarantee their display-order stat and two distinct random stats")
+{
+    u32 letter = 0;
+    for (u32 i = 0; i < 6; i++) PARAMETRIZE { letter = i; }
+    u32 species = letter == 0 ? SPECIES_UNOWN : SPECIES_UNOWN_B + letter - 1;
+    bool8 seen[64] = {0};
+    u32 choices = 0;
+    SeedRng(12345);
+    for (u32 i = 0; i < 1024; i++)
+    {
+        u32 mask = GetUnownPerfectIVMask(species);
+        EXPECT_EQ(CountUnownTestBits(mask), 3);
+        EXPECT(mask & (1u << sUnownTestStatOrder[letter]));
+        if (!seen[mask]) choices++;
+        seen[mask] = TRUE;
+    }
+    EXPECT_EQ(choices, 10);
+}
+
+TEST("Elastic-tests: Unown question mark can select every IV triple")
+{
+    bool8 seen[64] = {0};
+    u32 choices = 0;
+    SeedRng(54321);
+    for (u32 i = 0; i < 2048; i++)
+    {
+        u32 mask = GetUnownPerfectIVMask(SPECIES_UNOWN_QUESTION);
+        EXPECT_EQ(CountUnownTestBits(mask), 3);
+        if (!seen[mask]) choices++;
+        seen[mask] = TRUE;
+    }
+    EXPECT_EQ(choices, 20);
+}
+
+TEST("Elastic-tests: Unown exclamation mark guarantees one IV from each stat pair")
+{
+    bool8 seen[64] = {0};
+    u32 choices = 0;
+    SeedRng(24680);
+    for (u32 i = 0; i < 1024; i++)
+    {
+        u32 mask = GetUnownPerfectIVMask(SPECIES_UNOWN_EXCLAMATION);
+        EXPECT_EQ(CountUnownTestBits(mask), 3);
+        EXPECT_EQ(CountUnownTestBits(mask & ((1u << STAT_ATK) | (1u << STAT_SPATK))), 1);
+        EXPECT_EQ(CountUnownTestBits(mask & ((1u << STAT_DEF) | (1u << STAT_SPDEF))), 1);
+        EXPECT_EQ(CountUnownTestBits(mask & ((1u << STAT_HP) | (1u << STAT_SPEED))), 1);
+        if (!seen[mask]) choices++;
+        seen[mask] = TRUE;
+    }
+    EXPECT_EQ(choices, 8);
+}
+
+TEST("Elastic-tests: Unown creation applies form IV guarantees through both creation APIs")
+{
+    u32 form = 0, method = 0;
+    for (u32 i = 0; i < 28; i++)
+        for (u32 j = 0; j < 3; j++) PARAMETRIZE { form = i; method = j; }
+    u32 species = form == 0 ? SPECIES_UNOWN : SPECIES_UNOWN_B + form - 1;
+    struct Pokemon mon;
+    if (method == 0)
+        CreateRandomMonWithIVs(&mon, species, 50, USE_RANDOM_IVS);
+    else
+    {
+        struct PokemonTemplate template = {
+            .species = species,
+            .level = 50,
+            .gender = MON_GENDER_RANDOM,
+            .nature = NATURE_RANDOM,
+            .ivs = { [0 ... NUM_STATS - 1] = USE_RANDOM_IVS },
+            .origin = method == 1 ? WILDMON_ORIGIN : GIFTMON_ORIGIN,
+        };
+        CreateMonFromTemplate(&mon, &template);
+    }
+    if (species == SPECIES_UNOWN)
+    {
+        species = GetUnownSpeciesId(GetMonData(&mon, MON_DATA_PERSONALITY));
+        form = species == SPECIES_UNOWN ? 0 : species - SPECIES_UNOWN_B + 1;
+    }
+    u32 mask = 0;
+    for (u32 i = 0; i < NUM_STATS; i++)
+        if (GetMonData(&mon, MON_DATA_HP_IV + i) == MAX_PER_STAT_IVS)
+            mask |= 1u << i;
+    EXPECT(CountUnownTestBits(mask) >= 3);
+    if (form < 6)
+        EXPECT(mask & (1u << sUnownTestStatOrder[form]));
+    else if (form < 26)
+    {
+        u32 expected = GetUnownPerfectIVMask(species);
+        EXPECT_EQ(mask & expected, expected);
+    }
+    else if (species == SPECIES_UNOWN_EXCLAMATION)
+    {
+        EXPECT(mask & ((1u << STAT_ATK) | (1u << STAT_SPATK)));
+        EXPECT(mask & ((1u << STAT_DEF) | (1u << STAT_SPDEF)));
+        EXPECT(mask & ((1u << STAT_HP) | (1u << STAT_SPEED)));
+    }
+}
+
+TEST("Elastic-tests: Unown IV guarantees preserve explicit IV templates and other species")
+{
+    struct Pokemon mon;
+    EXPECT_EQ(GetUnownPerfectIVMask(SPECIES_WOBBUFFET), 0);
+    CreateRandomMonWithIVs(&mon, SPECIES_UNOWN_G, 50, 0);
+    for (u32 i = 0; i < NUM_STATS; i++)
+        EXPECT_EQ(GetMonData(&mon, MON_DATA_HP_IV + i), 0);
+    struct PokemonTemplate template = {
+        .species = SPECIES_UNOWN_G,
+        .level = 50,
+        .gender = MON_GENDER_RANDOM,
+        .nature = NATURE_RANDOM,
+        .ivs = {0},
+        .origin = GIFTMON_ORIGIN,
+    };
+    CreateMonFromTemplate(&mon, &template);
+    for (u32 i = 0; i < NUM_STATS; i++)
+        EXPECT_EQ(GetMonData(&mon, MON_DATA_HP_IV + i), 0);
+}
+
+TEST("Elastic-tests: Unown stored as the base species use their personality letter for IVs")
+{
+    u32 form = 0;
+    for (u32 i = 0; i < 28; i++) PARAMETRIZE { form = i; }
+    struct Pokemon mon;
+    u32 personality = GetMonPersonality(SPECIES_UNOWN, MON_GENDER_RANDOM, NATURE_RANDOM, form + 1);
+    CreateMonWithIVs(&mon, SPECIES_UNOWN, 50, personality, OTID_STRUCT_PLAYER_ID, USE_RANDOM_IVS);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_SPECIES), SPECIES_UNOWN);
+    u32 mask = 0;
+    for (u32 i = 0; i < NUM_STATS; i++)
+        if (GetMonData(&mon, MON_DATA_HP_IV + i) == MAX_PER_STAT_IVS)
+            mask |= 1u << i;
+    EXPECT(CountUnownTestBits(mask) >= 3);
+    if (form < 6)
+        EXPECT(mask & (1u << sUnownTestStatOrder[form]));
+    else if (form < 26)
+    {
+        u32 expected = GetUnownPerfectIVMask(SPECIES_UNOWN_B + form - 1);
+        EXPECT_EQ(mask & expected, expected);
+    }
+    else if (form == 26)
+    {
+        EXPECT(mask & ((1u << STAT_ATK) | (1u << STAT_SPATK)));
+        EXPECT(mask & ((1u << STAT_DEF) | (1u << STAT_SPDEF)));
+        EXPECT(mask & ((1u << STAT_HP) | (1u << STAT_SPEED)));
+    }
+}
+
+TEST("Elastic-tests: Unown partial IV templates preserve fixed values while perfecting eligible stats")
+{
+    struct Pokemon mon;
+    struct PokemonTemplate template = {
+        .species = SPECIES_UNOWN_G,
+        .level = 50,
+        .gender = MON_GENDER_RANDOM,
+        .nature = NATURE_RANDOM,
+        .ivs = { [0 ... NUM_STATS - 1] = USE_RANDOM_IVS },
+        .origin = GIFTMON_ORIGIN,
+    };
+    template.ivs[STAT_HP] = 0;
+    CreateMonFromTemplate(&mon, &template);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HP_IV), 0);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_ATK_IV), MAX_PER_STAT_IVS);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_DEF_IV), MAX_PER_STAT_IVS);
 }

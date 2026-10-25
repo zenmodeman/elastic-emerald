@@ -21,6 +21,8 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 | Color Change animation coverage | `9cf5263470` (2026-10-04) | Adds animation expectations to Color Change tests. |
 | Party-menu relearner repair | `766c31cb22` | Restores direct level-up move relearning from the party menu, with Resource Mode costs and facility restrictions. |
 | Party-menu relearner regression coverage | `766c31cb22` | Adds nine regression cases covering availability, selected Pokemon, service costs, and crowded party menus. |
+| Unown form IVs | **Newest** | Gives randomly generated Unown three form-dependent perfect IVs, covering fixed triples, one-fixed-stat forms, and punctuation-form selection rules. |
+| Adaptive Hidden Power | **Newest** | Makes Hidden Power a 60-power Unown-only move with a damage bonus based on Attack relative to Special Attack. It chooses its type after switching using revealed ability information and known modifiers, and announces the type before Proactive Color Change. |
 | Compact party-options box | **Newest** | Restores the compact party-options box and shortens the move relearner label to `RELEARN`. |
 | Documentation organization | `766c31cb22` | Separates current feature descriptions, change history, and developer maintenance notes. |
 

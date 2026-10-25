@@ -584,6 +584,8 @@ bool32 MovesWithCategoryUnusable(u32 attacker, u32 target, enum DamageCategory c
         if (GetBattleMoveCategory(moves[moveIndex]) == category)
         {
             SetTypeBeforeUsingMove(moves[moveIndex], attacker, ctx.abilities[attacker], ctx.holdEffects[attacker]);
+            if (GetMoveEffect(moves[moveIndex]) == EFFECT_HIDDEN_POWER)
+                SetHiddenPowerType(attacker, target);
             ctx.move = ctx.chosenMove = moves[moveIndex];
             ctx.moveType = GetBattleMoveType(moves[moveIndex]);
 
@@ -971,6 +973,13 @@ struct SimulatedDamage AI_CalcDamage(struct AiCalcValues *aiCalc, enum BattlerId
         return simDamage;
     }
 
+    if (moveEffect == EFFECT_HIDDEN_POWER
+     && GET_BASE_SPECIES_ID(gBattleMons[battlerAtk].species) != SPECIES_UNOWN)
+    {
+        gAiLogicData->aiCalcInProgress = FALSE;
+        return simDamage;
+    }
+
     if (moveEffect == EFFECT_NATURE_POWER)
     {
         move = baseMove = GetNaturePowerMove();
@@ -1019,6 +1028,8 @@ struct SimulatedDamage AI_CalcDamage(struct AiCalcValues *aiCalc, enum BattlerId
 
     SetDynamicMoveCategory(battlerAtk, battlerDef, move);
     SetTypeBeforeUsingMove(move, battlerAtk, ctx.abilities[battlerAtk], ctx.holdEffects[battlerAtk]);
+    if (GetMoveEffect(move) == EFFECT_HIDDEN_POWER)
+        SetHiddenPowerType(battlerAtk, battlerDef);
 
     ctx.moveType = GetBattleMoveType(move);
     ctx.isCrit = ShouldCalcCritDamage(&ctx);
@@ -1456,6 +1467,8 @@ uq4_12_t AI_GetMoveEffectiveness(enum Move move, enum BattlerId battlerAtk, enum
     ctx.holdEffects[ctx.battlerDef] = gAiLogicData->holdEffects[battlerDef];
 
     SetTypeBeforeUsingMove(move, battlerAtk, ctx.abilities[battlerAtk], ctx.holdEffects[battlerAtk]);
+    if (GetMoveEffect(move) == EFFECT_HIDDEN_POWER)
+        SetHiddenPowerType(battlerAtk, battlerDef);
     ctx.moveType = GetBattleMoveType(move);
     typeEffectiveness = AI_CalcTypeEffectivenessMultiplier(&ctx);
 

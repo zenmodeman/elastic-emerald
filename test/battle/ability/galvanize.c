@@ -21,11 +21,10 @@ SINGLE_BATTLE_TEST("Galvanize turns a normal type move into Electric")
     }
 }
 
-SINGLE_BATTLE_TEST("Galvanize can not turn certain moves into Electric type moves")
+SINGLE_BATTLE_TEST("Elastic-tests: Galvanize can not turn certain moves into Electric type moves")
 {
     enum Move move;
 
-    PARAMETRIZE { move = MOVE_HIDDEN_POWER; }
     PARAMETRIZE { move = MOVE_WEATHER_BALL; }
     PARAMETRIZE { move = MOVE_MULTI_ATTACK; }
 
@@ -149,19 +148,18 @@ SINGLE_BATTLE_TEST("Galvanize doesn't affect Judgment / Techno Blast / Multi-Att
     }
 }
 
-SINGLE_BATTLE_TEST("Galvanize doesn't affect Hidden Power's type")
+SINGLE_BATTLE_TEST("Elastic-tests: Galvanize does not override adaptive Hidden Power")
 {
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_HIDDEN_POWER) == EFFECT_HIDDEN_POWER);
-        ASSUME(gTypesInfo[TYPE_ELECTRIC].isHiddenPowerType == TRUE);
-        ASSUME(GetSpeciesType(SPECIES_DIGLETT, 0) == TYPE_GROUND);
-        PLAYER(SPECIES_GEODUDE_ALOLA) { Ability(ABILITY_GALVANIZE); HPIV(31); AttackIV(31); DefenseIV(31); SpAttackIV(30); SpDefenseIV(31); SpeedIV(30); } // HP Water
-        OPPONENT(SPECIES_VAPOREON) { Ability(ABILITY_WATER_ABSORB); }
+        PLAYER(SPECIES_UNOWN) { Ability(ABILITY_GALVANIZE); }
+        OPPONENT(SPECIES_DIGLETT);
     } WHEN {
         TURN { MOVE(player, MOVE_HIDDEN_POWER); }
     } SCENE {
-        NOT { ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player); }
-        MESSAGE("It doesn't affect the opposing Vaporeon…");
+        MESSAGE("Hidden Power became Water type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+        MESSAGE("It's super effective!");
     }
 }
 

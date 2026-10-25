@@ -121,19 +121,18 @@ SINGLE_BATTLE_TEST("Dragonize doesn't affect Judgment / Techno Blast / Multi-Att
     }
 }
 
-SINGLE_BATTLE_TEST("Dragonize doesn't affect Hidden Power's type")
+SINGLE_BATTLE_TEST("Elastic-tests: Dragonize does not override adaptive Hidden Power")
 {
     GIVEN {
-        ASSUME(GetMoveEffect(MOVE_HIDDEN_POWER) == EFFECT_HIDDEN_POWER);
-        ASSUME(gTypesInfo[TYPE_ELECTRIC].isHiddenPowerType == TRUE);
-        ASSUME(GetSpeciesType(SPECIES_DIGLETT, 0) == TYPE_GROUND);
-        PLAYER(SPECIES_FERALIGATR_MEGA) { Ability(ABILITY_DRAGONIZE); HPIV(31); AttackIV(31); DefenseIV(31); SpAttackIV(30); SpDefenseIV(31); SpeedIV(31); } // HP Electric
+        PLAYER(SPECIES_UNOWN) { Ability(ABILITY_DRAGONIZE); }
         OPPONENT(SPECIES_DIGLETT);
     } WHEN {
         TURN { MOVE(player, MOVE_HIDDEN_POWER); }
     } SCENE {
-        NOT { ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player); }
-        MESSAGE("It doesn't affect the opposing Diglett…");
+        MESSAGE("Hidden Power became Water type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+        MESSAGE("It's super effective!");
     }
 }
 

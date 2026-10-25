@@ -3314,6 +3314,12 @@ u32 AbilityBattleEffects(enum AbilityEffect caseID, enum BattlerId battler, enum
                             move = gBattleMons[i].moves[j];
                             enum BattleMoveEffects moveEffect = GetMoveEffect(move);
                             moveType = GetBattleMoveType(move);
+                            if (moveEffect == EFFECT_HIDDEN_POWER)
+                            {
+                                if (GET_BASE_SPECIES_ID(gBattleMons[i].species) != SPECIES_UNOWN)
+                                    continue;
+                                moveType = GetHiddenPowerType(i, battler);
+                            }
 
                             ctx.battlerAtk = i;
                             ctx.battlerDef = battler;
@@ -6550,20 +6556,8 @@ static inline u32 CalcMoveBasePower(struct DamageContext *ctx)
             basePower *= 2;
         break;
     case EFFECT_HIDDEN_POWER:
-    {
-        if (GetConfig(B_HIDDEN_POWER_DMG) < GEN_6)
-        {
-            u8 powerBits = ((gBattleMons[battlerAtk].hpIV & 2) >> 1)
-                         | ((gBattleMons[battlerAtk].attackIV & 2) << 0)
-                         | ((gBattleMons[battlerAtk].defenseIV & 2) << 1)
-                         | ((gBattleMons[battlerAtk].speedIV & 2) << 2)
-                         | ((gBattleMons[battlerAtk].spAttackIV & 2) << 3)
-                         | ((gBattleMons[battlerAtk].spDefenseIV & 2) << 4);
-
-            basePower = (40 * powerBits) / 63 + 30;
-        }
+        basePower = 60;
         break;
-    }
     case EFFECT_GRAV_APPLE:
         if (gFieldStatuses & STATUS_FIELD_GRAVITY)
             basePower = uq4_12_multiply(basePower, UQ_4_12(1.5));
@@ -7883,6 +7877,123 @@ static inline uq4_12_t GetOtherModifiers(struct DamageContext *ctx)
     dmg = uq4_12_multiply_by_int_half_down(modifier, dmg); \
 } while (0)
 
+// Unlike the regular absorption check, scoring must not prepare healing or messages.
+static bool32 HiddenPowerTypeIsAbsorbed(struct DamageContext *ctx)
+{
+    switch (ctx->abilities[ctx->battlerDef])
+    {
+    case ABILITY_VOLT_ABSORB:
+    case ABILITY_MOTOR_DRIVE:
+        return ctx->moveType == TYPE_ELECTRIC;
+    case ABILITY_LIGHTNING_ROD:
+        return GetConfig(B_REDIRECT_ABILITY_IMMUNITY) >= GEN_5 && ctx->moveType == TYPE_ELECTRIC;
+    case ABILITY_WATER_ABSORB:
+    case ABILITY_DRY_SKIN:
+        return ctx->moveType == TYPE_WATER;
+    case ABILITY_STORM_DRAIN:
+        return GetConfig(B_REDIRECT_ABILITY_IMMUNITY) >= GEN_5 && ctx->moveType == TYPE_WATER;
+    case ABILITY_EARTH_EATER:
+        return ctx->moveType == TYPE_GROUND;
+    case ABILITY_SAP_SIPPER:
+        return ctx->moveType == TYPE_GRASS;
+    case ABILITY_WELL_BAKED_BODY:
+        return ctx->moveType == TYPE_FIRE;
+    case ABILITY_FLASH_FIRE:
+        return ctx->moveType == TYPE_FIRE
+            && (B_FLASH_FIRE_FROZEN >= GEN_5 || !(gBattleMons[ctx->battlerDef].status1 & STATUS1_FREEZE));
+    default:
+        return FALSE;
+    }
+}
+
+// Scores have extra fractional precision; use a wide intermediate for 4x hits.
+static u32 ScaleHiddenPowerScore(u32 score, uq4_12_t modifier)
+{
+    return ((u64)score * modifier + UQ_4_12(0.5) - 1) / UQ_4_12(1.0);
+}
+
+enum Type GetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    struct DamageContext ctx = {0};
+    enum Type bestType = TYPE_NORMAL;
+    u32 bestScore = 0;
+    bool32 savedGemBoost = gSpecialStatuses[battlerAtk].gemBoost;
+
+    ctx.battlerAtk = battlerAtk;
+    ctx.battlerDef = battlerDef;
+    ctx.move = ctx.chosenMove = ctx.baseMove = MOVE_HIDDEN_POWER;
+    ctx.weather = GetWeather();
+    ctx.terrain = gFieldTimers.terrain;
+    // No guessing, species-based inference, or AI omniscience here.
+    for (enum BattlerId battler = 0; battler < gBattlersCount; battler++)
+    {
+        struct AiPartyMon *known = &gAiPartyData->mons[GetBattlerTrainer(battler)][gBattlerPartyIndexes[battler]];
+        enum Ability ability = GetBattlerAbility(battler);
+        if (known->revealedAbility == ability)
+            ctx.abilities[battler] = ability;
+        if (battler == battlerAtk || (known->revealedHoldEffect != HOLD_EFFECT_NONE
+         && known->revealedHoldEffect == GetBattlerHoldEffect(battler)))
+            ctx.holdEffects[battler] = GetBattlerHoldEffect(battler);
+    }
+    ctx.abilities[battlerDef] = AI_GetMoldBreakerSanitizedAbility(battlerAtk,
+        ctx.abilities[battlerAtk], ctx.abilities[battlerDef], ctx.holdEffects[battlerDef], MOVE_HIDDEN_POWER);
+
+    // The normal damage path checks gemBoost before type-specific modifiers.
+    // Evaluate the prospective gem explicitly, without consuming or announcing it.
+    gSpecialStatuses[battlerAtk].gemBoost = FALSE;
+    for (enum Type type = TYPE_NORMAL; type < NUMBER_OF_MON_TYPES; type++)
+    {
+        u32 score;
+        if (type == TYPE_MYSTERY || type == TYPE_STELLAR)
+            continue;
+        ctx.moveType = type;
+        ctx.abilityBlocked = ctx.airBalloonBlocked = FALSE;
+        ctx.typeEffectivenessModifier = CalcTypeEffectivenessMultiplier(&ctx);
+        if (HiddenPowerTypeIsAbsorbed(&ctx))
+            continue;
+        if (((ctx.weather & B_WEATHER_SUN_PRIMAL) && type == TYPE_WATER)
+         || ((ctx.weather & B_WEATHER_RAIN_PRIMAL) && type == TYPE_FIRE))
+            continue;
+
+        // Keep precision until after the comparison; damage rolls and critical
+        // hits must not influence selection. Equal scores keep the first type.
+        score = CalcMoveBasePowerAfterModifiers(&ctx) * UQ_4_12(1.0);
+        score = ScaleHiddenPowerScore(score, ctx.typeEffectivenessModifier);
+        score = ScaleHiddenPowerScore(score, GetWeatherDamageModifier(&ctx));
+        score = ScaleHiddenPowerScore(score, GetSameTypeAttackBonusModifier(&ctx));
+        score = ScaleHiddenPowerScore(score, GetOtherModifiers(&ctx));
+        score = (u64)score * CalcAttackStat(&ctx) / 100;
+        if (ctx.holdEffects[battlerAtk] == HOLD_EFFECT_GEMS
+         && type == GetItemSecondaryId(gBattleMons[battlerAtk].item))
+            score = ScaleHiddenPowerScore(score, PercentToUQ4_12AddOne(GetBattlerHoldEffectParam(battlerAtk)));
+        if (score > bestScore)
+        {
+            bestScore = score;
+            bestType = type;
+        }
+    }
+    gSpecialStatuses[battlerAtk].gemBoost = savedGemBoost;
+    return bestType;
+}
+
+void SetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    enum HoldEffect holdEffect = GetBattlerHoldEffect(battlerAtk);
+
+    gBattleStruct->dynamicMoveType = GetHiddenPowerType(battlerAtk, battlerDef);
+    if (gBattleMons[battlerAtk].volatiles.electrified)
+        gBattleStruct->dynamicMoveType = TYPE_ELECTRIC;
+
+    // Gem eligibility follows the resolved type, including Electrify.
+    gSpecialStatuses[battlerAtk].gemBoost = FALSE;
+    if (holdEffect == HOLD_EFFECT_GEMS
+     && gBattleStruct->dynamicMoveType == GetItemSecondaryId(gBattleMons[battlerAtk].item))
+    {
+        gSpecialStatuses[battlerAtk].gemBoost = TRUE;
+        gSpecialStatuses[battlerAtk].gemParam = GetBattlerHoldEffectParam(battlerAtk);
+    }
+}
+
 static inline s32 DoMoveDamageCalcVars(struct DamageContext *ctx)
 {
     s32 dmg;
@@ -7936,6 +8047,16 @@ s32 ApplyModifiersAfterDmgRoll(struct DamageContext *ctx, s32 dmg)
     DAMAGE_APPLY_MODIFIER(GetBurnOrFrostBiteModifier(ctx));
     DAMAGE_APPLY_MODIFIER(GetMoveAgainstProtectionModifier(ctx));
     DAMAGE_APPLY_MODIFIER(GetOtherModifiers(ctx));
+
+    if (GetMoveEffect(ctx->move) == EFFECT_HIDDEN_POWER
+     && GET_BASE_SPECIES_ID(gBattleMons[ctx->battlerAtk].species) == SPECIES_UNOWN)
+    {
+        // Use the stored stats, before stat stages and item/ability multipliers.
+        // (Sp. Atk + Attack / 4) / Sp. Atk, preserving fractional Attack / 4.
+        u32 denominator = 4 * max(1, gBattleMons[ctx->battlerAtk].spAttack);
+        u32 numerator = denominator + gBattleMons[ctx->battlerAtk].attack;
+        dmg = ((u64)dmg * numerator + denominator / 2 - 1) / denominator;
+    }
 
     return dmg;
 }

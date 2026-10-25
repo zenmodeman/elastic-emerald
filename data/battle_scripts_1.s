@@ -6540,3 +6540,8 @@ BattleScript_BelchFails::
 	printstring STRINGID_BELCHCANTSELECT
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
+
+BattleScript_HiddenPowerType::
+	printstring STRINGID_HIDDENPOWERTYPE
+	waitmessage B_WAIT_TIME_LONG
+	return

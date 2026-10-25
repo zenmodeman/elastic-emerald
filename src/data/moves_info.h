@@ -6502,9 +6502,9 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Hidden Power"),
         .description = COMPOUND_STRING(
-            "The effectiveness varies\n"
-            "with the user."),
-        .power = B_HIDDEN_POWER_DMG >= GEN_6 ? 60 : 1,
+            "Unown chooses the most\n"
+            "effective attack type."),
+        .power = 60,
         .effect = EFFECT_HIDDEN_POWER,
         .type = TYPE_NORMAL,
         .accuracy = 100,

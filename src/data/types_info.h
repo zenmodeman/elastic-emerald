@@ -45,7 +45,7 @@ const uq4_12_t gTypeEffectivenessTable[NUMBER_OF_MON_TYPES][NUMBER_OF_MON_TYPES]
 // - In this array there's commented-out data such as references to type-resist berries that would otherwise would go unused.
 //   However, we figured this information would be useful for users that want to add their own types as a reminder of
 //   what data would they need to add in order to have their new types be fully fledged like official types.
-// - Changing "isHiddenPowerType" for any type will change the distribution of all Hidden Power types from vanilla.
+// - isHiddenPowerType is legacy metadata; adaptive Hidden Power considers all ordinary types.
 const struct TypeInfo gTypesInfo[NUMBER_OF_MON_TYPES] =
 {
     [TYPE_NONE] =
