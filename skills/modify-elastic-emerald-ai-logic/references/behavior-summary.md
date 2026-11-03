@@ -2,7 +2,8 @@
 
 ## Documentation status
 
-- **Uncommitted follow-up:** STAB assumptions exclude self-recharge attacks and two-turn attacks without a modeled charge-skip condition at the shared recording point; Elastic knowledge explicitly includes item omniscience.
+- **Committed follow-up (`3b01725fcc`):** STAB assumptions exclude self-recharge attacks and two-turn attacks without a modeled charge-skip condition; Elastic knowledge explicitly includes item omniscience.
+- **Uncommitted follow-up:** STAB inference supplies damage and KO estimates without recording move knowledge; specific effects such as Brick Break screen removal require revelation or move omniscience.
 
 - **Last documented code commit:** `c753e34660` ("Complete last failing automated tests").
 - **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through `9c4b986496`. The subsequent commitment-reset change in `c753e34660` was reconciled against its committed diff on September 25, 2026; the two later commits through `9c12ae6d16` only add analysis helpers. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
@@ -47,11 +48,11 @@ The AI distinguishes among:
 - known held-item effects;
 - revealed party species and previously used switch-ins.
 
-The upstream `AI_FLAG_ASSUME_STAB` path records eligible unrevealed STAB options while helpers such as `HasNoMovesKnown`, `HasAllKnownMoves`, `HasNoKnownNonProtectingMoves`, and `GetStatusMoveCount` let individual heuristics state how much evidence they require.
+The `AI_FLAG_ASSUME_STAB` path resolves eligible unrevealed STAB options only for damage estimates, leaving active and party move history untouched. `GetMovesArray` and move-effect checks retain revealed or explicitly authorized knowledge, while `GetDamageMoves` supplies slot-aligned damage candidates. Helpers such as `HasNoMovesKnown`, `HasAllKnownMoves`, `HasNoKnownNonProtectingMoves`, and `GetStatusMoveCount` let individual heuristics state how much evidence they require.
 
-Powder is rejected for lacking a Fire target move only after all four target move slots are known. With an incomplete moveset, the AI preserves Powder as a candidate instead of treating unrevealed slots as proof that no Fire move exists. Omniscient trainers naturally satisfy the complete-knowledge condition; ordinary trainers can satisfy it through revealed or inferred move history.
+Powder is rejected for lacking a Fire target move only after all four target move slots are known. With an incomplete moveset, the AI preserves Powder as a candidate instead of treating unrevealed slots as proof that no Fire move exists. Omniscient trainers naturally satisfy the complete-knowledge condition; ordinary trainers can satisfy it through revealed move history.
 
-`RecordMovesBasedOnStab` excludes self-recharge attacks and two-turn attacks unless known effective Power Herb, applicable weather (including modeled Mega Sol), or Tailwind for Razor Wind guarantees skipping the charge. Hidden Power Herb does not qualify; item omniscience or observed item knowledge is required. Sky Drop cannot use Power Herb, and semi-invulnerable moves cannot skip charging through weather. Revealed moves remain known, and move/full omniscience still exposes the complete moveset. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
+`GetDamageMoves` excludes self-recharge attacks and two-turn attacks unless known effective Power Herb, applicable weather (including modeled Mega Sol), or Tailwind for Razor Wind guarantees skipping the charge. Hidden Power Herb does not qualify; item omniscience or observed item knowledge is required. Sky Drop cannot use Power Herb, and semi-invulnerable moves cannot skip charging through weather. Revealed moves remain known, and move/full omniscience still exposes the complete moveset. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
 
 Key commits: `59b76d3fcd`, `4bb634c651`, `829ec9c367`, `7ee8501957`.
 

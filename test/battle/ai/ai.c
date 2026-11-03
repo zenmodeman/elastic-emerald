@@ -527,7 +527,7 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: AI does not prioritize Rock Tomb when the 
     }
 }
 
-AI_SINGLE_BATTLE_TEST("Elastic-tests: AI_FLAG_ASSUME_STAB records unrevealed STAB moves but not unrevealed non-STAB moves")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: AI_FLAG_ASSUME_STAB estimates hidden STAB damage without learning moves")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_ASSUME_STAB);
@@ -538,10 +538,15 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: AI_FLAG_ASSUME_STAB records unrevealed STA
     } THEN {
         enum Move *knownMoves = GetMovesArray(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT));
 
-        EXPECT(knownMoves[0] == MOVE_ABSORB);
+        EXPECT(knownMoves[0] == MOVE_NONE);
         EXPECT(knownMoves[1] == MOVE_FLAMETHROWER);
-        EXPECT(knownMoves[2] == MOVE_GIGA_DRAIN);
+        EXPECT(knownMoves[2] == MOVE_NONE);
         EXPECT(knownMoves[3] == MOVE_NONE);
+        enum Move damageMoves[MAX_MON_MOVES];
+        GetDamageMoves(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT), damageMoves);
+        EXPECT_EQ(damageMoves[0], MOVE_ABSORB);
+        EXPECT_EQ(damageMoves[2], MOVE_GIGA_DRAIN);
+        EXPECT_EQ(damageMoves[3], MOVE_NONE);
     }
 }
 

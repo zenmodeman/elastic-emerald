@@ -1433,7 +1433,8 @@ u32 GetNoOfHitsToKOBattlerDmg(u32 dmg, enum BattlerId battlerDef)
 u32 GetNoOfHitsToKOBattler(enum BattlerId battlerAtk, enum BattlerId battlerDef, u32 moveIndex, enum DamageCalcContext calcContext, enum AiConsiderEndure considerEndure)
 {
     u32 hitsToKO = GetNoOfHitsToKOBattlerDmg(AI_GetDamage(battlerAtk, battlerDef, moveIndex, calcContext, gAiLogicData), battlerDef);
-    enum Move *moves = GetMovesArray(battlerAtk);
+    enum Move moves[MAX_MON_MOVES];
+    GetDamageMoves(battlerAtk, moves);
 
     if (CanEndureHit(battlerAtk, battlerDef, moves[moveIndex]) && hitsToKO == 1 && considerEndure == CONSIDER_ENDURE)
         hitsToKO += 1;
@@ -1447,7 +1448,8 @@ u32 GetBestNoOfHitsToKO(enum BattlerId battlerAtk, enum BattlerId battlerDef, en
     u32 tempResult = 0;
 
     struct AiLogicData *aiData = gAiLogicData;
-    enum Move *moves = GetMovesArray(battlerAtk);
+    enum Move moves[MAX_MON_MOVES];
+    GetDamageMoves(battlerAtk, moves);
     u32 moveLimitations = aiData->moveLimitations[battlerAtk];
 
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
@@ -1599,7 +1601,8 @@ bool32 CanEndureHit(enum BattlerId battler, enum BattlerId battlerTarget, enum M
 bool32 CanTargetFaintAi(enum BattlerId battlerDef, enum BattlerId battlerAtk)
 {
     struct AiLogicData *aiData = gAiLogicData;
-    enum Move *moves = GetMovesArray(battlerDef);
+    enum Move moves[MAX_MON_MOVES];
+    GetDamageMoves(battlerDef, moves);
     u32 moveLimitations = aiData->moveLimitations[battlerDef];
 
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
@@ -1751,7 +1754,8 @@ u32 GetBestDmgFromBattler(enum BattlerId battler, enum BattlerId battlerTarget, 
 {
     struct AiLogicData *aiData = gAiLogicData;
     u32 bestDmg = 0;
-    enum Move *moves = GetMovesArray(battler);
+    enum Move moves[MAX_MON_MOVES];
+    GetDamageMoves(battler, moves);
     u32 moveLimitations = aiData->moveLimitations[battler];
 
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
@@ -1804,7 +1808,8 @@ bool32 CanBattlerKOTargetIgnoringSturdy(enum BattlerId battlerAtk, enum BattlerI
 {
     struct AiLogicData *aiData = gAiLogicData;
     s32 dmg;
-    enum Move *moves = GetMovesArray(battlerAtk);
+    enum Move moves[MAX_MON_MOVES];
+    GetDamageMoves(battlerAtk, moves);
     u32 moveLimitations = aiData->moveLimitations[battlerAtk];
 
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
@@ -1836,7 +1841,8 @@ bool32 CanTargetFaintAiWithMod(enum BattlerId battlerDef, enum BattlerId battler
 {
     struct AiLogicData *aiData = gAiLogicData;
     s32 dmg;
-    enum Move *moves = GetMovesArray(battlerDef);
+    enum Move moves[MAX_MON_MOVES];
+    GetDamageMoves(battlerDef, moves);
     u32 hpCheck = gBattleMons[battlerAtk].hp + hpMod;
     u32 moveLimitations = aiData->moveLimitations[battlerAtk];
 

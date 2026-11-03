@@ -751,12 +751,23 @@ static bool32 CanAssumeTwoTurnMove(enum BattlerId battler, enum Move move)
         && gBattleWeatherInfo[GetBattleWeather(weather)].type == requiredWeather;
 }
 
-void RecordMovesBasedOnStab(enum BattlerId battler)
+// Temporarily obtain move info just for damage sake, without updating the info in the records themselves
+// Used to evaluate damage of unrevealed STAB moves without revealing the specific moves (to hide effects such as Brick Break)
+void GetDamageMoves(enum BattlerId battler, enum Move moves[MAX_MON_MOVES])
 {
+    memcpy(moves, GetMovesArray(battler), sizeof(enum Move) * MAX_MON_MOVES);
+    if (!IsAiBattlerAssumingStab(battler))
+        return;
+
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
         enum Move playerMove = gBattleMons[battler].moves[moveIndex];
 
+        //If moves are already known, either through reveals or Omniscience
+        if (moves[moveIndex] != MOVE_NONE && moves[moveIndex] != MOVE_UNAVAILABLE)
+            continue;
+        
+        //Exceptions for STAB moves that are volatile enough to not assume damage for without being revealed
         if (playerMove == MOVE_NONE || playerMove == MOVE_UNAVAILABLE
             || (gBattleMoveEffects[GetMoveEffect(playerMove)].twoTurnEffect
                 && !CanAssumeTwoTurnMove(battler, playerMove))
@@ -764,7 +775,7 @@ void RecordMovesBasedOnStab(enum BattlerId battler)
             continue;
 
         if (IsSpeciesOfType(gBattleMons[battler].species, GetMoveType(playerMove)) && GetMovePower(playerMove) != 0)
-            RecordKnownMove(battler, playerMove);
+            moves[moveIndex] = playerMove;
     }
 }
 
@@ -791,9 +802,6 @@ void SetBattlerAiData(enum BattlerId battler, struct AiLogicData *aiData)
     aiData->moveLimitations[battler] = CheckMoveLimitations(battler, 0, ~(MOVE_LIMITATION_UNUSABLE));
     aiData->speedStats[battler] = GetBattlerTotalSpeedStat(battler, ability, holdEffect);
     aiData->dragonDartsHitsBothTarget = 0;
-
-    if (IsAiBattlerAssumingStab(battler))
-        RecordMovesBasedOnStab(battler);
 
     if (IsAiBattlerAssumingStatusMoves(battler))
         RecordStatusMoves(battler);
@@ -840,7 +848,8 @@ static u32 Ai_SetMoveAccuracy(struct AiLogicData *aiData, enum BattlerId battler
 
 void CalcBattlerAiMovesData(struct AiLogicData *aiData, enum BattlerId battlerAtk, enum BattlerId battlerDef, u32 weather, enum BattleTerrain terrain)
 {
-    enum Move *moves = GetMovesArray(battlerAtk);
+    enum Move moves[MAX_MON_MOVES];
+    GetDamageMoves(battlerAtk, moves);
     u32 moveLimitations = aiData->moveLimitations[battlerAtk];
 
     struct AiCalcValues aiCalc = {

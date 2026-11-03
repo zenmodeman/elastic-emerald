@@ -196,6 +196,7 @@ u32 GetBestNoOfHitsToKO(enum BattlerId battlerAtk, enum BattlerId battlerDef, en
 uq4_12_t AI_GetMoveEffectiveness(enum Move move, enum BattlerId battlerAtk, enum BattlerId battlerDef);
 uq4_12_t AI_CalcTypeEffectivenessMultiplier(struct DamageContext *ctx);
 enum Move *GetMovesArray(enum BattlerId battler);
+void GetDamageMoves(enum BattlerId battler, enum Move moves[MAX_MON_MOVES]);
 bool32 IsConfusionMoveEffect(enum BattleMoveEffects moveEffect);
 bool32 HasMove(enum BattlerId battlerId, enum Move move);
 u32 GetBattlerMoveIndexWithEffect(enum BattlerId battler, enum BattleMoveEffects effect);

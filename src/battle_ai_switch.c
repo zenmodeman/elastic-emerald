@@ -1393,7 +1393,8 @@ static bool32 CanBattlerConsiderSwitch(enum BattlerId battler)
 void GetShouldSwitchMoveData(struct SwitchAiContext *switchContext)
 {
     //Variable initialization
-    enum Move *playerMoves = GetMovesArray(switchContext->opposingBattler);
+    enum Move playerMoves[MAX_MON_MOVES];
+    GetDamageMoves(switchContext->opposingBattler, playerMoves);
     enum Move aiMove, playerMove, bestPlayerPriorityMove = MOVE_NONE, bestPlayerMove = MOVE_NONE, expectedMove = MOVE_NONE;
     enum BattleMoveEffects aiMoveEffect;
     u32 hitsToKOAI = 0, hitsToKOPlayer = 0, minHitsToKOAI = gBattleMons[switchContext->battler].hp, minHitsToKOAIPriority = gBattleMons[switchContext->battler].hp;
@@ -2143,7 +2144,8 @@ static u32 GetValidSwitchinCandidate(u32 validMonIds, enum BattlerId battler, u3
 static s32 GetMaxDamagePlayerCouldDealToSwitchin(enum BattlerId battler, enum BattlerId opposingBattler, enum Move *bestPlayerMove)
 {
     enum Move playerMove;
-    enum Move *playerMoves = GetMovesArray(opposingBattler);
+    enum Move playerMoves[MAX_MON_MOVES];
+    GetDamageMoves(opposingBattler, playerMoves);
     s32 damageTaken = 0, maxDamageTaken = 0;
 
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
@@ -2170,7 +2172,8 @@ static s32 GetMaxDamagePlayerCouldDealToSwitchin(enum BattlerId battler, enum Ba
 static s32 GetMaxPriorityDamagePlayerCouldDealToSwitchin(enum BattlerId battler, enum BattlerId opposingBattler, enum Move *bestPlayerPriorityMove)
 {
     enum Move playerMove;
-    enum Move *playerMoves = GetMovesArray(opposingBattler);
+    enum Move playerMoves[MAX_MON_MOVES];
+    GetDamageMoves(opposingBattler, playerMoves);
     s32 damageTaken = 0, maxDamageTaken = 0;
 
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)

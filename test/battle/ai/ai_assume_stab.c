@@ -3,7 +3,7 @@
 #include "battle_ai_util.h"
 #include "pokemon.h"
 
-AI_SINGLE_BATTLE_TEST("AI_FLAG_ASSUME_STAB sees the player's STAB moves")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB damage assumptions inform switch-in survival")
 {
     u32 aiFlag = 0;
     PARAMETRIZE { aiFlag = AI_FLAG_ASSUME_STAB; }
@@ -43,7 +43,7 @@ AI_SINGLE_BATTLE_TEST("AI_FLAG_ASSUME_STAB does not see the player's non-STAB mo
     }
 }
 
-AI_DOUBLE_BATTLE_TEST("AI correctly records assumed STAB moves")
+AI_DOUBLE_BATTLE_TEST("Elastic-tests: STAB damage assumptions do not enter doubles move history")
 {
     u32 aiFlag = 0;
     // Not checking Omniscient here because it doesn't change the battle history
@@ -58,30 +58,12 @@ AI_DOUBLE_BATTLE_TEST("AI correctly records assumed STAB moves")
     } WHEN {
         TURN { MOVE(playerLeft, MOVE_TACKLE, target:opponentLeft); MOVE(playerRight, MOVE_THUNDERBOLT, target:opponentRight); }
     } THEN {
-        if (aiFlag == AI_FLAG_ASSUME_STAB)
-        {
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][0], MOVE_TACKLE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_FLAMETHROWER);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][2], MOVE_NONE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][3], MOVE_NONE);
-
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][0], MOVE_TACKLE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][1], MOVE_HEADBUTT);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][2], MOVE_THUNDERBOLT);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][3], MOVE_NONE);
-        }
-        else if (aiFlag == 0)
-        {
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][0], MOVE_TACKLE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_NONE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][2], MOVE_NONE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][3], MOVE_NONE);
-
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][0], MOVE_NONE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][1], MOVE_NONE);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][2], MOVE_THUNDERBOLT);
-            EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][3], MOVE_NONE);
-        }
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][0], MOVE_TACKLE);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_NONE);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][0], MOVE_NONE);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][1], MOVE_NONE);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][2], MOVE_THUNDERBOLT);
+        EXPECT_EQ(gAiPartyData->mons[B_TRAINER_PLAYER][0].moves[1], MOVE_NONE);
     }
 }
 
@@ -104,6 +86,9 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB assumptions exclude unrevealed chargi
         EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][0], MOVE_CELEBRATE);
         EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_NONE);
         EXPECT_EQ(gAiPartyData->mons[B_TRAINER_PLAYER][0].moves[1], MOVE_NONE);
+        enum Move moves[MAX_MON_MOVES];
+        GetDamageMoves(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT), moves);
+        EXPECT_EQ(moves[1], MOVE_NONE);
     }
 }
 
@@ -133,7 +118,10 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB charge skipping requires known Power 
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); }
     } THEN {
-        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1],
+        enum Move moves[MAX_MON_MOVES];
+        GetDamageMoves(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT), moves);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_NONE);
+        EXPECT_EQ(moves[1],
             flags & AI_FLAG_ITEM_OMNISCIENCE ? MOVE_FLY : MOVE_NONE);
         EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][2], MOVE_NONE);
     }
@@ -152,7 +140,10 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB Solar Beam inference follows weather 
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); }
     } THEN {
-        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1],
+        enum Move moves[MAX_MON_MOVES];
+        GetDamageMoves(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT), moves);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_NONE);
+        EXPECT_EQ(moves[1],
             ability == ABILITY_DROUGHT && item == ITEM_NONE ? MOVE_SOLAR_BEAM : MOVE_NONE);
     }
 }
@@ -167,6 +158,34 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: Tailwind permits unrevealed STAB Razor Win
         TURN { MOVE(player, MOVE_TAILWIND); }
         TURN { MOVE(player, MOVE_CELEBRATE); }
     } THEN {
-        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_RAZOR_WIND);
+        enum Move moves[MAX_MON_MOVES];
+        GetDamageMoves(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT), moves);
+        EXPECT_EQ(moves[1], MOVE_RAZOR_WIND);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_NONE);
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Hidden STAB Brick Break contributes damage without revealing screen removal")
+{
+    u32 reveal;
+    PARAMETRIZE { reveal = FALSE; }
+    PARAMETRIZE { reveal = TRUE; }
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_ASSUME_STAB);
+        PLAYER(SPECIES_MACHAMP) { Moves(MOVE_CELEBRATE, MOVE_BRICK_BREAK); }
+        OPPONENT(SPECIES_BLISSEY) { Defense(500); Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        if (reveal)
+            TURN { MOVE(player, MOVE_BRICK_BREAK); }
+        else
+            TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        enum BattlerId player = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+        enum Move damageMoves[MAX_MON_MOVES];
+        GetDamageMoves(player, damageMoves);
+        EXPECT_EQ(damageMoves[1], MOVE_BRICK_BREAK);
+        EXPECT_EQ(HasMoveWithAIEffect(player, AI_EFFECT_BREAK_SCREENS), reveal);
+        EXPECT_EQ(GetMovesArray(player)[1], reveal ? MOVE_BRICK_BREAK : MOVE_NONE);
+        EXPECT_EQ(gAiPartyData->mons[B_TRAINER_PLAYER][0].moves[1], reveal ? MOVE_BRICK_BREAK : MOVE_NONE);
     }
 }
