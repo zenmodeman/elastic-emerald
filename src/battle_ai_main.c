@@ -727,11 +727,42 @@ void Ai_UpdateFaintData(enum BattlerId battler)
     aiMon->isFainted = TRUE;
 }
 
+// Match charge-skipping conditions using modeled ability and effective item knowledge.
+// In particular, the actual held item must not reveal an unknown Power Herb.
+static bool32 CanAssumeTwoTurnMove(enum BattlerId battler, enum Move move)
+{
+    enum BattleMoveEffects effect = GetMoveEffect(move);
+    enum HoldEffect holdEffect = gAiLogicData->holdEffects[battler];
+
+    // Sky Drop uses its own execution path and cannot consume Power Herb.
+    if (effect == EFFECT_SKY_DROP)
+        return FALSE;
+    if (holdEffect == HOLD_EFFECT_POWER_HERB)
+        return TRUE;
+    if (effect == EFFECT_GEOMANCY || gBattleMoveEffects[effect].semiInvulnerableEffect)
+        return FALSE;
+    if (move == MOVE_RAZOR_WIND && (gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_TAILWIND))
+        return TRUE;
+
+    u32 weather = GetAttackerWeather(holdEffect, gAiLogicData->abilities[battler], AI_GetWeather());
+    enum BattleWeather requiredWeather = GetTwoTurnMoveWeather(move);
+
+    return weather != B_WEATHER_NONE
+        && gBattleWeatherInfo[GetBattleWeather(weather)].type == requiredWeather;
+}
+
 void RecordMovesBasedOnStab(enum BattlerId battler)
 {
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
         enum Move playerMove = gBattleMons[battler].moves[moveIndex];
+
+        if (playerMove == MOVE_NONE || playerMove == MOVE_UNAVAILABLE
+            || (gBattleMoveEffects[GetMoveEffect(playerMove)].twoTurnEffect
+                && !CanAssumeTwoTurnMove(battler, playerMove))
+            || MoveHasAdditionalEffectSelf(playerMove, MOVE_EFFECT_RECHARGE))
+            continue;
+
         if (IsSpeciesOfType(gBattleMons[battler].species, GetMoveType(playerMove)) && GetMovePower(playerMove) != 0)
             RecordKnownMove(battler, playerMove);
     }

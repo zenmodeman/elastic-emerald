@@ -1,6 +1,7 @@
 #include "global.h"
 #include "test/battle.h"
 #include "battle_ai_util.h"
+#include "pokemon.h"
 
 AI_SINGLE_BATTLE_TEST("AI_FLAG_ASSUME_STAB sees the player's STAB moves")
 {
@@ -81,5 +82,91 @@ AI_DOUBLE_BATTLE_TEST("AI correctly records assumed STAB moves")
             EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][2], MOVE_THUNDERBOLT);
             EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_RIGHT][3], MOVE_NONE);
         }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB assumptions exclude unrevealed charging and recharge moves")
+{
+    u32 species, move;
+    PARAMETRIZE { species = SPECIES_CHARIZARD; move = MOVE_FLY; }
+    PARAMETRIZE { species = SPECIES_VENUSAUR; move = MOVE_SOLAR_BEAM; }
+    PARAMETRIZE { species = SPECIES_SNORLAX; move = MOVE_SKULL_BASH; }
+    PARAMETRIZE { species = SPECIES_SNORLAX; move = MOVE_HYPER_BEAM; }
+    PARAMETRIZE { species = SPECIES_CHARIZARD; move = MOVE_BLAST_BURN; }
+    GIVEN {
+        ASSUME(IsSpeciesOfType(species, GetMoveType(move)));
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_ASSUME_STAB);
+        PLAYER(species) { Moves(MOVE_CELEBRATE, move); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][0], MOVE_CELEBRATE);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_NONE);
+        EXPECT_EQ(gAiPartyData->mons[B_TRAINER_PLAYER][0].moves[1], MOVE_NONE);
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB restrictions retain revealed recharge moves")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_ASSUME_STAB);
+        PLAYER(SPECIES_SNORLAX) { Moves(MOVE_HYPER_BEAM); }
+        OPPONENT(SPECIES_BLISSEY) { Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_HYPER_BEAM); }
+    } THEN {
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][0], MOVE_HYPER_BEAM);
+        EXPECT_EQ(gAiPartyData->mons[B_TRAINER_PLAYER][0].moves[0], MOVE_HYPER_BEAM);
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB charge skipping requires known Power Herb")
+{
+    u32 flags;
+    PARAMETRIZE { flags = AI_FLAG_ASSUME_STAB; }
+    PARAMETRIZE { flags = AI_FLAG_ASSUME_STAB | AI_FLAG_ITEM_OMNISCIENCE; }
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | flags);
+        PLAYER(SPECIES_CHARIZARD) { Item(ITEM_POWER_HERB); Moves(MOVE_CELEBRATE, MOVE_FLY, MOVE_BLAST_BURN); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1],
+            flags & AI_FLAG_ITEM_OMNISCIENCE ? MOVE_FLY : MOVE_NONE);
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][2], MOVE_NONE);
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB Solar Beam inference follows weather and known Utility Umbrella")
+{
+    u32 ability, item;
+    PARAMETRIZE { ability = ABILITY_DROUGHT; item = ITEM_NONE; }
+    PARAMETRIZE { ability = ABILITY_DRIZZLE; item = ITEM_NONE; }
+    PARAMETRIZE { ability = ABILITY_DROUGHT; item = ITEM_UTILITY_UMBRELLA; }
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_ASSUME_STAB | AI_FLAG_ITEM_OMNISCIENCE);
+        PLAYER(SPECIES_VENUSAUR) { Item(item); Moves(MOVE_CELEBRATE, MOVE_SOLAR_BEAM); }
+        OPPONENT(SPECIES_TORKOAL) { Ability(ability); Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1],
+            ability == ABILITY_DROUGHT && item == ITEM_NONE ? MOVE_SOLAR_BEAM : MOVE_NONE);
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Tailwind permits unrevealed STAB Razor Wind inference")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_ASSUME_STAB);
+        PLAYER(SPECIES_CHARIZARD) { Moves(MOVE_TAILWIND, MOVE_RAZOR_WIND, MOVE_CELEBRATE); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_TAILWIND); }
+        TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        EXPECT_EQ(gBattleHistory->usedMoves[B_POSITION_PLAYER_LEFT][1], MOVE_RAZOR_WIND);
     }
 }

@@ -2,6 +2,8 @@
 
 ## Documentation status
 
+- **Uncommitted follow-up:** STAB assumptions exclude self-recharge attacks and two-turn attacks without a modeled charge-skip condition at the shared recording point; Elastic knowledge explicitly includes item omniscience.
+
 - **Last documented code commit:** `c753e34660` ("Complete last failing automated tests").
 - **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through `9c4b986496`. The subsequent commitment-reset change in `c753e34660` was reconciled against its committed diff on September 25, 2026; the two later commits through `9c12ae6d16` only add analysis helpers. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
 - **Follow-up committed in `c753e34660`:** a player switch now clears established commitment as well as the already-cleared pending commitment for the opponents. The game's existing AI-versus-AI battle mode remains intact.
@@ -49,7 +51,7 @@ The upstream `AI_FLAG_ASSUME_STAB` path records eligible unrevealed STAB options
 
 Powder is rejected for lacking a Fire target move only after all four target move slots are known. With an incomplete moveset, the AI preserves Powder as a candidate instead of treating unrevealed slots as proof that no Fire move exists. Omniscient trainers naturally satisfy the complete-knowledge condition; ordinary trainers can satisfy it through revealed or inferred move history.
 
-Unrevealed STAB estimates are filtered to avoid implausible predictions such as unusable recharge or two-turn attacks. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
+`RecordMovesBasedOnStab` excludes self-recharge attacks and two-turn attacks unless known effective Power Herb, applicable weather (including modeled Mega Sol), or Tailwind for Razor Wind guarantees skipping the charge. Hidden Power Herb does not qualify; item omniscience or observed item knowledge is required. Sky Drop cannot use Power Herb, and semi-invulnerable moves cannot skip charging through weather. Revealed moves remain known, and move/full omniscience still exposes the complete moveset. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
 
 Key commits: `59b76d3fcd`, `4bb634c651`, `829ec9c367`, `7ee8501957`.
 
@@ -57,7 +59,7 @@ Key commits: `59b76d3fcd`, `4bb634c651`, `829ec9c367`, `7ee8501957`.
 
 Earlier iterations recorded inferable items when their effects became visible, including Life Orb, Float Stone, Eviolite, and Assault Vest. Frisk was expanded to interact with item-manipulating moves. Forewarn stores its announced move in switch-cleared volatile state and halves damage from that move only; because this modifier is in the shared damage path, AI estimates and live damage remain aligned.
 
-The current policy goes further and gives the AI complete player held-item knowledge, including benched party members. This is deliberately more permissive than its move and ability knowledge model and feeds both damage simulation and switching.
+The Elastic knowledge profile uses `AI_FLAG_ITEM_OMNISCIENCE` to give the AI complete player held-item knowledge, including benched party members. Trainers without item/full omniscience retain observed item knowledge. This is deliberately more permissive than its move and ability knowledge model and feeds both damage simulation and switching.
 
 Key commits: `ac7f19cbd6`, `ece86112ff`, `3c07dac5ed`, `1f6633f157`, `6cf60d5e69`.
 

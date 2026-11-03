@@ -151,7 +151,7 @@ AI has full knowledge of player moves, abilities, and hold items, and can use th
 AI has full knowledge of the species in the player's party, as well as their fainted status; no other omniscient knowledge is included. Functions similarly to a team preview.
 
 ## `AI_FLAG_ASSUME_STAB`
-A significantly more restricted version of `AI_FLAG_OMNISCIENT`, the AI only knows the player's STAB moves, as their existence would be reasonable to assume in almost any case.
+A significantly more restricted version of `AI_FLAG_OMNISCIENT`, the AI infers the player's damaging species-STAB moves, excluding self-recharge attacks and two-turn attacks without a guaranteed charge skip. Known effective Power Herb, applicable weather, and Tailwind for Razor Wind permit the corresponding two-turn inference. Hidden Power Herb does not qualify. Excluded moves become known when revealed.
 
 ## `AI_FLAG_ASSUME_STATUS_MOVES`
 A more restricted version of `AI_FLAG_OMNISCIENT`. The AI has a _chance_ to know what status moves the player has, plus additionally Fake Out and fixed percentage moves like Super Fang. The intention is so that if the AI has a counterplay implemented, it will seem to have guessed if the player's pokemon has a move, without giving the AI perfect information. For example, with Omniscient set, the AI will not usually put a pokemon to sleep if it has Sleep Talk; with neither Assume Powerful Status nor Omniscient set, the AI will always assume the pokemon does not have Sleep Talk.
