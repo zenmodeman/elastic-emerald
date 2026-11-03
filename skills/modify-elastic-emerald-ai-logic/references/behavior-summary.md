@@ -3,7 +3,9 @@
 ## Documentation status
 
 - **Committed follow-up (`3b01725fcc`):** STAB assumptions exclude self-recharge attacks and two-turn attacks without a modeled charge-skip condition; Elastic knowledge explicitly includes item omniscience.
-- **Uncommitted follow-up:** STAB inference supplies damage and KO estimates without recording move knowledge; specific effects such as Brick Break screen removal require revelation or move omniscience.
+- **Committed follow-up (`db9df93b11`):** STAB inference supplies damage and KO estimates without recording move knowledge; specific effects such as Brick Break screen removal require revelation or move omniscience.
+
+- **Uncommitted follow-up:** Hidden Power chooses uniformly among equally scored best types at move execution; AI and Anticipation previews remain deterministic and do not consume the tie-selection RNG.
 
 - **Last documented code commit:** `c753e34660` ("Complete last failing automated tests").
 - **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through `9c4b986496`. The subsequent commitment-reset change in `c753e34660` was reconciled against its committed diff on September 25, 2026; the two later commits through `9c12ae6d16` only add analysis helpers. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
@@ -348,3 +350,7 @@ Key commits: `7fdbe2f144`, `bd8658f64c`, `10f438d2f0`, `7829b03a9c`.
 Choice Band and Choice Scarf return no effective held-item effect while Gorilla Tactics is active on a player-owned Pokémon in Restricted Mode. Opponents and AI-controlled partners retain their Choice-item effects. The shared damage and Speed helpers also apply this rule using their supplied ability, so AI simulations use their modeled ability rather than discovering a hidden one. The normal AI held-effect cache applies the same filter after its existing negation checks; the suppression-unaware handicap retains its existing early return. Gorilla Tactics keeps its own Attack boost and move lock. Choice Specs and unrestricted battles retain their normal effects. Suppressing or replacing Gorilla Tactics restores normal item behavior, subject to other item-negation rules. The held item itself remains present.
 
 Key commit: `f70470b888`.
+
+### Adaptive Hidden Power ties
+
+**Uncommitted:** `GetHiddenPowerTypeInternal` retains all types tied at the highest computed score, discarding earlier candidates when a higher score appears. Move execution uses `SetHiddenPowerType(..., TRUE)` and a single `RandomUniform(RNG_HIDDEN_POWER_TYPE, 0, count - 1)` draw when more than one best type exists. AI damage/effectiveness queries use `SetHiddenPowerType(..., FALSE)`; `GetHiddenPowerType` used by Anticipation is also deterministic. These queries retain a representative best type and do not consume or preselect the runtime roll. Revelation policy, scoring modifiers, and announcement timing are unchanged. Explicit candidate-index overrides pin existing examples; the tied-type regressions exercise all best choices and equal selection probability.

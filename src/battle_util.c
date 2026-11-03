@@ -7912,10 +7912,11 @@ static u32 ScaleHiddenPowerScore(u32 score, uq4_12_t modifier)
     return ((u64)score * modifier + UQ_4_12(0.5) - 1) / UQ_4_12(1.0);
 }
 
-enum Type GetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+static enum Type GetHiddenPowerTypeInternal(enum BattlerId battlerAtk, enum BattlerId battlerDef, bool32 randomizeTies)
 {
     struct DamageContext ctx = {0};
-    enum Type bestType = TYPE_NORMAL;
+    enum Type bestTypes[NUMBER_OF_MON_TYPES];
+    u32 bestTypeCount = 0;
     u32 bestScore = 0;
     bool32 savedGemBoost = gSpecialStatuses[battlerAtk].gemBoost;
 
@@ -7924,7 +7925,7 @@ enum Type GetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDe
     ctx.move = ctx.chosenMove = ctx.baseMove = MOVE_HIDDEN_POWER;
     ctx.weather = GetWeather();
     ctx.terrain = gFieldTimers.terrain;
-    // No guessing, species-based inference, or AI omniscience here.
+    // Explicitly use revealed information rather than what the AI knows
     for (enum BattlerId battler = 0; battler < gBattlersCount; battler++)
     {
         struct AiPartyMon *known = &gAiPartyData->mons[GetBattlerTrainer(battler)][gBattlerPartyIndexes[battler]];
@@ -7956,7 +7957,7 @@ enum Type GetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDe
             continue;
 
         // Keep precision until after the comparison; damage rolls and critical
-        // hits must not influence selection. Equal scores keep the first type.
+        // hits must not influence selection. Retain every equally best type.
         score = CalcMoveBasePowerAfterModifiers(&ctx) * UQ_4_12(1.0);
         score = ScaleHiddenPowerScore(score, ctx.typeEffectivenessModifier);
         score = ScaleHiddenPowerScore(score, GetWeatherDamageModifier(&ctx));
@@ -7969,18 +7970,30 @@ enum Type GetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDe
         if (score > bestScore)
         {
             bestScore = score;
-            bestType = type;
+            bestTypeCount = 0;
         }
+        if (score == bestScore)
+            bestTypes[bestTypeCount++] = type;
     }
     gSpecialStatuses[battlerAtk].gemBoost = savedGemBoost;
-    return bestType;
+    if (bestTypeCount == 0)
+        return TYPE_NORMAL;
+    if (randomizeTies && bestTypeCount > 1)
+        return bestTypes[RandomUniform(RNG_HIDDEN_POWER_TYPE, 0, bestTypeCount - 1)];
+    return bestTypes[0];
 }
 
-void SetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+// Check-only queries must not roll the move's type during AI/Anticipation work.
+enum Type GetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    return GetHiddenPowerTypeInternal(battlerAtk, battlerDef, FALSE);
+}
+
+void SetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef, bool32 randomizeTies)
 {
     enum HoldEffect holdEffect = GetBattlerHoldEffect(battlerAtk);
 
-    gBattleStruct->dynamicMoveType = GetHiddenPowerType(battlerAtk, battlerDef);
+    gBattleStruct->dynamicMoveType = GetHiddenPowerTypeInternal(battlerAtk, battlerDef, randomizeTies);
     if (gBattleMons[battlerAtk].volatiles.electrified)
         gBattleStruct->dynamicMoveType = TYPE_ELECTRIC;
 

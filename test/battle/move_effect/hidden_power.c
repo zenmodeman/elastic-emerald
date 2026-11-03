@@ -1,5 +1,6 @@
 #include "global.h"
 #include "test/battle.h"
+#include "battle_util.h"
 
 SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power fails for species other than Unown")
 {
@@ -7,7 +8,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power fails for species other than Uno
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Wobbuffet used Hidden Power!");
         MESSAGE("But Wobbuffet can't use the move!");
@@ -28,7 +29,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power supports Unown forms and Fairy t
         PLAYER(species);
         OPPONENT(SPECIES_SABLEYE);
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Fairy type!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
@@ -53,7 +54,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power has 60 base power regardless of 
         }
         OPPONENT(SPECIES_WOBBUFFET) { SpDefense(100); }
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Bug type!");
         HP_BAR(opponent, captureDamage: &results[i].damage);
@@ -71,7 +72,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power selects its type against the swi
         OPPONENT(SPECIES_SABLEYE);
         OPPONENT(SPECIES_GYARADOS) { Ability(ABILITY_MOXIE); }
     } WHEN {
-        TURN { SWITCH(opponent, 1); MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { SWITCH(opponent, 1); MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Electric type!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
@@ -86,7 +87,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power factors weather into its type se
         OPPONENT(SPECIES_TANGELA);
     } WHEN {
         TURN { MOVE(player, MOVE_SUNNY_DAY); }
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_SUNNY_DAY, player);
         MESSAGE("Hidden Power became Fire type!");
@@ -105,7 +106,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power factors the user's type boosters
         PLAYER(SPECIES_UNOWN) { Item(item); }
         OPPONENT(SPECIES_TANGELA);
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Fire type!");
         if (item == ITEM_FIRE_GEM)
@@ -126,7 +127,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power ignores unrevealed opposing item
         PLAYER(SPECIES_UNOWN) { Item(ITEM_CHARCOAL); }
         OPPONENT(SPECIES_TANGELA) { Item(ITEM_OCCA_BERRY); }
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Fire type!");
         ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_BERRY, opponent);
@@ -141,8 +142,8 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power only accounts for Levitate after
         PLAYER(SPECIES_UNOWN);
         OPPONENT(SPECIES_BRONZONG) { Ability(ABILITY_LEVITATE); }
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Ground type!");
         ABILITY_POPUP(opponent, ABILITY_LEVITATE);
@@ -158,7 +159,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power announces its type before Proact
         PLAYER(SPECIES_UNOWN);
         OPPONENT(SPECIES_KECLEON) { Ability(ABILITY_COLOR_CHANGE); }
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Fighting type!");
         ABILITY_POPUP(opponent, ABILITY_COLOR_CHANGE);
@@ -178,8 +179,8 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power preserves the legacy Counter exc
         PLAYER(SPECIES_UNOWN) { HP(1000); MaxHP(1000); Attack(100); SpAttack(100); Speed(100); }
         OPPONENT(SPECIES_WOBBUFFET) { HP(1000); MaxHP(1000); SpDefense(100); Speed(1); }
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); MOVE(opponent, MOVE_MIRROR_COAT); }
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); MOVE(opponent, MOVE_COUNTER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); MOVE(opponent, MOVE_MIRROR_COAT); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); MOVE(opponent, MOVE_COUNTER); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
         MESSAGE("The opposing Wobbuffet used Mirror Coat!");
@@ -196,7 +197,7 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power ignores AI ability omniscienc
         PLAYER(SPECIES_BRONZONG) { Ability(ABILITY_LEVITATE); Moves(MOVE_CELEBRATE); }
         OPPONENT(SPECIES_UNOWN) { Moves(MOVE_HIDDEN_POWER); }
     } WHEN {
-        TURN { EXPECT_MOVE(opponent, MOVE_HIDDEN_POWER); }
+        TURN { EXPECT_MOVE(opponent, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Ground type!");
         ABILITY_POPUP(player, ABILITY_LEVITATE);
@@ -211,9 +212,9 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power remembers revealed abilities acr
         OPPONENT(SPECIES_BRONZONG) { Ability(ABILITY_LEVITATE); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
         TURN { SWITCH(opponent, 1); MOVE(player, MOVE_CELEBRATE); }
-        TURN { SWITCH(opponent, 0); MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { SWITCH(opponent, 0); MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Ground type!");
         ABILITY_POPUP(opponent, ABILITY_LEVITATE);
@@ -229,8 +230,8 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power avoids absorption abilities only
         PLAYER(SPECIES_UNOWN);
         OPPONENT(SPECIES_SCIZOR) { Ability(ABILITY_FLASH_FIRE); }
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Fire type!");
         ABILITY_POPUP(opponent, ABILITY_FLASH_FIRE);
@@ -246,7 +247,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power does not consume a Gem for its n
         PLAYER(SPECIES_UNOWN) { Item(ITEM_NORMAL_GEM); }
         OPPONENT(SPECIES_TANGELA);
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Flying type!");
         NOT ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_EFFECT, player);
@@ -282,5 +283,64 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power boosts Unown damage using Attack
         EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.25), results[1].damage);
         EXPECT_MUL_EQ(results[2].damage, Q_4_12(1.5), results[3].damage);
         EXPECT_MUL_EQ(results[4].damage, Q_4_12(1.125), results[5].damage);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power can select every equally best type")
+{
+    u32 choice = 0;
+    PARAMETRIZE { choice = 0; }
+    PARAMETRIZE { choice = 1; }
+    PARAMETRIZE { choice = 2; }
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, choice)); }
+    } SCENE {
+        if (choice == 0)
+            MESSAGE("Hidden Power became Bug type!");
+        else if (choice == 1)
+            MESSAGE("Hidden Power became Ghost type!");
+        else
+            MESSAGE("Hidden Power became Dark type!");
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);
+        HP_BAR(opponent);
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power chooses uniformly among tied best types")
+{
+    PASSES_RANDOMLY(1, 3, RNG_HIDDEN_POWER_TYPE);
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+    } SCENE {
+        MESSAGE("Hidden Power became Bug type!");
+    }
+}
+
+SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power previews and unique best types do not consume RNG")
+{
+    bool32 unique = FALSE;
+    PARAMETRIZE { unique = FALSE; }
+    PARAMETRIZE { unique = TRUE; }
+    GIVEN {
+        PLAYER(SPECIES_UNOWN);
+        OPPONENT(unique ? SPECIES_SABLEYE : SPECIES_WOBBUFFET);
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        rng_value_t savedRng = gRngValue;
+        enum Type expected = unique ? TYPE_FAIRY : TYPE_BUG;
+        EXPECT_EQ(GetHiddenPowerType(B_BATTLER_0, B_BATTLER_1), expected);
+        SetHiddenPowerType(B_BATTLER_0, B_BATTLER_1, unique);
+        EXPECT_EQ(gBattleStruct->dynamicMoveType, expected);
+        EXPECT_EQ(gRngValue.a, savedRng.a);
+        EXPECT_EQ(gRngValue.b, savedRng.b);
+        EXPECT_EQ(gRngValue.c, savedRng.c);
+        EXPECT_EQ(gRngValue.ctr, savedRng.ctr);
     }
 }

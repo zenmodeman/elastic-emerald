@@ -1973,7 +1973,7 @@ static enum CancelerResult CancelerHiddenPowerType(struct BattleCalcValues *cv)
      || !IsBattlerAlive(cv->battlerDef))
         return CANCELER_RESULT_SUCCESS;
 
-    SetHiddenPowerType(cv->battlerAtk, cv->battlerDef);
+    SetHiddenPowerType(cv->battlerAtk, cv->battlerDef, TRUE);
     PREPARE_TYPE_BUFFER(gBattleTextBuff1, GetBattleMoveType(cv->move));
     BattleScriptCall(BattleScript_HiddenPowerType);
     return CANCELER_RESULT_RUN_SCRIPT_AND_INCREMENT;

@@ -148,7 +148,7 @@ s32 CalculateMoveDamageVars(struct DamageContext *ctx);
 s32 DoFixedDamageMoveCalc(struct DamageContext *ctx);
 s32 ApplyModifiersAfterDmgRoll(struct DamageContext *ctx, s32 dmg);
 enum Type GetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef);
-void SetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef);
+void SetHiddenPowerType(enum BattlerId battlerAtk, enum BattlerId battlerDef, bool32 randomizeTies);
 uq4_12_t CalcTypeEffectivenessMultiplier(struct DamageContext *ctx);
 uq4_12_t CalcPartyMonTypeEffectivenessMultiplier(enum Move move, enum Species speciesDef, enum Ability abilityDef);
 uq4_12_t GetTypeModifier(enum Type atkType, enum Type defType);

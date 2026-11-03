@@ -10,6 +10,7 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| Hidden Power tie selection | **Uncommitted** | Randomly selects among equally valued best types at execution while keeping AI and Anticipation previews from consuming the selection roll. |
 | Agent reference ownership | **Uncommitted** | Moves AI behavior and feature history into skill references and the Tier Points working audit into `analysis/`; preserves developer-owned prose while allowing focused technical documentation updates for requested code changes. |
 | Damage-only STAB knowledge | **Uncommitted** | Keeps hidden STAB attacks available to damage, KO, and switch survival estimates without revealing specific move effects or populating active/party move history. |
 | STAB inference restrictions | `3b01725fcc` | Excludes unrevealed self-recharge attacks and two-turn attacks without known charge-skip conditions through the shared STAB flag path while retaining revealed moves and explicit item omniscience in the Elastic knowledge profile. |

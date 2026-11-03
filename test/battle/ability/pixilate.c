@@ -129,7 +129,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Pixilate does not override adaptive Hidden Po
         PLAYER(SPECIES_UNOWN) { Ability(ABILITY_PIXILATE); }
         OPPONENT(SPECIES_DIGLETT);
     } WHEN {
-        TURN { MOVE(player, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(player, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         MESSAGE("Hidden Power became Water type!");
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HIDDEN_POWER, player);

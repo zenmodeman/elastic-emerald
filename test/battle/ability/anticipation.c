@@ -345,7 +345,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Anticipation ignores Hidden Power from specie
         PLAYER(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); }
         OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_HIDDEN_POWER); }
     } WHEN {
-        TURN { MOVE(opponent, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(opponent, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         NONE_OF {
             ABILITY_POPUP(player, ABILITY_ANTICIPATION);
@@ -362,7 +362,7 @@ SINGLE_BATTLE_TEST("Elastic-tests: Anticipation treats adaptive Hidden Power as 
         PLAYER(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); Item(ITEM_CHOPLE_BERRY); }
         OPPONENT(SPECIES_UNOWN) { Moves(MOVE_HIDDEN_POWER, MOVE_SCRATCH, MOVE_POUND, MOVE_CELEBRATE); }
     } WHEN {
-        TURN { MOVE(opponent, MOVE_HIDDEN_POWER); }
+        TURN { MOVE(opponent, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
     } SCENE {
         ABILITY_POPUP(player, ABILITY_ANTICIPATION);
         ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_BERRY, player); // Check that the item is triggered

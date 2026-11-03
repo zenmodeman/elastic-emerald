@@ -585,7 +585,7 @@ bool32 MovesWithCategoryUnusable(u32 attacker, u32 target, enum DamageCategory c
         {
             SetTypeBeforeUsingMove(moves[moveIndex], attacker, ctx.abilities[attacker], ctx.holdEffects[attacker]);
             if (GetMoveEffect(moves[moveIndex]) == EFFECT_HIDDEN_POWER)
-                SetHiddenPowerType(attacker, target);
+                SetHiddenPowerType(attacker, target, FALSE);
             ctx.move = ctx.chosenMove = moves[moveIndex];
             ctx.moveType = GetBattleMoveType(moves[moveIndex]);
 
@@ -1041,7 +1041,7 @@ static struct SimulatedDamage CalcDamageWithCritMode(struct AiCalcValues *aiCalc
     SetDynamicMoveCategory(battlerAtk, battlerDef, move);
     SetTypeBeforeUsingMove(move, battlerAtk, ctx.abilities[battlerAtk], ctx.holdEffects[battlerAtk]);
     if (GetMoveEffect(move) == EFFECT_HIDDEN_POWER)
-        SetHiddenPowerType(battlerAtk, battlerDef);
+        SetHiddenPowerType(battlerAtk, battlerDef, FALSE);
 
     ctx.moveType = GetBattleMoveType(move);
     // Display queries explicitly separate normal rolls from possible critical rolls.
@@ -1489,7 +1489,7 @@ uq4_12_t AI_GetMoveEffectiveness(enum Move move, enum BattlerId battlerAtk, enum
 
     SetTypeBeforeUsingMove(move, battlerAtk, ctx.abilities[battlerAtk], ctx.holdEffects[battlerAtk]);
     if (GetMoveEffect(move) == EFFECT_HIDDEN_POWER)
-        SetHiddenPowerType(battlerAtk, battlerDef);
+        SetHiddenPowerType(battlerAtk, battlerDef, FALSE);
     ctx.moveType = GetBattleMoveType(move);
     typeEffectiveness = AI_CalcTypeEffectivenessMultiplier(&ctx);
 
