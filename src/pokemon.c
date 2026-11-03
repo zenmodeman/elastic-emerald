@@ -2492,7 +2492,8 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         case MON_DATA_TERA_TYPE:
             {
                 struct PokemonSubstruct0 *substruct0 = GetSubstruct0(boxMon);
-                if (gSpeciesInfo[substruct0->species].forceTeraType)
+                // Preserve the trainer opt-out sentinel even for species with a forced Tera type.
+                if (substruct0->teraType != TYPE_MYSTERY && gSpeciesInfo[substruct0->species].forceTeraType)
                 {
                     retVal = gSpeciesInfo[substruct0->species].forceTeraType;
                 }

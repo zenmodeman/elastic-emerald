@@ -308,6 +308,14 @@ The following move and custom-mechanic families received explicit AI treatment. 
 
 ## 7. Terastalization logic
 
+### Switch-prediction scope
+
+**Uncommitted:** General player-switch simulation is suppressed: prediction setup does not run the player through `ShouldSwitch` / `GetMostSuitableMonToSwitchInto`, and predicted move scoring cannot create a player-switch prediction. Move prediction remains enabled. Incoming-mon prediction is retained for the custom singles immunity-abuse path, gated by five observed player switches overall or during the current AI Pokémon’s stint, and limited to previously seen, living bench candidates immune to the considered attack. The existing switch-prediction probability still gates that path.
+
+### Trainer Tera eligibility
+
+**Uncommitted:** Trainer Pokémon require an explicit Tera type in `src/data/trainers.party` to Terastallize. Smart Tera controls decisions for eligible Pokémon; it cannot grant eligibility from a generated or curated default. Trainer generation stores `TYPE_MYSTERY` when the party entry omits a type.
+
 ### Defensive Tera decision
 
 `AI_ShouldTerastal` compares the battler's current defensive typing with its Tera type against the opponent's known or inferred STABs. It avoids Tera when doing so introduces a new STAB weakness, removes a valuable immunity or double resistance, or otherwise worsens immediate survival. If Tera has no defensive type cost, the AI is generally willing to use it.

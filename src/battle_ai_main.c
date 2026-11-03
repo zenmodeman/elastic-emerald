@@ -384,22 +384,29 @@ void SetupAIPredictionData(enum BattlerId battler, enum SwitchType switchType)
 {
     gAiLogicData->aiPredictionInProgress = TRUE;
 
-    // Switch prediction
+    // General player-switch simulation is suppressed. Only the observed-switch
+    // immunity path may establish a predicted player switch during move selection.
+    gAiLogicData->shouldSwitch &= ~(1u << battler);
+    gBattleStruct->prevTurnSpecies[battler] = gBattleMons[battler].species;
+
+    /* General player-switch simulation, retained for possible restoration.
+     * Restore the post-scoring hook below along with this block.
     if (IsAiFlagPresent(AI_FLAG_PREDICT_SWITCH))
     {
-        enum SwitchType switchType = (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_RISKY) ? SWITCH_AFTER_KO : SWITCH_MID_BATTLE_OPTIONAL; // Risky AI switches aggressively even mid battle
-        gAiLogicData->mostSuitableMonId[battler] = GetMostSuitableMonToSwitchInto(battler, switchType);
+        enum SwitchType predictedSwitchType = (gAiThinkingStruct->aiFlags[battler] & AI_FLAG_RISKY) ? SWITCH_AFTER_KO : SWITCH_MID_BATTLE_OPTIONAL;
+        gAiLogicData->mostSuitableMonId[battler] = GetMostSuitableMonToSwitchInto(battler, predictedSwitchType);
         if (ShouldSwitch(battler))
             gAiLogicData->shouldSwitch |= (1u << battler);
-        gBattleStruct->prevTurnSpecies[battler] = gBattleMons[battler].species;
     }
+    */
 
     // Move prediction
     if (IsAiFlagPresent(AI_FLAG_PREDICT_MOVE))
     {
         gAiBattleData->chosenMoveIndex[battler] = BattleAI_ChooseMoveIndex(battler);
         gAiLogicData->predictedMove[battler] = gBattleMons[battler].moves[gAiBattleData->chosenMoveIndex[battler]];
-        ModifySwitchAfterMoveScoring(battler);
+        // General player-switch simulation post-scoring hook (disabled):
+        // ModifySwitchAfterMoveScoring(battler);
     }
 
     gAiLogicData->aiPredictionInProgress = FALSE;

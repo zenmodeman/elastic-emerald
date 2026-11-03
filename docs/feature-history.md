@@ -10,6 +10,8 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| General switch prediction suppressed | **Uncommitted** | Stops modeling player switches through ordinary AI switching logic while retaining move prediction and the restricted immunity-abuse path. |
+| Trainer Tera eligibility repair | **Uncommitted** | Requires an explicit party Tera type even for Smart Tera trainers; generated and curated defaults no longer enable trainer Terastallization. |
 | Damage-view transition repair | **Uncommitted** | Reveals Player Dmg and AI Dmg only after their table graphics finish transferring, preventing a flash of stale contents during entry. |
 | Battle info return repair | **Uncommitted** | Moves enlarged AI damage graphics away from the options tilemap, preventing a blank screen when returning to the dropdown. Adds a VRAM layout regression. |
 | AI and player damage displays | **Uncommitted** | Both show minimum normal–maximum critical damage (normal maximum when critical hits are blocked), collapsing `0-0` to `0`. AI Dmg keeps three ability columns with two-row headings and larger numbers where space permits. |

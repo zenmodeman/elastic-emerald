@@ -222,8 +222,9 @@ void GenerateMonFromTrainerMon(struct Pokemon *mon, const struct TrainerMon *tra
         data = trainerMon->teraType;
         SetMonData(mon, MON_DATA_TERA_TYPE, &data);
     }
-    else if (!trainer->smartTera)
+    else
     {
+        // Generated/curated types do not opt trainer Pokemon into Terastallization.
         data = TYPE_MYSTERY;
         SetMonData(mon, MON_DATA_TERA_TYPE, &data);
     }

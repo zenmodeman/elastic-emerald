@@ -124,3 +124,11 @@ Focused read-only menu regressions live in `test/battle/battle_info.c`. The `TES
 The read-only damage window uses BG1 base tile `0x180`: its graphics occupy `0xB000..0xEBFF`, between BG1’s tilemap (`0xA000..0xA7FF`) and BG0’s options tilemap (`0xF800..0xFFFF`). A 30×16 window at the old base `0x200` reaches `0xFBFF` and corrupts the options tilemap, leaving a blank screen on return. Check complete VRAM byte ranges whenever enlarging windows; tile storage can overlap another BG’s tilemap even when the windows use different backgrounds. The focused VRAM regression reads the production window and BG templates.
 
 Player Dmg and read-only AI Dmg keep BG1 and their newly created sprites hidden during initialization. After drawing and queuing window graphics/tilemap copies, wait for `IsDma3ManagerBusyWithBgCopy()` to clear before hiding BG0 and revealing BG1/sprites. Showing BG1 in setup state 0 exposes the previous table for a frame before state 1 replaces it. Input starts only after the reveal state.
+
+### Trainer Tera eligibility
+
+`GenerateMonFromTrainerMon` must store `TYPE_MYSTERY` when the trainer party entry omits `teraType`, regardless of `smartTera`. `ShouldTrainerBattlerUseGimmick` uses that sentinel to block Tera; generated/curated defaults are not permission. `GetMonData(MON_DATA_TERA_TYPE)` must preserve that sentinel ahead of species-forced types as well. Preserve explicit party types. The regression in `test/battle/trainer_control.c` covers Smart Tera without an explicit type.
+
+### Suppressed general switch prediction
+
+`SetupAIPredictionData` clears the modeled player's switch bit and does not call `ShouldSwitch`, `GetMostSuitableMonToSwitchInto`, or `ModifySwitchAfterMoveScoring`. The latter can independently create a switch prediction from bad move scores, so suppressing only `ShouldSwitch` is insufficient. Keep normal AI switching in `ComputeAiBattlerDecisions` intact. Retain the prediction flags and probability for `TryChooseImmunityPredictionSwitchin`, which establishes its own candidate and switch bit after observed-switch restrictions pass. Legacy general-prediction battle scenarios need expectations reflecting suppression if maintained; static review does not establish their runtime results.
