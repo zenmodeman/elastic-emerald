@@ -1,6 +1,6 @@
 # Elastic Emerald custom feature reference
 
-This reference describes current functional features and player-visible rules. Keep descriptions concise. Repair records belong in the [feature history](../feature-history.md); implementation and maintenance details belong in the [developer topic guides](README.md). Restoring expected behavior does not create a new feature entry.
+This reference describes current functional features and player-visible rules. Keep descriptions concise. Repair records belong in the [feature history](../../../docs/feature-history.md); implementation and maintenance details belong in the [repository skills](../SKILL.md). Restoring expected behavior does not create a new feature entry.
 
 ## Run modes and progression
 
@@ -14,13 +14,13 @@ Wild encounters, gifts, evolutions, and Tera eligibility support the chosen type
 
 Starting PC storage includes 12 of each resist berry covering a weakness of the selected type. Terastallization must preserve the chosen type or use Stellar.
 
-See [encounter notes](encounters.md) and the [gameplay reference](../gameplay/README.md).
+See [encounter notes](../../manage-elastic-emerald-encounters/SKILL.md) and the [gameplay reference](../../../docs/gameplay/README.md).
 
 ## Tier Points
 
 Tiered Mode assigns species- and ability-dependent costs and limits the party's total. Captures, gifts, hatches, evolutions, PC transfers, and ability changes respect that budget; excess Pokemon are boxed or the change is blocked as appropriate. The Summary Screen displays Tier Points.
 
-See [Tier Points](../gameplay/tier-points.md) for costs and eligibility rules.
+See [Tier Points](../../../docs/gameplay/tier-points.md) for costs and eligibility rules.
 
 ## Restricted and Resource modes
 
@@ -36,7 +36,7 @@ Route bosses and selected accomplished trainer classes heal the player's party b
 
 After ordinary battles, sleeping Pokemon receive a fresh two-to-four-turn sleep duration. Running from trainer battles remains disabled.
 
-See [trainer rules](../gameplay/trainers.md).
+See [trainer rules](../../../docs/gameplay/trainers.md).
 
 ## Terastallization
 
@@ -44,7 +44,7 @@ Tera types can use curated species choices or random assignment. Compatible rand
 
 Restricted Mode normally bans Terastallization at four or more Tier Points, with exceptions for selected lower-power ability combinations. Trainer AI accounts for player eligibility when making Tera decisions.
 
-See [curated Tera types](../gameplay/curated-tera-type-distribution.md).
+See [curated Tera types](../../../docs/gameplay/curated-tera-type-distribution.md).
 
 ## Move services
 
@@ -84,7 +84,7 @@ Trainer AI compares damage, residual effects, resist berries, priority, hazards,
 
 Singles immunity-switch prediction becomes available after at least five voluntary player switches during the current opponent's stint. It considers revealed reserve Pokemon and favors frequently used immunity candidates. Forced switches do not contribute.
 
-See the [AI behavior summary](../custom_ai_logic_summary.md) for individual decision rules.
+See the [AI behavior summary](../../../docs/custom_ai_logic_summary.md) for individual decision rules.
 
 ## Maps, trainers, and story
 
@@ -96,7 +96,7 @@ Triumphs reward participation in first-time trainer victories against comparably
 
 The Trainer School includes an AI-versus-AI demonstration and a one-time, Monotype-aware egg gift. Petalburg Grove's Birch scene is limited to the first-badge period. Flannery's diagonal fog is visual and does not introduce Misty Terrain.
 
-See [NPC and trainer notes](npcs-and-trainers.md) and [trainer rules](../gameplay/trainers.md).
+See [NPC and trainer notes](../../modify-elastic-emerald-npcs/SKILL.md) and [trainer rules](../../../docs/gameplay/trainers.md).
 
 ## Overworld and quality of life
 
@@ -114,4 +114,4 @@ The Summary Screen includes IV/EV information and a Details page for Tier Points
 
 Species stats, abilities, evolution levels, learnsets, tutor compatibility, machines, items, prices, encounters, and trainer parties receive custom balance changes. Examples include revised early-game bulk profiles, Wind Rider Beautifly, Corrosion Dustox, and Beautifly's Mud-Slap compatibility.
 
-Detailed values and acquisition rules belong in the [gameplay reference](../gameplay/README.md), [item notes](item-acquisition.md), and [learnset tools](../../tools/learnset_helpers/README.md).
+Detailed values and acquisition rules belong in the [gameplay reference](../../../docs/gameplay/README.md), [item notes](../../manage-elastic-emerald-item-acquisition/SKILL.md), and [learnset tools](../../../tools/learnset_helpers/README.md).

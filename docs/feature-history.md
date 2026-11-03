@@ -2,7 +2,7 @@
 
 I keep this index of the major custom systems and their commits, through `766c31cb22` (October 4, 2026), with pending additions explicitly labeled. It draws on the existing project feature/AI references and local Git history. It covers major gameplay, content, and tooling changes; routine individual learnset, encounter, trainer, and balance edits are not exhaustively listed. The inherited Expansion changelog remains separate.
 
-Entries briefly describe additions, changes, and repairs and retain their commit IDs. Keep entries descriptive; actionable merge guidance belongs in the [upgrade notes](development/upstream-upgrades.md). The [custom feature reference](development/feature-reference.md) describes current functionality, the [AI summary](custom_ai_logic_summary.md) covers individual scoring rules, and the [development guides](development/README.md) record my maintenance approach.
+Entries briefly describe additions, changes, and repairs and retain their commit IDs. Keep entries descriptive; actionable merge guidance belongs in the [upgrade notes](../skills/merge-upgrade-helper/references/upstream-upgrades.md). The [custom feature reference](../skills/maintain-elastic-emerald-documentation/references/feature-reference.md) describes current functionality, the [AI summary](custom_ai_logic_summary.md) covers individual scoring rules, and the [documentation skill](../skills/maintain-elastic-emerald-documentation/SKILL.md) records the documentation maintenance workflow.
 
 ## Newest changes
 

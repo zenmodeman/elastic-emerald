@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modify Elastic Emerald NPCs"
+  short_description: "Add NPCs, trainers, and route bosses safely"
+  default_prompt: "Use $modify-elastic-emerald-npcs to add or revise an Elastic Emerald NPC or route boss."

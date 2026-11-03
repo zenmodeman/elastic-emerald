@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modify Elastic Emerald AI Logic"
+  short_description: "Safely change Elastic Emerald battle-AI logic"
+  default_prompt: "Use $modify-elastic-emerald-ai-logic to implement and document this Elastic Emerald battle-AI change."
