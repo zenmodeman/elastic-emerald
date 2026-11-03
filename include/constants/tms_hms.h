@@ -1,72 +1,84 @@
 #ifndef GUARD_CONSTANTS_TMS_HMS_H
 #define GUARD_CONSTANTS_TMS_HMS_H
 
-//Consider replacing the following:
-// Snatch (exclusive), probably Toxic (into a center tutor move), probably Giga Drain (into a center tutor move)
-//Shock Wave (into a center tutor move), Aerial Ace (into a center tutor move), Torment (Tech Tutor)
+// Priority candidates in off_type_moves.md, plus Power Split and Lucky Chant.
 #define FOREACH_TM(F) \
-    F(FOCUS_PUNCH) \
     F(DRAGON_CLAW) \
     F(CHILLING_WATER) \
-    F(CALM_MIND) \
-    F(ROAR) \
-    F(TOXIC) \
-    F(HAIL) \
     F(LOW_KICK) \
     F(HELPING_HAND) \
-    F(NATURE_POWER) \
-    F(SUNNY_DAY) \
-    F(TAUNT) \
     F(ICE_BEAM) \
-    F(BLIZZARD) \
-    F(HYPER_BEAM) \
     F(LIGHT_SCREEN) \
-    F(PROTECT) \
-    F(RAIN_DANCE) \
-    F(GIGA_DRAIN) \
-    F(SAFEGUARD) \
-    F(FRUSTRATION) \
     F(SOLAR_BEAM) \
-    F(IRON_TAIL) \
     F(THUNDERBOLT) \
-    F(THUNDER) \
     F(EARTHQUAKE) \
     F(RETURN) \
-    F(DIG) \
     F(PSYCHIC) \
     F(SHADOW_BALL) \
     F(BRICK_BREAK) \
-    F(DOUBLE_TEAM) \
     F(REFLECT) \
-    F(SHOCK_WAVE) \
     F(FLAMETHROWER) \
     F(SLUDGE_BOMB) \
-    F(SANDSTORM) \
-    F(FIRE_BLAST) \
     F(ROCK_TOMB) \
-    F(ROOST) \
-    F(TORMENT) \
-    F(FACADE) \
     F(SECRET_POWER) \
     F(REST) \
-    F(ATTRACT) \
     F(SNARL) \
     F(STEEL_WING) \
-    F(SKILL_SWAP) \
-    F(SNATCH) \
-    F(OVERHEAT)\
-    F(THROAT_CHOP)\
-    F(SPEED_SWAP)\
-    F(HARD_PRESS)\
-    F(TRICK)\
-    F(POWER_SPLIT)\
-    F(MAGNET_RISE)\
-    F(FLIP_TURN) \
-    F(FLY) \
+    F(THROAT_CHOP) \
+    F(HARD_PRESS) \
+    F(POWER_SPLIT) \
     F(SURF) \
-    F(STRENGTH) \
-    F(WATERFALL) \
-    F(DIVE)
+    F(TERA_BLAST) \
+    F(BODY_SLAM) \
+    F(BULLDOZE) \
+    F(ROCK_SLIDE) \
+    F(STOMPING_TANTRUM) \
+    F(ICY_WIND) \
+    F(DOUBLE_EDGE) \
+    F(GRASS_KNOT) \
+    F(THUNDER_WAVE) \
+    F(PAYBACK) \
+    F(SHADOW_CLAW) \
+    F(IRON_HEAD) \
+    F(THUNDER_PUNCH) \
+    F(ICE_PUNCH) \
+    F(ZEN_HEADBUTT) \
+    F(ENDEAVOR) \
+    F(FIRE_PUNCH) \
+    F(WEATHER_BALL) \
+    F(ENERGY_BALL) \
+    F(U_TURN) \
+    F(POISON_JAB) \
+    F(MUD_SHOT) \
+    F(HYPER_VOICE) \
+    F(DAZZLING_GLEAM) \
+    F(ACROBATICS) \
+    F(DARK_PULSE) \
+    F(FLASH_CANNON) \
+    F(LOW_SWEEP) \
+    F(EARTH_POWER) \
+    F(PAIN_SPLIT) \
+    F(SEED_BOMB) \
+    F(ALLY_SWITCH) \
+    F(AVALANCHE) \
+    F(RECYCLE) \
+    F(WILD_CHARGE) \
+    F(X_SCISSOR) \
+    F(HEX) \
+    F(ICE_SPINNER) \
+    F(VENOSHOCK) \
+    F(DRAGON_PULSE) \
+    F(LIQUIDATION) \
+    F(POUNCE) \
+    F(POLLEN_PUFF) \
+    F(PLAY_ROUGH) \
+    F(PSYCHIC_NOISE) \
+    F(ELECTROWEB) \
+    F(PSYSHOCK) \
+    F(REVENGE) \
+    F(TEMPER_FLARE) \
+    F(POWER_GEM) \
+    F(LUCKY_CHANT)
 
 #define FOREACH_HM(F) \
     F(CUT) \

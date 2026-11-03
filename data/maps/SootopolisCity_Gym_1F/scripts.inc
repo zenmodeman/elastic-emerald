@@ -117,14 +117,14 @@ SootopolisCity_Gym_1F_EventScript_JuanDefeated::
 	end
 
 SootopolisCity_Gym_1F_EventScript_GiveFlipTurn::
-	giveitem ITEM_TM_FLIP_TURN
+	giveitem ITEM_TM_TERA_BLAST
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
 	msgbox SootopolisCity_Gym_1F_Text_ExplainFlipTurn, MSGBOX_DEFAULT
 	setflag FLAG_RECEIVED_TM_FLIP_TURN
 	return
 
 SootopolisCity_Gym_1F_EventScript_GiveFlipTurn2::
-	giveitem ITEM_TM_FLIP_TURN
+	giveitem ITEM_TM_TERA_BLAST
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	msgbox SootopolisCity_Gym_1F_Text_ExplainFlipTurn, MSGBOX_DEFAULT
 	setflag FLAG_RECEIVED_TM_FLIP_TURN

@@ -537,7 +537,7 @@ SlateportCity_EventScript_PowerTMClerk::
 
 	.align 2
 SlateportCity_Pokemart_PowerTMs:
-	.2byte ITEM_TM_NATURE_POWER
+	.2byte ITEM_TM_TERA_BLAST
 	.2byte ITEM_TM_SECRET_POWER
 	pokemartlistend
 

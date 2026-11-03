@@ -121,3 +121,7 @@ python3 tools/elastic_emerald_helpers/sync_trainer_docs.py
 python3 tools/elastic_emerald_helpers/sync_trainer_docs.py --check
 ```
 
+
+## TM/HM reward maintenance
+
+The active machine set is 76 TMs and three HMs: the 77 priority entries in `tools/learnset_helpers/off_type_moves.md`, plus Power Split and Lucky Chant. Cut, Flash, and Rock Smash occur only as HMs; Surf is a TM. Retired machine rewards, shops, and item balls use `ITEM_TM_TERA_BLAST` as a temporary placeholder. Edit `include/constants/tms_hms.h` and matching `src/data/items.h` entries together. Numeric script references must be resolved before renumbering; retained HMs preserve their established numeric item IDs. Compatibility remains owned by `all_learnables.json`. Placeholder rewards do not establish final placements or final NPC dialogue.

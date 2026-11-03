@@ -170,3 +170,5 @@ The [AI summary](../../modify-elastic-emerald-ai-logic/references/behavior-summa
 - Fishing briefly prevented fish from escaping (`bd0ec22dae`). The later design (`e7bdc4146e`) restored failure while making timing more lenient.
 - The standalone host-driven AI-versus-AI simulator began in `9ebc494153` and was removed in `9c4b986496`. The in-game AI-versus-AI battle mode remains separate and supported.
 - PC access through the Pokénav (`4a17ce7633`) was replaced by Box Link (`c1e8fd5840`).
+
+- Uncommitted: aligned machines with the 79-move plan (76 TMs and Cut/Flash/Rock Smash HMs); retired machine rewards use Tera Blast pending final placement.

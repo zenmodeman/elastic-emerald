@@ -23,7 +23,7 @@ MtMoon_1F_EventScript_ItemParalyzeHeal::
 	end
 
 MtMoon_1F_EventScript_ItemTM09::
-	finditem ITEM_TM09
+	finditem ITEM_TM_HELPING_HAND
 	end
 
 MtMoon_1F_EventScript_ItemPotion::
@@ -47,23 +47,23 @@ MtMoon_B2F_EventScript_ItemStarPiece::
 	end
 
 MtMoon_B2F_EventScript_ItemTM46::
-	finditem ITEM_TM46
+	finditem ITEM_TM_SNARL
 	end
 
 Route4_EventScript_ItemTM05::
-	finditem ITEM_TM05
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 Route24_EventScript_ItemTM45::
-	finditem ITEM_TM45
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 Route25_EventScript_ItemTM43::
-	finditem ITEM_TM43
+	finditem ITEM_TM_SECRET_POWER
 	end
 
 SSAnne_1F_Room2_EventScript_ItemTM31::
-	finditem ITEM_TM31
+	finditem ITEM_TM_BRICK_BREAK
 	end
 
 SSAnne_2F_Room2_EventScript_ItemStardust::
@@ -75,7 +75,7 @@ SSAnne_2F_Room4_EventScript_ItemXAttack::
 	end
 
 SSAnne_B1F_Room2_EventScript_ItemTM44::
-	finditem ITEM_TM44
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 SSAnne_B1F_Room3_EventScript_ItemEther::
@@ -91,7 +91,7 @@ SSAnne_Kitchen_EventScript_ItemGreatBall::
 	end
 
 Route9_EventScript_ItemTM40::
-	finditem ITEM_TM40
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 RocketHideout_B1F_EventScript_ItemEscapeRope::
@@ -111,7 +111,7 @@ RocketHideout_B2F_EventScript_ItemMoonStone::
 	end
 
 RocketHideout_B2F_EventScript_ItemTM12::
-	finditem ITEM_TM12
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 RocketHideout_B2F_EventScript_ItemSuperPotion::
@@ -123,11 +123,11 @@ RocketHideout_B3F_EventScript_ItemRareCandy::
 	end
 
 RocketHideout_B3F_EventScript_ItemTM21::
-	finditem ITEM_TM21
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 RocketHideout_B4F_EventScript_ItemTM49::
-	finditem ITEM_TM49
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 RocketHideout_B4F_EventScript_ItemMaxEther::
@@ -167,7 +167,7 @@ PokemonTower_6F_EventScript_ItemXAccuracy::
 	end
 
 Route12_EventScript_ItemTM48::
-	finditem ITEM_TM48
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 Route12_EventScript_ItemIron::
@@ -175,7 +175,7 @@ Route12_EventScript_ItemIron::
 	end
 
 Route15_EventScript_ItemTM18::
-	finditem ITEM_TM18
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 SafariZone_Center_EventScript_ItemNugget::
@@ -191,7 +191,7 @@ SafariZone_East_EventScript_ItemFullRestore::
 	end
 
 SafariZone_East_EventScript_ItemTM11::
-	finditem ITEM_TM11
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 SafariZone_East_EventScript_ItemLeafStone::
@@ -203,11 +203,11 @@ SafariZone_North_EventScript_ItemProtein::
 	end
 
 SafariZone_North_EventScript_ItemTM47::
-	finditem ITEM_TM47
+	finditem ITEM_TM_STEEL_WING
 	end
 
 SafariZone_West_EventScript_ItemTM32::
-	finditem ITEM_TM32
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 SafariZone_West_EventScript_ItemGoldTeeth::
@@ -243,7 +243,7 @@ SilphCo_5F_EventScript_ItemProtein::
 	end
 
 SilphCo_5F_EventScript_ItemTM01::
-	finditem ITEM_TM01
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 SilphCo_5F_EventScript_ItemCardKey::
@@ -263,7 +263,7 @@ SilphCo_7F_EventScript_ItemCalcium::
 	end
 
 SilphCo_7F_EventScript_ItemTM08::
-	finditem ITEM_TM08
+	finditem ITEM_TM_LOW_KICK
 	end
 
 SilphCo_10F_EventScript_ItemCarbos::
@@ -283,11 +283,11 @@ PowerPlant_EventScript_ItemMaxPotion::
 	end
 
 PowerPlant_EventScript_ItemTM17::
-	finditem ITEM_TM17
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 PowerPlant_EventScript_ItemTM25::
-	finditem ITEM_TM25
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 PowerPlant_EventScript_ItemThunderStone::
@@ -319,7 +319,7 @@ PokemonMansion_3F_EventScript_ItemIron::
 	end
 
 PokemonMansion_B1F_EventScript_ItemTM14::
-	finditem ITEM_TM14
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 PokemonMansion_B1F_EventScript_ItemFullRestore::
@@ -327,7 +327,7 @@ PokemonMansion_B1F_EventScript_ItemFullRestore::
 	end
 
 PokemonMansion_B1F_EventScript_ItemTM22::
-	finditem ITEM_TM22
+	finditem ITEM_TM_SOLAR_BEAM
 	end
 
 PokemonMansion_B1F_EventScript_ItemSecretKey::
@@ -339,7 +339,7 @@ VictoryRoad_1F_EventScript_ItemRareCandy::
 	end
 
 VictoryRoad_1F_EventScript_ItemTM02::
-	finditem ITEM_TM02
+	finditem ITEM_TM_DRAGON_CLAW
 	end
 
 VictoryRoad_2F_EventScript_ItemGuardSpec::
@@ -347,7 +347,7 @@ VictoryRoad_2F_EventScript_ItemGuardSpec::
 	end
 
 VictoryRoad_2F_EventScript_ItemTM07::
-	finditem ITEM_TM07
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 VictoryRoad_2F_EventScript_ItemFullHeal::
@@ -355,7 +355,7 @@ VictoryRoad_2F_EventScript_ItemFullHeal::
 	end
 
 VictoryRoad_2F_EventScript_ItemTM37::
-	finditem ITEM_TM37
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 VictoryRoad_3F_EventScript_ItemMaxRevive::
@@ -363,7 +363,7 @@ VictoryRoad_3F_EventScript_ItemMaxRevive::
 	end
 
 VictoryRoad_3F_EventScript_ItemTM50::
-	finditem ITEM_TM50
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 CeruleanCave_1F_EventScript_ItemMaxElixir::
@@ -615,7 +615,7 @@ FourIsland_IcefallCave_1F_EventScript_ItemUltraBall::
 	end
 
 FourIsland_IcefallCave_1F_EventScript_ItemHM07::
-	finditem ITEM_TM_WATERFALL
+	finditem ITEM_TM_TERA_BLAST
 	end
 
 FourIsland_IcefallCave_B1F_EventScript_ItemFullRestore::
@@ -631,7 +631,7 @@ FiveIsland_RocketWarehouse_EventScript_ItemBigPearl::
 	end
 
 FiveIsland_RocketWarehouse_EventScript_ItemTM36::
-	finditem ITEM_TM36
+	finditem ITEM_TM_SLUDGE_BOMB
 	end
 
 FiveIsland_RocketWarehouse_EventScript_ItemPearl::
@@ -667,5 +667,5 @@ SevenIsland_SevaultCanyon_House_EventScript_ItemLuckyPunch::
 	end
 
 SilphCo_4F_EventScript_ItemTM41::
-	finditem ITEM_TM41
+	finditem ITEM_TM_TERA_BLAST
 	end

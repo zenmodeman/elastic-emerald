@@ -89,6 +89,8 @@ const u16 gPreGym4Tutor[] = {
     MOVE_ENDEAVOR,
     MOVE_PAIN_SPLIT,
     MOVE_VENOSHOCK,
+    MOVE_GRAVITY,
+    MOVE_MAGNET_RISE,
 };
 
 const u16 gPreGym4TutorSetup[] = {
@@ -261,7 +263,6 @@ const u16 gPreGym8Tutor[] = {
     MOVE_SOLAR_BLADE,
     MOVE_FOUL_PLAY,
     MOVE_PHANTOM_FORCE,
-    MOVE_PLAY_ROUGH,
     MOVE_POWER_WHIP,
     MOVE_SLUDGE_WAVE,
     MOVE_POLTERGEIST,

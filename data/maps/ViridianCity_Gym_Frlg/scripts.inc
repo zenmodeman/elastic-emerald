@@ -25,9 +25,9 @@ ViridianCity_Gym_EventScript_DefeatedGiovanni::
 
 ViridianCity_Gym_EventScript_GiveTM26::
 	msgbox ViridianCity_Gym_Text_ExplainEarthBadgeTakeThis
-	checkitemspace ITEM_TM26
+	checkitemspace ITEM_TM_EARTHQUAKE
 	goto_if_eq VAR_RESULT, FALSE, ViridianCity_Gym_EventScript_NoRoomForTM26
-	giveitem_msg ViridianCity_Gym_Text_ReceivedTM26FromGiovanni, ITEM_TM26
+	giveitem_msg ViridianCity_Gym_Text_ReceivedTM26FromGiovanni, ITEM_TM_EARTHQUAKE
 	setflag FLAG_GOT_TM26_FROM_GIOVANNI
 	msgbox ViridianCity_Gym_Text_ExplainTM26
 	release

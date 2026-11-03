@@ -24,13 +24,13 @@ static void ReadItemBallTemplate(enum Item item, u8 amount)
 
 TEST("Elastic-tests: Ground TMs yield one copy outside Resource Mode and retain encoded quantities within it")
 {
-    ReadItemBallTemplate(ITEM_TM_ROOST, 3);
-    EXPECT_EQ(gSpecialVar_Result, ITEM_TM_ROOST);
+    ReadItemBallTemplate(ITEM_TM_TERA_BLAST, 3);
+    EXPECT_EQ(gSpecialVar_Result, ITEM_TM_TERA_BLAST);
     EXPECT_EQ(gSpecialVar_0x8009, 1);
 
     FlagSet(FLAG_RESOURCE_MODE);
-    ReadItemBallTemplate(ITEM_TM_ROOST, 3);
-    EXPECT_EQ(gSpecialVar_Result, ITEM_TM_ROOST);
+    ReadItemBallTemplate(ITEM_TM_TERA_BLAST, 3);
+    EXPECT_EQ(gSpecialVar_Result, ITEM_TM_TERA_BLAST);
     EXPECT_EQ(gSpecialVar_0x8009, 3);
 }
 

@@ -16,9 +16,9 @@ Route12_NorthEntrance_2F_EventScript_Lass::
 	checkplayergender
 	call_if_eq VAR_RESULT, MALE, Route12_NorthEntrance_2F_EventScript_TakeTMMale
 	call_if_eq VAR_RESULT, FEMALE, Route12_NorthEntrance_2F_EventScript_TakeTMFemale
-	checkitemspace ITEM_TM27
+	checkitemspace ITEM_TM_RETURN
 	goto_if_eq VAR_RESULT, FALSE, Route12_NorthEntrance_2F_EventScript_NoRoomForTM27
-	giveitem_msg Route12_NorthEntrance_2F_Text_ReceivedTM27FromLittleGirl, ITEM_TM27
+	giveitem_msg Route12_NorthEntrance_2F_Text_ReceivedTM27FromLittleGirl, ITEM_TM_RETURN
 	msgbox Route12_NorthEntrance_2F_Text_ExplainTM27
 	setflag FLAG_GOT_TM27
 	release

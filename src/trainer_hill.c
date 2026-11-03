@@ -151,10 +151,10 @@ static const enum Item sPrizeListLuxuryBall1[] = {ITEM_LUXURY_BALL,      ITEM_ET
 static const enum Item sPrizeListMaxRevive1[]  = {ITEM_MAX_REVIVE,       ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 static const enum Item sPrizeListMaxEther1[]   = {ITEM_MAX_ETHER,        ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 static const enum Item sPrizeListElixir1[]     = {ITEM_ELIXIR,           ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
-static const enum Item sPrizeListRoar[]        = {ITEM_TM_ROAR,          ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
+static const enum Item sPrizeListRoar[]        = {ITEM_TM_TERA_BLAST,          ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 static const enum Item sPrizeListSludgeBomb[]  = {ITEM_TM_SLUDGE_BOMB,   ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
-static const enum Item sPrizeListToxic[]       = {ITEM_TM_TOXIC,         ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
-static const enum Item sPrizeListSunnyDay[]    = {ITEM_TM_SUNNY_DAY,     ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
+static const enum Item sPrizeListToxic[]       = {ITEM_TM_TERA_BLAST,         ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
+static const enum Item sPrizeListSunnyDay[]    = {ITEM_TM_TERA_BLAST,     ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 static const enum Item sPrizeListEarthQuake[]  = {ITEM_TM_EARTHQUAKE,    ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 
 static const enum Item sPrizeListRareCandy2[]  = {ITEM_RARE_CANDY,       ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
@@ -163,10 +163,10 @@ static const enum Item sPrizeListMaxRevive2[]  = {ITEM_MAX_REVIVE,       ITEM_ET
 static const enum Item sPrizeListMaxEther2[]   = {ITEM_MAX_ETHER,        ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 static const enum Item sPrizeListElixir2[]     = {ITEM_ELIXIR,           ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 static const enum Item sPrizeListBrickBreak[]  = {ITEM_TM_BRICK_BREAK,   ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
-static const enum Item sPrizeListTorment[]     = {ITEM_TM_TORMENT,       ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
-static const enum Item sPrizeListSkillSwap[]   = {ITEM_TM_SKILL_SWAP,    ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
-static const enum Item sPrizeListGigaDrain[]   = {ITEM_TM_GIGA_DRAIN,    ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
-static const enum Item sPrizeListAttract[]     = {ITEM_TM_ATTRACT,       ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
+static const enum Item sPrizeListTorment[]     = {ITEM_TM_TERA_BLAST,       ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
+static const enum Item sPrizeListSkillSwap[]   = {ITEM_TM_TERA_BLAST,    ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
+static const enum Item sPrizeListGigaDrain[]   = {ITEM_TM_TERA_BLAST,    ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
+static const enum Item sPrizeListAttract[]     = {ITEM_TM_TERA_BLAST,       ITEM_ETHER, ITEM_MAX_POTION, ITEM_REVIVE, ITEM_FLUFFY_TAIL, ITEM_GREAT_BALL};
 
 static const enum Item *const sPrizeLists1[NUM_TRAINER_HILL_PRIZE_LISTS] =
 {
@@ -1096,9 +1096,9 @@ static enum Item GetPrizeItemId(void)
     // Which prize is given from the list depends on the time scored.
     // The prize for any time after 12 minutes is the same in every list.
     // The prizes for a time under 12 minutes are:
-    // - ITEM_TM_SUNNY_DAY     (Normal)
+    // - ITEM_TM_TERA_BLAST     (Normal)
     // - ITEM_ELIXIR           (Variety)
-    // - ITEM_TM_GIGA_DRAIN    (Unique)
+    // - ITEM_TM_TERA_BLAST    (Unique)
     // - ITEM_TM_BRICK_BREAK   (Expert)
     // As an additional note, if players were allowed to enter a Trainer Hill challenge before
     // entering the Hall of Fame, there would be 1 additional prize possibility (ITEM_MAX_ETHER)

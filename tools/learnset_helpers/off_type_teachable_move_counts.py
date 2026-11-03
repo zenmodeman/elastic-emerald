@@ -213,7 +213,6 @@ tmExclusionHelper = [
     "Grassy Terrain", #Tutor
     "Psychic Terrain", #Tutor
     "Electric Terrain", #Tutor
-    "Play Rough", #Tutor
     "Air Slash", #Tutor
     "Signal Beam", #Tutor
     "Bind",
@@ -355,6 +354,8 @@ tmExclusionHelper = [
     "Ancient Power",
     "Screech",
     "Crunch",
+    "Gravity", #Tutor
+    "Magnet Rise", #Tutor
 ]
 
 @dataclass(frozen=True)

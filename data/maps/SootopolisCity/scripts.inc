@@ -1282,7 +1282,7 @@ SootopolisCity_EventScript_Wallace::
 
 SootopolisCity_EventScript_GiveWaterfall::
 	msgbox SootopolisCity_Text_ThankYouForHelpAcceptThis, MSGBOX_DEFAULT
-	giveitem ITEM_TM_WATERFALL
+	giveitem ITEM_TM_TERA_BLAST
 	setflag FLAG_RECEIVED_HM_WATERFALL
 	msgbox SootopolisCity_Text_ExplainWaterfallGoToGym, MSGBOX_DEFAULT
 	closemessage

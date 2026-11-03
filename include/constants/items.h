@@ -824,7 +824,7 @@ enum __attribute__((packed)) Item
 
 
     /* Expands to:
-     *   ITEM_TM_FOCUS_PUNCH = ITEM_TM01,
+     *   ITEM_TM_DRAGON_CLAW = ITEM_TM01,
      *   ... */
     #define ENUM_TM(n, id) CAT(ITEM_TM_, id) = CAT(ITEM_TM, n),
     #define TO_TMHM_NUMS(a, ...) (__VA_ARGS__)
@@ -833,7 +833,7 @@ enum __attribute__((packed)) Item
     #undef TO_TMHM_NUMS
 
     // These released or planned HMs keep their established item IDs. The
-    // remaining field moves use ordinary TM item IDs generated above.
+    // only other supported former HM is Surf, using an ordinary TM item ID.
     ITEM_HM_CUT = ITEM_HM01,
     ITEM_HM_FLASH = ITEM_HM05,
     ITEM_HM_ROCK_SMASH = ITEM_HM06,

@@ -294,7 +294,7 @@ static const struct LilycoveQuizLadyQuestions sQuizLadyQuestions[] =
     {.question = sQuizLadyQuestion8,  .answer = EC_WORD_SHADOW_TAG, .prize = ITEM_BELUE_BERRY},
     {.question = sQuizLadyQuestion9,  .answer = EC_WORD_IMMUNITY,   .prize = ITEM_DURIN_BERRY},
     {.question = sQuizLadyQuestion10, .answer = EC_WORD_POKEMON,    .prize = ITEM_LUXURY_BALL},
-    {.question = sQuizLadyQuestion11, .answer = EC_WORD_PC,         .prize = ITEM_TM_HYPER_BEAM},
+    {.question = sQuizLadyQuestion11, .answer = EC_WORD_PC,         .prize = ITEM_TM_TERA_BLAST},
     {.question = sQuizLadyQuestion12, .answer = EC_WORD_TELEVISION, .prize = ITEM_BIG_PEARL},
     {.question = sQuizLadyQuestion13, .answer = EC_WORD_PLUSH_DOLL, .prize = ITEM_STAR_PIECE},
     {.question = sQuizLadyQuestion14, .answer = EC_WORD_ICE,        .prize = ITEM_RARE_CANDY},
