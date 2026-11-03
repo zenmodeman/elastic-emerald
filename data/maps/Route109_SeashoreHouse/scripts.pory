@@ -188,11 +188,7 @@ script Route109_SeashoreHouse_EventScript_Johanna {
 script Route109_SeashoreHouse_EventScript_JohannaReward {
     msgbox(format("I lost, but Lucky Chant always reassures me!"))
 	msgbox(format("Here, you should try it out too."))
-    if (flag(FLAG_RESOURCE_MODE)) {
-        giveItem(ITEM_TM_LUCKY_CHANT, 6)
-    } else {
-        giveItem(ITEM_TM_LUCKY_CHANT)
-    }
+    giveItem(ITEM_TM_LUCKY_CHANT, 6)
     if (var(VAR_RESULT) == FALSE) {
         msgbox(format("There's no room in your BAG or your PC\nfor the LUCKY CHANT TMs."))
     }

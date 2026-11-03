@@ -367,27 +367,19 @@ Route109_SeashoreHouse_EventScript_JohannaReward::
 # 190 "data/maps/Route109_SeashoreHouse/scripts.pory"
 	msgbox Route109_SeashoreHouse_EventScript_JohannaReward_Text_1
 # 191 "data/maps/Route109_SeashoreHouse/scripts.pory"
-	goto_if_set FLAG_RESOURCE_MODE, Route109_SeashoreHouse_EventScript_JohannaReward_2
-# 194 "data/maps/Route109_SeashoreHouse/scripts.pory"
-	giveItem ITEM_TM_LUCKY_CHANT
-Route109_SeashoreHouse_EventScript_JohannaReward_1:
-# 196 "data/maps/Route109_SeashoreHouse/scripts.pory"
+	giveItem ITEM_TM_LUCKY_CHANT, 6
+# 192 "data/maps/Route109_SeashoreHouse/scripts.pory"
 	compare VAR_RESULT, FALSE
-	goto_if_eq Route109_SeashoreHouse_EventScript_JohannaReward_6
-Route109_SeashoreHouse_EventScript_JohannaReward_5:
-# 199 "data/maps/Route109_SeashoreHouse/scripts.pory"
+	goto_if_eq Route109_SeashoreHouse_EventScript_JohannaReward_2
+Route109_SeashoreHouse_EventScript_JohannaReward_1:
+# 195 "data/maps/Route109_SeashoreHouse/scripts.pory"
 	goto Route109_SeashoreHouse_EventScript_CheckTrainersCompletion
 	return
 
 Route109_SeashoreHouse_EventScript_JohannaReward_2:
-# 192 "data/maps/Route109_SeashoreHouse/scripts.pory"
-	giveItem ITEM_TM_LUCKY_CHANT, 6
-	goto Route109_SeashoreHouse_EventScript_JohannaReward_1
-
-Route109_SeashoreHouse_EventScript_JohannaReward_6:
-# 197 "data/maps/Route109_SeashoreHouse/scripts.pory"
+# 193 "data/maps/Route109_SeashoreHouse/scripts.pory"
 	msgbox Route109_SeashoreHouse_EventScript_JohannaReward_Text_2
-	goto Route109_SeashoreHouse_EventScript_JohannaReward_5
+	goto Route109_SeashoreHouse_EventScript_JohannaReward_1
 
 
 Route109_SeashoreHouse_EventScript_JohannaReward_Text_0:
@@ -400,6 +392,6 @@ Route109_SeashoreHouse_EventScript_JohannaReward_Text_1:
 	.string "Here, you should try it out too.$"
 
 Route109_SeashoreHouse_EventScript_JohannaReward_Text_2:
-# 197 "data/maps/Route109_SeashoreHouse/scripts.pory"
+# 193 "data/maps/Route109_SeashoreHouse/scripts.pory"
 	.string "There's no room in your BAG or your PC\n"
 	.string "for the LUCKY CHANT TMs.$"

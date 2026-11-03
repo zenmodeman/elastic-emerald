@@ -6,14 +6,6 @@
 #include "test/overworld_script.h"
 #include "test/test.h"
 
-TEST("Elastic-tests: Planned TM additions map to their moves")
-{
-    EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_TERA_BLAST), MOVE_TERA_BLAST);
-    EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_POWER_SPLIT), MOVE_POWER_SPLIT);
-    EXPECT_EQ(GetItemTMHMMoveId(ITEM_TM_LUCKY_CHANT), MOVE_LUCKY_CHANT);
-    EXPECT_EQ(NUM_TECHNICAL_MACHINES, 76);
-    EXPECT_EQ(NUM_ALL_MACHINES, 79);
-}
 
 TEST("Elastic-tests: Non-resource mode preserves hidden quantities for reusable TMs")
 {

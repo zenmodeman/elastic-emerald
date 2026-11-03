@@ -824,7 +824,7 @@ enum __attribute__((packed)) Item
 
 
     /* Expands to:
-     *   ITEM_TM_DRAGON_CLAW = ITEM_TM01,
+     *   ITEM_TM_TERA_BLAST = ITEM_TM01,
      *   ... */
     #define ENUM_TM(n, id) CAT(ITEM_TM_, id) = CAT(ITEM_TM, n),
     #define TO_TMHM_NUMS(a, ...) (__VA_ARGS__)

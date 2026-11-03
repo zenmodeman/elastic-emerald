@@ -119,9 +119,9 @@ static inline enum TMHMIndex GetItemTMHMIndex(enum Item item)
     switch (item)
     {
     /* Expands to:
-        * case ITEM_TM_DRAGON_CLAW:
+        * case ITEM_TM_TERA_BLAST:
         *     return 1;
-        * case ITEM_TM_CHILLING_WATER:
+        * case ITEM_TM_DRAGON_CLAW:
         *      return 2;
         * etc */
     FOREACH_TM(UNPACK_ITEM_TO_TM_INDEX)
@@ -136,10 +136,10 @@ static inline enum Move GetItemTMHMMoveId(enum Item item)
     switch (item)
     {
     /* Expands to:
+        * case ITEM_TM_TERA_BLAST:
+        *     return MOVE_TERA_BLAST;
         * case ITEM_TM_DRAGON_CLAW:
-        *     return MOVE_DRAGON_CLAW;
-        * case ITEM_TM_CHILLING_WATER:
-        *      return MOVE_CHILLING_WATER;
+        *      return MOVE_DRAGON_CLAW;
         * etc */
     FOREACH_TM(UNPACK_ITEM_TO_TM_MOVE_ID)
     FOREACH_HM(UNPACK_ITEM_TO_HM_MOVE_ID)
@@ -153,10 +153,10 @@ static inline enum Item GetTMHMItemIdFromMoveId(enum Move move)
     switch (move)
     {
     /* Expands to:
+        * case MOVE_TERA_BLAST:
+        *     return ITEM_TM_TERA_BLAST;
         * case MOVE_DRAGON_CLAW:
-        *     return ITEM_TM_DRAGON_CLAW;
-        * case MOVE_CHILLING_WATER:
-        *      return ITEM_TM_CHILLING_WATER;
+        *      return ITEM_TM_DRAGON_CLAW;
         * etc */
     FOREACH_TM(UNPACK_TM_MOVE_TO_ITEM_ID)
     FOREACH_HM(UNPACK_HM_MOVE_TO_ITEM_ID)
