@@ -76,6 +76,8 @@ Read `AGENTS.md` for repository conventions. Maintain this skill’s technical g
 
 ## Documentation and verification
 
+- Document reusable NPC scripting patterns and shared technical contracts here. Ordinary instance-level changes, such as a single trainer’s TM reward, do not warrant a named skill section or a feature-reference addition; a brief change-history entry is sufficient when recording them. See [documentation scope guidance](../maintain-elastic-emerald-documentation/SKILL.md#topic-guidance).
+
 - Keep prerequisites, mode cutoff, reward, level scaling, reused-slot caveats, and route-boss healing in this skill or its supporting references. Directly add or update authored prose in the corresponding `docs/gameplay/trainers.md` section only when explicitly requested. Synchronize designated generated party blocks for relevant source changes.
 - For relevant trainer changes, run `python3 tools/elastic_emerald_helpers/sync_trainer_docs.py`, followed by `--check`, to refresh existing `trainer-party` blocks. Adding new documented sections or markers requires an explicit documentation request; preserve manual prose.
 - Use targeted source generation where needed; do not invoke broad build targets or ROM/test builds unless requested.
@@ -124,8 +126,12 @@ python3 tools/elastic_emerald_helpers/sync_trainer_docs.py --check
 
 ## TM/HM reward maintenance
 
-The active machine set is 76 TMs and three HMs: the 77 priority entries in `tools/learnset_helpers/off_type_moves.md`, plus Power Split and Lucky Chant. Cut, Flash, and Rock Smash occur only as HMs; Surf is a TM. Retired machine rewards, shops, and item balls use `ITEM_TM_TERA_BLAST` as a temporary placeholder. Edit `include/constants/tms_hms.h` and matching `src/data/items.h` entries together. Numeric script references must be resolved before renumbering; retained HMs preserve their established numeric item IDs. Compatibility remains owned by `all_learnables.json`. Placeholder rewards do not establish final placements or final NPC dialogue.
+### TM quantities and mode-dependent display
 
-## Seashore House reward
+- Give the intended Resource Mode TM quantity in every mode. A request such as “six in Resource Mode” means `giveItem(ITEM_TM_LUCKY_CHANT, 6)` unconditionally, unless the user explicitly requests different stored quantities.
+- Do not branch on `FLAG_RESOURCE_MODE` just to change a TM reward's quantity. Outside Resource Mode, TMs are reusable, their Bag quantities are hidden, and the shared obtain-item display presents a single TM. Resource Mode displays the actual quantity.
+- Rely on shared obtain-item messaging for the displayed quantity. Keep custom reward dialogue quantity-neutral unless a mode-specific quantity is necessary to the dialogue.
+- The shared implementation is in `src/item.c`: `GetItemImportance` determines mode-dependent TM importance, and `GetItemDisplayQuantity` / `NormalizeObtainedItemQuantityForDisplay` normalize obtain-item display. These rules apply to TMs; do not infer the same quantity policy for other consumable rewards or HMs.
 
-`Route109_SeashoreHouse/scripts.pory` owns the map script output. Unchanged owner/shop, other trainer, and dialogue assembly remains in its raw block. Johanna gives one Lucky Chant TM immediately after victory, or six in Resource Mode, then runs the shared Seashore House completion check. Her trainer-defeated flag makes the reward one-shot; if both Bag and PC storage reject it, the script explains the failure without offering a retry.
+
+The active machine set is 76 TMs and three HMs: the 77 priority entries in `tools/learnset_helpers/off_type_moves.md`, plus Power Split and Lucky Chant. Cut, Flash, and Rock Smash occur only as HMs; Surf is a TM. Retired machine rewards, shops, and item balls use `ITEM_TM_TERA_BLAST` as a temporary placeholder. Edit `include/constants/tms_hms.h` and matching `src/data/items.h` entries together. Preserve every retained TM's existing number and item ID. Fill retired TM slots with additions before appending the remaining additions; never compact the retained entries. Retained HMs also preserve their established numeric item IDs. Compatibility remains owned by `all_learnables.json`. Placeholder rewards do not establish final placements or final NPC dialogue.

@@ -1,28 +1,29 @@
-# Elastic Emerald feature history
+# Elastic Emerald change history
 
-This index records the major custom systems and their commits, through `766c31cb22` (October 4, 2026), with pending additions explicitly labeled. It draws on the existing project feature/AI references and local Git history. It covers major gameplay, content, and tooling changes; routine individual learnset, encounter, trainer, and balance edits are not exhaustively listed. The inherited Expansion changelog remains separate.
+This index records the major custom systems and their commits, with pending additions explicitly labeled. Pending commit labels were reconciled against local history through `64a71d14bc` (November 3, 2026); this was a commit-attribution review, not a new full-history gameplay audit. It draws on the existing project feature/AI references and local Git history. It covers major gameplay, content, and tooling changes; routine individual learnset, encounter, trainer, and balance edits are not exhaustively listed. The inherited Expansion changelog remains separate.
 
 Entries briefly describe additions, changes, and repairs and retain their commit IDs. Keep entries descriptive; actionable merge guidance belongs in the [upgrade notes](../../merge-upgrade-helper/references/upstream-upgrades.md). The [custom feature reference](feature-reference.md) describes current functionality, the [AI summary](../../modify-elastic-emerald-ai-logic/references/behavior-summary.md) covers individual scoring rules, and the [documentation skill](../SKILL.md) records the documentation maintenance workflow.
 
 ## Newest changes
 
-Committed entries use their actual commit IDs. **Newest** identifies working-tree changes added to the current commit; replace that label with the commit ID once it has been committed.
+Committed entries use their actual commit IDs. **Uncommitted** identifies working-tree changes; replace that label with the verified implementation commit once committed.
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
-| Hidden Power tie selection | **Uncommitted** | Randomly selects among equally valued best types at execution while keeping AI and Anticipation previews from consuming the selection roll. |
-| Agent reference ownership | **Uncommitted** | Moves AI behavior and feature history into skill references and the Tier Points working audit into `analysis/`; preserves developer-owned prose while allowing focused technical documentation updates for requested code changes. |
-| Damage-only STAB knowledge | **Uncommitted** | Keeps hidden STAB attacks available to damage, KO, and switch survival estimates without revealing specific move effects or populating active/party move history. |
+| Johanna TM reward quantity | **Uncommitted** | Awards six Lucky Chant TMs in every mode, relying on shared non-Resource TM quantity display handling. |
+| Hidden Power tie selection | `6f319a0f09` | Randomly selects among equally valued best types at execution while keeping AI and Anticipation previews from consuming the selection roll. |
+| Agent reference ownership | `08376dda45` | Moves AI behavior and change history into skill references and the Tier Points working audit into `analysis/`; preserves developer-owned prose while allowing focused technical documentation updates for requested code changes. |
+| Damage-only STAB knowledge | `db9df93b11` | Keeps hidden STAB attacks available to damage, KO, and switch survival estimates without revealing specific move effects or populating active/party move history. |
 | STAB inference restrictions | `3b01725fcc` | Excludes unrevealed self-recharge attacks and two-turn attacks without known charge-skip conditions through the shared STAB flag path while retaining revealed moves and explicit item omniscience in the Elastic knowledge profile. |
-| General switch prediction suppressed | **Uncommitted** | Stops modeling player switches through ordinary AI switching logic while retaining move prediction and the restricted immunity-abuse path. |
-| Trainer Tera eligibility repair | **Uncommitted** | Requires an explicit party Tera type even for Smart Tera trainers; generated and curated defaults no longer enable trainer Terastallization. |
-| Damage-view transition repair | **Uncommitted** | Reveals Player Dmg and AI Dmg only after their table graphics finish transferring, preventing a flash of stale contents during entry. |
-| Battle info return repair | **Uncommitted** | Moves enlarged AI damage graphics away from the options tilemap, preventing a blank screen when returning to the dropdown. Adds a VRAM layout regression. |
-| AI and player damage displays | **Uncommitted** | Both show minimum normal–maximum critical damage (normal maximum when critical hits are blocked), collapsing `0-0` to `0`. AI Dmg keeps three ability columns with two-row headings and larger numbers where space permits. |
-| Elastic test regression repairs | **Newest** | Restores Drain Douse recovery targets, Float Stone handling and inference, repeatable Laser Focus, doubles Speed-drop coordination, and unspecified trainer Pokemon genders after the upstream upgrade. |
-| Post-merge build repairs | **Newest** | Restores ROM compilation and linking by migrating remaining battle-script commands, removing a duplicate trainer-script label, and updating enum handling. |
-| Expansion 1.17.1 integration | **Newest** | Resolves the upstream merge while retaining custom modes, trainer services and scaling, move effects, AI prediction, and move-service access on the updated APIs. |
-| Two-trainer intro party trays | **Newest** | Fixes overlapping Pokeball trays in paired battles, including Lola and Chandler on Route 109. Each trainer now has a separate visible row. |
+| General switch prediction suppressed | `58c29f391e` | Stops modeling player switches through ordinary AI switching logic while retaining move prediction and the restricted immunity-abuse path. |
+| Trainer Tera eligibility repair | `58c29f391e` | Requires an explicit party Tera type even for Smart Tera trainers; generated and curated defaults no longer enable trainer Terastallization. |
+| Damage-view transition repair | `625c9a436b` | Reveals Player Dmg and AI Dmg only after their table graphics finish transferring, preventing a flash of stale contents during entry. |
+| Battle info return repair | `625c9a436b` | Moves enlarged AI damage graphics away from the options tilemap, preventing a blank screen when returning to the dropdown. Adds a VRAM layout regression. |
+| AI and player damage displays | `625c9a436b` | Both show minimum normal–maximum critical damage (normal maximum when critical hits are blocked), collapsing `0-0` to `0`. AI Dmg keeps three ability columns with two-row headings and larger numbers where space permits. |
+| Elastic test regression repairs | `afe3da6716` | Restores Drain Douse recovery targets, Float Stone handling and inference, repeatable Laser Focus, doubles Speed-drop coordination, and unspecified trainer Pokemon genders after the upstream upgrade. |
+| Post-merge build repairs | `9208a1d5f9` | Restores ROM compilation and linking by migrating remaining battle-script commands, removing a duplicate trainer-script label, and updating enum handling. |
+| Expansion 1.17.1 integration | `9e44808d30` | Resolves the upstream merge while retaining custom modes, trainer services and scaling, move effects, AI prediction, and move-service access on the updated APIs. |
+| Two-trainer intro party trays | `089c029440` | Fixes overlapping Pokeball trays in paired battles, including Lola and Chandler on Route 109. Each trainer now has a separate visible row. |
 | Proactive Color Change | `cb993f21b5` (2026-09-25) | Changes the target's type before immunity checks, including status moves; runtime eligibility and AI prediction share the rule. |
 | Overwhelm Beam | `3c2264d738` (2026-09-27) | Adds a 120-power, 80%-accuracy Special Normal attack with an Insomnia ability-replacement secondary effect. |
 | Round turn-tracking repair | `868293c1c6` (2026-10-04) | Prevents Round used on a previous turn from doubling damage on a later turn; adds singles and doubles regression coverage. |
@@ -30,9 +31,9 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 | Color Change animation coverage | `9cf5263470` (2026-10-04) | Adds animation expectations to Color Change tests. |
 | Party-menu relearner repair | `766c31cb22` | Restores direct level-up move relearning from the party menu, with Resource Mode costs and facility restrictions. |
 | Party-menu relearner regression coverage | `766c31cb22` | Adds nine regression cases covering availability, selected Pokemon, service costs, and crowded party menus. |
-| Unown form IVs | **Newest** | Gives randomly generated Unown three form-dependent perfect IVs, covering fixed triples, one-fixed-stat forms, and punctuation-form selection rules. |
-| Adaptive Hidden Power | **Newest** | Makes Hidden Power a 60-power Unown-only move with a damage bonus based on Attack relative to Special Attack. It chooses its type after switching using revealed ability information and known modifiers, and announces the type before Proactive Color Change. |
-| Compact party-options box | **Newest** | Restores the compact party-options box and shortens the move relearner label to `RELEARN`. |
+| Unown form IVs | `bcd861114b` | Gives randomly generated Unown three form-dependent perfect IVs, covering fixed triples, one-fixed-stat forms, and punctuation-form selection rules. |
+| Adaptive Hidden Power | `bcd861114b` | Makes Hidden Power a 60-power Unown-only move with a damage bonus based on Attack relative to Special Attack. It chooses its type after switching using revealed ability information and known modifiers, and announces the type before Proactive Color Change. |
+| Compact party-options box | `1c6f8598b6` | Restores the compact party-options box and shortens the move relearner label to `RELEARN`. |
 | Documentation organization | `766c31cb22` | Separates current feature descriptions, change history, and developer maintenance notes. |
 
 These entries record patch contents, not a new test run. The newest commit boundary does not extend the September full-history gameplay audit.
@@ -171,4 +172,6 @@ The [AI summary](../../modify-elastic-emerald-ai-logic/references/behavior-summa
 - The standalone host-driven AI-versus-AI simulator began in `9ebc494153` and was removed in `9c4b986496`. The in-game AI-versus-AI battle mode remains separate and supported.
 - PC access through the Pokénav (`4a17ce7633`) was replaced by Box Link (`c1e8fd5840`).
 
-- Uncommitted: aligned machines with the 79-move plan (76 TMs and Cut/Flash/Rock Smash HMs); retired machine rewards use Tera Blast pending final placement.
+- `9f4fc64309`: aligned machines with the 79-move plan (76 TMs and Cut/Flash/Rock Smash HMs); retired machine rewards use Tera Blast pending final placement.
+
+- Uncommitted: restored all 25 retained TM numbers from before `9f4fc64309`; new moves replace retired slots before extending the list. Tera Blast remains the placeholder reward.

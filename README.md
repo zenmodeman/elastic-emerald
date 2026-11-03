@@ -4,7 +4,7 @@ Elastic Emerald is built on top of RHH's pokeemerald-expansion: https://github.c
 
 ## Project documentation
 
-- [Custom feature history and implementation commits](skills/maintain-elastic-emerald-documentation/references/feature-history.md)
+- [Custom change history and implementation commits](skills/maintain-elastic-emerald-documentation/references/change-history.md)
 - [Agent instructions and repository skills](AGENTS.md)
 - [Gameplay reference](docs/gameplay/README.md)
 

@@ -1,6 +1,6 @@
 # Elastic Emerald custom feature reference
 
-This reference describes current functional features and player-visible rules. Keep descriptions concise. Repair records belong in the [feature history](feature-history.md); implementation and maintenance details belong in the [repository skills](../SKILL.md). Restoring expected behavior does not create a new feature entry.
+This reference describes current functional features and player-visible rules. Keep descriptions concise. Repair records belong in the [change history](change-history.md); implementation and maintenance details belong in the [repository skills](../SKILL.md). Restoring expected behavior does not create a new feature entry.
 
 ## Run modes and progression
 
@@ -90,7 +90,7 @@ See the [AI behavior summary](../../modify-elastic-emerald-ai-logic/references/b
 
 Custom areas and events include Petalburg Grove, Oldale Ruins, Sandfront, Rustboro Grass, Dewford Garden, the Trainer School, Tech House, and expanded early routes and Granite Cave. Trainer parties, rivals, bosses, shops, gifts, and progression gates reflect the selected modes.
 
-Route 109's Cassia requires defeating the beach and Seashore House trainers, heals the party, and offers mode-dependent Power Herb rewards. Her encounter closes after badge three only in Restricted Mode. Rival 110 completion raises beach trainer levels by three. Edmond awards mode-dependent Water Gems after a paired battle. Seashore House Beauty Johanna awards one Lucky Chant TM after victory, or six in Resource Mode.
+Route 109's Cassia requires defeating the beach and Seashore House trainers, heals the party, and offers mode-dependent Power Herb rewards. Her encounter closes after badge three only in Restricted Mode. Rival 110 completion raises beach trainer levels by three. Edmond awards mode-dependent Water Gems after a paired battle.
 
 Triumphs reward participation in first-time trainer victories against comparably leveled Pokemon, up to 30 per Pokemon. Rematches and special battle formats cannot be used to farm them.
 

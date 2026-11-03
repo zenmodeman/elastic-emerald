@@ -1,6 +1,6 @@
 # Upstream upgrade notes
 
-Use the [custom feature reference](../../maintain-elastic-emerald-documentation/references/feature-reference.md) to locate local behavior and the [feature history](../../maintain-elastic-emerald-documentation/references/feature-history.md) to distinguish introductions, redesigns, and repairs.
+Use the [custom feature reference](../../maintain-elastic-emerald-documentation/references/feature-reference.md) to locate local behavior and the [change history](../../maintain-elastic-emerald-documentation/references/change-history.md) to distinguish introductions, redesigns, and repairs.
 
 ## Merge workflow
 
@@ -44,7 +44,7 @@ These are recurring failure points, not a historical feature inventory. Check th
 | Numeric namespaces | Check battle flags, trainer modes, save flags, and palettes for collisions introduced by FRLG integration. |
 | Battle display | Keep trainer backsprite palette indexing and low-HP bar conversion. Separate intro party trays for each trainer; the shared layout retained in merge `5725273a2a` hid paired trainers' Pokeballs. |
 
-Keep only actionable lessons here. Feature history records brief outcomes and commit IDs; old test counts, exhaustive feature accounts, and release-by-release audit narratives do not need a separate archive.
+Keep only actionable lessons here. Change history records brief outcomes and commit IDs; old test counts, exhaustive feature accounts, and release-by-release audit narratives do not need a separate archive.
 
 ## Source paths to review during upgrades
 

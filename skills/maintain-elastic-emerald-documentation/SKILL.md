@@ -1,6 +1,6 @@
 ---
 name: maintain-elastic-emerald-documentation
-description: Maintain Elastic Emerald feature references, feature history, AI documentation status, and repository skill organization. Use for cross-topic documentation maintenance or reorganizing agent guidance; use the topic skills for system-specific workflows.
+description: Maintain Elastic Emerald feature references, change history, AI documentation status, and repository skill organization. Use for cross-topic documentation maintenance or reorganizing agent guidance; use the topic skills for system-specific workflows.
 ---
 
 # Maintain Elastic Emerald Documentation
@@ -10,12 +10,14 @@ Read `AGENTS.md` and use its topic routing. The developer owns `docs/`. Preserve
 ## Documentation ownership
 
 - Maintain [the feature reference](references/feature-reference.md) as concise descriptions of current functional features and player-visible rules. Update existing descriptions only when functional behavior changes. Do not add standalone bugfixes, repair narratives, commit histories, or test inventories.
-- Maintain [feature history](references/feature-history.md) as brief outcomes of additions, changes, and repairs. Use real commit IDs or explicitly pending/uncommitted labels until the commit is known.
+- Maintain [change history](references/change-history.md) as brief outcomes of additions, changes, and repairs. Use real commit IDs or explicitly pending/uncommitted labels until the commit is known. When maintaining history, reconcile existing pending labels against local Git history: inspect the implementation diff rather than relying only on commit subjects, use the commit that actually contains the change, and leave genuinely pending changes labeled uncommitted. A commit-attribution review does not advance a full gameplay-audit baseline.
 - Treat [gameplay documentation](../../docs/gameplay/README.md) as developer-owned design context. Report discrepancies without editing it unless instructed. Maintain [the AI summary](../modify-elastic-emerald-ai-logic/references/behavior-summary.md) as agent reference material with accurate documentation status.
 - Keep working audit reports such as the [Tier Points discrepancy analysis](../../analysis/tier-points-discrepancy-analysis.md) in `analysis/` and link them from the matching skill. Keep reusable procedures and established technical contracts in skill references. Preserve authored gameplay documents and inherited upstream manuals in `docs/`. When relocating references, preserve pending changes, rebase relative links, update skill routing and consumers, and remove moved entries from the mdBook index.
 - For bugfixes, update history and the relevant topic skill or supporting reference. Restoring expected behavior does not warrant a new feature entry. Keep actionable merge-breakage lessons in the [upgrade reference](../merge-upgrade-helper/references/upstream-upgrades.md). Do not create verbose feature archives.
 
 ## Topic guidance
+
+Keep documentation proportional to the change. Skills and their technical references should capture reusable procedures, broad patterns, and shared contracts. Minor instance-level content changes, such as adding a TM reward to one trainer, do not require named sections in a topic skill or additions to the feature reference. Record those outcomes briefly in change history when useful. A general lesson discovered during the same task, such as shared TM quantity display behavior, belongs in the relevant topic skill without retaining a separate description of the individual NPC.
 
 Use the topic skills routed by `AGENTS.md`. Fold new task procedures and technical contracts into the relevant skill or its supporting references. Write skill instructions as direct guidance and references as neutral factual descriptions. Avoid first-person narration or wording that implies the agent authored the developer’s design. Preserve attribution when it identifies actual design ownership. Link shared material rather than maintaining duplicate copies. Read only the references needed for the task.
 
