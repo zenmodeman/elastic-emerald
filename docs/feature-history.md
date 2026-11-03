@@ -10,6 +10,9 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| Damage-view transition repair | **Uncommitted** | Reveals Player Dmg and AI Dmg only after their table graphics finish transferring, preventing a flash of stale contents during entry. |
+| Battle info return repair | **Uncommitted** | Moves enlarged AI damage graphics away from the options tilemap, preventing a blank screen when returning to the dropdown. Adds a VRAM layout regression. |
+| AI and player damage displays | **Uncommitted** | Both show minimum normal–maximum critical damage (normal maximum when critical hits are blocked), collapsing `0-0` to `0`. AI Dmg keeps three ability columns with two-row headings and larger numbers where space permits. |
 | Elastic test regression repairs | **Newest** | Restores Drain Douse recovery targets, Float Stone handling and inference, repeatable Laser Focus, doubles Speed-drop coordination, and unspecified trainer Pokemon genders after the upstream upgrade. |
 | Post-merge build repairs | **Newest** | Restores ROM compilation and linking by migrating remaining battle-script commands, removing a duplicate trainer-script label, and updating enum handling. |
 | Expansion 1.17.1 integration | **Newest** | Resolves the upstream merge while retaining custom modes, trainer services and scaling, move effects, AI prediction, and move-service access on the updated APIs. |

@@ -186,6 +186,8 @@ enum MoveComparisonResult CompareMoveEffects(enum Move move1, enum Move move2, e
 struct SimulatedDamage AI_CalcDamageSaveBattlers(enum Move move, enum BattlerId battlerAtk, enum BattlerId battlerDef, uq4_12_t *typeEffectiveness, enum Gimmick gimmickAtk, enum Gimmick gimmickDef);
 bool32 IsAdditionalEffectBlocked(enum BattlerId battlerAtk, enum Ability abilityAtk, enum BattlerId battlerDef, enum Ability abilityDef, enum Move move);
 struct SimulatedDamage AI_CalcDamage(struct AiCalcValues *aiCalc, enum BattlerId battlerAtk, enum BattlerId battlerDef);
+// Explicit normal/possible critical rolls for the read-only damage display.
+struct SimulatedDamage AI_CalcDamageForDisplay(struct AiCalcValues *aiCalc, enum BattlerId battlerAtk, enum BattlerId battlerDef, bool32 critical);
 bool32 AI_IsDamagedByRecoil(enum BattlerId battler);
 u32 GetNoOfHitsToKO(u32 dmg, s32 hp);
 u32 GetNoOfHitsToKOBattlerDmg(u32 dmg, enum BattlerId battlerDef);

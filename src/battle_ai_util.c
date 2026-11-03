@@ -955,7 +955,19 @@ static s32 AI_ApplyModifiersAfterDmgRoll(struct DamageContext *ctx, s32 dmg)
     return dmg;
 }
 
+static struct SimulatedDamage CalcDamageWithCritMode(struct AiCalcValues *aiCalc, enum BattlerId battlerAtk, enum BattlerId battlerDef, u32 critMode);
+
 struct SimulatedDamage AI_CalcDamage(struct AiCalcValues *aiCalc, enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    return CalcDamageWithCritMode(aiCalc, battlerAtk, battlerDef, 0);
+}
+
+struct SimulatedDamage AI_CalcDamageForDisplay(struct AiCalcValues *aiCalc, enum BattlerId battlerAtk, enum BattlerId battlerDef, bool32 critical)
+{
+    return CalcDamageWithCritMode(aiCalc, battlerAtk, battlerDef, critical ? 2 : 1);
+}
+
+static struct SimulatedDamage CalcDamageWithCritMode(struct AiCalcValues *aiCalc, enum BattlerId battlerAtk, enum BattlerId battlerDef, u32 critMode)
 {
     struct SimulatedDamage simDamage = {0};
     enum Move move = aiCalc->move;
@@ -1032,7 +1044,14 @@ struct SimulatedDamage AI_CalcDamage(struct AiCalcValues *aiCalc, enum BattlerId
         SetHiddenPowerType(battlerAtk, battlerDef);
 
     ctx.moveType = GetBattleMoveType(move);
-    ctx.isCrit = ShouldCalcCritDamage(&ctx);
+    // Display queries explicitly separate normal rolls from possible critical rolls.
+    if (critMode == 0)
+        ctx.isCrit = ShouldCalcCritDamage(&ctx);
+    else if (critMode == 1)
+        ctx.isCrit = FALSE;
+    else
+        ctx.isCrit = (GetConfig(B_CRIT_CHANCE) == GEN_1
+                    ? CalcCritChanceStageGen1(&ctx) : CalcCritChanceStage(&ctx)) != CRITICAL_HIT_BLOCKED;
     ctx.typeEffectivenessModifier = aiCalc->typeEffectiveness = AI_CalcTypeEffectivenessMultiplier(&ctx);
 
     u32 movePower = GetMovePower(move);

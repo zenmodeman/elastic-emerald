@@ -1,5 +1,6 @@
 #include "global.h"
 #include "battle.h"
+#include "battle_debug.h"
 #include "battle_anim.h"
 #include "battle_controllers.h"
 #include "battle_message.h"
@@ -742,6 +743,19 @@ static const struct WindowTemplate sBattlerWindowTemplate =
     .baseBlock = 0x1B5
 };
 
+// BG1 tiles start at 0x8000. Keep this window between the BG1 tilemap
+// (0xA000..0xA7FF) and the BG0 options tilemap (0xF800..0xFFFF).
+static const struct WindowTemplate sReadOnlyDamageWindowTemplate =
+{
+    .bg = 1,
+    .tilemapLeft = 0,
+    .tilemapTop = 4,
+    .width = 30,
+    .height = 16,
+    .paletteNum = 15,
+    .baseBlock = 0x180,
+};
+
 static const struct BgTemplate sBgTemplates[] =
 {
    {
@@ -977,7 +991,7 @@ static void PutMovesPointsText(struct BattleDebugMenu *data)
     Free(text);
 }
 
-static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32 battlerDef, enum Ability abilityDef)
+static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32 battlerDef, enum Ability abilityDef, bool32 critical)
 {
     enum Ability savedAbility = gAiLogicData->abilities[battlerDef];
     struct BattlePokemon savedAttacker = gBattleMons[battlerAtk];
@@ -1002,7 +1016,7 @@ static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32
     // ability, or no ability when the current ability is publicly suppressed.
     gAiLogicData->abilities[battlerDef] = abilityDef;
     gBattleMons[battlerDef].ability = abilityDef;
-    damage = AI_CalcDamage(&aiCalc, battlerAtk, battlerDef);
+    damage = AI_CalcDamageForDisplay(&aiCalc, battlerAtk, battlerDef, critical);
 
     gBattleMons[battlerAtk] = savedAttacker;
     gBattleMons[battlerDef] = savedDefender;
@@ -1016,6 +1030,103 @@ static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32
     return damage;
 }
 
+#if TESTING
+bool32 Test_BattleInfoDamageWindowFitsVram(void)
+{
+    const struct WindowTemplate *window = &sReadOnlyDamageWindowTemplate;
+    u32 start = sBgTemplates[window->bg].charBaseIndex * 0x4000 + window->baseBlock * 32;
+    u32 end = start + window->width * window->height * 32;
+    u32 i;
+
+    if (end > 0x10000)
+        return FALSE;
+    for (i = 0; i < ARRAY_COUNT(sBgTemplates); i++)
+    {
+        u32 mapStart = sBgTemplates[i].mapBaseIndex * 0x800;
+        if (start < mapStart + 0x800 && end > mapStart)
+            return FALSE;
+    }
+    return window->tilemapLeft + window->width <= 30
+        && window->tilemapTop + window->height <= 20;
+}
+
+struct SimulatedDamage Test_BattleInfoCalcAiDamage(u32 move, u32 battlerAtk, u32 battlerDef, enum Ability abilityDef, bool32 critical)
+{
+    return CalcReadOnlyAiDamage(move, battlerAtk, battlerDef, abilityDef, critical);
+}
+#endif
+
+// Wrap by measured pixels, preferring spaces; split long single words as needed.
+static void PrintWrappedAiDamageName(u8 windowId, const u8 *name, u32 x, u32 y, u32 width)
+{
+    u8 line[64];
+    while (*name != EOS)
+    {
+        u32 count = 0, space = 0;
+        while (name[count] != EOS && count < sizeof(line) - 1)
+        {
+            line[count] = name[count];
+            line[count + 1] = EOS;
+            if (GetStringWidth(FONT_SMALL_NARROW, line, 0) > width)
+                break;
+            if (name[count] == CHAR_SPACE)
+                space = count;
+            count++;
+        }
+        if (name[count] != EOS && space != 0)
+            count = space;
+        if (count == 0)
+            count = 1;
+        StringCopyN(line, name, count)[0] = EOS;
+        AddTextPrinterParameterized5(windowId, FONT_SMALL_NARROW, line, x, y, 0, NULL, 0, 0);
+        name += count;
+        while (*name == CHAR_SPACE)
+            name++;
+        y += 12;
+    }
+}
+
+// Prefer a word break even when a multiword heading fits on one line.
+static void PrintAiDamageAbilityHeading(u8 windowId, const u8 *name, u32 x, u32 width)
+{
+    u8 first[64];
+    u32 i, split = 0;
+
+    for (i = 0; name[i] != EOS; i++)
+    {
+        if (name[i] == CHAR_SPACE)
+        {
+            StringCopyN(first, name, i)[0] = EOS;
+            if (GetStringWidth(FONT_SMALL_NARROW, first, 0) <= width)
+                split = i;
+        }
+    }
+    if (split != 0)
+    {
+        StringCopyN(first, name, split)[0] = EOS;
+        AddTextPrinterParameterized5(windowId, FONT_SMALL_NARROW, first, x, 0, 0, NULL, 0, 0);
+        StringCopy(first, name + split + 1);
+        i = StringLength(first);
+        while (i != 0 && GetStringWidth(FONT_SMALL_NARROW, first, 0) > width)
+            first[--i] = EOS;
+        AddTextPrinterParameterized5(windowId, FONT_SMALL_NARROW, first, x, 12, 0, NULL, 0, 0);
+    }
+    else
+    {
+        PrintWrappedAiDamageName(windowId, name, x, 0, width);
+    }
+}
+
+static void FormatDisplayedDamageRange(u8 *text, u32 minimum, u32 maximum)
+{
+    u8 *end = ConvertIntToDecimalStringN(text, minimum, STR_CONV_MODE_LEFT_ALIGN, 5);
+    if (minimum != 0 || maximum != 0)
+    {
+        *end++ = CHAR_HYPHEN;
+        ConvertIntToDecimalStringN(end, maximum, STR_CONV_MODE_LEFT_ALIGN, 5);
+    }
+}
+
 static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
 {
     bool32 hasSuppressedAbility = GetBattlerAbilityIgnoreMoldBreaker(data->battlerId) == ABILITY_NONE
@@ -1023,15 +1134,15 @@ static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
     bool32 hasOverwrittenAbility = gBattleMons[data->battlerId].volatiles.overwrittenAbility != ABILITY_NONE;
     bool32 hasFixedAbility = hasSuppressedAbility || hasOverwrittenAbility;
     u32 abilityCount = hasFixedAbility ? 1 : NUM_ABILITY_SLOTS;
-    u32 moveSlot, abilitySlot;
-    u8 text[32];
+    u32 abilitySlot, moveSlot;
+    u8 text[64];
 
     FillWindowPixelBuffer(data->aiMovesWindowId, 0x11);
     for (abilitySlot = 0; abilitySlot < abilityCount; abilitySlot++)
     {
         enum Ability ability;
-        u32 x = hasFixedAbility ? 134 : 82 + abilitySlot * 52;
-        u8 *end;
+        u32 x = hasFixedAbility ? 78 : 78 + abilitySlot * 54;
+        u32 width = hasFixedAbility ? 160 : 52;
 
         if (hasSuppressedAbility)
             ability = ABILITY_NONE;
@@ -1041,55 +1152,45 @@ static void PutReadOnlyAiDamageText(struct BattleDebugMenu *data)
             ability = GetSpeciesAbility(gBattleMons[data->battlerId].species, abilitySlot);
 
         if (hasSuppressedAbility)
-            StringCopy(text, COMPOUND_STRING("NoAbility"));
+            StringCopy(text, COMPOUND_STRING("No Ability"));
         else if (ability == ABILITY_NONE)
             StringCopy(text, COMPOUND_STRING("-"));
         else
+            StringCopy(text, gAbilitiesInfo[ability].name);
+        PrintAiDamageAbilityHeading(data->aiMovesWindowId, text, x, width);
+
+        for (moveSlot = 0; moveSlot < MAX_MON_MOVES; moveSlot++)
         {
-            end = StringCopyN(text, gAbilitiesInfo[ability].name, 8);
-            *end = EOS;
-        }
-        AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, x, 0, 0, NULL, 0, 0);
-    }
+            u32 move = gBattleMons[data->aiBattlerId].moves[moveSlot];
+            u32 y = 28 + moveSlot * 24;
 
-    for (moveSlot = 0; moveSlot < MAX_MON_MOVES; moveSlot++)
-    {
-        u32 move = gBattleMons[data->aiBattlerId].moves[moveSlot];
-
-        StringCopyN(text, GetMoveName(move), 12)[0] = EOS;
-        AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 0, 18 + moveSlot * 18, 0, NULL, 0, 0);
-        for (abilitySlot = 0; abilitySlot < abilityCount; abilitySlot++)
-        {
-            enum Ability ability;
-            u32 x = hasFixedAbility ? 134 : 82 + abilitySlot * 52;
-
-            if (hasSuppressedAbility)
-                ability = ABILITY_NONE;
-            else if (hasOverwrittenAbility)
-                ability = gBattleMons[data->battlerId].ability;
-            else
-                ability = GetSpeciesAbility(gBattleMons[data->battlerId].species, abilitySlot);
-
+            if (abilitySlot == 0)
+                PrintWrappedAiDamageName(data->aiMovesWindowId, GetMoveName(move), 0, y, 76);
             if (move == MOVE_NONE || (ability == ABILITY_NONE && !hasSuppressedAbility))
             {
                 StringCopy(text, COMPOUND_STRING("-"));
             }
             else
             {
-                struct SimulatedDamage damage = CalcReadOnlyAiDamage(move, data->aiBattlerId, data->battlerId, ability);
-                u8 *end = ConvertIntToDecimalStringN(text, damage.minimum, STR_CONV_MODE_LEFT_ALIGN, 5);
-
-                *end++ = CHAR_HYPHEN;
-                ConvertIntToDecimalStringN(end, damage.maximum, STR_CONV_MODE_LEFT_ALIGN, 5);
+                struct SimulatedDamage damage = CalcReadOnlyAiDamage(move, data->aiBattlerId, data->battlerId, ability, FALSE);
+                struct SimulatedDamage critical = CalcReadOnlyAiDamage(move, data->aiBattlerId, data->battlerId, ability, TRUE);
+                FormatDisplayedDamageRange(text, damage.minimum, critical.maximum);
             }
-            AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, x, 18 + moveSlot * 18, 0, NULL, 0, 0);
+            if (GetStringWidth(FONT_NARROW, text, 0) <= width)
+            {
+                AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_NARROW, text, x, y, 0, NULL, 0, 0);
+            }
+            else if (GetStringWidth(FONT_SMALL_NARROWER, text, 0) <= width)
+            {
+                AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROWER, text, x, y, 0, NULL, 0, 0);
+            }
+
         }
     }
-
     CopyWindowToVram(data->aiMovesWindowId, COPYWIN_FULL);
 }
 
-static struct SimulatedDamage CalcPlayerDisplayedDamage(u32 move, u32 battlerAtk, u32 battlerDef)
+static struct SimulatedDamage CalcPlayerDisplayedDamage(u32 move, u32 battlerAtk, u32 battlerDef, bool32 critical)
 {
     enum Ability savedAiAbilityAtk = gAiLogicData->abilities[battlerAtk];
     enum Ability savedAiAbilityDef = gAiLogicData->abilities[battlerDef];
@@ -1114,7 +1215,7 @@ static struct SimulatedDamage CalcPlayerDisplayedDamage(u32 move, u32 battlerAtk
     // abilities rather than the AI's inferred or predicted ability state.
     gAiLogicData->abilities[battlerAtk] = gBattleMons[battlerAtk].ability;
     gAiLogicData->abilities[battlerDef] = gBattleMons[battlerDef].ability;
-    damage = AI_CalcDamage(&aiCalc, battlerAtk, battlerDef);
+    damage = AI_CalcDamageForDisplay(&aiCalc, battlerAtk, battlerDef, critical);
 
     gBattleMons[battlerAtk] = savedAttacker;
     gBattleMons[battlerDef] = savedDefender;
@@ -1128,6 +1229,13 @@ static struct SimulatedDamage CalcPlayerDisplayedDamage(u32 move, u32 battlerAtk
     gMultiHitCounter = savedMultiHitCounter;
     return damage;
 }
+
+#if TESTING
+struct SimulatedDamage Test_BattleInfoCalcPlayerDamage(u32 move, u32 battlerAtk, u32 battlerDef, bool32 critical)
+{
+    return CalcPlayerDisplayedDamage(move, battlerAtk, battlerDef, critical);
+}
+#endif
 
 static void PutPlayerDamageText(struct BattleDebugMenu *data)
 {
@@ -1143,8 +1251,7 @@ static void PutPlayerDamageText(struct BattleDebugMenu *data)
         AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 0, 15 + moveSlot * 18, 0, NULL, 0, 0);
         for (count = 0, battlerDef = 0; battlerDef < gBattlersCount; battlerDef++)
         {
-            u8 *end;
-            struct SimulatedDamage damage;
+            struct SimulatedDamage damage, critical;
 
             if (data->spriteIds.aiIconSpriteIds[battlerDef] == 0xFF)
                 continue;
@@ -1154,10 +1261,9 @@ static void PutPlayerDamageText(struct BattleDebugMenu *data)
             }
             else
             {
-                damage = CalcPlayerDisplayedDamage(move, data->battlerId, battlerDef);
-                end = ConvertIntToDecimalStringN(text, damage.minimum, STR_CONV_MODE_LEFT_ALIGN, 5);
-                *end++ = CHAR_HYPHEN;
-                ConvertIntToDecimalStringN(end, damage.maximum, STR_CONV_MODE_LEFT_ALIGN, 5);
+                damage = CalcPlayerDisplayedDamage(move, data->battlerId, battlerDef, FALSE);
+                critical = CalcPlayerDisplayedDamage(move, data->battlerId, battlerDef, TRUE);
+                FormatDisplayedDamageRange(text, damage.minimum, critical.maximum);
             }
             AddTextPrinterParameterized5(data->aiMovesWindowId, FONT_SMALL_NARROW, text, 84 + count * 70, 15 + moveSlot * 18, 0, NULL, 0, 0);
             count++;
@@ -1178,7 +1284,8 @@ static void CleanUpAiInfoWindow(u8 taskId)
         if (data->spriteIds.aiIconSpriteIds[i] != 0xFF)
             FreeAndDestroyMonIconSprite(&gSprites[data->spriteIds.aiIconSpriteIds[i]]);
     }
-    FreeAndDestroyMonPicSprite(data->aiMonSpriteId);
+    if (data->aiMonSpriteId != MAX_SPRITES)
+        FreeAndDestroyMonPicSprite(data->aiMonSpriteId);
     ClearWindowTilemap(data->aiMovesWindowId);
     RemoveWindow(data->aiMovesWindowId);
 }
@@ -1281,15 +1388,13 @@ static void SwitchToAiPointsView(u8 taskId)
 static void Task_ShowReadOnlyAiDamage(u8 taskId)
 {
     u32 i;
-    struct WindowTemplate winTemplate;
     struct BattleDebugMenu *data = GetStructPtr(taskId);
-    struct Pokemon *mon;
 
     switch (data->aiViewState)
     {
     case 0:
-        HideBg(0);
-        ShowBg(1);
+        // Keep the existing menu visible until the new table has reached VRAM.
+        HideBg(1);
 
         if (IsOnPlayerSide(data->aiBattlerId) || !IsBattlerAlive(data->aiBattlerId))
         {
@@ -1310,25 +1415,39 @@ static void Task_ShowReadOnlyAiDamage(u8 taskId)
             data->spriteIds.aiIconSpriteIds[i] = 0xFF;
         data->spriteIds.aiIconSpriteIds[data->battlerId] = CreateMonIcon(gBattleMons[data->battlerId].species,
                                                                          SpriteCallbackDummy,
-                                                                         67, 17, 0, 0);
+                                                                         60, 17, 0, 0);
         gSprites[data->spriteIds.aiIconSpriteIds[data->battlerId]].data[0] = data->battlerId;
 
-        mon = GetBattlerMon(data->aiBattlerId);
-        data->aiMonSpriteId = CreateMonPicSprite(gBattleMons[data->aiBattlerId].species,
-                                                 GetMonData(mon, MON_DATA_IS_SHINY),
-                                                 gBattleMons[data->aiBattlerId].personality,
-                                                 TRUE,
-                                                 39, 135, 15, TAG_NONE);
+        data->spriteIds.aiIconSpriteIds[data->aiBattlerId] = CreateMonIcon(gBattleMons[data->aiBattlerId].species,
+                                                                         SpriteCallbackDummy,
+                                                                         24, 17, 0, 0);
+        data->aiMonSpriteId = MAX_SPRITES;
+        for (i = 0; i < MAX_BATTLERS_COUNT; i++)
+            if (data->spriteIds.aiIconSpriteIds[i] != 0xFF)
+                gSprites[data->spriteIds.aiIconSpriteIds[i]].invisible = TRUE;
+        if (data->aiMonSpriteId != MAX_SPRITES)
+            gSprites[data->aiMonSpriteId].invisible = TRUE;
         data->aiViewState++;
         break;
     case 1:
-        winTemplate = CreateWindowTemplate(1, 0, 4, 30, 14, 15, 0x200);
-        data->aiMovesWindowId = AddWindow(&winTemplate);
+        data->aiMovesWindowId = AddWindow(&sReadOnlyDamageWindowTemplate);
         PutWindowTilemap(data->aiMovesWindowId);
         PutReadOnlyAiDamageText(data);
         data->aiViewState++;
         break;
     case 2:
+        if (IsDma3ManagerBusyWithBgCopy())
+            break;
+        HideBg(0);
+        ShowBg(1);
+        for (i = 0; i < MAX_BATTLERS_COUNT; i++)
+            if (data->spriteIds.aiIconSpriteIds[i] != 0xFF)
+                gSprites[data->spriteIds.aiIconSpriteIds[i]].invisible = FALSE;
+        if (data->aiMonSpriteId != MAX_SPRITES)
+            gSprites[data->aiMonSpriteId].invisible = FALSE;
+        data->aiViewState++;
+        break;
+    case 3:
         if (JOY_NEW(R_BUTTON | L_BUTTON) && IsDoubleBattle())
         {
             u32 opposingPartner = GetPartnerBattler(data->aiBattlerId);
@@ -1372,8 +1491,8 @@ static void Task_ShowPlayerDamage(u8 taskId)
     switch (data->aiViewState)
     {
     case 0:
-        HideBg(0);
-        ShowBg(1);
+        // Keep the existing menu visible until the new table has reached VRAM.
+        HideBg(1);
 
         if (!IsOnPlayerSide(data->battlerId) || !IsBattlerAlive(data->battlerId))
         {
@@ -1405,6 +1524,11 @@ static void Task_ShowPlayerDamage(u8 taskId)
                                                  gBattleMons[data->battlerId].personality,
                                                  FALSE,
                                                  39, 135, 15, TAG_NONE);
+        for (i = 0; i < MAX_BATTLERS_COUNT; i++)
+            if (data->spriteIds.aiIconSpriteIds[i] != 0xFF)
+                gSprites[data->spriteIds.aiIconSpriteIds[i]].invisible = TRUE;
+        if (data->aiMonSpriteId != MAX_SPRITES)
+            gSprites[data->aiMonSpriteId].invisible = TRUE;
         data->aiViewState++;
         break;
     case 1:
@@ -1415,6 +1539,18 @@ static void Task_ShowPlayerDamage(u8 taskId)
         data->aiViewState++;
         break;
     case 2:
+        if (IsDma3ManagerBusyWithBgCopy())
+            break;
+        HideBg(0);
+        ShowBg(1);
+        for (i = 0; i < MAX_BATTLERS_COUNT; i++)
+            if (data->spriteIds.aiIconSpriteIds[i] != 0xFF)
+                gSprites[data->spriteIds.aiIconSpriteIds[i]].invisible = FALSE;
+        if (data->aiMonSpriteId != MAX_SPRITES)
+            gSprites[data->aiMonSpriteId].invisible = FALSE;
+        data->aiViewState++;
+        break;
+    case 3:
         if (JOY_NEW(R_BUTTON | L_BUTTON) && IsDoubleBattle())
         {
             u32 partner = GetPartnerBattler(data->battlerId);
