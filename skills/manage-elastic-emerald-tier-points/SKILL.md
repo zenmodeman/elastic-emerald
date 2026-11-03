@@ -8,7 +8,7 @@ Read `AGENTS.md` for repository conventions. Maintain this skill’s technical g
 
 # Tier points documentation
 
-Maintain `docs/gameplay/tier-points.md` through case-by-case editorial review. Its inconsistent phrasing, regional lists, and fully evolved/not fully evolved groupings are intentional authoring context, not a schema to normalize. Do not introduce a generated replacement, spreadsheet pipeline, or permanent prose parser for this workflow.
+Only when explicitly requested, update developer-owned `docs/gameplay/tier-points.md` through case-by-case editorial review. Its inconsistent phrasing, regional lists, and fully evolved/not fully evolved groupings are intentional authoring context, not a schema to normalize. Do not introduce a generated replacement, spreadsheet pipeline, or permanent prose parser for this workflow.
 
 ## Scope and editing decisions
 
@@ -40,19 +40,19 @@ For broad audits, compare both directions: documented costs against source and e
 
 Give each finding the document location, observed claim, implemented behavior, source path and symbol (line links when useful), and a proposed correction or unresolved intent. Record whether the baseline includes uncommitted changes. Keep broad audit reports separate from player-facing prose; historical findings are leads to recheck, not future source of truth.
 
-When implementing or documenting a fix for a recorded discrepancy, update `docs/tier-points-discrepancy-analysis.md` in the same work. Recheck the affected finding against current source and all relevant document occurrences, delete resolved findings from the report. Keep the report focused on outstanding issues; do not add resolved sections, resolution histories, or completion notes. Keep any remaining documentation contradiction or unverified behavior open rather than marking the whole case resolved. Refresh related report statements and affected source links so the report no longer describes implemented behavior as missing. This maintenance also applies when the request is to implement the documented behavior in source rather than sync the document to source.
+When implementing or documenting a fix for a recorded discrepancy, update `analysis/tier-points-discrepancy-analysis.md` in the same work. Recheck the affected finding against current source and all relevant document occurrences, delete resolved findings from the report. Keep the report focused on outstanding issues; do not add resolved sections, resolution histories, or completion notes. Keep any remaining documentation contradiction or unverified behavior open rather than marking the whole case resolved. Refresh related report statements and affected source links so the report no longer describes implemented behavior as missing. This maintenance also applies when the request is to implement the documented behavior in source rather than sync the document to source.
 
 Use static verification only unless a build is explicitly requested. Re-read changed paragraphs and other occurrences, check source links and `git diff --check`, and summarize what was reviewed versus left unverified. Do not add gameplay tests for documentation-only edits.
 
 ## Current implementation and maintenance notes
 
-I maintain `docs/gameplay/tier-points.md` through individual editorial changes. Its regional lists, fully evolved/not fully evolved groupings, and varied wording reflect how I organize the design. I do not treat it as a schema for generated replacement prose.
+Treat `docs/gameplay/tier-points.md` as developer-owned and make individual editorial changes only when explicitly requested. Its regional lists, fully evolved/not fully evolved groupings, and varied wording reflect the developer’s design organization. Do not treat it as a schema for generated replacement prose.
 
 ## Implementation and intent
 
-A document edit can describe an intended change before the code implements it. I distinguish that situation from an inaccurate description of existing behavior by comparing the document, working diff, and source. Empty ability headings remain placeholders; they do not establish a point schedule. A Tera exception also does not necessarily change ordinary Tier Points.
+A document edit can describe an intended change before the code implements it. Distinguish that situation from an inaccurate description of existing behavior by comparing the document, working diff, and source. Empty ability headings remain placeholders; they do not establish a point schedule. A Tera exception also does not necessarily change ordinary Tier Points.
 
-Synchronizing prose to source and changing gameplay to match an intended rule are different decisions. My discrepancy notes keep unresolved design choices separate from factual mismatches.
+Synchronizing prose to source and changing gameplay to match an intended rule are different decisions. Discrepancy notes should keep unresolved design choices separate from factual mismatches.
 
 ## Source map
 
@@ -69,18 +69,20 @@ Runtime item/ability handling supplies mode-specific details. The [battle AI not
 
 ## Comparing a rule with source
 
-For each entry, I identify the species/form, ability, mode, and badge transitions in the executable branches. The implementation tests individual badge flags; interpreting them as a badge count assumes normal ordered progression. Values immediately before and at a threshold are useful distinctions.
+For each entry, identify the species/form, ability, mode, and badge transitions in the executable branches. The implementation tests individual badge flags; interpreting them as a badge count assumes normal ordered progression. Values immediately before and at a threshold are useful distinctions.
 
 Ordinary Tier Points and MaxTierPoints answer different questions. MaxTierPoints considers the current-mon floor, terminal evolutions, terminal Megas, nonempty ability slots, and current progression, with the Nincada-to-Shedinja branch excluded. Evolution requirements do not gate that search. Teaching implications also depend on the callers.
 
-A conditional entry may appear in both an ability section and an unqualified “Always” list. I compare those occurrences together. Names such as Mega Charizard Y, regional forms, punctuation variants, and collective names such as Sinistcha sometimes need manual interpretation. A base-species case covers other forms only where the code normalizes or aliases them.
+A conditional entry may appear in both an ability section and an unqualified “Always” list. Compare those occurrences together. Names such as Mega Charizard Y, regional forms, punctuation variants, and collective names such as Sinistcha sometimes need manual interpretation. A base-species case covers other forms only where the code normalizes or aliases them.
 
-A broad comparison runs in both directions: documented values against source and explicit source cases against document coverage. I distinguish wrong conditions, missing entries, internal contradictions, and placeholders. This still does not establish coverage of every available species; default cost alone says nothing about encounter availability. Availability depends on the encounter and progression references.
+A broad comparison runs in both directions: documented values against source and explicit source cases against document coverage. Distinguish wrong conditions, missing entries, internal contradictions, and placeholders. This still does not establish coverage of every available species; default cost alone says nothing about encounter availability. Availability depends on the encounter and progression references.
 
 ## Discrepancy notes
 
-`docs/tier-points-discrepancy-analysis.md` holds outstanding findings separately from player-facing prose. A useful finding records the document claim, implemented behavior, source symbol, and the remaining correction or design question, including any uncommitted baseline.
+Read the [outstanding discrepancy analysis](../../analysis/tier-points-discrepancy-analysis.md) when reviewing or resolving recorded findings.
 
-When I resolve a finding, I remove it after comparing the relevant source and document occurrences. The report is an outstanding-work list rather than a resolution history. A partial fix leaves the remaining contradiction or uncertainty visible.
+`analysis/tier-points-discrepancy-analysis.md` holds outstanding findings separately from player-facing prose. A useful finding records the document claim, implemented behavior, source symbol, and the remaining correction or design question, including any uncommitted baseline.
 
-For documentation changes, I review the prose, source references, and diff without a game build. The scope of that review remains separate from runtime verification.
+Remove a resolved finding after comparing the relevant source and document occurrences. The report is an outstanding-work list rather than a resolution history. A partial fix leaves the remaining contradiction or uncertainty visible.
+
+For documentation changes, review the prose, source references, and diff without a game build. The scope of that review remains separate from runtime verification.

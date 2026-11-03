@@ -13,7 +13,7 @@ Read `AGENTS.md` first. Preserve current Elastic Emerald behavior while adapting
 - Read `skills/merge-upgrade-helper/references/resolution-policy.md` for conflict decisions.
 - Use `skills/merge-upgrade-helper/references/stale-api-map.md` when migrating callers; compare every mapping with current declarations.
 - Use `skills/merge-upgrade-helper/references/check-recipes.md` for targeted static checks.
-- Use `skills/maintain-elastic-emerald-documentation/references/feature-reference.md` for current behavior and `docs/feature-history.md` for introductions, redesigns, and repairs.
+- Use `skills/maintain-elastic-emerald-documentation/references/feature-reference.md` for current behavior and `skills/maintain-elastic-emerald-documentation/references/feature-history.md` for introductions, redesigns, and repairs.
 
 ## Workflow
 

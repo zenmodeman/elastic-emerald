@@ -1,6 +1,6 @@
 # Elastic Emerald custom feature reference
 
-This reference describes current functional features and player-visible rules. Keep descriptions concise. Repair records belong in the [feature history](../../../docs/feature-history.md); implementation and maintenance details belong in the [repository skills](../SKILL.md). Restoring expected behavior does not create a new feature entry.
+This reference describes current functional features and player-visible rules. Keep descriptions concise. Repair records belong in the [feature history](feature-history.md); implementation and maintenance details belong in the [repository skills](../SKILL.md). Restoring expected behavior does not create a new feature entry.
 
 ## Run modes and progression
 
@@ -84,7 +84,7 @@ Trainer AI compares damage, residual effects, resist berries, priority, hazards,
 
 Singles immunity-switch prediction becomes available after at least five voluntary player switches during the current opponent's stint. It considers revealed reserve Pokemon and favors frequently used immunity candidates. Forced switches do not contribute.
 
-See the [AI behavior summary](../../../docs/custom_ai_logic_summary.md) for individual decision rules.
+See the [AI behavior summary](../../modify-elastic-emerald-ai-logic/references/behavior-summary.md) for individual decision rules.
 
 ## Maps, trainers, and story
 

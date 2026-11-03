@@ -1,8 +1,8 @@
 # Elastic Emerald feature history
 
-I keep this index of the major custom systems and their commits, through `766c31cb22` (October 4, 2026), with pending additions explicitly labeled. It draws on the existing project feature/AI references and local Git history. It covers major gameplay, content, and tooling changes; routine individual learnset, encounter, trainer, and balance edits are not exhaustively listed. The inherited Expansion changelog remains separate.
+This index records the major custom systems and their commits, through `766c31cb22` (October 4, 2026), with pending additions explicitly labeled. It draws on the existing project feature/AI references and local Git history. It covers major gameplay, content, and tooling changes; routine individual learnset, encounter, trainer, and balance edits are not exhaustively listed. The inherited Expansion changelog remains separate.
 
-Entries briefly describe additions, changes, and repairs and retain their commit IDs. Keep entries descriptive; actionable merge guidance belongs in the [upgrade notes](../skills/merge-upgrade-helper/references/upstream-upgrades.md). The [custom feature reference](../skills/maintain-elastic-emerald-documentation/references/feature-reference.md) describes current functionality, the [AI summary](custom_ai_logic_summary.md) covers individual scoring rules, and the [documentation skill](../skills/maintain-elastic-emerald-documentation/SKILL.md) records the documentation maintenance workflow.
+Entries briefly describe additions, changes, and repairs and retain their commit IDs. Keep entries descriptive; actionable merge guidance belongs in the [upgrade notes](../../merge-upgrade-helper/references/upstream-upgrades.md). The [custom feature reference](feature-reference.md) describes current functionality, the [AI summary](../../modify-elastic-emerald-ai-logic/references/behavior-summary.md) covers individual scoring rules, and the [documentation skill](../SKILL.md) records the documentation maintenance workflow.
 
 ## Newest changes
 
@@ -10,6 +10,7 @@ Committed entries use their actual commit IDs. **Newest** identifies working-tre
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| Agent reference ownership | **Uncommitted** | Moves AI behavior and feature history into skill references and the Tier Points working audit into `analysis/`; preserves developer-owned prose while allowing focused technical documentation updates for requested code changes. |
 | STAB inference restrictions | **Uncommitted** | Excludes unrevealed self-recharge attacks and two-turn attacks without known charge-skip conditions through the shared STAB flag path while retaining revealed moves and explicit item omniscience in the Elastic knowledge profile. |
 | General switch prediction suppressed | **Uncommitted** | Stops modeling player switches through ordinary AI switching logic while retaining move prediction and the restricted immunity-abuse path. |
 | Trainer Tera eligibility repair | **Uncommitted** | Requires an explicit party Tera type even for Smart Tera trainers; generated and curated defaults no longer enable trainer Terastallization. |
@@ -117,7 +118,7 @@ These entries record patch contents, not a new test run. The newest commit bound
 
 ## Battle AI
 
-The [AI summary](custom_ai_logic_summary.md) expands these entries into per-move rules, knowledge limits, and simulation contracts. “AI” here means the game's battle decision code.
+The [AI summary](../../modify-elastic-emerald-ai-logic/references/behavior-summary.md) expands these entries into per-move rules, knowledge limits, and simulation contracts. “AI” here means the game's battle decision code.
 
 | Feature | Implementation commits |
 | --- | --- |

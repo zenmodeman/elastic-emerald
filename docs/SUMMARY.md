@@ -24,8 +24,6 @@
     - [Trainer Documentation](gameplay/trainers.md)
     - [Tier Points](gameplay/tier-points.md)
     - [Curated Tera Type Distribution](gameplay/curated-tera-type-distribution.md)
-- [Elastic Emerald Feature History](feature-history.md)
-- [Battle AI Behavior](custom_ai_logic_summary.md)
 - [Contributing](./CONTRIBUTING.md)
 - [Styleguide and Principles](./STYLEGUIDE.md)
 - [Credits](./CREDITS.md)

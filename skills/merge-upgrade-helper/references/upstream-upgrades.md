@@ -1,16 +1,16 @@
 # Upstream upgrade notes
 
-I use the [custom feature reference](../../maintain-elastic-emerald-documentation/references/feature-reference.md) to locate local behavior and the [feature history](../../../docs/feature-history.md) to distinguish introductions, redesigns, and repairs.
+Use the [custom feature reference](../../maintain-elastic-emerald-documentation/references/feature-reference.md) to locate local behavior and the [feature history](../../maintain-elastic-emerald-documentation/references/feature-history.md) to distinguish introductions, redesigns, and repairs.
 
-## How I approach a merge
+## Merge workflow
 
 The working diff, merge parents, and unmerged paths establish what is changing. Structural problems—duplicate enums, fields, cases, or interleaved braces—often need attention before a semantic comparison is possible.
 
-My aim is to retain the current Elastic Emerald behavior on the newer upstream APIs and data layouts. Later local commits matter: restoring an older implementation can accidentally undo an intentional redesign. Adjacent code also matters, because stale callers and generated inputs can sit outside the conflict hunk.
+Retain current Elastic Emerald behavior on newer upstream APIs and data layouts. Later local commits matter: restoring an older implementation can accidentally undo an intentional redesign. Adjacent code also matters, because stale callers and generated inputs can sit outside the conflict hunk.
 
-I trace a feature through its constants/data, runtime dispatch, scripts, UI, save state, and AI simulation. A declaration or surviving test does not establish that its runtime caller survived. Record non-obvious resolutions here or in the relevant topic skill or supporting reference when they help prevent recurring breakage. Keep repair details out of the feature reference.
+Trace a feature through its constants/data, runtime dispatch, scripts, UI, save state, and AI simulation. A declaration or surviving test does not establish that its runtime caller survived. Record non-obvious resolutions here or in the relevant topic skill or supporting reference when they help prevent recurring breakage. Keep repair details out of the feature reference.
 
-Routine review uses [static checks](check-recipes.md). Full builds and test runs are separate decisions. When I do build, compilation, linking, and ROM generation are distinct milestones; an incremental follow-up can expose unstable generated dependencies.
+Routine review uses [static checks](check-recipes.md). Full builds and test runs are separate decisions. When a build is explicitly requested, treat compilation, linking, and ROM generation as distinct milestones; an incremental follow-up can expose unstable generated dependencies.
 
 ## Recurring failure patterns
 
@@ -25,7 +25,7 @@ Routine review uses [static checks](check-recipes.md). Full builds and test runs
 
 ## Battle AI parity
 
-The [battle AI notes](../../modify-elastic-emerald-ai-logic/SKILL.md) cover simulation and scoring. I compare the model with runtime ability suppression, immunity, dynamic targets, item negation, and check-only versus script-running calls, while retaining intentional knowledge limits.
+The [battle AI notes](../../modify-elastic-emerald-ai-logic/SKILL.md) cover simulation and scoring. Compare the model with runtime ability suppression, immunity, dynamic targets, item negation, and check-only versus script-running calls, while retaining intentional knowledge limits.
 
 Some apparent anomalies are deliberate. Tera Orb charged/no-cost flags share an alias because charging has no cost. The old clean-state and weather-preservation switching paths are also historical; matchup commitment superseded them.
 
@@ -48,7 +48,7 @@ Keep only actionable lessons here. Feature history records brief outcomes and co
 
 ## Source paths to review during upgrades
 
-I trace an affected system through data, prototypes, save flags/vars, scripts, UI, AI calculations, and tests. The complete runtime path matters because a surviving declaration can conceal a lost implementation hook. My usual resolution retains Elastic Emerald behavior on current upstream APIs, with static review first and builds handled separately.
+Trace an affected system through data, prototypes, save flags/vars, scripts, UI, AI calculations, and tests. The complete runtime path matters because a surviving declaration can conceal a lost implementation hook. Resolve upgrades by retaining Elastic Emerald behavior on current upstream APIs, with static review first and builds handled separately.
 
 High-risk files that repeatedly contain local behavior:
 

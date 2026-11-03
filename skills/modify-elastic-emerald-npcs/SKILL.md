@@ -63,7 +63,7 @@ Read `AGENTS.md` for repository conventions. Maintain this skill’s technical g
 - Centralize runtime scaling in `GetTrainerLevelModifier(trainerNum)` and apply its result when each trainer Pokémon is created. Cap the resulting level at `MAX_LEVEL`.
 - Include all applicable base and rematch IDs. Confirm whether the route boss itself belongs to the scaling group.
 - Make cumulative progression explicit. Independent achieved flags should contribute independently when later milestones add to earlier bonuses.
-- Update `docs/gameplay/trainers.md` with the exact trigger and cumulative modifier.
+- Record the exact trigger and cumulative modifier in this skill or its supporting references. Directly edit authored prose in `docs/gameplay/trainers.md` only when explicitly instructed; source-driven generated sections may be synchronized as part of relevant trainer changes.
 
 ## Rewards and flags
 
@@ -76,8 +76,8 @@ Read `AGENTS.md` for repository conventions. Maintain this skill’s technical g
 
 ## Documentation and verification
 
-- Add or update the trainer section in `docs/gameplay/trainers.md`, including prerequisites, mode cutoff, reward, level scaling, reused-slot caveats, and route-boss healing.
-- Wrap documented parties in `trainer-party` markers and run `python3 tools/elastic_emerald_helpers/sync_trainer_docs.py`, followed by `--check`.
+- Keep prerequisites, mode cutoff, reward, level scaling, reused-slot caveats, and route-boss healing in this skill or its supporting references. Directly add or update authored prose in the corresponding `docs/gameplay/trainers.md` section only when explicitly requested. Synchronize designated generated party blocks for relevant source changes.
+- For relevant trainer changes, run `python3 tools/elastic_emerald_helpers/sync_trainer_docs.py`, followed by `--check`, to refresh existing `trainer-party` blocks. Adding new documented sections or markers requires an explicit documentation request; preserve manual prose.
 - Use targeted source generation where needed; do not invoke broad build targets or ROM/test builds unless requested.
 - Use `rg` to audit trainer IDs, flags, script labels, rematch references, and stale reward logic.
 - Run `git diff --check` and inspect the complete relevant diff. Distinguish pre-existing whitespace warnings from new ones.
@@ -104,17 +104,17 @@ When trying to figure out the right Pokemon to use for a trainer, their existing
 python3 tools/elastic_emerald_helpers/analyze_trainer_types.py
 ```
 
-This script is helpful to figure out what types should get more representation that fit the given trainers.  For otherwise suitable candidates, my preference is an unused species, then an unused ability on a used species, then a repeated species/ability pairing when it makes sense for theme or battle design. 
+Use this report to identify underrepresented types that fit the trainers. For otherwise suitable candidates, prefer an unused species, then an unused ability on a used species, then a repeated species/ability pairing when it fits the theme or battle design.
 
 
 ## Scaling and rewards
 
-Runtime level scaling lives in `GetTrainerLevelModifier(trainerNum)` and is applied when trainer Pokémon are created, capped at `MAX_LEVEL`. This avoids duplicate parties solely for level changes. Base/rematch IDs and route-boss membership determine the affected group; independent progression flags can  cumulative bonuses. I record those triggers ancontributed totals in `docs/gameplay/trainers.md`.
+Runtime level scaling lives in `GetTrainerLevelModifier(trainerNum)` and is applied when trainer Pokémon are created, capped at `MAX_LEVEL`. This avoids duplicate parties solely for level changes. Base/rematch IDs and route-boss membership determine the affected group; independent progression flags can  cumulative bonuses. Record those triggers and contributed totals in this skill or its supporting references; `docs/gameplay/trainers.md` remains developer-owned.
 
 
 ## Documentation and review
 
-My trainer notes cover prerequisites, mode cutoffs, rewards, scaling, reused slots, and healing. Parties inside `trainer-party` markers are synchronized by:
+Trainer notes should cover prerequisites, mode cutoffs, rewards, scaling, reused slots, and healing. For relevant authorized source changes, synchronize existing generated parties inside `trainer-party` markers with:
 
 ```sh
 python3 tools/elastic_emerald_helpers/sync_trainer_docs.py

@@ -8,11 +8,11 @@
 - **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through `9c4b986496`. The subsequent commitment-reset change in `c753e34660` was reconciled against its committed diff on September 25, 2026; the two later commits through `9c12ae6d16` only add analysis helpers. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
 - **Follow-up committed in `c753e34660`:** a player switch now clears established commitment as well as the already-cleared pending commitment for the opponents. The game's existing AI-versus-AI battle mode remains intact.
 
-I use the commit above as the boundary of reviewed AI behavior. Pending changes stay explicitly labeled as uncommitted; once they have a commit, I reconcile the note against its diff and advance the boundary accordingly.
+Use the last documented code commit above as the boundary of reviewed AI behavior. Pending changes stay explicitly labeled as uncommitted; once committed, reconcile the note against its diff and advance the boundary only through reviewed changes.
 
 ## Scope and reading guidance
 
-This document summarizes the main battle-AI work introduced through my commits from January 2024 through September 2026. Merge commits, trainer-team-only edits, mechanical formatting changes, and tests that did not introduce behavior are omitted. Later "restore" commits are treated as continuations of the original feature rather than separate features.
+This document summarizes the main battle-AI work introduced through project commits from January 2024 through September 2026. Merge commits, trainer-team-only edits, mechanical formatting changes, and tests that did not introduce behavior are omitted. Later "restore" commits are treated as continuations of the original feature rather than separate features.
 
 The implementation is a heuristic, rule-based system. It scores moves, predicts damage and state transitions, chooses targets, and evaluates switches. It is not a search tree or learned policy. Much of the custom work tries to make that heuristic system reason under imperfect information without becoming trivially exploitable. It involves a lot of stochastic logic. 
 

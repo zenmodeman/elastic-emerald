@@ -1,6 +1,6 @@
 # Static check notes
 
-These are commands I use to answer specific questions during review. A clean result is limited to what the command checks; it does not replace a runtime test.
+Use these commands to answer specific questions during review. A clean result is limited to what the command checks; it does not replace a runtime test.
 
 ## Conflicts and working state
 
@@ -12,7 +12,7 @@ rg -n "<<<<<<<|=======|>>>>>>>" <files>
 git status --short
 ```
 
-The broad marker search can also match ordinary separator text, so I review the matches rather than treating every one as a conflict.
+The broad marker search can also match ordinary separator text, so review the matches rather than treating every one as a conflict.
 
 ## Whitespace and stale symbols
 
@@ -32,4 +32,4 @@ rg -n "MOVE_EFFECT_STEAL_ITEM|MOVE_EFFECT_SPIKES|HITMARKER_PASSIVE_DAMAGE|B_ILLU
 
 ## Compiler checks
 
-A targeted C front-end check still depends on the compiler, generated headers, and preprocessing pipeline. I derive such commands from the current Makefile and installed toolchain; compiler paths copied from older notes can be stale. Routine documentation review needs no compilation.
+A targeted C front-end check still depends on the compiler, generated headers, and preprocessing pipeline. Derive such commands from the current Makefile and installed toolchain; compiler paths copied from older notes can be stale. Routine documentation review needs no compilation.

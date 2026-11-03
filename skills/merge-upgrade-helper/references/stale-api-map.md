@@ -1,6 +1,6 @@
 # API migration notes
 
-I keep these mappings as a record of API changes encountered during upgrades. They are starting points for comparing a caller with the current declaration, rather than a mechanical replacement list.
+These mappings record API changes encountered during upgrades. They are starting points for comparing a caller with the current declaration, rather than a mechanical replacement list.
 
 ## Battle Volatiles
 
@@ -60,7 +60,7 @@ Renamed and split effects have affected local switch cases:
 - `MOVE_EFFECT_STEAL_ITEM` is usually now a battle move effect such as `EFFECT_STEAL_ITEM`.
 - Hazard effects may be represented by `EFFECT_SPIKES`, `EFFECT_STEALTH_ROCK`, `EFFECT_STICKY_WEB`, `EFFECT_TOXIC_SPIKES`, `EFFECT_STONE_AXE`, or `EFFECT_CEASELESS_EDGE`.
 
-An intentionally partial enum switch can use `default: break;` under `-Werror=switch`. I distinguish that case from a missing custom effect that actually needs handling.
+An intentionally partial enum switch can use `default: break;` under `-Werror=switch`. Distinguish that case from a missing custom effect that actually needs handling.
 
 ## 1.17 battle and trainer APIs
 
