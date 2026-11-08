@@ -594,7 +594,7 @@ As listed below, some Pokemon can only Tera based on ability.
 - Tera Flying
 	- Main: {Persian, Meowth}, {Pyroar, Litleo}, {Lopunny, Buneary}, {Grafaiai, Shroodle}, {Dubwool, Wooloo}
 - Tera Ghost
-	- Main: Kecleon, Smeargle
+	- Main: {Watchog, Patrat}, Kecleon
 	- Other: Zorua-Hisui
 - Tera Grass
 	- Main: Oranguru, Stantler, Munchlax
@@ -611,7 +611,7 @@ As listed below, some Pokemon can only Tera based on ability.
 - Tera Poison
 	- Main: Komala, {Linoone-Galar, Zigzagoon-Galar}
 - Tera Psychic
-	- Main: Spinda, {Watchog, Spinda}
+	- Main: Spinda, Smeargle
 - Tera Rock
 	- Main: {Toucannon, Trumbeak, Pikipek}
 	- Other: Stufful

@@ -7058,7 +7058,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_AIPOM:
             return TYPE_DARK; //Technician Beat Up for the earlier game
         case SPECIES_SMEARGLE:
-            return TYPE_GHOST; //Immunity for frailness
+            return TYPE_PSYCHIC; //Might return to Ghost if Watchog is given a non-Ghost Tera
         case SPECIES_MILTANK:
             return TYPE_FAIRY; //Play Rough
         case SPECIES_ZIGZAGOON: case  SPECIES_LINOONE:
@@ -7083,7 +7083,7 @@ List of Tera Types: Normal Fire Water Electric Grass Ice Fighting Poison Ground 
         case SPECIES_REGIGIGAS:
             return TYPE_FIGHTING; //Hammer Arm
         case SPECIES_WATCHOG: case SPECIES_PATRAT:
-            return TYPE_PSYCHIC; //Potential also for Stellar
+            return TYPE_GHOST; //Potential also for Stellar or Psychic
         case SPECIES_MINCCINO:
             return TYPE_WATER; //Aqua Tail
         case SPECIES_LILLIPUP: case SPECIES_HERDIER: case SPECIES_STOUTLAND:
