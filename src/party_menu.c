@@ -261,6 +261,7 @@ static void DisplayPartyPokemonDataForWirelessMinigame(u8);
 static void DisplayPartyPokemonDataForBattlePyramidHeldItem(u8);
 static bool8 DisplayPartyPokemonDataForMoveTutorOrEvolutionItem(u8);
 static void DisplayPartyPokemonData(u8);
+static void DisplayPartyPokemonDescriptionData(u8 slot, u8 stringID);
 static void DisplayPartyPokemonNickname(struct Pokemon *, struct PartyMenuBox *, u8);
 static void DisplayPartyPokemonLevelCheck(struct Pokemon *, struct PartyMenuBox *, u8);
 static void DisplayPartyPokemonGenderNidoranCheck(struct Pokemon *, struct PartyMenuBox *, u8);
@@ -1048,6 +1049,8 @@ static void RenderPartyMenuBox(u8 slot)
                 DisplayPartyPokemonDataForWirelessMinigame(slot);
             else if (gPartyMenu.menuType == PARTY_MENU_TYPE_STORE_PYRAMID_HELD_ITEMS)
                 DisplayPartyPokemonDataForBattlePyramidHeldItem(slot);
+            else if (gPartyMenu.menuType == PARTY_MENU_TYPE_WEAK_SPLIT_MAX)
+                DisplayPartyPokemonDescriptionData(slot, GetWeakSplitMaxStatForMon(GetPartyMonFromPartyMenuId(slot)) >= 0 ? PARTYBOX_DESC_ABLE : PARTYBOX_DESC_NOT_ABLE);
             else if (!DisplayPartyPokemonDataForMoveTutorOrEvolutionItem(slot))
                 DisplayPartyPokemonData(slot);
 
@@ -8194,7 +8197,14 @@ void ChoosePartyMon(void)
 {
     LockPlayerFieldControls();
     FadeScreen(FADE_TO_BLACK, 0);
-    CreateTask(Task_ChoosePartyMon, 10);
+    gTasks[CreateTask(Task_ChoosePartyMon, 10)].data[0] = PARTY_MENU_TYPE_CHOOSE_MON;
+}
+
+void ChoosePartyMonForWeakSplitMax(void)
+{
+    LockPlayerFieldControls();
+    FadeScreen(FADE_TO_BLACK, 0);
+    gTasks[CreateTask(Task_ChoosePartyMon, 10)].data[0] = PARTY_MENU_TYPE_WEAK_SPLIT_MAX;
 }
 
 static void Task_ChoosePartyMon(u8 taskId)
@@ -8202,7 +8212,7 @@ static void Task_ChoosePartyMon(u8 taskId)
     if (!gPaletteFade.active)
     {
         CleanupOverworldWindowsAndTilemaps();
-        InitPartyMenu(PARTY_MENU_TYPE_CHOOSE_MON, PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_AND_CLOSE, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, BufferMonSelection);
+        InitPartyMenu(gTasks[taskId].data[0], PARTY_LAYOUT_SINGLE, PARTY_ACTION_CHOOSE_AND_CLOSE, FALSE, PARTY_MSG_CHOOSE_MON, Task_HandleChooseMonInput, BufferMonSelection);
         DestroyTask(taskId);
     }
 }

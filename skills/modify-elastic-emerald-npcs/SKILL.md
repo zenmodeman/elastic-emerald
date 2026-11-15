@@ -135,3 +135,13 @@ python3 tools/elastic_emerald_helpers/sync_trainer_docs.py --check
 
 
 The active machine set is 76 TMs and three HMs: the 77 priority entries in `tools/learnset_helpers/off_type_moves.md`, plus Power Split and Lucky Chant. Cut, Flash, and Rock Smash occur only as HMs; Surf is a TM. Retired machine rewards, shops, and item balls use `ITEM_TM_TERA_BLAST` as a temporary placeholder. Edit `include/constants/tms_hms.h` and matching `src/data/items.h` entries together. Preserve every retained TM's existing number and item ID. Fill retired TM slots with additions before appending the remaining additions; never compact the retained entries. Retained HMs also preserve their established numeric item IDs. Compatibility remains owned by `all_learnables.json`. Placeholder rewards do not establish final placements or final NPC dialogue.
+
+## Secondary attacking IV service
+
+The Tech House expert uses exact-species lists in `src/data/weak_split_max.h`. `GetWeakSplitMaxStat` rejects invalid party slots and Eggs, sets `VAR_TEMP_1` to `STAT_ATK` or `STAT_SPATK`, and buffers the stat name in `gStringVar2`. Eligibility is independent of current IVs; after confirmation, `TrainMaxIV` raises only that IV and recalculates stats, or returns false for the already-maximized dialogue. Keep the lists disjoint; Attack takes precedence if they overlap. Evolutions and alternate forms need explicit entries.
+
+Follow the configuration-driven testing guidance in [AGENTS.md](../../AGENTS.md). `test/weak_split_max.c` includes the eligibility configuration directly: parameterize eligible-species checks from both arrays and derive unlisted fixtures from their complement. Assert stat selection, labels, Egg and invalid-slot rejection, chosen party member, stat recalculation, and preservation of other IVs independently of list membership. Routine eligibility edits should not require copying species or counts into tests.
+
+When adding party compatibility labels in `RenderPartyMenuBox`, declare `DisplayPartyPokemonDescriptionData` in the forward-declaration block because its definition follows the renderer.
+
+Register asynchronous party-selection specials with `waitstate=1` in `data/specials.inc`, matching `ChoosePartyMon`. The `special` assembly macro emits the pause automatically; the shared party-menu return callback resumes the script after selection or cancellation. Omitting this flag lets dialogue and eligibility checks execute during menu opening.

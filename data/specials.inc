@@ -659,3 +659,5 @@ gSpecials::
 	def_special GetTutorAbility
 	def_special SetTutorAbility
 	def_special Script_BufferChosenMonTriumph
+	def_special GetWeakSplitMaxStat
+	def_special ChoosePartyMonForWeakSplitMax, waitstate=1

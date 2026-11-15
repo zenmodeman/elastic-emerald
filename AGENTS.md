@@ -6,6 +6,8 @@ Use static verification. Do not run ROM builds, test builds, or broad build chec
 
 When adding or modifying tests because of code changes, use the `Elastic-tests: ` prefix.
 
+For behavior driven by configurable arrays or tables, derive test cases from the authoritative configuration instead of duplicating its current entries or counts. Cover all configured entries where practical, and select negative fixtures from outside the configuration so routine list changes do not invalidate tests. Keep expected behavioral rules independent: assert the intended effects, boundaries, and unchanged state rather than reproducing the implementation. Hardcode entries only when their specific identity is itself the contract being tested.
+
 ## Repository skills
 
 Read and follow the matching repository skill before acting, and announce its use. Paths are relative to the repository root. Load multiple skills when the work crosses their boundaries.

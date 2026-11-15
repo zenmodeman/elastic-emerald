@@ -10,6 +10,7 @@ Committed entries use their actual commit IDs. **Uncommitted** identifies workin
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
+| Tech House secondary attacking IV expert | **Uncommitted** | Completes party selection, configured species eligibility, confirmation, and single-IV maximization, including cancellation, Egg rejection, and already-maximized conditions. The selection screen shows Able/Unable using the shared eligibility check. Adds the description helper forward declaration required to compile the party screen. Registers the selector with `waitstate=1` so eligibility checks and dialogue wait for selection or cancellation. |
 | Johanna TM reward quantity | **Uncommitted** | Awards six Lucky Chant TMs in every mode, relying on shared non-Resource TM quantity display handling. |
 | Hidden Power tie selection | `6f319a0f09` | Randomly selects among equally valued best types at execution while keeping AI and Anticipation previews from consuming the selection roll. |
 | Agent reference ownership | `08376dda45` | Moves AI behavior and change history into skill references and the Tier Points working audit into `analysis/`; preserves developer-owned prose while allowing focused technical documentation updates for requested code changes. |

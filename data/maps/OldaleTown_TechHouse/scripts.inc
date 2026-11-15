@@ -299,36 +299,126 @@ TechHouse_SuctionCupsFisher::
 	end
 
 
-AbilityTutor_ChooseMon::
+TechHouse_WeakSplitMax_Expert::
 # 163 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	msgbox AbilityTutor_ChooseMon_Text_0
+	lock
 # 164 "data/maps/OldaleTown_TechHouse/scripts.pory"
-	special ChoosePartyMon
+	faceplayer
+# 165 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_0
 # 166 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_1
+# 167 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_2
+# 168 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_3
+# 169 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_4
+# 170 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_5, MSGBOX_YESNO
+# 171 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq TechHouse_WeakSplitMax_Expert_2
+TechHouse_WeakSplitMax_Expert_1:
+# 174 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_6
+# 175 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	special ChoosePartyMonForWeakSplitMax
+# 176 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
+	goto_if_eq TechHouse_WeakSplitMax_Expert_5
+TechHouse_WeakSplitMax_Expert_4:
+# 179 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	specialvar VAR_RESULT, GetWeakSplitMaxStat
+# 180 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq TechHouse_WeakSplitMax_Expert_8
+# 183 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_8, MSGBOX_YESNO
+# 184 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq TechHouse_WeakSplitMax_Expert_12
+TechHouse_WeakSplitMax_Expert_11:
+# 187 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	specialvar VAR_RESULT, TrainMaxIV
+# 188 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	compare VAR_RESULT, FALSE
+	goto_if_eq TechHouse_WeakSplitMax_Expert_14
+# 191 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	playfanfare MUS_LEVEL_UP
+# 192 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	waitfanfare
+# 193 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_10
+TechHouse_WeakSplitMax_Expert_7:
+# 196 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	release
+	end
+
+TechHouse_WeakSplitMax_Expert_2:
+# 172 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	goto TechHouse_WeakSplitMax_Farewell
+	goto TechHouse_WeakSplitMax_Expert_1
+
+TechHouse_WeakSplitMax_Expert_5:
+# 177 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	goto TechHouse_WeakSplitMax_Farewell
+	goto TechHouse_WeakSplitMax_Expert_4
+
+TechHouse_WeakSplitMax_Expert_8:
+# 181 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_7
+	goto TechHouse_WeakSplitMax_Expert_7
+
+TechHouse_WeakSplitMax_Expert_12:
+# 185 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	goto TechHouse_WeakSplitMax_Farewell
+	goto TechHouse_WeakSplitMax_Expert_11
+
+TechHouse_WeakSplitMax_Expert_14:
+# 189 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Expert_Text_9
+	goto TechHouse_WeakSplitMax_Expert_7
+
+
+TechHouse_WeakSplitMax_Farewell::
+# 201 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox TechHouse_WeakSplitMax_Farewell_Text_0
+# 202 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	release
+	end
+
+
+AbilityTutor_ChooseMon::
+# 207 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	msgbox AbilityTutor_ChooseMon_Text_0
+# 208 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	special ChoosePartyMon
+# 210 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	compare VAR_0x8004, PARTY_NOTHING_CHOSEN
 	goto_if_eq AbilityTutor_ChooseMon_1
 	return
 
 AbilityTutor_ChooseMon_1:
-# 167 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 211 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	goto AbilityTutor_NotInterested
 	return
 
 
 AbilityTutor_NotInterested::
-# 172 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 216 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	msgbox AbilityTutor_NotInterested_Text_0
-# 173 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 217 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	waitmessage
-# 174 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 218 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	release
 	end
 
 
 AbilityTutor_NotValid::
-# 179 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 223 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	msgbox AbilityTutor_NotValid_Text_0
-# 180 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 224 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	release
 	end
 
@@ -603,17 +693,82 @@ TechHouse_SuctionCupsFisher_Text_1:
 # 157 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	.string "Sometimes it helps find rare items too!$"
 
+TechHouse_WeakSplitMax_Expert_Text_0:
+# 165 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Have you ever wanted to use Hurricane\n"
+	.string "with Gyarados? Or Fire Punch with\l"
+	.string "Alakazam?$"
+
+TechHouse_WeakSplitMax_Expert_Text_1:
+# 166 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "It's difficult when that Pokemon's\n"
+	.string "attacking stat is low.$"
+
+TechHouse_WeakSplitMax_Expert_Text_2:
+# 167 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "And it's unthinkable if that stat hasn't\n"
+	.string "reached it's full potential!$"
+
+TechHouse_WeakSplitMax_Expert_Text_3:
+# 168 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "That's why I've mastered a technique to\n"
+	.string "bring out the potential of weaker\l"
+	.string "attacking stats.$"
+
+TechHouse_WeakSplitMax_Expert_Text_4:
+# 169 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "My Gyarados' Special Attack is as high\n"
+	.string "as it can be!$"
+
+TechHouse_WeakSplitMax_Expert_Text_5:
+# 170 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Would you like me to apply my technique\n"
+	.string "to your Pokemon?$"
+
+TechHouse_WeakSplitMax_Expert_Text_6:
+# 174 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Choose a Pokemon whose potential I\n"
+	.string "should check.$"
+
+TechHouse_WeakSplitMax_Expert_Text_7:
+# 181 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "I'm afraid I can't train this Pokemon. My\n"
+	.string "technique only works on certain\l"
+	.string "species.$"
+
+TechHouse_WeakSplitMax_Expert_Text_8:
+# 183 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "I can maximize this Pokemon's\n"
+	.string "{STR_VAR_2} IV. Shall I?$"
+
+TechHouse_WeakSplitMax_Expert_Text_9:
+# 189 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "This Pokemon's {STR_VAR_2} IV is\n"
+	.string "already at its maximum. It can't get any\l"
+	.string "higher!$"
+
+TechHouse_WeakSplitMax_Expert_Text_10:
+# 193 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "It's done! This Pokemon's\n"
+	.string "{STR_VAR_2} IV is now at its\l"
+	.string "maximum!$"
+
+TechHouse_WeakSplitMax_Farewell_Text_0:
+# 201 "data/maps/OldaleTown_TechHouse/scripts.pory"
+	.string "Come back whenever you'd like to unlock\n"
+	.string "that potential!$"
+
 AbilityTutor_ChooseMon_Text_0:
-# 163 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 207 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	.string "Alright, Please choose a Pokemon to\n"
 	.string "check.$"
 
 AbilityTutor_NotInterested_Text_0:
-# 172 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 216 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	.string "Not interested? Come back if you\n"
 	.string "change your mind.$"
 
 AbilityTutor_NotValid_Text_0:
-# 179 "data/maps/OldaleTown_TechHouse/scripts.pory"
+# 223 "data/maps/OldaleTown_TechHouse/scripts.pory"
 	.string "I'm afraid I couldn't find anything for\n"
 	.string "your Pokemon.$"

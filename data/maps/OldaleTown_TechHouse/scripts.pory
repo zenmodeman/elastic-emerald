@@ -159,6 +159,50 @@ script TechHouse_SuctionCupsFisher{
     end
 }
 
+script TechHouse_WeakSplitMax_Expert{
+    lock
+    faceplayer
+    msgbox(format("Have you ever wanted to use Hurricane with Gyarados? Or Fire Punch with Alakazam?"))
+    msgbox(format("It's difficult when that Pokemon's attacking stat is low."))
+    msgbox(format("And it's unthinkable if that stat hasn't reached it's full potential!"))
+    msgbox(format("That's why I've mastered a technique to bring out the potential of weaker attacking stats."))
+    msgbox(format("My Gyarados' Special Attack is as high as it can be!"))
+    msgbox(format("Would you like me to apply my technique to your Pokemon?"), MSGBOX_YESNO)
+    if (var(VAR_RESULT) == FALSE){
+        goto(TechHouse_WeakSplitMax_Farewell)
+    }
+    msgbox(format("Choose a Pokemon whose potential I should check."))
+    special(ChoosePartyMonForWeakSplitMax)
+    if (var(VAR_0x8004) == PARTY_NOTHING_CHOSEN){
+        goto(TechHouse_WeakSplitMax_Farewell)
+    }
+    specialvar(VAR_RESULT, GetWeakSplitMaxStat)
+    if (var(VAR_RESULT) == FALSE){
+        msgbox(format("I'm afraid I can't train this Pokemon. My technique only works on certain species."))
+    }else{
+        msgbox(format("I can maximize this Pokemon's {STR_VAR_2} IV. Shall I?"), MSGBOX_YESNO)
+        if (var(VAR_RESULT) == FALSE){
+            goto(TechHouse_WeakSplitMax_Farewell)
+        }
+        specialvar(VAR_RESULT, TrainMaxIV)
+        if (var(VAR_RESULT) == FALSE){
+            msgbox(format("This Pokemon's {STR_VAR_2} IV is already at its maximum. It can't get any higher!"))
+        }else{
+            playfanfare(MUS_LEVEL_UP)
+            waitfanfare
+            msgbox(format("It's done! This Pokemon's {STR_VAR_2} IV is now at its maximum!"))
+        }
+    }
+    release
+    end
+}
+
+script TechHouse_WeakSplitMax_Farewell{
+    msgbox(format("Come back whenever you'd like to unlock that potential!"))
+    release
+    end
+}
+
 script AbilityTutor_ChooseMon{
 		msgbox(format("Alright, Please choose a Pokemon to check."))
 		special(ChoosePartyMon)

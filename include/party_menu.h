@@ -34,7 +34,8 @@ enum PartyMenuType
     PARTY_MENU_TYPE_MINIGAME,
     PARTY_MENU_TYPE_STORE_PYRAMID_HELD_ITEMS,
     PARTY_MENU_TYPE_CENTER_MOVE_TUTOR,
-    PARTY_MENU_TYPE_MULTI_FULL_SHOWCASE
+    PARTY_MENU_TYPE_MULTI_FULL_SHOWCASE,
+    PARTY_MENU_TYPE_WEAK_SPLIT_MAX
 };
 
 // seems like the last two fields may have been left as all-purpose vars

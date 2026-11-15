@@ -4624,6 +4624,49 @@ u8 TrainMaxIV(void){
 }
 
 
+#include "data/weak_split_max.h"
+
+// Shared by the party compatibility display and the script special.
+s8 GetWeakSplitMaxStatForMon(struct Pokemon *mon)
+{
+    u16 species;
+    u32 i;
+
+    if (GetMonData(mon, MON_DATA_IS_EGG))
+        return -1;
+
+    species = GetMonData(mon, MON_DATA_SPECIES);
+    for (i = 0; i < ARRAY_COUNT(sWeakSplitMaxAttackSpecies); i++)
+    {
+        if (species == sWeakSplitMaxAttackSpecies[i])
+            return STAT_ATK;
+    }
+    for (i = 0; i < ARRAY_COUNT(sWeakSplitMaxSpAttackSpecies); i++)
+    {
+        if (species == sWeakSplitMaxSpAttackSpecies[i])
+            return STAT_SPATK;
+    }
+    return -1;
+}
+
+// ChoosePartyMon supplies 0x8004. TrainMaxIV consumes the stat in VAR_TEMP_1.
+bool8 GetWeakSplitMaxStat(void)
+{
+    s8 stat;
+
+    if (gSpecialVar_0x8004 >= gPartiesCount[B_TRAINER_PLAYER])
+        return FALSE;
+
+    stat = GetWeakSplitMaxStatForMon(&gParties[B_TRAINER_PLAYER][gSpecialVar_0x8004]);
+    if (stat < 0)
+        return FALSE;
+
+    VarSet(VAR_TEMP_1, stat);
+    StringCopy(gStringVar2, stat == STAT_ATK ? COMPOUND_STRING("Attack") : COMPOUND_STRING("Special Attack"));
+    return TRUE;
+}
+
+
 struct TutorAbilityException
 {
     u16 species;
@@ -4637,6 +4680,11 @@ static const u16 sTutorAbilitySpeciesAllAbilities[] =
 {
     // Add species here when all of their alternate abilities should be tutor-viable.
     SPECIES_BEEDRILL,
+    SPECIES_PATRAT,
+    SPECIES_WATCHOG,
+    SPECIES_DUSTOX,
+    SPECIES_BEAUTIFLY,
+    SPECIES_ARIADOS,
     SPECIES_NONE,
 };
 
