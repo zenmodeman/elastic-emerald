@@ -14,6 +14,7 @@
 #include "battle_setup.h"
 #include "battle_z_move.h"
 #include "battle_terastal.h"
+#include "battle_gimmick.h"
 #include "data.h"
 #include "debug.h"
 #include "event_data.h"
@@ -691,6 +692,10 @@ void Ai_UpdateSwitchInData(enum BattlerId battler)
     enum BattleTrainer trainer = GetBattlerTrainer(battler);
     struct AiPartyMon *aiMon = &gAiPartyData->mons[trainer][gBattlerPartyIndexes[battler]];
 
+    // Recent move-use history belongs to the current occupant; known moves
+    // are restored below from this party member's persistent record.
+    ClearBattlerMoveHistory(battler);
+
     if (!IsDoubleBattle() && GetBattlerSide(battler) == B_SIDE_OPPONENT)
         gAiBattleData->playerSwitchesDuringAiStint = 0;
 
@@ -711,7 +716,6 @@ void Ai_UpdateSwitchInData(enum BattlerId battler)
     }
     else // If not, copy the newly switched-in mon in battle and clear battle history.
     {
-        ClearBattlerMoveHistory(battler);
         ClearBattlerAbilityHistory(battler);
         ClearBattlerItemEffectHistory(battler);
         CopyBattlerDataToAIParty(GetBattlerPosition(battler), trainer);
@@ -751,17 +755,45 @@ static bool32 CanAssumeTwoTurnMove(enum BattlerId battler, enum Move move)
         && gBattleWeatherInfo[GetBattleWeather(weather)].type == requiredWeather;
 }
 
-// Temporarily obtain move info just for damage sake, without updating the info in the records themselves
-// Used to evaluate damage of unrevealed STAB moves without revealing the specific moves (to hide effects such as Brick Break)
+static enum Species GetKnownProspectiveMegaSpecies(enum BattlerId battler)
+{
+    enum Species species = gBattleMons[battler].species;
+    // Only add types from a known, matching stone while Mega remains available.
+    // This does not simulate prospective Mega stats, ability, or defensive typing.
+    bool32 knowsItem = IsAiBattlerAware(battler) || IsAiFlagPresent(AI_FLAG_ITEM_OMNISCIENCE)
+        || gAiPartyData->mons[GetBattlerTrainer(battler)][gBattlerPartyIndexes[battler]].heldEffect == HOLD_EFFECT_MEGA_STONE;
+    if (!knowsItem
+     || GetItemHoldEffect(gAiLogicData->items[battler]) != HOLD_EFFECT_MEGA_STONE
+     || !CanMegaEvolve(battler)
+     || gSpeciesInfo[species].isMegaEvolution
+     || gBattleMons[battler].volatiles.transformed)
+        return species;
+
+    struct FormChangeContext ctx = {
+        .method = FORM_CHANGE_BATTLE_MEGA_EVOLUTION_ITEM,
+        .currentSpecies = species,
+        .heldItem = gAiLogicData->items[battler],
+    };
+    return GetFormChangeTargetSpecies_Internal(ctx);
+}
+
+// Damage-only assumptions never reveal the move or its strategic effects.
 void GetDamageMoves(enum BattlerId battler, enum Move moves[MAX_MON_MOVES])
 {
     memcpy(moves, GetMovesArray(battler), sizeof(enum Move) * MAX_MON_MOVES);
     if (!IsAiBattlerAssumingStab(battler))
         return;
 
+    enum Species species = gBattleMons[battler].species;
+    enum Species megaSpecies = GetKnownProspectiveMegaSpecies(battler);
+
     for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
-        enum Move playerMove = gBattleMons[battler].moves[moveIndex];
+        // Damage-cache setup temporarily masks unknown moves in gBattleMons.
+        // Read the saved original slots only for this damage-only inference.
+        enum Move playerMove = !BattlerHasAi(battler) && gAiThinkingStruct->saved[battler].saved
+            ? gAiThinkingStruct->saved[battler].moves[moveIndex]
+            : gBattleMons[battler].moves[moveIndex];
 
         //If moves are already known, either through reveals or Omniscience
         if (moves[moveIndex] != MOVE_NONE && moves[moveIndex] != MOVE_UNAVAILABLE)
@@ -774,7 +806,10 @@ void GetDamageMoves(enum BattlerId battler, enum Move moves[MAX_MON_MOVES])
             || MoveHasAdditionalEffectSelf(playerMove, MOVE_EFFECT_RECHARGE))
             continue;
 
-        if (IsSpeciesOfType(gBattleMons[battler].species, GetMoveType(playerMove)) && GetMovePower(playerMove) != 0)
+        if (GetMovePower(playerMove) != 0
+         && (IsSpeciesOfType(species, GetMoveType(playerMove))
+          || IsSpeciesOfType(megaSpecies, GetMoveType(playerMove))
+          || (species == SPECIES_ARCHALUDON && playerMove == MOVE_ELECTRO_SHOT)))
             moves[moveIndex] = playerMove;
     }
 }
@@ -2984,9 +3019,10 @@ static s32 AI_CheckBadMove(enum BattlerId battlerAtk, enum BattlerId battlerDef,
             ADJUST_SCORE(-10);
         break;
     case EFFECT_SUCKER_PUNCH:
-        if ((HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_STATUS) && RandomPercentage(RNG_AI_SUCKER_PUNCH, SUCKER_PUNCH_CHANCE)) // Player has a status move
-        || (IsBattleMoveStatus(incomingMove) && RandomPercentage(RNG_AI_SUCKER_PUNCH, SUCKER_PUNCH_PREDICTION_CHANCE) && (gAiThinkingStruct->aiFlags[battlerAtk] & AI_FLAG_PREDICT_MOVE)) // AI actively predicting incoming status move
-        || AI_IsSlower(battlerAtk, battlerDef, move, predictedMove, CONSIDER_PRIORITY)) // Opponent going first
+        if (ShouldDisincentivizeSuckerPunch(battlerAtk, battlerDef)
+        //Expansion had this check below for the opponent going first, but I don't think such an incentive should apply
+        //|| AI_IsSlower(battlerAtk, battlerDef, move, predictedMove, CONSIDER_PRIORITY)
+        )
             ADJUST_SCORE(-10);
         break;
     case EFFECT_TAILWIND:

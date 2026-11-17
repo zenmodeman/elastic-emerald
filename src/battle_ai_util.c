@@ -203,6 +203,38 @@ enum Move FindMoveUsedXTurnsAgo(enum BattlerId battler, u32 turnsAgo)
     return gBattleHistory->moveHistory[battler][index];
 }
 
+bool32 ShouldDisincentivizeSuckerPunch(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    // Unknown move slots are not evidence that the target cannot attack.
+    if ((IsAiBattlerAware(battlerDef) || IsAiFlagPresent(AI_FLAG_MOVE_OMNISCIENCE) || HasAllKnownMoves(battlerDef))
+     && !HasDamagingMove(battlerDef))
+        return TRUE;
+
+    // The existing ring records moves used, not elapsed turns. Offset zero is
+    // the most recent move; unknown moves never enter this observed history.
+    for (u32 movesAgo = 0; movesAgo < AI_MOVE_HISTORY_COUNT; movesAgo++)
+    {
+        if (FindMoveUsedXTurnsAgo(battlerAtk, movesAgo) != MOVE_SUCKER_PUNCH)
+            continue;
+
+        //If Sucker Punch has been found, there's automatic confirmation if it was used the previous turn,
+        //or it was used in any valid History-length number of moves ago and the player mon hasn't made any moves (generally because it just switched in)
+        bool32 hasNotRevealedMove = FindMoveUsedXTurnsAgo(battlerDef, 0) == MOVE_NONE;
+        bool32 suckerUsedPreviousTurn = movesAgo == 0;
+        bool32 considerPenalty = suckerUsedPreviousTurn || hasNotRevealedMove;
+
+        for (u32 i = 0; i <= movesAgo && !considerPenalty; i++)
+        {
+            enum Move observedMove = FindMoveUsedXTurnsAgo(battlerDef, i);
+            if (observedMove != MOVE_NONE && IsBattleMoveStatus(observedMove))
+                considerPenalty = TRUE;
+        }
+        // Use the most recent attempt and roll only once, even if it failed.
+        return considerPenalty && RandomPercentage(RNG_AI_SUCKER_PUNCH, SUCKER_PUNCH_CHANCE);
+    }
+    return FALSE;
+}
+
 bool32 IsAiFlagPresent(u64 flag)
 {
     for (enum BattlerId battlerIndex = 0; battlerIndex < MAX_BATTLERS_COUNT; battlerIndex++)

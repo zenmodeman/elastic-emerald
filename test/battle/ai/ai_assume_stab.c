@@ -189,3 +189,20 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: Hidden STAB Brick Break contributes damage
         EXPECT_EQ(gAiPartyData->mons[B_TRAINER_PLAYER][0].moves[1], reveal ? MOVE_BRICK_BREAK : MOVE_NONE);
     }
 }
+
+AI_SINGLE_BATTLE_TEST("Elastic-tests: masked move setup caches hidden STAB damage without revealing the move")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_ASSUME_STAB);
+        PLAYER(SPECIES_MEWTWO) { Speed(100); SpAttack(200); Moves(MOVE_CELEBRATE, MOVE_PSYCHIC); }
+        OPPONENT(SPECIES_WOBBUFFET) { Speed(1); Moves(MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_CELEBRATE); }
+    } THEN {
+        enum BattlerId atk = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+        enum BattlerId def = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
+        EXPECT_GT(gAiLogicData->simulatedDmg[atk][def][1].median, 0);
+        EXPECT_EQ(GetMovesArray(atk)[1], MOVE_NONE);
+        EXPECT_EQ(gAiPartyData->mons[B_TRAINER_PLAYER][0].moves[1], MOVE_NONE);
+    }
+}

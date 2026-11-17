@@ -127,7 +127,7 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: a move blocked by Protect does not commit 
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_ASSUME_STAB);
         PLAYER(SPECIES_SLAKING) { Level(100); Attack(500); Speed(80); Ability(ABILITY_VITAL_SPIRIT); Moves(MOVE_SILK_TRAP, MOVE_DOUBLE_EDGE); }
         OPPONENT(SPECIES_SNORLAX) { Level(100); HP(200); MaxHP(200); Defense(200); Speed(100); Moves(MOVE_SCRATCH); }
-        OPPONENT(SPECIES_TYRANITAR) { Level(100); Speed(2); Moves(MOVE_CRUNCH); }
+        OPPONENT(SPECIES_TYRANITAR) { Level(100); HP(500); MaxHP(500); Defense(500); Speed(2); Moves(MOVE_CRUNCH); }
     } WHEN {
         TURN { MOVE(player, MOVE_SILK_TRAP); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
         TURN { MOVE(player, MOVE_DOUBLE_EDGE); EXPECT_SWITCH(opponent, 1); }

@@ -2,10 +2,12 @@
 
 ## Documentation status
 
+- **Uncommitted follow-up (AI-001–010):** damage-only inference includes conditional Archaludon Electro Shot and known eligible Mega Stone forms; fast-KO escapes require 80% HP or full Regenerator healing, allow that Regenerator exception after commitment, and validate replacement survival; Sucker Punch uses the existing three-move observed history. Diagnostic ability inference and prospective Mega combat simulation remain deferred.
+
 - **Committed follow-up (`3b01725fcc`):** STAB assumptions exclude self-recharge attacks and two-turn attacks without a modeled charge-skip condition; Elastic knowledge explicitly includes item omniscience.
 - **Committed follow-up (`db9df93b11`):** STAB inference supplies damage and KO estimates without recording move knowledge; specific effects such as Brick Break screen removal require revelation or move omniscience.
 
-- **Uncommitted follow-up:** Hidden Power chooses uniformly among equally scored best types at move execution; AI and Anticipation previews remain deterministic and do not consume the tie-selection RNG.
+- **Committed follow-up (`6f319a0f09`):** Hidden Power chooses uniformly among equally scored best types at move execution; AI and Anticipation previews remain deterministic and do not consume the tie-selection RNG.
 
 - **Last documented code commit:** `c753e34660` ("Complete last failing automated tests").
 - **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through `9c4b986496`. The subsequent commitment-reset change in `c753e34660` was reconciled against its committed diff on September 25, 2026; the two later commits through `9c12ae6d16` only add analysis helpers. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
@@ -33,7 +35,7 @@ The most important implementation files are:
 
 The custom `AI_FLAG_SMART_TRAINER` profile removes unconditional omniscience and PP-stall prevention from the upstream smart profile. It instead combines ordinary viability logic with smart switching, incoming-mon prediction, move prediction, and smart Terastalization.
 
-Regression tests pin both sides of that contract: all prediction and imperfect-information assumption flags must remain present, while `AI_FLAG_OMNISCIENT` and `AI_FLAG_PP_STALL_PREVENTION` must remain absent.
+Regression tests pin both sides of that contract: all prediction and Elastic knowledge flags must remain present, while move/ability/full omniscience, hidden status assumptions, unrevealed party identities, and `AI_FLAG_PP_STALL_PREVENTION` must remain absent.
 
 This establishes the intended design philosophy: strong trainers should infer likely information and react to observed play rather than simply reading every hidden move and ability.
 
@@ -55,6 +57,10 @@ The `AI_FLAG_ASSUME_STAB` path resolves eligible unrevealed STAB options only fo
 Powder is rejected for lacking a Fire target move only after all four target move slots are known. With an incomplete moveset, the AI preserves Powder as a candidate instead of treating unrevealed slots as proof that no Fire move exists. Omniscient trainers naturally satisfy the complete-knowledge condition; ordinary trainers can satisfy it through revealed move history.
 
 `GetDamageMoves` excludes self-recharge attacks and two-turn attacks unless known effective Power Herb, applicable weather (including modeled Mega Sol), or Tailwind for Razor Wind guarantees skipping the charge. Hidden Power Herb does not qualify; item omniscience or observed item knowledge is required. Sky Drop cannot use Power Herb, and semi-invulnerable moves cannot skip charging through weather. Revealed moves remain known, and move/full omniscience still exposes the complete moveset. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
+
+Uncommitted cache repair: during masked battler setup, damage-only inference reads the saved original move slots, so hidden STAB damage reaches the initial active-matchup cache without entering revealed history.
+
+Uncommitted AI-001 follow-up: eligible known Mega Stones expand damage-only move eligibility to the union of current and prospective Mega species types. Actual Mega species replace the old species types after evolution. This does not model prospective Mega stats, ability, Speed, or defensive typing. Archaludon Electro Shot is the sole non-STAB exception and retains the ordinary known charge-skip requirements. Neither exception records move/effect knowledge.
 
 Key commits: `59b76d3fcd`, `4bb634c651`, `829ec9c367`, `7ee8501957`.
 
@@ -136,9 +142,11 @@ Key commit: `04e8acf271`.
 
 ### Matchup commitment for fast-KO switching
 
-In singles, an active Pokemon using `AI_FLAG_SMART_SWITCHING` may switch from a fast KO while it remains uncommitted to the matchup. The shared safeguards still require the player to be faster, an actual-state calculation using revealed moves plus Hidden STAB inference to find a KO, a suitable switch-in, and at least 75% HP for most Pokemon or 50% HP for Regenerator Pokemon. Slow KOs do not trigger this path, and the final switch remains a 50% roll.
+In singles, an active Pokemon using `AI_FLAG_SMART_SWITCHING` may switch from a fast KO while it remains uncommitted to the matchup. The shared safeguards still require the player to be faster, an actual-state calculation using revealed moves plus Hidden STAB inference to find a KO, a suitable switch-in, and at least 80% HP for ordinary Pokemon. Effective Regenerator instead requires enough missing HP to receive the runtime's full healing amount (`GetNonDynamaxMaxHP / 3`) and may bypass commitment. Slow KOs do not trigger this path, and the final switch remains a single 50% roll. The independent Regenerator-benefit reason defers lethal matchups to this gate. These threshold and Regenerator refinements are uncommitted.
 
 An opposing Pokemon becomes committed after it successfully resolves a move during a turn in which the player's active Pokemon never switches. Damaging, status, and self-targeting moves all qualify. Failure to act and no-effect results such as misses, immunity, failure, or Protect do not qualify. Commitment is finalized at the end of the turn so a player pivot that occurs after the opposing move still prevents commitment to the old matchup. Any player switch clears both pending and established commitment for the opposing battlers, while an opposing Pokemon switching out also resets its own state.
+
+Uncommitted replacement safety: both the selected replacement and fallback candidates must survive hazards and an incoming attack, plus another attack if they cannot act first. Candidate simulation restores battlers, AI caches, saved knowledge state, protection flags, and dynamic move state. Entry hazards are counted once in this additional check.
 
 This commitment gate applies only to the fast-KO reason. Perish Song, ineffective Encore or choice locks, and the other independent switch reasons retain their own rules. Weather setters no longer receive a separate preservation path, and the heavy-switching and defensive-drop entry checks are suppressed.
 
@@ -238,6 +246,10 @@ Key commits: `4a52d27b94`, `0d40937518`, `a0437698e7`, `0abf70faf9`.
 
 ## 5. Status, setup, and sustain heuristics
 
+### Sucker Punch observed-use policy
+
+Uncommitted AI-007 follow-up: the existing three-entry last-moves-used ring governs status mind games. Offset zero is the latest move, not a previous elapsed turn. No history-based penalty applies before a recent Sucker Punch attempt. The latest attempt permits one 50% penalty roll immediately; an attempt two or three recorded moves back permits the roll only if the target has a status move within the corresponding history window or has no recorded move since switching in. Known complete status-only sets remain penalized. The inherited penalty for an opponent expected to act first is removed per the developer's inline decision. Hidden slots are not proof that a target cannot attack. Switching clears the occupant's recent history and rehydrates revealed moves from its persistent party record; no new per-turn history is introduced.
+
 ### Stat-lowering decisions
 
 Dedicated `ShouldLower*` helpers evaluate each stat separately. They consider target immunity or punishment abilities, current stages, whether the target uses the corresponding offensive split, raw-stat estimates when moves are unknown, speed-order changes, and whether the AI should simply take an available KO.
@@ -315,11 +327,11 @@ The following move and custom-mechanic families received explicit AI treatment. 
 
 ### Switch-prediction scope
 
-**Uncommitted:** General player-switch simulation is suppressed: prediction setup does not run the player through `ShouldSwitch` / `GetMostSuitableMonToSwitchInto`, and predicted move scoring cannot create a player-switch prediction. Move prediction remains enabled. Incoming-mon prediction is retained for the custom singles immunity-abuse path, gated by five observed player switches overall or during the current AI Pokémon’s stint, and limited to previously seen, living bench candidates immune to the considered attack. The existing switch-prediction probability still gates that path.
+**Committed in `58c29f391e`:** General player-switch simulation is suppressed: prediction setup does not run the player through `ShouldSwitch` / `GetMostSuitableMonToSwitchInto`, and predicted move scoring cannot create a player-switch prediction. Move prediction remains enabled. Incoming-mon prediction is retained for the custom singles immunity-abuse path, gated by five observed player switches overall or during the current AI Pokémon’s stint, and limited to previously seen, living bench candidates immune to the considered attack. The existing switch-prediction probability still gates that path.
 
 ### Trainer Tera eligibility
 
-**Uncommitted:** Trainer Pokémon require an explicit Tera type in `src/data/trainers.party` to Terastallize. Smart Tera controls decisions for eligible Pokémon; it cannot grant eligibility from a generated or curated default. Trainer generation stores `TYPE_MYSTERY` when the party entry omits a type.
+**Committed in `58c29f391e`:** Trainer Pokémon require an explicit Tera type in `src/data/trainers.party` to Terastallize. Smart Tera controls decisions for eligible Pokémon; it cannot grant eligibility from a generated or curated default. Trainer generation stores `TYPE_MYSTERY` when the party entry omits a type.
 
 ### Defensive Tera decision
 
@@ -353,4 +365,4 @@ Key commit: `f70470b888`.
 
 ### Adaptive Hidden Power ties
 
-**Uncommitted:** `GetHiddenPowerTypeInternal` retains all types tied at the highest computed score, discarding earlier candidates when a higher score appears. Move execution uses `SetHiddenPowerType(..., TRUE)` and a single `RandomUniform(RNG_HIDDEN_POWER_TYPE, 0, count - 1)` draw when more than one best type exists. AI damage/effectiveness queries use `SetHiddenPowerType(..., FALSE)`; `GetHiddenPowerType` used by Anticipation is also deterministic. These queries retain a representative best type and do not consume or preselect the runtime roll. Revelation policy, scoring modifiers, and announcement timing are unchanged. Explicit candidate-index overrides pin existing examples; the tied-type regressions exercise all best choices and equal selection probability.
+**Committed in `6f319a0f09`:** `GetHiddenPowerTypeInternal` retains all types tied at the highest computed score, discarding earlier candidates when a higher score appears. Move execution uses `SetHiddenPowerType(..., TRUE)` and a single `RandomUniform(RNG_HIDDEN_POWER_TYPE, 0, count - 1)` draw when more than one best type exists. AI damage/effectiveness queries use `SetHiddenPowerType(..., FALSE)`; `GetHiddenPowerType` used by Anticipation is also deterministic. These queries retain a representative best type and do not consume or preselect the runtime roll. Revelation policy, scoring modifiers, and announcement timing are unchanged. Explicit candidate-index overrides pin existing examples; the tied-type regressions exercise all best choices and equal selection probability.

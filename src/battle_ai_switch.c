@@ -129,6 +129,7 @@ static bool32 CanIntimidateLowerOpponentAtk(enum BattlerId battler, enum Battler
 static bool32 ShouldSwitchIfIntimidateBenefit(struct SwitchAiContext *switchContext);
 static bool32 DoesMostSuitableSwitchinBenefitFromWish(enum BattlerId battler);
 static u32 GetSwitchinCandidate(u32 switchinCategory, enum BattlerId battler, int lastId, enum SwitchType switchType);
+static bool32 CanSurviveFastKoSwitchin(enum BattlerId battler, enum BattlerId opposingBattler, u32 partyIndex);
 
 static enum Ability GetPartyMonAbilityForSwitchCalc(enum BattlerId battler, u32 monIndex, struct Pokemon *mon)
 {
@@ -380,11 +381,12 @@ static inline bool32 SetSwitchinAndSwitch(enum BattlerId battler, u32 switchinId
     return TRUE;
 }
 
-static u32 GetFirstEligibleSwitchin(const struct SwitchAiContext *switchContext)
+static u32 GetSafeFastKoSwitchin(const struct SwitchAiContext *switchContext)
 {
     for (u32 monIndex = 0; monIndex < switchContext->lastId; monIndex++)
     {
-        if (switchContext->eligiblePartyMons & (1u << monIndex))
+        if ((switchContext->eligiblePartyMons & (1u << monIndex))
+         && CanSurviveFastKoSwitchin(switchContext->battler, switchContext->opposingBattler, monIndex))
             return monIndex;
     }
     return PARTY_SIZE;
@@ -449,7 +451,7 @@ static bool32 DoesMostSuitableSwitchinBenefitFromWish(enum BattlerId battler)
 }
 
 // A successful move against an unchanged player matchup commits this active
-// Pokemon to staying in against fast KOs until it leaves the field.
+// Pokemon to staying in against fast KOs, except for full-value Regenerator escapes.
 static bool32 ShouldSwitchIfHasBadOdds(struct SwitchAiContext *switchContext)
 {
     enum BattlerId battler = switchContext->battler;
@@ -464,18 +466,24 @@ static bool32 ShouldSwitchIfHasBadOdds(struct SwitchAiContext *switchContext)
     if (IsDoubleBattle())
         return FALSE;
 
-    if (gBattleStruct->battlerState[battler].fastKoCommitted)
+    bool32 canRegenerate = gAiLogicData->abilities[battler] == ABILITY_REGENERATOR
+        && GetBattlerAbility(battler) == ABILITY_REGENERATOR
+        && gBattleMons[battler].maxHP - gBattleMons[battler].hp >= GetNonDynamaxMaxHP(battler) / 3;
+
+    if (gBattleStruct->battlerState[battler].fastKoCommitted && !canRegenerate)
         return FALSE;
 
-    if (switchinId == PARTY_SIZE)
-        switchinId = GetFirstEligibleSwitchin(switchContext);
-
-    if (switchinId == PARTY_SIZE
-     || !AI_IsSlower(battler, opposingBattler, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
+    if (!AI_IsSlower(battler, opposingBattler, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY)
      || !switchContext->battlerGetsOHKOd
      || (gAiLogicData->abilities[battler] == ABILITY_REGENERATOR
-       ? gBattleMons[battler].hp * 2 < gBattleMons[battler].maxHP
-       : gBattleMons[battler].hp * 4 < gBattleMons[battler].maxHP * 3))
+       ? !canRegenerate
+       : gBattleMons[battler].hp * 5 < gBattleMons[battler].maxHP * 4))
+        return FALSE;
+
+    if (switchinId == PARTY_SIZE
+     || !CanSurviveFastKoSwitchin(battler, opposingBattler, switchinId))
+        switchinId = GetSafeFastKoSwitchin(switchContext);
+    if (switchinId == PARTY_SIZE)
         return FALSE;
 
     if (!gAiLogicData->aiPredictionInProgress
@@ -1093,6 +1101,10 @@ static bool32 ShouldSwitchIfAbilityBenefit(struct SwitchAiContext *switchContext
         return FALSE;
 
     case ABILITY_REGENERATOR:
+        // Lethal matchups use the shared fast-KO gate, including its speed,
+        // replacement-safety, and single 50% probability checks.
+        if (switchContext->battlerGetsOHKOd)
+            return FALSE;
         //Don't switch if ailment
         if (gBattleMons[switchContext->battler].status1 & STATUS1_ANY)
             return FALSE;
@@ -2199,6 +2211,52 @@ static s32 GetMaxPriorityDamagePlayerCouldDealToSwitchin(enum BattlerId battler,
         }
     }
     return maxDamageTaken;
+}
+
+// A voluntary escape must survive entry plus an incoming hit, and another hit
+// if slower. Revalidate even replacements selected under a free-switch policy.
+static bool32 CanSurviveFastKoSwitchin(enum BattlerId battler, enum BattlerId opposingBattler, u32 partyIndex)
+{
+    struct Pokemon *mon = &GetBattlerParty(battler)[partyIndex];
+    struct AiLogicData *savedAi = AllocSaveAiLogicData();
+    struct BattlePokemon *savedMons = AllocSaveBattleMons();
+    struct AI_SavedBattleMon savedThinking = gAiThinkingStruct->saved[battler];
+    struct ProtectStruct savedProtect[MAX_BATTLERS_COUNT];
+    memcpy(savedProtect, gProtectStructs, sizeof(savedProtect));
+    u32 savedNotOnField = gBattleStruct->battlerState[battler].notOnField;
+    enum Type savedType = gBattleStruct->dynamicMoveType;
+    enum DamageCategory savedCategory = gBattleStruct->dynamicMoveCategory;
+    u32 savedMagnitude = gBattleStruct->magnitudeBasePower;
+    u32 savedPresent = gBattleStruct->presentBasePower;
+    enum Move bestMove = MOVE_NONE, priorityMove = MOVE_NONE;
+    struct IncomingHealInfo healInfo;
+
+    gBattleStruct->battlerState[battler].notOnField = FALSE;
+    GetIncomingHealInfo(battler, &healInfo);
+    InitializeSwitchinCandidate(battler, partyIndex, mon);
+    // InitializeSwitchinCandidate applies entry HP changes. The survival helper
+    // models them itself, so start from party HP to avoid counting hazards twice.
+    u32 originalHp = GetMonData(mon, MON_DATA_HP);
+    gBattleMons[battler].hp = originalHp;
+    s32 damage = GetMaxDamagePlayerCouldDealToSwitchin(battler, opposingBattler, &bestMove);
+    s32 priorityDamage = GetMaxPriorityDamagePlayerCouldDealToSwitchin(battler, opposingBattler, &priorityMove);
+    u32 hits = GetSwitchinHitsToKO(damage, battler, &healInfo, originalHp);
+    u32 priorityHits = GetSwitchinHitsToKO(priorityDamage, battler, &healInfo, originalHp);
+    bool32 faster = AI_IsFaster(battler, opposingBattler, MOVE_NONE, bestMove, CONSIDER_PRIORITY);
+    bool32 fasterThanPriority = AI_IsFaster(battler, opposingBattler, MOVE_NONE, priorityMove, CONSIDER_PRIORITY);
+    bool32 safe = (hits == 0 || hits > (faster ? 1 : 2))
+        && (priorityHits == 0 || priorityHits > (fasterThanPriority ? 1 : 2));
+
+    FreeRestoreBattleMons(savedMons);
+    FreeRestoreAiLogicData(savedAi);
+    gAiThinkingStruct->saved[battler] = savedThinking;
+    memcpy(gProtectStructs, savedProtect, sizeof(savedProtect));
+    gBattleStruct->battlerState[battler].notOnField = savedNotOnField;
+    gBattleStruct->dynamicMoveType = savedType;
+    gBattleStruct->dynamicMoveCategory = savedCategory;
+    gBattleStruct->magnitudeBasePower = savedMagnitude;
+    gBattleStruct->presentBasePower = savedPresent;
+    return safe;
 }
 
 static bool32 AI_CanSwitchinAbilityTrapOpponent(enum Ability ability, enum BattlerId opposingBattler)

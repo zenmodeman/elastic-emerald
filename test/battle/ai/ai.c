@@ -828,7 +828,7 @@ AI_SINGLE_BATTLE_TEST("AI stays choice locked into moves in spite of the player'
     }
 }
 
-AI_SINGLE_BATTLE_TEST("AI won't use Sucker Punch if it expects a status move a percentage of the time")
+AI_SINGLE_BATTLE_TEST("Elastic-tests: Sucker Punch status penalty starts only after a recent attempt")
 {
     PASSES_RANDOMLY(SUCKER_PUNCH_CHANCE, 100, RNG_AI_SUCKER_PUNCH);
     GIVEN {
@@ -838,6 +838,7 @@ AI_SINGLE_BATTLE_TEST("AI won't use Sucker Punch if it expects a status move a p
         OPPONENT(SPECIES_ZIGZAGOON) { Moves(MOVE_SUCKER_PUNCH, MOVE_SCRATCH); }
     } WHEN {
         TURN { MOVE(player, MOVE_SCRATCH); EXPECT_MOVE(opponent, MOVE_SUCKER_PUNCH); }
+        TURN { MOVE(player, MOVE_SCRATCH); EXPECT_MOVE(opponent, MOVE_SCRATCH); }
     }
 }
 

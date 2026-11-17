@@ -20,6 +20,18 @@ Read `AGENTS.md` for repository conventions. Maintain this skill’s technical g
 
 Before restoring older AI logic during an upgrade, check whether a newer commit deliberately removed or superseded it. Preserve the current design decision rather than reviving an abandoned heuristic merely because its old symbols still appear in history or tests. In particular, generalized clean-state/fast-KO switching is historical in this project; both generalized clean-state switching and weather-setter preservation have been superseded by matchup commitment. Read the current battle-AI notes and behavior summary before restoring any heuristic.
 
+## Condition readability
+
+Prefer named local booleans for distinct decision criteria, then combine those names with `||` or `&&` to form the operating boolean. The developer prefers seeing what each criterion means over having several inline expressions inside one condition, even when a criterion is used only once. Name criteria precisely for the information actually checked; for example, move-use history is not necessarily elapsed-turn history. Add a short comment when the gameplay reason or evidence boundary needs explanation.
+
+```c
+bool32 targetHasNoRecordedMove = FindMoveUsedXTurnsAgo(battlerDef, 0) == MOVE_NONE;
+bool32 suckerPunchWasLastMove = movesAgo == 0;
+bool32 considerPenalty = suckerPunchWasLastMove || targetHasNoRecordedMove;
+```
+
+Preserve short-circuit safety, evaluation order, and RNG consumption when extracting criteria. Keep state-changing, random, expensive, or conditionally valid queries behind their required guards rather than evaluating them eagerly for a named boolean.
+
 ## Simulation and decision guardrails
 
 - Compare the same move, battler, or switch candidate across alternate states. Do not let independent maxima from different candidates satisfy separate halves of one condition.
@@ -64,6 +76,8 @@ For upgrade or merge work that touches AI, load `skills/merge-upgrade-helper/SKI
 ## Current implementation and maintenance notes
 
 Read the [AI behavior summary](references/behavior-summary.md) for current decision rules and reviewed implementation history.
+
+The [200-scenario design workbook](../../analysis/battle-ai-priority-scenarios.md) collects questions for developer feedback, with its review baseline and limitations recorded in the file. When using it for later AI changes, inspect the developer's actual answers and recheck the relevant source. Unanswered prompts and illustrative situations are not approved behavior requirements.
 
 ## Information and comparisons
 
@@ -117,7 +131,7 @@ The focused regressions live in `test/battle/move_effect/hidden_power.c` with th
 
 ### Read-only damage display
 
-`PutReadOnlyAiDamageText` keeps all three ability columns (54 pixels each, 52 usable) on one page. Multiword headings always prefer two rows, splitting at the last word boundary whose prefix fits; for example, `Good as` / `Gold`. Single-word names use one row when they fit. There is no legend; ability headings occupy y=0/12 below the icons. Move rows start at y=28 and advance by 24 pixels; move names wrap within 76 pixels. Both AI Dmg and Player Dmg display minimum normal damage–maximum possible critical damage (`min-maxCrit`), collapsing `0-0` to `0` through `FormatDisplayedDamageRange`. Critical blockers make the upper value the normal maximum instead. AI Dmg prefers `FONT_NARROW` where the string fits and uses `FONT_SMALL_NARROWER` for longer values. Player Dmg uses actual current abilities for both simulations and restores cached AI ability knowledge after each query. Keep the compact icons and all four rows inside the 240×128 window (screen y=32). `FONT_SMALL_NARROW` reports an 8-pixel maximum height but renders 12-pixel glyphs; `FONT_SMALL_NARROWER` renders 15-pixel glyphs. Use the rendered heights for layout. `AI_CalcDamageForDisplay` explicitly requests normal or possible-critical damage through the shared calculator; blocked critical hits retain normal damage. Ordinary `AI_CalcDamage` callers retain the existing guaranteed/risky critical policy. The display wrapper must restore battle and AI state after each query.
+`PutReadOnlyAiDamageText` keeps all three ability columns (54 pixels each, 52 usable) on one page. Multiword headings always prefer two rows, splitting at the last word boundary whose prefix fits; for example, `Good as` / `Gold`. Single-word names use one row when they fit. There is no legend; ability headings occupy y=0/12 below the icons. Move rows start at y=28 and advance by 24 pixels; move names wrap within 76 pixels. Both AI Dmg and Player Dmg display minimum normal damage–maximum possible critical damage (`min-maxCrit`), collapsing `0-0` to `0` through `FormatDisplayedDamageRange`. Critical blockers make the upper value the normal maximum instead. AI Dmg prefers `FONT_NARROW` where the string fits and uses `FONT_SMALL_NARROWER` for longer values. Player Dmg uses actual current abilities for both simulations and restores cached AI ability knowledge after each query. Keep the compact icons and all four rows inside the 240×128 window (screen y=32). `FONT_SMALL_NARROW` reports an 8-pixel maximum height but renders 12-pixel glyphs; `FONT_SMALL_NARROWER` renders 15-pixel glyphs. Use the rendered heights for layout. `AI_CalcDamageForDisplay` explicitly requests normal or possible-critical damage through the shared calculator; blocked critical hits retain normal damage. Ordinary `AI_CalcDamage` callers retain the existing guaranteed/risky critical policy. The display wrapper must clear inherited dynamic move type/category before each query, then restore battle and AI state afterward. A prior calculation must not retag the new move.
 
 Focused read-only menu regressions live in `test/battle/battle_info.c`. The `TESTING`-only `Test_BattleInfoCalcAiDamage` entry point calls the production menu wrapper so tests cover temporary ability replacement and state restoration as well as roll calculations. These source tests do not verify rendered wrapping, colors, or icon cleanup.
 
@@ -135,8 +149,18 @@ Player Dmg and read-only AI Dmg keep BG1 and their newly created sprites hidden 
 
 ### STAB and item knowledge flags
 
+`GetDamageMoves` reads saved original move slots while `SetBattlerAiMovesData` has masked unknown attacks; otherwise the initial damage cache silently loses hidden STAB threats. Never restore those attacks into effect knowledge.
+
 `GetDamageMoves` is the damage-only inference entry point for `AI_FLAG_ASSUME_STAB`. It copies `GetMovesArray` into a caller-owned array, then fills eligible hidden species-STAB attacks at their actual slots. Never record inferred attacks through `RecordKnownMove`: active and party history must remain independent of damage assumptions. Use this array for damage-cache population, survival/KO queries, and incoming switch damage; retain `GetMovesArray` for effect checks, move prediction, and knowledge completeness. Do not expose damage-only candidates through `GetBestDmgMovesFromBattler`, whose callers inspect effects.
 
 Filter hidden attacks using `gBattleMoveEffects[effect].twoTurnEffect` and `MoveHasAdditionalEffectSelf(move, MOVE_EFFECT_RECHARGE)`. `CanAssumeTwoTurnMove` permits known effective Power Herb, applicable weather with modeled ability/item, or Tailwind for Razor Wind. Sky Drop cannot use Herb, and semi-invulnerable effects do not use weather. Revealed moves and move/full omniscience override these inference restrictions. Keep slot indexes aligned with damage caches and do not mutate shared move arrays during simulations.
 
 `AI_FLAG_ELASTIC_KNOWLEDGE` combines STAB inference, weighted ability prediction, and item omniscience. Keep held-item knowledge flag-driven in `Ai_InitPartyStruct` and `AI_DecideHoldEffectForTurn`; retain item revelation hooks for trainers without omniscience and for mechanics that explicitly require revealed effects.
+
+### AI-001–010 policy follow-up
+
+Hidden STAB eligibility includes types gained by a known matching Mega Stone while runtime Mega eligibility remains available. Do not simulate prospective Mega combat stats or ability for this inference. Archaludon Electro Shot is a damage-only exception subject to the ordinary charge-skip gate. Keep diagnostic ability inference deferred to [future considerations](../../analysis/ai-future-considerations.md).
+
+Fast-KO escapes require 80% HP for ordinary users or full effective Regenerator healing, a faster lethal opponent, and a replacement that survives entry and acts before being removed. Full-value Regenerator may bypass commitment; do not add a second lethal-matchup probability through the general ability-benefit reason. Preserve independent nonlethal switching reasons.
+
+Sucker Punch uses the existing last-moves-used ring, not elapsed-turn history. `FindMoveUsedXTurnsAgo(battler, 0)` returns the latest recorded move. Recent attempts enable at most one status-mind-game roll; retain the known complete status-only check. Do not restore the inherited predicted turn-order penalty. Clear recent occupant history on switching while restoring persistent move knowledge from the incoming party member.

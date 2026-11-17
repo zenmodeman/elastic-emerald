@@ -82,6 +82,8 @@ Resource Mode starts with three tutor and relearner points, or five for Monotype
 
 Trainer AI compares damage, residual effects, resist berries, priority, hazards, weather, and recovery when choosing moves and switches. It knows player held items, coordinates doubles targeting and Speed control, and uses Tera for knockouts or survival.
 
+Hidden attack damage estimates include eligible known Mega Stone types and conditional Archaludon Electro Shot without revealing move effects. Fast-KO escapes require 80% HP or full Regenerator healing and a survivable replacement; full-value Regenerator can escape after commitment. Sucker Punch status caution follows its recent use and observed opposing moves.
+
 Singles immunity-switch prediction becomes available after at least five voluntary player switches during the current opponent's stint. It considers revealed reserve Pokemon and favors frequently used immunity candidates. Forced switches do not contribute.
 
 See the [AI behavior summary](../../modify-elastic-emerald-ai-logic/references/behavior-summary.md) for individual decision rules.
