@@ -18,10 +18,12 @@ SINGLE_BATTLE_TEST("Elastic-tests: battle info separates normal and critical rol
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_CELEBRATE); }
     } THEN {
+        enum BattlerId playerId = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+        enum BattlerId opponentId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
         struct SimulatedDamage normal, critical;
-        gAiLogicData->abilities[opponent] = ABILITY_NONE;
-        normal = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponent, player, ability, FALSE);
-        critical = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponent, player, ability, TRUE);
+        gAiLogicData->abilities[opponentId] = ABILITY_NONE;
+        normal = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponentId, playerId, ability, FALSE);
+        critical = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponentId, playerId, ability, TRUE);
         EXPECT_GT(normal.minimum, 0);
         EXPECT(normal.maximum >= normal.minimum);
         if (blocked)
@@ -42,9 +44,11 @@ SINGLE_BATTLE_TEST("Elastic-tests: battle info leaves status and fixed damage un
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_CELEBRATE); }
     } THEN {
+        enum BattlerId playerId = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+        enum BattlerId opponentId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
         struct SimulatedDamage normal, critical;
-        normal = Test_BattleInfoCalcAiDamage(move, opponent, player, ABILITY_NONE, FALSE);
-        critical = Test_BattleInfoCalcAiDamage(move, opponent, player, ABILITY_NONE, TRUE);
+        normal = Test_BattleInfoCalcAiDamage(move, opponentId, playerId, ABILITY_NONE, FALSE);
+        critical = Test_BattleInfoCalcAiDamage(move, opponentId, playerId, ABILITY_NONE, TRUE);
         EXPECT_EQ(normal.minimum, move == MOVE_CELEBRATE ? 0 : 50);
         EXPECT_EQ(normal.maximum, normal.minimum);
         EXPECT_EQ(critical.maximum, normal.maximum);
@@ -65,11 +69,13 @@ SINGLE_BATTLE_TEST("Elastic-tests: battle info restores ability knowledge and te
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_CELEBRATE); }
     } THEN {
-        struct BattlePokemon savedAttacker = gBattleMons[opponent];
-        struct BattlePokemon savedDefender = gBattleMons[player];
+        enum BattlerId playerId = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+        enum BattlerId opponentId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
+        struct BattlePokemon savedAttacker = gBattleMons[opponentId];
+        struct BattlePokemon savedDefender = gBattleMons[playerId];
         struct SimulatedDamage immune, neutral;
-        gAiLogicData->abilities[opponent] = ABILITY_PROTEAN;
-        gAiLogicData->abilities[player] = ABILITY_WATER_ABSORB;
+        gAiLogicData->abilities[opponentId] = ABILITY_PROTEAN;
+        gAiLogicData->abilities[playerId] = ABILITY_WATER_ABSORB;
         gAiLogicData->aiCalcInProgress = wasCalculating;
         gBattleStruct->dynamicMoveType = TYPE_FIRE;
         gBattleStruct->dynamicMoveCategory = DAMAGE_CATEGORY_SPECIAL;
@@ -77,20 +83,20 @@ SINGLE_BATTLE_TEST("Elastic-tests: battle info restores ability knowledge and te
         gBattleStruct->presentBasePower = 45;
         gMultiHitCounter = 3;
 
-        immune = Test_BattleInfoCalcAiDamage(MOVE_WATER_GUN, opponent, player, ABILITY_WATER_ABSORB, critical);
-        neutral = Test_BattleInfoCalcAiDamage(MOVE_WATER_GUN, opponent, player, ABILITY_NONE, critical);
+        immune = Test_BattleInfoCalcAiDamage(MOVE_WATER_GUN, opponentId, playerId, ABILITY_WATER_ABSORB, critical);
+        neutral = Test_BattleInfoCalcAiDamage(MOVE_WATER_GUN, opponentId, playerId, ABILITY_NONE, critical);
         EXPECT_EQ(immune.maximum, 0);
         EXPECT_GT(neutral.maximum, 0);
-        EXPECT_EQ(gAiLogicData->abilities[player], ABILITY_WATER_ABSORB);
-        EXPECT_EQ(gAiLogicData->abilities[opponent], ABILITY_PROTEAN);
-        EXPECT_EQ(gBattleMons[player].ability, savedDefender.ability);
-        EXPECT_EQ(gBattleMons[opponent].ability, savedAttacker.ability);
-        EXPECT_EQ(gBattleMons[opponent].types[0], savedAttacker.types[0]);
-        EXPECT_EQ(gBattleMons[opponent].types[1], savedAttacker.types[1]);
-        EXPECT_EQ(gBattleMons[opponent].types[2], savedAttacker.types[2]);
-        EXPECT_EQ(gAiLogicData->aiCalcInProgress, wasCalculating);
+        EXPECT_EQ(gAiLogicData->abilities[playerId], ABILITY_WATER_ABSORB);
+        EXPECT_EQ(gAiLogicData->abilities[opponentId], ABILITY_PROTEAN);
+        EXPECT_EQ(gBattleMons[playerId].ability, savedDefender.ability);
+        EXPECT_EQ(gBattleMons[opponentId].ability, savedAttacker.ability);
+        EXPECT_EQ(gBattleMons[opponentId].types[0], savedAttacker.types[0]);
+        EXPECT_EQ(gBattleMons[opponentId].types[1], savedAttacker.types[1]);
+        EXPECT_EQ(gBattleMons[opponentId].types[2], savedAttacker.types[2]);
+        EXPECT_EQ((u32)gAiLogicData->aiCalcInProgress, wasCalculating);
         EXPECT_EQ(gBattleStruct->dynamicMoveType, TYPE_FIRE);
-        EXPECT_EQ(gBattleStruct->dynamicMoveCategory, DAMAGE_CATEGORY_SPECIAL);
+        EXPECT_EQ((u32)gBattleStruct->dynamicMoveCategory, DAMAGE_CATEGORY_SPECIAL);
         EXPECT_EQ(gBattleStruct->magnitudeBasePower, 123);
         EXPECT_EQ(gBattleStruct->presentBasePower, 45);
         EXPECT_EQ(gMultiHitCounter, 3);
@@ -105,17 +111,19 @@ SINGLE_BATTLE_TEST("Elastic-tests: battle info critical rolls ignore defensive b
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_CELEBRATE); }
     } THEN {
+        enum BattlerId playerId = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+        enum BattlerId opponentId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
         struct SimulatedDamage normal, critical, boostedNormal, boostedCritical;
-        gAiLogicData->abilities[opponent] = ABILITY_NONE;
-        gBattleMons[player].statStages[STAT_DEF] = DEFAULT_STAT_STAGE;
-        normal = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponent, player, ABILITY_NONE, FALSE);
-        critical = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponent, player, ABILITY_NONE, TRUE);
-        gBattleMons[player].statStages[STAT_DEF] = MAX_STAT_STAGE;
-        boostedNormal = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponent, player, ABILITY_NONE, FALSE);
-        boostedCritical = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponent, player, ABILITY_NONE, TRUE);
+        gAiLogicData->abilities[opponentId] = ABILITY_NONE;
+        gBattleMons[playerId].statStages[STAT_DEF] = DEFAULT_STAT_STAGE;
+        normal = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponentId, playerId, ABILITY_NONE, FALSE);
+        critical = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponentId, playerId, ABILITY_NONE, TRUE);
+        gBattleMons[playerId].statStages[STAT_DEF] = MAX_STAT_STAGE;
+        boostedNormal = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponentId, playerId, ABILITY_NONE, FALSE);
+        boostedCritical = Test_BattleInfoCalcAiDamage(MOVE_TACKLE, opponentId, playerId, ABILITY_NONE, TRUE);
         EXPECT_GT(normal.maximum, boostedNormal.maximum);
         EXPECT_EQ(critical.maximum, boostedCritical.maximum);
-        EXPECT_EQ(gBattleMons[player].statStages[STAT_DEF], MAX_STAT_STAGE);
+        EXPECT_EQ(gBattleMons[playerId].statStages[STAT_DEF], MAX_STAT_STAGE);
     }
 }
 
@@ -135,15 +143,17 @@ SINGLE_BATTLE_TEST("Elastic-tests: player damage uses actual critical blockers a
     } WHEN {
         TURN { MOVE(player, MOVE_CELEBRATE); MOVE(opponent, MOVE_CELEBRATE); }
     } THEN {
+        enum BattlerId playerId = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+        enum BattlerId opponentId = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
         struct SimulatedDamage normal, critical, status;
-        gBattleMons[player].ability = ABILITY_NONE;
-        gBattleMons[opponent].ability = ability;
+        gBattleMons[playerId].ability = ABILITY_NONE;
+        gBattleMons[opponentId].ability = ability;
         // Deliberately stale knowledge must not control the player's display.
-        gAiLogicData->abilities[player] = ABILITY_SNIPER;
-        gAiLogicData->abilities[opponent] = ability == ABILITY_NONE ? ABILITY_BATTLE_ARMOR : ABILITY_NONE;
-        normal = Test_BattleInfoCalcPlayerDamage(MOVE_TACKLE, player, opponent, FALSE);
-        critical = Test_BattleInfoCalcPlayerDamage(MOVE_TACKLE, player, opponent, TRUE);
-        status = Test_BattleInfoCalcPlayerDamage(MOVE_CELEBRATE, player, opponent, TRUE);
+        gAiLogicData->abilities[playerId] = ABILITY_SNIPER;
+        gAiLogicData->abilities[opponentId] = ability == ABILITY_NONE ? ABILITY_BATTLE_ARMOR : ABILITY_NONE;
+        normal = Test_BattleInfoCalcPlayerDamage(MOVE_TACKLE, playerId, opponentId, FALSE);
+        critical = Test_BattleInfoCalcPlayerDamage(MOVE_TACKLE, playerId, opponentId, TRUE);
+        status = Test_BattleInfoCalcPlayerDamage(MOVE_CELEBRATE, playerId, opponentId, TRUE);
         EXPECT_GT(normal.minimum, 0);
         if (ability == ABILITY_BATTLE_ARMOR)
             EXPECT_EQ(critical.maximum, normal.maximum);
@@ -151,9 +161,9 @@ SINGLE_BATTLE_TEST("Elastic-tests: player damage uses actual critical blockers a
             EXPECT_GT(critical.maximum, normal.maximum);
         EXPECT_EQ(status.minimum, 0);
         EXPECT_EQ(status.maximum, 0);
-        EXPECT_EQ(gBattleMons[player].ability, ABILITY_NONE);
-        EXPECT_EQ(gBattleMons[opponent].ability, ability);
-        EXPECT_EQ(gAiLogicData->abilities[player], ABILITY_SNIPER);
-        EXPECT_EQ(gAiLogicData->abilities[opponent], ability == ABILITY_NONE ? ABILITY_BATTLE_ARMOR : ABILITY_NONE);
+        EXPECT_EQ(gBattleMons[playerId].ability, ABILITY_NONE);
+        EXPECT_EQ(gBattleMons[opponentId].ability, ability);
+        EXPECT_EQ(gAiLogicData->abilities[playerId], ABILITY_SNIPER);
+        EXPECT_EQ(gAiLogicData->abilities[opponentId], ability == ABILITY_NONE ? ABILITY_BATTLE_ARMOR : ABILITY_NONE);
     }
 }

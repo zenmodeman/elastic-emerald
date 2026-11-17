@@ -108,7 +108,7 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB restrictions retain revealed recharge
 
 AI_SINGLE_BATTLE_TEST("Elastic-tests: STAB charge skipping requires known Power Herb")
 {
-    u32 flags;
+    u64 flags;
     PARAMETRIZE { flags = AI_FLAG_ASSUME_STAB; }
     PARAMETRIZE { flags = AI_FLAG_ASSUME_STAB | AI_FLAG_ITEM_OMNISCIENCE; }
     GIVEN {

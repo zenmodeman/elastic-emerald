@@ -29,6 +29,7 @@ extern const u8 OldaleTown_TechHouse_Sport_BugCatcher[];
 extern const u8 OldaleTown_TechHouse_Mist_OldMan[];
 extern const u8 TechHouse_SuctionCupsFisher[];
 extern const u8 TechHouse_Psychic_NicheAbilities[];
+extern const u8 TechHouse_WeakSplitMax_Expert[];
 
 static const struct ObjectEventTemplate *FindObjectByLocalId(const struct MapEvents *events, u8 localId)
 {
@@ -254,6 +255,7 @@ TEST("Elastic-tests: Oldale Tech House retains every custom tutor and guide")
         {OldaleTown_TechHouse_Mist_OldMan, OBJ_EVENT_GFX_GENTLEMAN},
         {TechHouse_SuctionCupsFisher, OBJ_EVENT_GFX_FISHERMAN},
         {TechHouse_Psychic_NicheAbilities, OBJ_EVENT_GFX_PSYCHIC_M},
+        {TechHouse_WeakSplitMax_Expert, OBJ_EVENT_GFX_EXPERT_F},
     };
     const struct MapEvents *events = Overworld_GetMapHeaderByGroupAndId(
         MAP_GROUP(MAP_OLDALE_TOWN_TECH_HOUSE), MAP_NUM(MAP_OLDALE_TOWN_TECH_HOUSE))->events;

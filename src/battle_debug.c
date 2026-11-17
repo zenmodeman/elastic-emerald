@@ -1016,6 +1016,8 @@ static struct SimulatedDamage CalcReadOnlyAiDamage(u32 move, u32 battlerAtk, u32
     // ability, or no ability when the current ability is publicly suppressed.
     gAiLogicData->abilities[battlerDef] = abilityDef;
     gBattleMons[battlerDef].ability = abilityDef;
+    gBattleStruct->dynamicMoveType = TYPE_NONE;
+    gBattleStruct->dynamicMoveCategory = DAMAGE_CATEGORY_NONE;
     damage = AI_CalcDamageForDisplay(&aiCalc, battlerAtk, battlerDef, critical);
 
     gBattleMons[battlerAtk] = savedAttacker;
@@ -1215,6 +1217,8 @@ static struct SimulatedDamage CalcPlayerDisplayedDamage(u32 move, u32 battlerAtk
     // abilities rather than the AI's inferred or predicted ability state.
     gAiLogicData->abilities[battlerAtk] = gBattleMons[battlerAtk].ability;
     gAiLogicData->abilities[battlerDef] = gBattleMons[battlerDef].ability;
+    gBattleStruct->dynamicMoveType = TYPE_NONE;
+    gBattleStruct->dynamicMoveCategory = DAMAGE_CATEGORY_NONE;
     damage = AI_CalcDamageForDisplay(&aiCalc, battlerAtk, battlerDef, critical);
 
     gBattleMons[battlerAtk] = savedAttacker;

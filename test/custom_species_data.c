@@ -83,7 +83,7 @@ TEST("Elastic-tests: Mystic and Dominate remain assigned to their intended speci
 
 TEST("Elastic-tests: Astral Charge remains assigned to Ledian and the Gothitelle line")
 {
-    EXPECT_EQ(GetSpeciesAbility(SPECIES_LEDIAN, 2), ABILITY_ASTRAL_CHARGE);
+    EXPECT_EQ(GetSpeciesAbility(SPECIES_LEDIAN, 1), ABILITY_ASTRAL_CHARGE);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_GOTHORITA, 0), ABILITY_ASTRAL_CHARGE);
     EXPECT_EQ(GetSpeciesAbility(SPECIES_GOTHITELLE, 0), ABILITY_ASTRAL_CHARGE);
 }

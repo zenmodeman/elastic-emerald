@@ -4,7 +4,7 @@
 #include "pokemon.h"
 #include "string_util.h"
 #include "test/test.h"
-#include "data/weak_split_max.h"
+#include "../src/data/weak_split_max.h"
 
 bool8 GetWeakSplitMaxStat(void);
 u8 TrainMaxIV(void);

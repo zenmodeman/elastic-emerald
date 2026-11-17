@@ -195,9 +195,10 @@ AI_SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power ignores AI ability omniscienc
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_OMNISCIENT);
         PLAYER(SPECIES_BRONZONG) { Ability(ABILITY_LEVITATE); Moves(MOVE_CELEBRATE); }
-        OPPONENT(SPECIES_UNOWN) { Moves(MOVE_HIDDEN_POWER); }
+        // A Ground Gem makes Ground the unique best type without revealing Levitate.
+        OPPONENT(SPECIES_UNOWN) { Item(ITEM_GROUND_GEM); Moves(MOVE_HIDDEN_POWER); }
     } WHEN {
-        TURN { EXPECT_MOVE(opponent, MOVE_HIDDEN_POWER, WITH_RNG(RNG_HIDDEN_POWER_TYPE, 0)); }
+        TURN { EXPECT_MOVE(opponent, MOVE_HIDDEN_POWER); }
     } SCENE {
         MESSAGE("Hidden Power became Ground type!");
         ABILITY_POPUP(player, ABILITY_LEVITATE);
