@@ -56,6 +56,7 @@ Read `AGENTS.md` for repository conventions. Maintain this skill’s technical g
 - Allow a reasonable density of types inherent to the setting or trainer classes, such as Water on a beach. Reduce avoidable saturation through secondary typings and non-obligatory party slots rather than stripping away the location's identity.
 - Inspect status-move usage and unused status moves for additional variety. Prefer candidates that can legally and appropriately use uncovered or less-covered status moves at the intended level, without forcing a poor thematic choice or an oppressive early-game set.
 - Account for the trainer's battle format, expected level, nearby parties, rematches, player progression, and team size. Present the thematic and mechanical reason for each suggested Pokémon and call out deliberate repeats.
+- Use `python3 tools/elastic_emerald_helpers/analyze_baxcalibur_matchups.py` to reproduce the named level-50 Mega Baxcalibur matchup cases. Recheck move effects, item and ability timing, and switch bait when adapting a case to a trainer battle.
 
 ## Level scaling
 
