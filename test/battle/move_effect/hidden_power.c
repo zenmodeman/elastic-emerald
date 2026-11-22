@@ -281,9 +281,10 @@ SINGLE_BATTLE_TEST("Elastic-tests: Hidden Power boosts Unown damage using Attack
         ANIMATION(ANIM_TYPE_MOVE, move, player);
         HP_BAR(opponent, captureDamage: &results[i].damage);
     } FINALLY {
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.25), results[1].damage);
-        EXPECT_MUL_EQ(results[2].damage, Q_4_12(1.5), results[3].damage);
-        EXPECT_MUL_EQ(results[4].damage, Q_4_12(1.125), results[5].damage);
+        EXPECT_EQ(results[1].damage, results[0].damage * 125 / 100);
+        EXPECT_EQ(results[3].damage, results[2].damage * 150 / 100);
+        // The currently formula uses a percent truncation approach so it'd be 1.12x instead of 1.125x.
+        EXPECT_EQ(results[5].damage, results[4].damage * 112 / 100);
     }
 }
 

@@ -7958,10 +7958,21 @@ static enum Type GetHiddenPowerTypeInternal(enum BattlerId battlerAtk, enum Batt
 
         // Keep precision until after the comparison; damage rolls and critical
         // hits must not influence selection. Retain every equally best type.
+
+        //The modifier check will include Terrain modifiers, Charge boosts, Type items, Sand Force, e.t.c.
         score = CalcMoveBasePowerAfterModifiers(&ctx) * UQ_4_12(1.0);
+
         score = ScaleHiddenPowerScore(score, ctx.typeEffectivenessModifier);
         score = ScaleHiddenPowerScore(score, GetWeatherDamageModifier(&ctx));
         score = ScaleHiddenPowerScore(score, GetSameTypeAttackBonusModifier(&ctx));
+
+        //Other Modifiers includes Fluffy's Fire modification
+        //This also includes resist berries if they have been explicitly revealed
+        //Hidden Power currently operates based on explicit item reveals, 
+        //so even if the AI flag for items being known is used in a battle, said item will not be factored without a reveal
+        //This means Hidden Power Electric will be used against unrevealed Wacan Berry Gyarados when Unown has Hard Stone,
+        //Even though Hidden Power Rock would be better.
+        //I could potentially see adjusting item knowledge based on AI flag, but this approach should be fine for now. 
         score = ScaleHiddenPowerScore(score, GetOtherModifiers(&ctx));
         score = (u64)score * CalcAttackStat(&ctx) / 100;
         if (ctx.holdEffects[battlerAtk] == HOLD_EFFECT_GEMS
@@ -8064,11 +8075,12 @@ s32 ApplyModifiersAfterDmgRoll(struct DamageContext *ctx, s32 dmg)
     if (GetMoveEffect(ctx->move) == EFFECT_HIDDEN_POWER
      && GET_BASE_SPECIES_ID(gBattleMons[ctx->battlerAtk].species) == SPECIES_UNOWN)
     {
-        // Use the stored stats, before stat stages and item/ability multipliers.
-        // (Sp. Atk + Attack / 4) / Sp. Atk, preserving fractional Attack / 4.
-        u32 denominator = 4 * max(1, gBattleMons[ctx->battlerAtk].spAttack);
-        u32 numerator = denominator + gBattleMons[ctx->battlerAtk].attack;
-        dmg = ((u64)dmg * numerator + denominator / 2 - 1) / denominator;
+        u32 atk = gBattleMons[ctx->battlerAtk].attack;
+        u32 spAtk = gBattleMons[ctx->battlerAtk].spAttack;
+
+        u32 dmgPercentBoost = (((spAtk * 4) + atk) * 100) / (4 * spAtk);
+
+        dmg = ((u64)dmg * dmgPercentBoost) / 100;
     }
 
     return dmg;
