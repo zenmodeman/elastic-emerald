@@ -137,12 +137,14 @@ def effectiveness(move_type, types):
 
 @cache
 def damage(power, attack, defense, stab, type_factor, roll, critical=False,
-           power_boost=ONE, final_boost=ONE):
+           power_boost=ONE, final_boost=ONE, vulnerable=False):
     if type_factor == 0:
         return 0
     value = 22 * half_down(power, power_boost) * attack // defense // 50 + 2
     if critical:
         value = half_down(value, ONE_AND_HALF)
+    if vulnerable:
+        value *= 2
     value = value * roll // 100
     if stab:
         value = half_down(value, ONE_AND_HALF)
@@ -181,7 +183,7 @@ ITEMS = (
 KNOCK_OFF_ITEMS = ("none", "sitrus", "figy", "enigma", "jaboca", "rocky helmet", "liechi")
 
 
-def outgoing(case, name, attack_stat, item):
+def outgoing(case, name, attack_stat, item, roll=85):
     attack = move(name)
     foe = species(case.species)
     stab = attack.type in species("BAXCALIBUR").types
@@ -194,7 +196,7 @@ def outgoing(case, name, attack_stat, item):
     final = 5324 if item == "life orb" else ONE
     if item == "expert belt" and factor >= 8192:
         final = 4915
-    return damage(attack.power, attack_stat, stat(foe.defense, 0), stab, factor, 85,
+    return damage(attack.power, attack_stat, stat(foe.defense, 0), stab, factor, roll,
                   power_boost=power_boost, final_boost=final)
 
 
@@ -314,7 +316,7 @@ def base_bounds(case):
     return bounds
 
 
-def verify_inputs(case):
+def verify_inputs(case, *, special=False):
     learnable = json.loads(source(POKEMON / "all_learnables.json"))
     level_files = "\n".join(source(path) for path in sorted((POKEMON / "level_up_learnsets").glob("*.h")))
     for species_name, names in ((case.species, case.moves), ("BAXCALIBUR", set(itertools.chain(*LINES)))):
@@ -332,15 +334,20 @@ def verify_inputs(case):
             raise ValueError(f"{species_name} missing moves from level-50/teachable data: {sorted(missing)}")
     if stat(species(case.species).speed, 252) * 11 // 10 <= stat(species("BAXCALIBUR").speed, 252):
         raise ValueError("Opponent must outrun max-Speed neutral Baxcalibur")
-    if any(move(name).priority != 0 for name in case.moves):
-        raise ValueError("Opponent priority requires a separate turn-order check")
     for name in case.moves:
         body = entry(source(DATA / "moves_info.h"), "MOVE_" + name)
+        category = "SPECIAL" if special else "PHYSICAL"
+        if f"DAMAGE_CATEGORY_{category}" not in body:
+            raise ValueError(f"{name} requires a separate damage model")
+        priority = re.search(r"\.priority\s*=\s*(-?\d+)", body)
+        if priority and int(priority[1]):
+            raise ValueError(f"{name} requires a separate turn-order check")
         if re.search(r"MOVE_EFFECT_\w*(?:FLINCH|PARALYS|CONFUS|SLEEP|FREEZE|FROSTBITE)", body):
             raise ValueError(f"{name} can deny an action and needs its own branches")
         if re.search(r"\.speed\s*=", body):
             raise ValueError(f"{name} needs a separate turn-order check")
-    if case.item.endswith("Gem") and move(case.moves[0]).type == case.item_type:
+    pivot = entry(source(DATA / "moves_info.h"), "MOVE_" + case.moves[0])
+    if case.item.endswith("Gem") and f".type = TYPE_{case.item_type}," in pivot:
         raise ValueError("The pivot would consume the gem before the follow-up")
 
 

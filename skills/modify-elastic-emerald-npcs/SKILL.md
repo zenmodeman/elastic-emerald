@@ -57,6 +57,9 @@ Read `AGENTS.md` for repository conventions. Maintain this skill’s technical g
 - Inspect status-move usage and unused status moves for additional variety. Prefer candidates that can legally and appropriately use uncovered or less-covered status moves at the intended level, without forcing a poor thematic choice or an oppressive early-game set.
 - Account for the trainer's battle format, expected level, nearby parties, rematches, player progression, and team size. Present the thematic and mechanical reason for each suggested Pokémon and call out deliberate repeats.
 - Use `python3 tools/elastic_emerald_helpers/analyze_baxcalibur_matchups.py` to reproduce the named level-50 Mega Baxcalibur matchup cases. Recheck move effects, item and ability timing, and switch bait when adapting a case to a trainer battle.
+- Run `python3 tools/elastic_emerald_helpers/analyze_baxcalibur_special_matchups.py` for the special-attacker two-hit cases and Assault Vest comparison. Evaluate every first-hit roll when an opposing Sitrus Berry can change the KO threshold.
+- The [BST-capped matchup pool](../../analysis/baxcalibur-two-hit-move-pool.md) records screened moves, bait examples, and the calculator for those trainer sets.
+- Use `python3 tools/elastic_emerald_helpers/analyze_baxcalibur_protect.py` for the three-crit special-attacker cases. The damage model assumes Baxcalibur has Protect. Check the generated teachable list and current move sources before treating the line as playable.
 
 ## Level scaling
 
