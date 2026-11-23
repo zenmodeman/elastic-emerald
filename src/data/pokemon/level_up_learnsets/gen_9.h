@@ -2873,7 +2873,7 @@ static const struct LevelUpMove sHypnoLevelUpLearnset[] = {
     LEVEL_UP_MOVE(47, MOVE_NASTY_PLOT),
     LEVEL_UP_MOVE(51, MOVE_PSYSHOCK),
     LEVEL_UP_MOVE(56, MOVE_FUTURE_SIGHT),
-    LEVEL_UP_MOVE(60, MOVE_MESMERIZE),
+    LEVEL_UP_MOVE(60, MOVE_MESMERIZE), //Custom Move addition
     LEVEL_UP_END};
 #endif // P_FAMILY_DROWZEE
 
@@ -15923,7 +15923,7 @@ static const struct LevelUpMove sMalamarLevelUpLearnset[] = {
     LEVEL_UP_MOVE(37, MOVE_FOUL_PLAY),
     LEVEL_UP_MOVE(42, MOVE_TOPSY_TURVY),
     LEVEL_UP_MOVE(47, MOVE_SUPERPOWER),
-    LEVEL_UP_MOVE(55, MOVE_MESMERIZE),
+    LEVEL_UP_MOVE(55, MOVE_MESMERIZE), //Custom Move addition
     LEVEL_UP_END};
 #endif // P_FAMILY_INKAY
 

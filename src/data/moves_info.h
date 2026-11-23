@@ -4746,8 +4746,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Snore"),
         .description = COMPOUND_STRING(
-            "A loud move that can be used\n"
-            "only while asleep. May flinch."),
+            "Used asleep; may flinch.\n"
+            "1.5x Dmg with Snorlax."),
         .effect = EFFECT_SNORE,
         .power = B_UPDATED_MOVE_DATA >= GEN_6 ? 50 : 40,
         .type = TYPE_NORMAL,
@@ -9365,8 +9365,8 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Bounce"),
         .description = COMPOUND_STRING(
-            "Bounces up, then down the\n"
-            "next turn. May paralyze."),
+            "Up T1, down T2, may PRLZ.\n"
+            "2x Dmg with Spoink line."),
         .effect = EFFECT_SEMI_INVULNERABLE,
         .power = 85,
         .type = TYPE_FLYING,

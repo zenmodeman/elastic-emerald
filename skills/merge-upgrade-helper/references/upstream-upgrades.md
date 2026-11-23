@@ -22,6 +22,7 @@ Routine review uses [static checks](check-recipes.md). Full builds and test runs
 - Boolean rewrites can change helper arguments, invert a condition, or save and restore different battler indexes.
 - Conditional species-stat macros can disappear from one branch or move below their users.
 - A missing dispatch case can disable a configuration-gated mechanic even when its data still compiles.
+- Upstream move descriptions can overwrite custom text while the corresponding battle effects survive. Check player-facing text in `src/data/moves_info.h` against the retained mechanics.
 
 ## Battle AI parity
 
