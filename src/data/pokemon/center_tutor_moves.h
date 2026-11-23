@@ -204,8 +204,6 @@ const u16 gPreGym7Tutor[] = {
     MOVE_FLASH_CANNON,
     MOVE_DAZZLING_GLEAM,
     MOVE_LUNGE,
-    MOVE_FIRE_PUNCH,
-    MOVE_ICE_PUNCH,
     MOVE_PIN_MISSILE,
     MOVE_BULLET_SEED,
     MOVE_TAIL_SLAP,
@@ -241,7 +239,8 @@ const u16 gPreGym7TutorSetup[] = {
     MOVE_STORED_POWER,
 };
 
-const u16 gPreGym8Tutor[] = {    
+const u16 gPreGym8Tutor[] = {
+    MOVE_DOUBLE_EDGE,
     MOVE_EXPLOSION,
     MOVE_ACROBATICS,
     MOVE_FROST_BREATH,
@@ -253,6 +252,7 @@ const u16 gPreGym8Tutor[] = {
     MOVE_LEAF_BLADE,
     MOVE_HEAT_WAVE,
     MOVE_ENERGY_BALL,
+    MOVE_PLAY_ROUGH,
     MOVE_AQUA_TAIL,
     MOVE_BUG_BUZZ,
     MOVE_POLLEN_PUFF,

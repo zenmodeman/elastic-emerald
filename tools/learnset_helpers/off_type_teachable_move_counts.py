@@ -4,9 +4,14 @@
 Learnsets are unioned across every bundled PoryMoves JSON file.  A Pokemon is
 counted for a move when:
 
-* it is fully evolved and does not share the move's type;
-* the move occurs in its TM or tutor learnset in at least one game; and
-* the move occurs in neither its level-up nor egg learnset in any game.
+* it is fully evolved and does not share the move's type; and
+* the move occurs in its level-up learnset in any game, or occurs in its
+  TM or tutor learnset in at least one game and never in its egg learnset.
+
+Moves in additionalTMList use the number of fully evolved, off-type Pokemon
+that can learn them by any recorded method as their teachable count.
+Other moves are reported only if they have at least one off-type learner
+that qualifies through TM or tutor access alone.
 
 By default the Markdown report is written beside this script as
 tools/learnset_helpers/off_type_moves.md.
@@ -18,7 +23,7 @@ import argparse
 import json
 import re
 import sys
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -37,6 +42,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parents[1]
 DEFAULT_MOVES_FILE = REPO_ROOT / "src" / "data" / "moves_info.h"
 DEFAULT_OUTPUT = SCRIPT_DIR / "off_type_moves.md"
+
+additionalTMList = ["Lucky Chant", "Power Split"]
 
 tmExclusionHelper = [
     "Facade", #Tutor
@@ -92,6 +99,8 @@ tmExclusionHelper = [
     "Inferno", #Tutor and Accuracy Tutor
     "Cross Chop", #Tutor and Accuracy Tutor
     "Dynamic Punch", #Tutor and Accuracy Tutor
+    "Dragon Claw", #Can be a tutor since it's not all that needed and can be given by level-up where appropriate
+    #The existing Dragon Claw TM can be replaced with Dragon Pulse
     "Focus Punch", #Tech Tutor
     "Scary Face", #Tech Tutor
     "Curse", #Setup Tutor
@@ -212,9 +221,11 @@ tmExclusionHelper = [
     "Misty Terrain", #Tech Tutor
     "Grassy Terrain", #Tutor
     "Psychic Terrain", #Tutor
-    "Electric Terrain", #Tutor
+    # "Electric Terrain", #Keeping it as a TM so that Watson can use it
     "Air Slash", #Tutor
     "Signal Beam", #Tutor
+    "Double-Edge", #Works fine as a level-up / Tutor move
+    "Play Rough", #Easy to give it by level-up when needed, so setting it as a tutor
     "Bind",
     "Night Shade",
     "Fire Spin",
@@ -363,6 +374,7 @@ class MoveInfo:
     name: str
     display_name: str
     type: str
+    category: str | None
 
 
 def first_constant(body: str, field: str, prefix: str) -> str | None:
@@ -394,18 +406,20 @@ def load_moves(path: Path) -> dict[str, MoveInfo]:
                 else display_constant(move)
             ),
             type=move_type,
+            category=first_constant(body, "category", "DAMAGE_CATEGORY_"),
         )
     return moves
 
 
 def collect_method_pools(games: dict[str, dict]) -> dict[str, dict[str, set[str]]]:
     pools: dict[str, dict[str, set[str]]] = defaultdict(
-        lambda: {"teachable": set(), "level_up": set(), "egg": set()}
+        lambda: {"teachable": set(), "level_up": set(), "egg": set(), "pre_evo": set()}
     )
     method_map = {
         "teachable": ("TMMoves", "TutorMoves"),
         "level_up": ("LevelMoves",),
         "egg": ("EggMoves",),
+        "pre_evo": ("PreEvoMoves",),
     }
     for game in games.values():
         for raw_species, learnset in game.items():
@@ -423,38 +437,51 @@ def count_learners(
     moves: dict[str, MoveInfo],
     species_info,
     pools: dict[str, dict[str, set[str]]],
-) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+) -> tuple[dict[str, list[str]], dict[str, list[str]], Counter[str]]:
     teachable_learners: dict[str, list[str]] = {move: [] for move in moves}
     level_up_learners: dict[str, list[str]] = {move: [] for move in moves}
+    additional_names = set(additionalTMList)
+    theoretical_learners = Counter({
+        move.name: 0 for move in moves.values() if move.display_name in additional_names
+    })
     for species_name, methods in pools.items():
         species = species_info.get(species_name)
         if not species or not species.fully_evolved:
             continue
-        exclusively_teachable = (
-            methods["teachable"] - methods["level_up"] - methods["egg"]
-        )
-        for move in (exclusively_teachable | methods["level_up"]) & moves.keys():
+        for move in set.union(*methods.values()) & theoretical_learners.keys():
             if moves[move].type not in species.types:
-                if move in exclusively_teachable:
-                    teachable_learners[move].append(species.display_name)
+                theoretical_learners[move] += 1
+        teachable = (methods["teachable"] - methods["egg"]) | methods["level_up"]
+        for move in teachable & moves.keys():
+            if moves[move].type not in species.types:
+                teachable_learners[move].append(species.display_name)
                 if move in methods["level_up"]:
                     level_up_learners[move].append(species.display_name)
-    return teachable_learners, level_up_learners
+    return teachable_learners, level_up_learners, theoretical_learners
 
 
 def build_report(
     moves: dict[str, MoveInfo],
     teachable_learners: dict[str, list[str]],
     level_up_learners: dict[str, list[str]],
+    theoretical_learners: Counter[str],
     game_count: int,
-) -> str:
+) -> tuple[str, int]:
+    def teachable_count(move: str) -> int:
+        if move in theoretical_learners:
+            return theoretical_learners[move]
+        return len(teachable_learners[move])
+
+    def ranking_score(move: str) -> int:
+        return teachable_count(move) - len(level_up_learners[move])
+
     ordered = sorted(
-        (move for move in moves.values() if teachable_learners[move.name]),
+        (
+            move for move in moves.values()
+            if move.name in theoretical_learners or ranking_score(move.name) > 0
+        ),
         key=lambda move: (
-            -(
-                len(teachable_learners[move.name])
-                - len(level_up_learners[move.name])
-            ),
+            -ranking_score(move.name),
             move.display_name,
             move.name,
         ),
@@ -462,6 +489,7 @@ def build_report(
     excluded_names = set(tmExclusionHelper)
     tm_candidates = [move for move in ordered if move.display_name not in excluded_names]
     excluded_moves = [move for move in ordered if move.display_name in excluded_names]
+    category_counts = Counter(move.category for move in tm_candidates)
 
     def table(move_group: list[MoveInfo], ranked: bool = False) -> list[str]:
         if ranked:
@@ -476,11 +504,13 @@ def build_report(
             ]
         for rank, move in enumerate(move_group, start=1):
             prefix = f"| {rank} " if ranked else ""
+            name = move.display_name
+            if move.name in theoretical_learners:
+                name += " (theoretical)"
             lines.append(
-                f"{prefix}| {move.display_name} | {display_constant(move.type)} | "
-                f"{len(teachable_learners[move.name])} | "
-                f"{len(level_up_learners[move.name])} | "
-                f"{len(teachable_learners[move.name]) - len(level_up_learners[move.name])} |"
+                f"{prefix}| {name} | {display_constant(move.type)} | "
+                f"{teachable_count(move.name)} | {len(level_up_learners[move.name])} | "
+                f"{ranking_score(move.name)} |"
             )
         return lines
 
@@ -489,12 +519,24 @@ def build_report(
         "",
         f"Learnsets are deduplicated unions across {game_count} PoryMoves datasets.",
         "",
+        "Teachable counts include off-type level-up learners, even without TM or "
+        "tutor access.",
+        "Regular moves require at least one off-type, fully evolved learner with "
+        "TM or tutor access and no level-up or egg access.",
+        "Theoretical rows use the total off-type, fully evolved learners across all "
+        "recorded methods as their Teachable count.",
+        "",
         "## TM priority candidates",
         "",
         "Moves listed in `tmExclusionHelper` are omitted from this section.",
         "",
     ]
     lines.extend(table(tm_candidates, ranked=True))
+    lines.append("")
+    lines.extend(
+        f"- {category.title()}: {category_counts[category]}"
+        for category in ("PHYSICAL", "SPECIAL", "STATUS")
+    )
     lines.extend(
         [
             "",
@@ -505,7 +547,7 @@ def build_report(
         ]
     )
     lines.extend(table(excluded_moves))
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines) + "\n", len(ordered)
 
 
 def parse_args() -> argparse.Namespace:
@@ -530,17 +572,14 @@ def main() -> int:
         species_info = load_species_info(args.species_dir)
         moves = load_moves(args.moves_file)
         pools = collect_method_pools(games)
-        teachable_learners, level_up_learners = count_learners(
+        teachable_learners, level_up_learners, theoretical_learners = count_learners(
             moves, species_info, pools
         )
-        report = build_report(
-            moves, teachable_learners, level_up_learners, len(games)
+        report, displayed_count = build_report(
+            moves, teachable_learners, level_up_learners, theoretical_learners, len(games)
         )
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(report, encoding="utf-8")
-        displayed_count = sum(
-            bool(move_learners) for move_learners in teachable_learners.values()
-        )
         print(f"Wrote {args.output} ({displayed_count} moves).")
     except (FileNotFoundError, json.JSONDecodeError, OSError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
