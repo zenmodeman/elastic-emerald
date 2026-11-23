@@ -905,12 +905,13 @@ enum __attribute__((packed)) Move
     MOVE_MALIGNANT_CHAIN = 847,
     MOVES_COUNT_GEN9,
 
-    // Add any custom moves here, not further down!
+    // Custom Moves
     MOVE_DRAIN_DOUSE = MOVES_COUNT_GEN9,
     MOVE_METAL_RUSH,
     MOVE_BEFUDDLE,
     MOVE_PERPLEX_DANCE,
     MOVE_OVERWHELM_BEAM,
+    MOVE_MESMERIZE,
 
     MOVES_COUNT,
 

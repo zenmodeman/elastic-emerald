@@ -22184,6 +22184,28 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .battleAnimScript = gBattleAnimMove_HyperBeam,
     },
 
+    [MOVE_MESMERIZE] =
+    {
+        .name = COMPOUND_STRING("Mesmerize"),
+        .description = COMPOUND_STRING(
+            "Moves last but\n"
+            "puts target asleep."),
+        .effect = EFFECT_NON_VOLATILE_STATUS,
+        .power = 0,
+        .type = TYPE_PSYCHIC,
+        .accuracy = 100,
+        .pp = 10,
+        .target = TARGET_SELECTED,
+        .priority = -1,
+        .category = DAMAGE_CATEGORY_STATUS,
+        .argument = { .nonVolatileStatus = MOVE_EFFECT_SLEEP },
+        .zMove = { .effect = Z_EFFECT_SPD_UP_1 },
+        .magicCoatAffected = TRUE,
+        .contestEffect = CONTEST_EFFECT_BADLY_STARTLE_PREV_MONS,
+        .contestCategory = CONTEST_CATEGORY_SMART,
+        .battleAnimScript = gBattleAnimMove_Hypnosis,
+    },
+
     [MOVE_DRAIN_DOUSE] =
     {
         .name = COMPOUND_STRING("Drain Douse"),

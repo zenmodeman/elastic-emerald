@@ -55,6 +55,7 @@ Resource Mode starts with three tutor and relearner points, or five for Monotype
 ## Custom moves and effects
 
 - Overwhelm Beam is a 120-power, 80%-accuracy Special Normal attack with 10 PP and an Insomnia ability-replacement secondary effect.
+- Mesmerize is an ascended version of Hypnosis, as a semi-signature move for Hypno and Malamar. It's fully accurate but has -1 priority.
 - Drain Douse and Metal Rush add custom battle effects.
 - Big Root increases drain recovery by 40%; Water Veil doubles Aqua Ring's final recovery.
 - Refresh cures all major status conditions, including those that ordinarily prevent movement.
