@@ -11,17 +11,35 @@ extern bool32 Test_ShouldContinueAfterTrainerLoss(void);
 
 TEST("Elastic-tests: AI demonstration continues after a trainer loss")
 {
+    u32 savedBattleTypeFlags = gBattleTypeFlags;
+    bool32 savedEarlyRival = TRAINER_BATTLE_PARAM.earlyRival;
+
     gBattleTypeFlags = BATTLE_TYPE_TRAINER | BATTLE_TYPE_AI_VS_AI;
-    EXPECT(Test_ShouldContinueAfterTrainerLoss());
-    EXPECT(!TRAINER_BATTLE_PARAM.earlyRival);
+    TRAINER_BATTLE_PARAM.earlyRival = FALSE;
+    bool32 continues = Test_ShouldContinueAfterTrainerLoss();
+    bool32 earlyRival = TRAINER_BATTLE_PARAM.earlyRival;
+
+    gBattleTypeFlags = savedBattleTypeFlags;
+    TRAINER_BATTLE_PARAM.earlyRival = savedEarlyRival;
+    EXPECT(continues);
+    EXPECT(!earlyRival);
 }
 
 TEST("Elastic-tests: ordinary and early rival battles retain their own loss handling")
 {
+    u32 savedBattleTypeFlags = gBattleTypeFlags;
+    bool32 savedEarlyRival = TRAINER_BATTLE_PARAM.earlyRival;
+
     gBattleTypeFlags = BATTLE_TYPE_TRAINER;
-    EXPECT(!Test_ShouldContinueAfterTrainerLoss());
+    TRAINER_BATTLE_PARAM.earlyRival = FALSE;
+    bool32 continuesOrdinary = Test_ShouldContinueAfterTrainerLoss();
     TRAINER_BATTLE_PARAM.earlyRival = TRUE;
-    EXPECT(!Test_ShouldContinueAfterTrainerLoss());
+    bool32 continuesEarlyRival = Test_ShouldContinueAfterTrainerLoss();
+
+    gBattleTypeFlags = savedBattleTypeFlags;
+    TRAINER_BATTLE_PARAM.earlyRival = savedEarlyRival;
+    EXPECT(!continuesOrdinary);
+    EXPECT(!continuesEarlyRival);
 }
 
 TEST("Elastic-tests: Youngster James rematches always reuse his custom opening team")

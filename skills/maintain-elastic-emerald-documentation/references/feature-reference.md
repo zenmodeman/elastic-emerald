@@ -68,6 +68,8 @@ Resource Mode starts with three tutor and relearner points, or five for Monotype
 
 ## Custom abilities
 
+- Boxer’s Guard is a new Hitmonchan custom ability (replacing Keen Eye). For each punching move and Punching Gloves, it gains a 1.1x Defense boost, upto 1.5x (the boost is calculated like Fur Coat).
+
 - Unown forms guarantee three perfect IVs on random generation: A–F each fix one stat in display order and randomize two others; G–Z cover all twenty fixed triples; question mark picks any triple; exclamation mark picks one offensive, one defensive, and one HP/Speed stat. Other IVs can naturally roll 31.
 - Hidden Power has 60 base power and only Unown (all forms) can use it. Unown receives a damage multiplier of `(Sp. Atk + Attack / 4) / Sp. Atk`, using its stats before battle stages and item/ability multipliers. After switching and target redirection, it chooses the strongest ordinary type using type matchups, explicitly revealed abilities, weather, terrain, STAB, known opposing items, and the user’s held type boosters or Gems. Equally valued best types are chosen uniformly at random when the move is used. Its type is announced before Proactive Color Change.
 - Proactive Color Change changes the target's type before immunity checks, including for status moves. Struggle, matching types, and None/Mystery/Stellar types do not trigger it.

@@ -9,12 +9,12 @@ ASSUMPTIONS
 
 //With the change to Illuminate, Staryu will not pass
 
-SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stage reduction from moves")
+SINGLE_BATTLE_TEST("Elastic-tests: Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stage reduction from moves")
 {
     enum Ability ability;
     enum Species species;
 
-    PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
+    PARAMETRIZE { species = SPECIES_SKARMORY; ability = ABILITY_KEEN_EYE; }
     PARAMETRIZE { species = SPECIES_URSALUNA_BLOODMOON; ability = ABILITY_MINDS_EYE; }
 
     PASSES_RANDOMLY(100, 100, RNG_ACCURACY);
@@ -27,8 +27,8 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stag
     } SCENE {
         ABILITY_POPUP(opponent, ability);
         NOT ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, player);
-        if (species == SPECIES_HITMONCHAN)
-            MESSAGE("The opposing Hitmonchan's accuracy was not lowered!");
+        if (species == SPECIES_SKARMORY)
+            MESSAGE("The opposing Skarmory's accuracy was not lowered!");
         else if (species == SPECIES_STARYU)
             MESSAGE("The opposing Staryu's accuracy was not lowered!");
         else
@@ -37,12 +37,12 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye prevent accuracy stag
     }
 }
 
-SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye ignore target's evasion stat")
+SINGLE_BATTLE_TEST("Elastic-tests: Keen Eye, Gen9+ Illuminate & Minds Eye ignore target's evasion stat")
 {
     enum Ability ability;
     enum Species species;
 
-    PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
+    PARAMETRIZE { species = SPECIES_SKARMORY; ability = ABILITY_KEEN_EYE; }
     PARAMETRIZE { species = SPECIES_STARYU; ability = ABILITY_ILLUMINATE; }
     PARAMETRIZE { species = SPECIES_URSALUNA_BLOODMOON; ability = ABILITY_MINDS_EYE; }
 
@@ -61,7 +61,7 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye ignore target's evasi
     }
 }
 
-SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye are ignored by Mold Breaker abilities")
+SINGLE_BATTLE_TEST("Elastic-tests: Keen Eye, Gen9+ Illuminate & Minds Eye are ignored by Mold Breaker abilities")
 {
     enum Ability abilityPlayer = ABILITY_NONE, abilityOpponent = ABILITY_NONE;
     enum Species speciesPlayer = SPECIES_NONE, speciesOpponent = SPECIES_NONE;
@@ -75,7 +75,7 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye are ignored by Mold B
 
     for (j = 0; j < ARRAY_COUNT(moldBreakerAbilities); j++) {
         speciesPlayer = moldBreakerAbilities[j][0]; abilityPlayer = moldBreakerAbilities[j][1];
-        PARAMETRIZE { speciesOpponent = SPECIES_HITMONCHAN; abilityOpponent = ABILITY_KEEN_EYE; }
+        PARAMETRIZE { speciesOpponent = SPECIES_SKARMORY; abilityOpponent = ABILITY_KEEN_EYE; }
         PARAMETRIZE { speciesOpponent = SPECIES_STARYU; abilityOpponent = ABILITY_ILLUMINATE; }
         PARAMETRIZE { speciesOpponent = SPECIES_URSALUNA_BLOODMOON; abilityOpponent = ABILITY_MINDS_EYE; }
     }
@@ -95,12 +95,12 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye are ignored by Mold B
     }
 }
 
-SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent Topsy-Turvy")
+SINGLE_BATTLE_TEST("Elastic-tests: Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent Topsy-Turvy")
 {
     enum Ability ability;
     enum Species species;
 
-    PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
+    PARAMETRIZE { species = SPECIES_SKARMORY; ability = ABILITY_KEEN_EYE; }
     PARAMETRIZE { species = SPECIES_STARYU; ability = ABILITY_ILLUMINATE; }
     PARAMETRIZE { species = SPECIES_URSALUNA_BLOODMOON; ability = ABILITY_MINDS_EYE; }
 
@@ -114,9 +114,9 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent Topsy-T
         TURN { MOVE(opponent, MOVE_HONE_CLAWS); MOVE(player, MOVE_TOPSY_TURVY); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HONE_CLAWS, opponent);
-        if (species == SPECIES_HITMONCHAN) {
-            MESSAGE("The opposing Hitmonchan's Attack rose!");
-            MESSAGE("The opposing Hitmonchan's accuracy rose!");
+        if (species == SPECIES_SKARMORY) {
+            MESSAGE("The opposing Skarmory's Attack rose!");
+            MESSAGE("The opposing Skarmory's accuracy rose!");
         } else if (species == SPECIES_STARYU) {
             MESSAGE("The opposing Staryu's Attack rose!");
             MESSAGE("The opposing Staryu's accuracy rose!");
@@ -125,8 +125,8 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent Topsy-T
             MESSAGE("The opposing Ursaluna's accuracy rose!");
         }
         ANIMATION(ANIM_TYPE_MOVE, MOVE_TOPSY_TURVY, player);
-        if (species == SPECIES_HITMONCHAN)
-            MESSAGE("All stat changes on the opposing Hitmonchan were inverted!");
+        if (species == SPECIES_SKARMORY)
+            MESSAGE("All stat changes on the opposing Skarmory were inverted!");
         else if (species == SPECIES_STARYU)
             MESSAGE("All stat changes on the opposing Staryu were inverted!");
         else
@@ -136,11 +136,11 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent Topsy-T
     }
 }
 
-SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent receiving negative Attack stage changes from Baton Pass")
+SINGLE_BATTLE_TEST("Elastic-tests: Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent receiving negative Attack stage changes from Baton Pass")
 {
     enum Ability ability;
     enum Species species;
-    PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
+    PARAMETRIZE { species = SPECIES_SKARMORY; ability = ABILITY_KEEN_EYE; }
     PARAMETRIZE { species = SPECIES_STARYU; ability = ABILITY_ILLUMINATE; }
     PARAMETRIZE { species = SPECIES_URSALUNA_BLOODMOON; ability = ABILITY_MINDS_EYE; }
 
@@ -158,8 +158,8 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent receivi
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_SAND_ATTACK, player);
         ANIMATION(ANIM_TYPE_MOVE, MOVE_BATON_PASS, opponent);
-        if (species == SPECIES_HITMONCHAN)
-            MESSAGE("2 sent out Hitmonchan!");
+        if (species == SPECIES_SKARMORY)
+            MESSAGE("2 sent out Skarmory!");
         else if (species == SPECIES_STARYU)
             MESSAGE("2 sent out Staryu!");
         else
@@ -169,12 +169,12 @@ SINGLE_BATTLE_TEST("Keen Eye, Gen9+ Illuminate & Minds Eye don't prevent receivi
     }
 }
 
-SINGLE_BATTLE_TEST("Keen Eye & Gen9+ Illuminate don't prevent Spectral Thief from resetting positive accuracy stage changes")
+SINGLE_BATTLE_TEST("Elastic-tests: Keen Eye & Gen9+ Illuminate don't prevent Spectral Thief from resetting positive accuracy stage changes")
 {
     enum Ability ability;
     enum Species species;
 
-    PARAMETRIZE { species = SPECIES_HITMONCHAN; ability = ABILITY_KEEN_EYE; }
+    PARAMETRIZE { species = SPECIES_SKARMORY; ability = ABILITY_KEEN_EYE; }
     PARAMETRIZE { species = SPECIES_STARYU; ability = ABILITY_ILLUMINATE; }
 
     GIVEN {
@@ -187,10 +187,10 @@ SINGLE_BATTLE_TEST("Keen Eye & Gen9+ Illuminate don't prevent Spectral Thief fro
         TURN { MOVE(opponent, MOVE_HONE_CLAWS); MOVE(player, MOVE_SPECTRAL_THIEF); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_HONE_CLAWS, opponent);
-        if (species == SPECIES_HITMONCHAN)
+        if (species == SPECIES_SKARMORY)
         {
-            MESSAGE("The opposing Hitmonchan's Attack rose!");
-            MESSAGE("The opposing Hitmonchan's accuracy rose!");
+            MESSAGE("The opposing Skarmory's Attack rose!");
+            MESSAGE("The opposing Skarmory's accuracy rose!");
         }
         else
         {

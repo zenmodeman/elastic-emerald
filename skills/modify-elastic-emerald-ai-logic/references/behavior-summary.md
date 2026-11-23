@@ -2,7 +2,9 @@
 
 ## Documentation status
 
-- **Uncommitted follow-up (AI-001–010):** damage-only inference includes conditional Archaludon Electro Shot and known eligible Mega Stone forms; fast-KO escapes require 80% HP or full Regenerator healing, allow that Regenerator exception after commitment, and validate replacement survival; Sucker Punch uses the existing three-move observed history. Diagnostic ability inference and prospective Mega combat simulation remain deferred.
+- **Uncommitted follow-up (Boxer’s Guard):** shared damage calculation boosts Defense by 10% per punching move and 10% for an effective Punching Glove. Once the AI’s modeled effective ability is Boxer’s Guard, damage estimates use the full current moveset and effective Punching Glove bonus. When cache setup masks unknown moves and items, the calculation reads the saved originals for this modifier without recording move or item knowledge.
+
+- **Committed follow-up (`1c5410038d`, AI-001–010):** damage-only inference includes conditional Archaludon Electro Shot and known eligible Mega Stone forms; fast-KO escapes require 80% HP or full Regenerator healing, allow that Regenerator exception after commitment, and validate replacement survival; Sucker Punch uses the existing three-move observed history. Diagnostic ability inference and prospective Mega combat simulation remain deferred.
 
 - **Committed follow-up (`3b01725fcc`):** STAB assumptions exclude self-recharge attacks and two-turn attacks without a modeled charge-skip condition; Elastic knowledge explicitly includes item omniscience.
 - **Committed follow-up (`db9df93b11`):** STAB inference supplies damage and KO estimates without recording move knowledge; specific effects such as Brick Break screen removal require revelation or move omniscience.

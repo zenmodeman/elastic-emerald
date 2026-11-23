@@ -7370,6 +7370,56 @@ static inline u32 CalcDefenseStat(struct DamageContext *ctx)
                 RecordAbilityBattle(battlerDef, ABILITY_FUR_COAT);
         }
         break;
+    case ABILITY_BOXERS_GUARD:
+        if (usesDefStat)
+        {
+            u32 guardCounter = 0;
+            const enum Move *moves = gBattleMons[battlerDef].moves;
+            bool32 hasPunchingGlove = ctx->holdEffects[battlerDef] == HOLD_EFFECT_PUNCHING_GLOVE;
+
+            // When the AI predicts Boxer's Guard or knows the player has it, the intent is that the AI will apply the real calculation,
+            // Regardless of if there are unrevealed moves it is not aware of.
+            if (ctx->aiCalc)
+            {
+                enum Item item = gBattleMons[battlerDef].item;
+
+                // SetBattlerData masks unknown moves and items when the AI is performing its calculations
+                //So extracting values from the saved structs to get around this
+                if (!BattlerHasAi(battlerDef) && gAiThinkingStruct->saved[battlerDef].saved)
+                {
+                    moves = gAiThinkingStruct->saved[battlerDef].moves;
+                    item = gAiThinkingStruct->saved[battlerDef].heldItem;
+                }
+                // If the AI masked items, hasPunchingGloves would not be accurate so need to recompute it
+                hasPunchingGlove = GetItemHoldEffect(item) == HOLD_EFFECT_PUNCHING_GLOVE
+                    && !gBattleStruct->battlerState[battlerDef].notOnField
+                    && !gSpecialStatuses[battlerDef].attackerInParty
+                    && !gBattleMons[battlerDef].volatiles.embargoTimer
+                    && !(gFieldStatuses & STATUS_FIELD_MAGIC_ROOM);
+            }
+
+            if (hasPunchingGlove){
+                guardCounter += 1;
+            }
+
+            for (u32 slot = 0; slot < MAX_MON_MOVES; slot++)
+            {
+                if (IsPunchingMove(moves[slot]))
+                    guardCounter += 1;
+            }
+
+            if (guardCounter != 0)
+            {
+                modifier = ((modifier * (10 + guardCounter)) 
+                + 5) // Added so that .5 and above round up
+                 / 10;
+                
+                //Since the ability changed damage calculation, the AI will know this ability going forward
+                if (ctx->updateFlags)
+                    RecordAbilityBattle(battlerDef, ABILITY_BOXERS_GUARD);
+            }
+        }
+        break;
     case ABILITY_GRASS_PELT:
         if (ctx->terrain == B_TERRAIN_GRASSY && usesDefStat)
         {

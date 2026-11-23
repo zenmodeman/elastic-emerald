@@ -2531,6 +2531,14 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
         .description = COMPOUND_STRING("Adjusts power favorably."),
     },
 
+    [ABILITY_BOXERS_GUARD] =
+    {
+        .name = _("Boxer's Guard"),
+        .description = COMPOUND_STRING("Punch moves & Glove up Def."),
+        .aiRating = 5,
+        .breakable = TRUE,
+    },
+
     [ABILITY_EELEVATE] =
     {
         .name = _("Eelevate"),
