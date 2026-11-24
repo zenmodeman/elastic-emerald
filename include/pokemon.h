@@ -887,6 +887,8 @@ u8 GetNature(struct Pokemon *mon);
 u8 GetNatureFromPersonality(u32 personality);
 enum Species GetGMaxTargetSpecies(enum Species species);
 bool32 DoesMonMeetAdditionalConditions(struct Pokemon *mon, const struct EvolutionParam *params, struct Pokemon *tradePartner, u32 partyId, bool32 *canStopEvo, enum EvoState evoState);
+bool32 TryGiveEvolutionHeldItem(struct Pokemon *mon, enum Species originalSpecies);
+bool32 IsHeldItemLocked(enum Species species, enum Item item);
 bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, enum Item item);
 enum Species GetEvolutionTargetSpecies(struct Pokemon *mon, enum EvolutionMode mode, enum Item evolutionItem, struct Pokemon *tradePartner, bool32 *canStopEvo, enum EvoState evoState);
 bool8 IsMonPastEvolutionLevel(struct Pokemon *mon);

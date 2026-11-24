@@ -2,7 +2,9 @@
 
 ## Documentation status
 
-- **Commit # pending (Restricted Toxic Spikes):** a successful poison application consumes one layer when the switch-in battler has an AI controller. The status uses the original layer count, and consumption precedes berry cures. Removing the final layer keeps the switch-in hazard cursor on the next queued hazard.
+- **Commit # pending (Egg Bomb):** the move table provides a +1 critical-hit stage and a 50% target Defense drop. AI damage and move scoring use the existing critical-hit and additional-effect paths, including the modeled Lucky Punch and Serene Grace effects.
+
+- **Committed follow-up (`9077a71ebd`, Restricted Toxic Spikes):** a successful poison application consumes one layer when the switch-in battler has an AI controller. The status uses the original layer count, and consumption precedes berry cures. Removing the final layer keeps the switch-in hazard cursor on the next queued hazard.
 
 - **Committed follow-up (`4e4ea300d7`, Boxer’s Guard):** shared damage calculation boosts Defense by 10% per punching move and 10% for an effective Punching Glove. Once the AI’s modeled effective ability is Boxer’s Guard, damage estimates use the full current moveset and effective Punching Glove bonus. When cache setup masks unknown moves and items, the calculation reads the saved originals for this modifier without recording move or item knowledge.
 

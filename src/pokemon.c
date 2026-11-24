@@ -3420,6 +3420,25 @@ const struct Evolution *GetSpeciesEvolutions(enum Species species)
     return evolutions;
 }
 
+bool32 TryGiveEvolutionHeldItem(struct Pokemon *mon, enum Species originalSpecies)
+{
+    enum Item item = ITEM_LUCKY_PUNCH;
+
+    if (originalSpecies != SPECIES_HAPPINY
+     || GetMonData(mon, MON_DATA_SPECIES) != SPECIES_CHANSEY
+     || GetMonData(mon, MON_DATA_HELD_ITEM) != ITEM_NONE)
+        return FALSE;
+
+    SetMonData(mon, MON_DATA_HELD_ITEM, &item);
+    return TRUE;
+}
+
+bool32 IsHeldItemLocked(enum Species species, enum Item item)
+{
+    return species == SPECIES_CHANSEY && item == ITEM_LUCKY_PUNCH
+        && FlagGet(FLAG_RESTRICTED_MODE) && !FlagGet(FLAG_BADGE08_GET);
+}
+
 bool32 DoesNotMeetRestrictedEvoItemConditions(struct Pokemon *mon, enum Item item)
 {
     enum Species species;

@@ -1,0 +1,1 @@
+- There may be an edge case with the Lucky Punch Chansey item locking in the case where another item is swapped onto it AND Chansey is also swapped to the PC with a caught wild mon. This is a bit lower priority since the swap feature isn't present in Tier Points mode to begin with.

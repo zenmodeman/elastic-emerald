@@ -54,6 +54,8 @@ COMMON_DATA void (*gCB2_AfterEvolution)(void) = NULL;
 #define sEvoCursorPos           gBattleCommunication[1] // when learning a new move
 #define sEvoGraphicsTaskId      gBattleCommunication[2]
 
+static const u8 sText_ChanseyFoundLuckyPunch[] = _("Chansey found a Lucky Punch!\nIt is now holding it.\p");
+
 static void Task_EvolutionScene(u8 taskId);
 static void Task_TradeEvolutionScene(u8 taskId);
 static void CB2_EvolutionSceneUpdate(void);
@@ -629,6 +631,7 @@ enum {
     EVOSTATE_RESTORE_SCREEN,
     EVOSTATE_EVO_MON_ANIM,
     EVOSTATE_SET_MON_EVOLVED,
+    EVOSTATE_GIVE_HELD_ITEM,
     EVOSTATE_TRY_LEARN_MOVE,
     EVOSTATE_END,
     EVOSTATE_CANCEL,
@@ -801,6 +804,14 @@ static void Task_EvolutionScene(u8 taskId)
             GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_SEEN);
             GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_CAUGHT);
             IncrementGameStat(GAME_STAT_EVOLVED_POKEMON);
+        }
+        break;
+    case EVOSTATE_GIVE_HELD_ITEM:
+        if (!IsTextPrinterActiveOnWindow(B_WIN_MSG))
+        {
+            if (TryGiveEvolutionHeldItem(mon, gTasks[taskId].tPreEvoSpecies))
+                BattlePutTextOnWindow(sText_ChanseyFoundLuckyPunch, B_WIN_MSG);
+            gTasks[taskId].tState++;
         }
         break;
     case EVOSTATE_TRY_LEARN_MOVE:

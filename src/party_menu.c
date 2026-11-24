@@ -2136,10 +2136,23 @@ static void GiveItemToMon(struct Pokemon *mon, enum Item item)
     TryItemHoldFormChange(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], gPartyMenu.slotId, B_TRAINER_PLAYER);
 }
 
+static bool32 IsMonHeldItemLocked(struct Pokemon *mon)
+{
+    return IsHeldItemLocked(GetMonData(mon, MON_DATA_SPECIES), GetMonData(mon, MON_DATA_HELD_ITEM));
+}
+
+static void DisplayHeldItemLockedMessage(u8 taskId)
+{
+    DisplayPartyMenuMessage(gText_ChanseyLuckyPunchLocked, TRUE);
+    ScheduleBgCopyTilemapToVram(2);
+    gTasks[taskId].func = Task_ReturnToChooseMonAfterText;
+}
+
 enum TryTakeMonItemResult
 {
     TAKE_NO_ITEM,
     TAKE_NO_BAG_SPACE,
+    TAKE_LOCKED,
     TAKE_OK,
 };
 
@@ -2149,6 +2162,9 @@ static enum TryTakeMonItemResult TryTakeMonItem(struct Pokemon *mon)
 
     if (item == ITEM_NONE)
         return TAKE_NO_ITEM;
+
+    if (IsMonHeldItemLocked(mon))
+        return TAKE_LOCKED;
 
     if (!AddBagItem(item, 1))
         return TAKE_NO_BAG_SPACE;
@@ -3554,7 +3570,14 @@ static void Task_SwitchHoldItemsPrompt(u8 taskId)
 {
     if (!gPaletteFade.active)
     {
-        DisplayAlreadyHoldingItemSwitchMessage(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], sPartyMenuItemId, TRUE);
+        struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][gPartyMenu.slotId];
+
+        if (IsMonHeldItemLocked(mon))
+        {
+            DisplayHeldItemLockedMessage(taskId);
+            return;
+        }
+        DisplayAlreadyHoldingItemSwitchMessage(mon, sPartyMenuItemId, TRUE);
         gTasks[taskId].func = Task_SwitchItemsYesNo;
     }
 }
@@ -3691,6 +3714,9 @@ static void CursorCb_TakeItem(u8 taskId)
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
     switch (TryTakeMonItem(mon))
     {
+    case TAKE_LOCKED:
+        DisplayHeldItemLockedMessage(taskId);
+        return;
     case TAKE_NO_ITEM:
         GetMonNickname(mon, gStringVar1);
         StringExpandPlaceholders(gStringVar4, gText_PkmnNotHolding);
@@ -3716,7 +3742,9 @@ static void CursorCb_Toss(u8 taskId)
     PlaySE(SE_SELECT);
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
-    if (item == ITEM_NONE)
+    if (IsMonHeldItemLocked(mon))
+        DisplayHeldItemLockedMessage(taskId);
+    else if (item == ITEM_NONE)
     {
         GetMonNickname(mon, gStringVar1);
         StringExpandPlaceholders(gStringVar4, gText_PkmnNotHolding);
@@ -7181,8 +7209,14 @@ void CB2_ChooseMonToGiveItem(void)
 
 static void TryGiveItemOrMailToSelectedMon(u8 taskId)
 {
-    sPartyMenuItemId = GetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], MON_DATA_HELD_ITEM);
-    if (sPartyMenuItemId == ITEM_NONE)
+    struct Pokemon *mon = &gParties[B_TRAINER_PLAYER][gPartyMenu.slotId];
+
+    sPartyMenuItemId = GetMonData(mon, MON_DATA_HELD_ITEM);
+    if (IsMonHeldItemLocked(mon))
+    {
+        DisplayHeldItemLockedMessage(taskId);
+    }
+    else if (sPartyMenuItemId == ITEM_NONE)
     {
         GiveItemOrMailToSelectedMon(taskId);
     }
@@ -7360,7 +7394,11 @@ static void TryGiveMailToSelectedMon(u8 taskId)
 
     gPartyMenuUseExitCallback = FALSE;
     mail = &gSaveBlock1Ptr->mail[gPlayerPCItemPageInfo.itemsAbove + PARTY_SIZE + gPlayerPCItemPageInfo.cursorPos];
-    if (GetMonData(mon, MON_DATA_HELD_ITEM) != ITEM_NONE)
+    if (IsMonHeldItemLocked(mon))
+    {
+        DisplayPartyMenuMessage(gText_ChanseyLuckyPunchLocked, TRUE);
+    }
+    else if (GetMonData(mon, MON_DATA_HELD_ITEM) != ITEM_NONE)
     {
         DisplayPartyMenuMessage(gText_PkmnHoldingItemCantHoldMail, TRUE);
     }
@@ -8468,6 +8506,14 @@ void CursorCb_MoveItemCallback(u8 taskId)
         item1 = GetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], MON_DATA_HELD_ITEM);
         item2 = GetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId2], MON_DATA_HELD_ITEM);
 
+        if (IsMonHeldItemLocked(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId2]))
+        {
+            AnimatePartySlot(gPartyMenu.slotId2, 0);
+            AnimatePartySlot(gPartyMenu.slotId, 1);
+            DisplayHeldItemLockedMessage(taskId);
+            return;
+        }
+
         // swap the held items
         SetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId], MON_DATA_HELD_ITEM, &item2);
         SetMonData(&gParties[B_TRAINER_PLAYER][gPartyMenu.slotId2], MON_DATA_HELD_ITEM, &item1);
@@ -8522,7 +8568,11 @@ void CursorCb_MoveItem(u8 taskId)
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
 
-    if (GetMonData(mon, MON_DATA_HELD_ITEM) != ITEM_NONE)
+    if (IsMonHeldItemLocked(mon))
+    {
+        DisplayHeldItemLockedMessage(taskId);
+    }
+    else if (GetMonData(mon, MON_DATA_HELD_ITEM) != ITEM_NONE)
     {
         gPartyMenu.action = PARTY_ACTION_SWITCH;
 

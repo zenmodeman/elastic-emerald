@@ -317,3 +317,79 @@ TEST("Elastic-tests: Evolution restrictions: Restricted walking evolutions retai
         EXPECT_EQ(evolution[0].params[1].arg1, cases[i].minimumLevel);
     }
 }
+
+TEST("Elastic-tests: Chansey requires level 60 and friendship in Restricted Mode")
+{
+    bool32 restricted, happy;
+    u32 level;
+    enum Species expected;
+    struct Pokemon mon;
+
+    PARAMETRIZE { restricted = TRUE;  happy = TRUE;  level = 59; expected = SPECIES_NONE; }
+    PARAMETRIZE { restricted = TRUE;  happy = TRUE;  level = 60; expected = SPECIES_BLISSEY; }
+    PARAMETRIZE { restricted = TRUE;  happy = TRUE;  level = 61; expected = SPECIES_BLISSEY; }
+    PARAMETRIZE { restricted = TRUE;  happy = FALSE; level = 60; expected = SPECIES_NONE; }
+    PARAMETRIZE { restricted = FALSE; happy = TRUE;  level = 59; expected = SPECIES_BLISSEY; }
+
+    if (restricted)
+        FlagSet(FLAG_RESTRICTED_MODE);
+    else
+        FlagClear(FLAG_RESTRICTED_MODE);
+
+    if (happy)
+        CreateHappyMon(&mon, SPECIES_CHANSEY, level);
+    else
+        CreateMon(&mon, SPECIES_CHANSEY, level, 0, OTID_STRUCT_PLAYER_ID);
+
+    EXPECT_EQ(GetNormalEvolution(&mon), expected);
+}
+
+TEST("Elastic-tests: Happiny's evolution replaces the consumed Oval Stone with a Lucky Punch")
+{
+    struct Pokemon mon;
+    enum Item item = ITEM_OVAL_STONE;
+    enum Species species;
+
+    RtcCalcLocalTimeOffset(1, 12, 0, 0);
+    CreateMon(&mon, SPECIES_HAPPINY, 20, 0, OTID_STRUCT_PLAYER_ID);
+    SetMonData(&mon, MON_DATA_HELD_ITEM, &item);
+    EXPECT_EQ(GetNormalEvolution(&mon), SPECIES_CHANSEY);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HELD_ITEM), ITEM_OVAL_STONE);
+
+    species = GetEvolutionTargetSpecies(&mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, NULL, DO_EVO);
+    EXPECT_EQ(species, SPECIES_CHANSEY);
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HELD_ITEM), ITEM_NONE);
+    EXPECT(!TryGiveEvolutionHeldItem(&mon, SPECIES_HAPPINY));
+
+    SetMonData(&mon, MON_DATA_SPECIES, &species);
+    EXPECT(TryGiveEvolutionHeldItem(&mon, SPECIES_HAPPINY));
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HELD_ITEM), ITEM_LUCKY_PUNCH);
+    EXPECT(!TryGiveEvolutionHeldItem(&mon, SPECIES_HAPPINY));
+}
+
+TEST("Elastic-tests: Evolution never overwrites Chansey's existing held item")
+{
+    struct Pokemon mon;
+    enum Item item = ITEM_ORAN_BERRY;
+
+    CreateMon(&mon, SPECIES_CHANSEY, 20, 0, OTID_STRUCT_PLAYER_ID);
+    EXPECT(!TryGiveEvolutionHeldItem(&mon, SPECIES_CHANSEY));
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HELD_ITEM), ITEM_NONE);
+    SetMonData(&mon, MON_DATA_HELD_ITEM, &item);
+    EXPECT(!TryGiveEvolutionHeldItem(&mon, SPECIES_HAPPINY));
+    EXPECT_EQ(GetMonData(&mon, MON_DATA_HELD_ITEM), ITEM_ORAN_BERRY);
+}
+
+TEST("Elastic-tests: Chansey's Lucky Punch locks until the eighth badge in Restricted Mode")
+{
+    EXPECT(!IsHeldItemLocked(SPECIES_CHANSEY, ITEM_LUCKY_PUNCH));
+
+    FlagSet(FLAG_RESTRICTED_MODE);
+    FlagSet(FLAG_BADGE07_GET);
+    EXPECT(IsHeldItemLocked(SPECIES_CHANSEY, ITEM_LUCKY_PUNCH));
+    EXPECT(!IsHeldItemLocked(SPECIES_CHANSEY, ITEM_ORAN_BERRY));
+    EXPECT(!IsHeldItemLocked(SPECIES_BLISSEY, ITEM_LUCKY_PUNCH));
+
+    FlagSet(FLAG_BADGE08_GET);
+    EXPECT(!IsHeldItemLocked(SPECIES_CHANSEY, ITEM_LUCKY_PUNCH));
+}

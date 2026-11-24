@@ -10,7 +10,8 @@ Use **Commit # pending** until the implementation commit ID is verified, then re
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
-| Restricted Toxic Spikes | **Commit # pending** | Consumes a layer on successful poison against an AI-controlled switch-in and announces the consumption. |
+| Chansey evolution and Egg Bomb | **Commit # pending** | Awards a Lucky Punch on evolution into Chansey with an empty held-item slot, locks it until badge eight in Restricted Mode, and adds a Restricted friendship evolution level floor of 60. Egg Bomb gains one critical-hit stage and a 50% chance to lower Defense. |
+| Restricted Toxic Spikes | `9077a71ebd` | Consumes a layer on successful poison against an AI-controlled switch-in and announces the consumption. |
 | Boxer’s Guard | `4e4ea300d7` | Replaces Hitmonchan’s Keen Eye with a Defense multiplier based on punching moves and Punching Glove. |
 | Trainer-loss test isolation | `4e4ea300d7` | Restores shared battle state after testing ordinary, early-rival, and AI demonstration loss handling. |
 | Snore and Bounce descriptions | `a79187ae17` | Restores the signature damage bonuses in the player-facing move descriptions using the wording from `04a9726ba9`. |

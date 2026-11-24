@@ -364,6 +364,7 @@ enum {
     WIN_DISPLAY_INFO,
     WIN_MESSAGE,
     WIN_ITEM_DESC,
+    WIN_HELD_ITEM_LOCK,
 };
 
 struct Wallpaper
@@ -988,6 +989,15 @@ static const struct WindowTemplate sWindowTemplates[] =
         .tilemapTop = 13,
         .width = 21,
         .height = 7,
+        .paletteNum = 15,
+        .baseBlock = 0x14,
+    },
+    [WIN_HELD_ITEM_LOCK] = {
+        .bg = 0,
+        .tilemapLeft = 11,
+        .tilemapTop = 16,
+        .width = 18,
+        .height = 3,
         .paletteNum = 15,
         .baseBlock = 0x14,
     },
@@ -2262,6 +2272,7 @@ enum {
     MSTATE_ERROR_LAST_PARTY_MON,
     MSTATE_ERROR_HAS_MAIL,
     MSTATE_WAIT_ERROR_MSG,
+    MSTATE_WAIT_HELD_ITEM_LOCK_MSG,
     MSTATE_MULTIMOVE_RUN,
     MSTATE_MULTIMOVE_RUN_CANCEL,
     MSTATE_MULTIMOVE_RUN_MOVED,
@@ -2510,10 +2521,19 @@ static void Task_PokeStorageMain(u8 taskId)
         PrintMessage(MSG_PLEASE_REMOVE_MAIL);
         sStorage->state = MSTATE_WAIT_ERROR_MSG;
         break;
+    case MSTATE_WAIT_HELD_ITEM_LOCK_MSG:
     case MSTATE_WAIT_ERROR_MSG:
         if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
         {
-            ClearBottomWindow();
+            if (sStorage->state == MSTATE_WAIT_HELD_ITEM_LOCK_MSG)
+            {
+                ClearStdWindowAndFrameToTransparent(WIN_HELD_ITEM_LOCK, FALSE);
+                ScheduleBgCopyTilemapToVram(0);
+            }
+            else
+            {
+                ClearBottomWindow();
+            }
             SetPokeStorageTask(Task_PokeStorageMain);
         }
         break;
@@ -3154,11 +3174,36 @@ static void Task_ShowMarkMenu(u8 taskId)
     }
 }
 
+static bool32 TryShowHeldItemLockMessage(void)
+{
+    u8 message[64];
+
+    if (!IsHeldItemLocked(sStorage->displayMonSpecies, sStorage->displayMonItemId))
+        return FALSE;
+
+    PlaySE(SE_FAILURE);
+    LoadUserWindowBorderGfx(WIN_HELD_ITEM_LOCK, 2, BG_PLTT_ID(13));
+    FillWindowPixelBuffer(WIN_HELD_ITEM_LOCK, PIXEL_FILL(1));
+    // This window handles dismissal in MSTATE_WAIT_HELD_ITEM_LOCK_MSG.
+    StringCopy(message, gText_ChanseyLuckyPunchLocked);
+    StripExtCtrlCodes(message);
+    AddTextPrinterParameterized(WIN_HELD_ITEM_LOCK, FONT_SMALL, message, 0, 0, TEXT_SKIP_DRAW, NULL);
+    DrawTextBorderOuter(WIN_HELD_ITEM_LOCK, 2, 14);
+    PutWindowTilemap(WIN_HELD_ITEM_LOCK);
+    CopyWindowToVram(WIN_HELD_ITEM_LOCK, COPYWIN_GFX);
+    ScheduleBgCopyTilemapToVram(0);
+    SetPokeStorageTask(Task_PokeStorageMain);
+    sStorage->state = MSTATE_WAIT_HELD_ITEM_LOCK_MSG;
+    return TRUE;
+}
+
 static void Task_TakeItemForMoving(u8 taskId)
 {
     switch (sStorage->state)
     {
     case 0:
+        if (TryShowHeldItemLockMessage())
+            break;
         if (!ItemIsMail(sStorage->displayMonItemId))
         {
             ClearBottomWindow();
@@ -3234,6 +3279,8 @@ static void Task_ItemToBag(u8 taskId)
     switch (sStorage->state)
     {
     case 0:
+        if (TryShowHeldItemLockMessage())
+            break;
         if (!AddBagItem(sStorage->displayMonItemId, 1))
         {
             PlaySE(SE_FAILURE);
@@ -3282,6 +3329,8 @@ static void Task_SwitchSelectedItem(u8 taskId)
     switch (sStorage->state)
     {
     case 0:
+        if (TryShowHeldItemLockMessage())
+            break;
         if (!ItemIsMail(sStorage->displayMonItemId))
         {
             ClearBottomWindow();

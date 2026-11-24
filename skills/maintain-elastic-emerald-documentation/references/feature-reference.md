@@ -30,6 +30,9 @@ Toxic Spikes consume one layer after poisoning an AI-controlled switch-in, even 
 
 Player Defiant and Competitive boosts are capped at two positive stages. Moxie-family abilities cannot add another boost once the relevant stat is positive. Mirror Herb copies only boosts directly given to its target by Swagger, Flatter, Spicy Extract, or Decorate. Opponent abilities retain their ordinary behavior.
 
+Happiny's evolution into Chansey awards a held Lucky Punch when the held-item slot is empty, before evolution moves are offered. In Restricted Mode, Chansey keeps its Lucky Punch equipped until badge eight and requires both level 60 and sufficient friendship to evolve into Blissey.
+
+
 ## Resource Mode
 Resource Mode makes TMs, consumable held items, and move-service points finite. Normal held-item activations spend the item; Knock Off, Fling, and theft cause temporary removal. Consumable held items cannot be transferred from wild Pokemon to the player, while immediate berry consumption and non-consumable transfers remain available.
 
@@ -54,6 +57,10 @@ See [curated Tera types](../../../docs/gameplay/curated-tera-type-distribution.m
 Pokemon Centers provide move tutoring, and the party menu provides direct level-up move relearning. Oldale's Tech House offers additional tutors, including alternate niche abilities.
 
 Resource Mode starts with three tutor and relearner points, or five for Monotype teams. Badges award further points, with extra support for depleted balances. When points run out, free tutoring requires the current Pokemon and its reachable evolutions to stay at one Tier Point or less; relearning uses a two-point threshold. Beedrill is exempt from both limits.
+
+## Significant Move Changes
+
+Egg Bomb has one additional critical-hit stage and a 50% chance to lower the target's Defense by one stage. This is designed to work alongside Lucky Punch and Serene Grace on Chansey.
 
 ## Custom moves and effects
 
