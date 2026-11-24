@@ -2,7 +2,9 @@
 
 ## Documentation status
 
-- **Uncommitted follow-up (Boxer’s Guard):** shared damage calculation boosts Defense by 10% per punching move and 10% for an effective Punching Glove. Once the AI’s modeled effective ability is Boxer’s Guard, damage estimates use the full current moveset and effective Punching Glove bonus. When cache setup masks unknown moves and items, the calculation reads the saved originals for this modifier without recording move or item knowledge.
+- **Commit # pending (Restricted Toxic Spikes):** a successful poison application consumes one layer when the switch-in battler has an AI controller. The status uses the original layer count, and consumption precedes berry cures. Removing the final layer keeps the switch-in hazard cursor on the next queued hazard.
+
+- **Committed follow-up (`4e4ea300d7`, Boxer’s Guard):** shared damage calculation boosts Defense by 10% per punching move and 10% for an effective Punching Glove. Once the AI’s modeled effective ability is Boxer’s Guard, damage estimates use the full current moveset and effective Punching Glove bonus. When cache setup masks unknown moves and items, the calculation reads the saved originals for this modifier without recording move or item knowledge.
 
 - **Committed follow-up (`1c5410038d`, AI-001–010):** damage-only inference includes conditional Archaludon Electro Shot and known eligible Mega Stone forms; fast-KO escapes require 80% HP or full Regenerator healing, allow that Regenerator exception after commitment, and validate replacement survival; Sucker Punch uses the existing three-move observed history. Diagnostic ability inference and prospective Mega combat simulation remain deferred.
 
@@ -15,7 +17,7 @@
 - **Forward-history review complete (2026-09-07):** every applicable AI change after the historical audit's original boundary has been reviewed through `9c4b986496`. The subsequent commitment-reset change in `c753e34660` was reconciled against its committed diff on September 25, 2026; the two later commits through `9c12ae6d16` only add analysis helpers. Cut's Grass-target critical-hit stage is in `ec25d70aa6`; curated fallback Tera assignment is in `eb69f0ece0`; singles matchup-commitment switching is in `53239d220d`; Restricted Mode's Gorilla Tactics/Choice-item interaction is in `f70470b888`; the current Powder knowledge restoration is in `085910e20f`; and removal of the standalone host-driven AI-versus-AI simulator is in `9c4b986496`.
 - **Follow-up committed in `c753e34660`:** a player switch now clears established commitment as well as the already-cleared pending commitment for the opponents. The game's existing AI-versus-AI battle mode remains intact.
 
-Use the last documented code commit above as the boundary of reviewed AI behavior. Pending changes stay explicitly labeled as uncommitted; once committed, reconcile the note against its diff and advance the boundary only through reviewed changes.
+Use the last documented code commit above as the boundary of reviewed AI behavior. Use `Commit # pending` until the implementation commit ID is verified. Reconcile the note against the commit diff and advance the boundary only through reviewed changes.
 
 ## Scope and reading guidance
 
@@ -60,9 +62,9 @@ Powder is rejected for lacking a Fire target move only after all four target mov
 
 `GetDamageMoves` excludes self-recharge attacks and two-turn attacks unless known effective Power Herb, applicable weather (including modeled Mega Sol), or Tailwind for Razor Wind guarantees skipping the charge. Hidden Power Herb does not qualify; item omniscience or observed item knowledge is required. Sky Drop cannot use Power Herb, and semi-invulnerable moves cannot skip charging through weather. Revealed moves remain known, and move/full omniscience still exposes the complete moveset. When no attacks are known, physical-versus-special expectations can fall back to raw offensive stats with a level-sensitive comparison threshold.
 
-Uncommitted cache repair: during masked battler setup, damage-only inference reads the saved original move slots, so hidden STAB damage reaches the initial active-matchup cache without entering revealed history.
+Commit # pending (cache repair): during masked battler setup, damage-only inference reads the saved original move slots, so hidden STAB damage reaches the initial active-matchup cache without entering revealed history.
 
-Uncommitted AI-001 follow-up: eligible known Mega Stones expand damage-only move eligibility to the union of current and prospective Mega species types. Actual Mega species replace the old species types after evolution. This does not model prospective Mega stats, ability, Speed, or defensive typing. Archaludon Electro Shot is the sole non-STAB exception and retains the ordinary known charge-skip requirements. Neither exception records move/effect knowledge.
+Commit # pending (AI-001 follow-up): eligible known Mega Stones expand damage-only move eligibility to the union of current and prospective Mega species types. Actual Mega species replace the old species types after evolution. This does not model prospective Mega stats, ability, Speed, or defensive typing. Archaludon Electro Shot is the sole non-STAB exception and retains the ordinary known charge-skip requirements. Neither exception records move/effect knowledge.
 
 Key commits: `59b76d3fcd`, `4bb634c651`, `829ec9c367`, `7ee8501957`.
 
@@ -144,11 +146,11 @@ Key commit: `04e8acf271`.
 
 ### Matchup commitment for fast-KO switching
 
-In singles, an active Pokemon using `AI_FLAG_SMART_SWITCHING` may switch from a fast KO while it remains uncommitted to the matchup. The shared safeguards still require the player to be faster, an actual-state calculation using revealed moves plus Hidden STAB inference to find a KO, a suitable switch-in, and at least 80% HP for ordinary Pokemon. Effective Regenerator instead requires enough missing HP to receive the runtime's full healing amount (`GetNonDynamaxMaxHP / 3`) and may bypass commitment. Slow KOs do not trigger this path, and the final switch remains a single 50% roll. The independent Regenerator-benefit reason defers lethal matchups to this gate. These threshold and Regenerator refinements are uncommitted.
+In singles, an active Pokemon using `AI_FLAG_SMART_SWITCHING` may switch from a fast KO while it remains uncommitted to the matchup. The shared safeguards still require the player to be faster, an actual-state calculation using revealed moves plus Hidden STAB inference to find a KO, a suitable switch-in, and at least 80% HP for ordinary Pokemon. Effective Regenerator instead requires enough missing HP to receive the runtime's full healing amount (`GetNonDynamaxMaxHP / 3`) and may bypass commitment. Slow KOs do not trigger this path, and the final switch remains a single 50% roll. The independent Regenerator-benefit reason defers lethal matchups to this gate. Commit # pending for these threshold and Regenerator refinements.
 
 An opposing Pokemon becomes committed after it successfully resolves a move during a turn in which the player's active Pokemon never switches. Damaging, status, and self-targeting moves all qualify. Failure to act and no-effect results such as misses, immunity, failure, or Protect do not qualify. Commitment is finalized at the end of the turn so a player pivot that occurs after the opposing move still prevents commitment to the old matchup. Any player switch clears both pending and established commitment for the opposing battlers, while an opposing Pokemon switching out also resets its own state.
 
-Uncommitted replacement safety: both the selected replacement and fallback candidates must survive hazards and an incoming attack, plus another attack if they cannot act first. Candidate simulation restores battlers, AI caches, saved knowledge state, protection flags, and dynamic move state. Entry hazards are counted once in this additional check.
+Commit # pending (replacement safety): both the selected replacement and fallback candidates must survive hazards and an incoming attack, plus another attack if they cannot act first. Candidate simulation restores battlers, AI caches, saved knowledge state, protection flags, and dynamic move state. Entry hazards are counted once in this additional check.
 
 This commitment gate applies only to the fast-KO reason. Perish Song, ineffective Encore or choice locks, and the other independent switch reasons retain their own rules. Weather setters no longer receive a separate preservation path, and the heavy-switching and defensive-drop entry checks are suppressed.
 
@@ -250,7 +252,7 @@ Key commits: `4a52d27b94`, `0d40937518`, `a0437698e7`, `0abf70faf9`.
 
 ### Sucker Punch observed-use policy
 
-Uncommitted AI-007 follow-up: the existing three-entry last-moves-used ring governs status mind games. Offset zero is the latest move, not a previous elapsed turn. No history-based penalty applies before a recent Sucker Punch attempt. The latest attempt permits one 50% penalty roll immediately; an attempt two or three recorded moves back permits the roll only if the target has a status move within the corresponding history window or has no recorded move since switching in. Known complete status-only sets remain penalized. The inherited penalty for an opponent expected to act first is removed per the developer's inline decision. Hidden slots are not proof that a target cannot attack. Switching clears the occupant's recent history and rehydrates revealed moves from its persistent party record; no new per-turn history is introduced.
+Commit # pending (AI-007 follow-up): the existing three-entry last-moves-used ring governs status mind games. Offset zero is the latest move, not a previous elapsed turn. No history-based penalty applies before a recent Sucker Punch attempt. The latest attempt permits one 50% penalty roll immediately; an attempt two or three recorded moves back permits the roll only if the target has a status move within the corresponding history window or has no recorded move since switching in. Known complete status-only sets remain penalized. The inherited penalty for an opponent expected to act first is removed per the developer's inline decision. Hidden slots are not proof that a target cannot attack. Switching clears the occupant's recent history and rehydrates revealed moves from its persistent party record; no new per-turn history is introduced.
 
 ### Stat-lowering decisions
 

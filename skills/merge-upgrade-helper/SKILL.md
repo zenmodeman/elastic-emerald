@@ -22,6 +22,6 @@ Read `AGENTS.md` first. Preserve current Elastic Emerald behavior while adapting
 3. Audit affected features through data, runtime dispatch, scripts, UI, save state, and AI. Surviving declarations or tests do not establish a working runtime path. Treat newly unused helpers as possible lost hooks. Check numeric namespaces for collisions.
 4. For AI changes, also load `skills/modify-elastic-emerald-ai-logic/SKILL.md`. Preserve current matchup commitment rather than restoring historical switching heuristics.
 5. Use conflict scans, stale-symbol/caller searches, and diff checks. Run builds or test builds only when explicitly requested. If requested, distinguish compilation, assembly, linking, ROM generation, and runtime testing in the results.
-6. Record actionable repair/API lessons in the relevant topic skill or upgrade references. Keep change history concise and commit references accurate; label uncommitted work explicitly. Update feature descriptions only when functional rules change.
+6. Record actionable repair/API lessons in the relevant topic skill or upgrade references. Keep change history concise and commit references accurate; use `Commit # pending` until the implementation commit ID is verified. Update feature descriptions only when functional rules change.
 
 Report changed files, verification and its limits, outstanding issues, and whether anything was staged.

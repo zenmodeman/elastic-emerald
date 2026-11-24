@@ -7,6 +7,7 @@
 #include "battle_switch_in.h"
 #include "battle_controllers.h"
 #include "config_changes.h"
+#include "event_data.h"
 #include "constants/battle.h"
 #include "constants/moves.h"
 
@@ -308,7 +309,7 @@ static bool32 TryHazardsOnSwitchIn(enum BattlerId battler, enum Ability ability,
 {
     bool32 effect = FALSE;
     enum BattleSide side = GetBattlerSide(battler);
-    bool32 clearedToxicSpikes = FALSE;
+    bool32 removedCurrentHazard = FALSE;
 
     switch (hazardType)
     {
@@ -345,15 +346,20 @@ static bool32 TryHazardsOnSwitchIn(enum BattlerId battler, enum Ability ability,
             RemoveHazardFromField(side, HAZARDS_TOXIC_SPIKES);
             gEffectBattler = battler;
             BattleScriptCall(BattleScript_ToxicSpikesAbsorbed);
-            clearedToxicSpikes = TRUE;
+            removedCurrentHazard = TRUE;
             effect = TRUE;
         }
         else if (IsBattlerAffectedByHazards(battler, holdEffect, TRUE)
               && CanBePoisoned(battler, battler, ABILITY_NONE, ability))
         {
+            bool32 shouldConsumeLayer = FlagGet(FLAG_RESTRICTED_MODE) && BattlerHasAi(battler);
+
             gBattleScripting.battler = battler;
             BattleScriptPushCursor();
-            if (gSideTimers[GetBattlerSide(battler)].toxicSpikesAmount >= 2)
+            if (shouldConsumeLayer)
+                BattleScriptPush(BattleScript_ToxicSpikesLayerConsumed);
+
+            if (gSideTimers[side].toxicSpikesAmount >= 2)
             {
                 gBattlescriptCurrInstr = BattleScript_ToxicSpikesBadlyPoisoned;
                 gBattleMons[battler].status1 |= STATUS1_TOXIC_POISON;
@@ -362,6 +368,13 @@ static bool32 TryHazardsOnSwitchIn(enum BattlerId battler, enum Ability ability,
             {
                 gBattlescriptCurrInstr = BattleScript_ToxicSpikesPoisoned;
                 gBattleMons[battler].status1 |= STATUS1_POISON;
+            }
+
+            // Consume the layer when poison is applied, before switch-in item effects can cure it.
+            if (shouldConsumeLayer && --gSideTimers[side].toxicSpikesAmount == 0)
+            {
+                RemoveHazardFromField(side, HAZARDS_TOXIC_SPIKES);
+                removedCurrentHazard = TRUE;
             }
 
             BtlController_EmitSetMonData(battler, B_COMM_TO_CONTROLLER, REQUEST_STATUS_BATTLE, 0, sizeof(gBattleMons[battler].status1), &gBattleMons[battler].status1);
@@ -395,7 +408,8 @@ static bool32 TryHazardsOnSwitchIn(enum BattlerId battler, enum Ability ability,
         break;
     }
 
-    if (!clearedToxicSpikes)
+    // Removing the current hazard shifts the next one into this slot.
+    if (!removedCurrentHazard)
         gBattleStruct->hazardsCounter++;
 
     return effect;

@@ -71,7 +71,7 @@ For upgrade or merge work that touches AI, load `skills/merge-upgrade-helper/SKI
 - Run `git diff --check` and inspect the complete diff. Do not run a full build unless explicitly requested.
 - Name new tests with the `Elastic-tests: ` prefix. Prefer tests that distinguish actual versus hypothetical state and verify restoration after simulation.
 - Update `skills/modify-elastic-emerald-ai-logic/references/behavior-summary.md` with the behavior and key commits.
-- If AI changes are uncommitted, list them as uncommitted in the summary. On later documentation edits, reconcile that marker with `git log` and the relevant committed diff before advancing the last-documented commit.
+- Use `Commit # pending` in the AI summary until the implementation commit ID is verified. On later documentation edits, reconcile that marker with `git log` and the relevant committed diff before advancing the last-documented commit.
 
 ## Current implementation and maintenance notes
 

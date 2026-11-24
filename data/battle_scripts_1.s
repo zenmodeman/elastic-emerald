@@ -3525,6 +3525,11 @@ BattleScript_ToxicSpikesBadlyPoisoned::
 	waitstate
 	return
 
+BattleScript_ToxicSpikesLayerConsumed::
+	printstring STRINGID_TOXICSPIKESLAYERCONSUMED
+	waitmessage B_WAIT_TIME_LONG
+	return
+
 BattleScript_StickyWebOnSwitchIn::
 	setbyte sSTICKY_WEB_STAT_DROP, 1
 	printstring STRINGID_STICKYWEBSWITCHIN

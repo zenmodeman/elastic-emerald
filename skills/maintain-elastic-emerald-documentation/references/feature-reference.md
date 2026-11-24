@@ -22,12 +22,15 @@ Tiered Mode assigns species- and ability-dependent costs and limits the party's 
 
 See [Tier Points](../../../docs/gameplay/tier-points.md) for costs and eligibility rules.
 
-## Restricted and Resource modes
+## Restricted Mode
 
-Restricted Mode limits battle items, evolution and ability changes, stat-boosting abilities, and Terastallization. Trainer battles enforce a held-item clause. Release restrictions protect access to required moves.
+Restricted Mode limits battle items, evolution and ability changes, stat-boosting abilities, and Terastallization. Trainer battles enforce a held-item clause. 
+
+Toxic Spikes consume one layer after poisoning an AI-controlled switch-in, even if the poison is immediately cured. This means if 2 Toxic Spikes are setup, it will amount to one Badly poison and one regular poison before expiring.
 
 Player Defiant and Competitive boosts are capped at two positive stages. Moxie-family abilities cannot add another boost once the relevant stat is positive. Mirror Herb copies only boosts directly given to its target by Swagger, Flatter, Spicy Extract, or Decorate. Opponent abilities retain their ordinary behavior.
 
+## Resource Mode
 Resource Mode makes TMs, consumable held items, and move-service points finite. Normal held-item activations spend the item; Knock Off, Fling, and theft cause temporary removal. Consumable held items cannot be transferred from wild Pokemon to the player, while immediate berry consumption and non-consumable transfers remain available.
 
 ## Trainer healing and battle-end status

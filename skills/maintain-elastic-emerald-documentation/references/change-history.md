@@ -6,15 +6,16 @@ Entries briefly describe additions, changes, and repairs and retain their commit
 
 ## Newest changes
 
-Committed entries use their actual commit IDs. **Uncommitted** identifies working-tree changes; replace that label with the verified implementation commit once committed.
+Use **Commit # pending** until the implementation commit ID is verified, then replace the label with that ID.
 
 | Change | Commit or status | Description |
 | --- | --- | --- |
-| Boxer’s Guard | **Uncommitted** | Replaces Hitmonchan’s Keen Eye with a Defense multiplier based on punching moves and Punching Glove. |
-| Trainer-loss test isolation | **Uncommitted** | Restores shared battle state after testing ordinary, early-rival, and AI demonstration loss handling. |
+| Restricted Toxic Spikes | **Commit # pending** | Consumes a layer on successful poison against an AI-controlled switch-in and announces the consumption. |
+| Boxer’s Guard | `4e4ea300d7` | Replaces Hitmonchan’s Keen Eye with a Defense multiplier based on punching moves and Punching Glove. |
+| Trainer-loss test isolation | `4e4ea300d7` | Restores shared battle state after testing ordinary, early-rival, and AI demonstration loss handling. |
 | Snore and Bounce descriptions | `a79187ae17` | Restores the signature damage bonuses in the player-facing move descriptions using the wording from `04a9726ba9`. |
 | AI scenario policy follow-up | `1c5410038d` | Adds conditional Archaludon Electro Shot and prospective Mega types to damage-only inference; revises fast-KO HP/Regenerator gates and replacement survival; applies observed-use Sucker Punch caution; clears stale active move history on switching while preserving party knowledge; corrects the Smart Trainer flag contract and adds focused regressions. |
-| AI cache, damage-preview, and Elastic regression repairs | **Uncommitted** | Restores hidden-STAB damage during masked cache setup and clears inherited dynamic move type/category in damage previews. Repairs 64-bit flag fixtures, battler-ID and bit-field assertions, the weak-IV test include path, and stale map/species/Hidden Power fixtures. ROM build and all 568 Elastic tests pass. |
+| AI cache, damage-preview, and Elastic regression repairs | **Commit # pending** | Restores hidden-STAB damage during masked cache setup and clears inherited dynamic move type/category in damage previews. Repairs 64-bit flag fixtures, battler-ID and bit-field assertions, the weak-IV test include path, and stale map/species/Hidden Power fixtures. ROM build and all 568 Elastic tests pass. |
 | Tech House secondary attacking IV expert | `ecb711f76f` | Completes party selection, configured species eligibility, confirmation, and single-IV maximization, including cancellation, Egg rejection, and already-maximized conditions. The selection screen shows Able/Unable using the shared eligibility check. Adds the description helper forward declaration required to compile the party screen. Registers the selector with `waitstate=1` so eligibility checks and dialogue wait for selection or cancellation. |
 | Johanna TM reward quantity | `fb1d47f72b` | Awards six Lucky Chant TMs in every mode, relying on shared non-Resource TM quantity display handling. |
 | Hidden Power tie selection | `6f319a0f09` | Randomly selects among equally valued best types at execution while keeping AI and Anticipation previews from consuming the selection roll. |
@@ -180,4 +181,4 @@ The [AI summary](../../modify-elastic-emerald-ai-logic/references/behavior-summa
 
 - `9f4fc64309`: aligned machines with the 79-move plan (76 TMs and Cut/Flash/Rock Smash HMs); retired machine rewards use Tera Blast pending final placement.
 
-- Uncommitted: restored all 25 retained TM numbers from before `9f4fc64309`; new moves replace retired slots before extending the list. Tera Blast remains the placeholder reward.
+- Commit # pending: restored all 25 retained TM numbers from before `9f4fc64309`; new moves replace retired slots before extending the list. Tera Blast remains the placeholder reward.
